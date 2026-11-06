@@ -8,7 +8,7 @@ export function BackOfficeBanner() {
 
   const message = loaded.report
     ? `Back office: City of bug report ${loaded.revision}, read-only. Nothing is saved.`
-    : `Back office: save of ${loaded.handle ?? 'an account without Handle'}, revision ${loaded.revision}. Cloud save is off.`;
+    : `Back office: save of ${loaded.handle ?? 'an account without Handle'}, revision ${loaded.revision}, read-only. Nothing is saved.`;
   return (
     <OverlayBanner variant="banner" role="alert" message={message}>
       {null}

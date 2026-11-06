@@ -6,9 +6,10 @@ export interface TrafficTargetInput {
   commuters: number;
   laneTiles: number;
   touch: boolean;
+  density?: number;
 }
 
-export function targetVehicleCount({ commuters, laneTiles, touch }: TrafficTargetInput): number {
+export function targetVehicleCount({ commuters, laneTiles, touch, density = 1 }: TrafficTargetInput): number {
   const ceiling = touch ? MAX_VEHICLES / 2 : MAX_VEHICLES;
-  return Math.min(Math.floor(commuters / COMMUTERS_PER_VEHICLE), Math.floor(laneTiles / LANE_TILES_PER_VEHICLE), ceiling);
+  return Math.min(Math.floor((commuters * density) / COMMUTERS_PER_VEHICLE), Math.floor((laneTiles * density) / LANE_TILES_PER_VEHICLE), ceiling);
 }

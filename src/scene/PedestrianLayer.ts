@@ -6,7 +6,8 @@ import { AvatarActors, type Actor } from './AvatarActors';
 import type { ModelLibrary } from './modelLibrary';
 import { stickCyclist, stickPedestrian } from './stickFigures';
 import { bridgeElevation, type ElevationAt } from './bridgeElevation';
-import { MAX_CYCLISTS, tileOfNode, MAX_PEDESTRIANS, advancePedestrian, crossedTile, isOnGraph, pedestrianPose, startPedestrian, targetPedestrianCount, type Pedestrian } from './pedestrianWalk';
+import { cumulativeSums, pickByWeight } from './trafficSpawn';
+import { MAX_CYCLISTS, loadWeights, tileOfNode, MAX_PEDESTRIANS, advancePedestrian, crossedTile, isOnGraph, pedestrianPose, startPedestrian, targetPedestrianCount, type NodeWeight, type Pedestrian } from './pedestrianWalk';
 
 const SIDEWALK_HEIGHT = 0.03;
 const BASE_SPEED = 0.35;
@@ -58,6 +59,12 @@ export class PedestrianLayer {
   private cyclists = createFleet(stickCyclist(), this.material, MAX_CYCLISTS, CYCLING_SPEED_FACTOR);
   private graph: PedestrianGraph = new Map();
   private nodes: string[] = [];
+  private loads: ReadonlyMap<string, number> | null = null;
+  private weight: NodeWeight = loadWeights(new Map());
+  private spawnWeights: number[] = [];
+  private walking = 0;
+  private cycling = 0;
+  private density = 1;
   private nextId = 1;
   private rngState = 0;
   private seed = '';
@@ -93,6 +100,7 @@ export class PedestrianLayer {
   setEnabled(enabled: boolean): void {
     this.enabled = enabled;
     this.root.visible = enabled;
+    if (!enabled) this.crossingTiles = new Set();
   }
 
   sync(state: GameState): void {
@@ -104,11 +112,22 @@ export class PedestrianLayer {
     const changes = this.walkSurface.changesOf(state);
     if (changes.length !== this.changes.length || changes.some((change, index) => change !== this.changes[index])) this.rebuildGraph(state, changes);
     const stats = congestionStats(state);
+    if (stats.sidewalkLoads !== this.loads) this.weighSidewalks(stats.sidewalkLoads);
     const share = this.walkSurface.share;
-    const walking = (stats.walkers + tripsTotal(stats.walkingTrips)) * share;
-    const cycling = (stats.cyclists + tripsTotal(stats.cyclingTrips)) * share;
-    this.walkers.target = targetPedestrianCount({ people: walking, nodes: this.nodes.length, touch: this.touch });
-    this.cyclists.target = targetPedestrianCount({ people: cycling, nodes: this.nodes.length, touch: this.touch, max: MAX_CYCLISTS });
+    this.walking = (stats.walkers + tripsTotal(stats.walkingTrips)) * share;
+    this.cycling = (stats.cyclists + tripsTotal(stats.cyclingTrips)) * share;
+    this.retarget();
+  }
+
+  setDensity(density: number): void {
+    this.density = density;
+    this.retarget();
+  }
+
+  private retarget(): void {
+    const { nodes, touch, density } = { nodes: this.nodes.length, touch: this.touch, density: this.density };
+    this.walkers.target = targetPedestrianCount({ people: this.walking, nodes, touch, density });
+    this.cyclists.target = targetPedestrianCount({ people: this.cycling, nodes, touch, max: MAX_CYCLISTS, density });
   }
 
   update(deltaSeconds: number): void {
@@ -141,8 +160,15 @@ export class PedestrianLayer {
     this.changes = changes;
     this.graph = this.walkSurface.graphOf(state);
     this.nodes = [...this.graph.keys()].sort();
+    this.loads = null;
     this.walkers.figures = this.walkers.figures.filter((figure) => isOnGraph(this.graph, figure));
     this.cyclists.figures = this.cyclists.figures.filter((figure) => isOnGraph(this.graph, figure));
+  }
+
+  private weighSidewalks(loads: ReadonlyMap<string, number>): void {
+    this.loads = loads;
+    this.weight = loadWeights(loads);
+    this.spawnWeights = cumulativeSums(this.nodes.map(this.weight));
   }
 
   private random = (): number => {
@@ -152,16 +178,16 @@ export class PedestrianLayer {
   };
 
   private advance(fleet: Fleet, deltaSeconds: number): void {
-    fleet.figures = fleet.figures.filter((figure) => advancePedestrian(this.graph, figure, deltaSeconds, this.random));
+    fleet.figures = fleet.figures.filter((figure) => advancePedestrian(this.graph, figure, deltaSeconds, this.random, this.weight));
     while (fleet.figures.length > fleet.target) fleet.figures.pop();
     for (let attempt = 0; fleet.figures.length < fleet.target && attempt < SPAWN_ATTEMPTS; attempt++) this.spawnOne(fleet);
   }
 
   private spawnOne(fleet: Fleet): void {
     if (this.nodes.length === 0) return;
-    const node = this.nodes[Math.floor(this.random() * this.nodes.length)] ?? '';
+    const node = this.nodes[pickByWeight(this.spawnWeights, this.random())] ?? '';
     const speed = BASE_SPEED * fleet.speedFactor * (1 - SPEED_VARIATION + 2 * SPEED_VARIATION * this.random());
-    const figure = startPedestrian(this.graph, node, this.nextId, speed, this.random);
+    const figure = startPedestrian(this.graph, node, this.nextId, speed, this.random, this.weight);
     if (!figure) return;
     this.nextId++;
     fleet.figures.push(figure);

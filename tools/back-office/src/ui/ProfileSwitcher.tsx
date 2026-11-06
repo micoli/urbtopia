@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { DropdownMenu } from 'radix-ui'
 import { hostOf, isLocalUrl, newProfile, type Profile } from '../domain/profiles'
 import { useProfiles } from '../store/connectionStore'
+import { followActiveProfile } from '../store/followActiveProfile'
 import { ColorDot } from './ColorDot'
 import { ConfirmDialog } from './ConfirmDialog'
 import { ProfileDialog } from './ProfileDialog'
@@ -31,7 +32,10 @@ export function ProfileSwitcher({ active }: Props) {
         <DropdownMenu.Portal>
           <DropdownMenu.Content align="start" sideOffset={6} className="z-30 min-w-64 rounded-lg bg-white p-1 shadow-lg ring-1 ring-zinc-200">
             {profiles.map(profile => (
-              <DropdownMenu.Item key={profile.id} className={item} onSelect={() => select(profile.id)}>
+              <DropdownMenu.Item key={profile.id} className={item} onSelect={() => {
+                select(profile.id)
+                followActiveProfile()
+              }}>
                 <ColorDot color={profile.color} />
                 <span className="flex-1 truncate">{profile.name}</span>
                 <span className="truncate text-xs text-zinc-500">{hostOf(profile.url)}</span>
@@ -52,6 +56,7 @@ export function ProfileSwitcher({ active }: Props) {
           onCancel={() => setDialog(null)}
           onSubmit={profile => {
             save(profile)
+            followActiveProfile()
             setDialog(null)
           }}
         />
@@ -64,6 +69,7 @@ export function ProfileSwitcher({ active }: Props) {
           onCancel={() => setDialog(null)}
           onConfirm={() => {
             remove(dialog.profile.id)
+            followActiveProfile()
             setDialog(null)
           }}
         />

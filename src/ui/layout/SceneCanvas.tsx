@@ -11,6 +11,7 @@ import { FACILITIES, isFacilityType, wasteKindOf } from '../../core';
 import { selectionGhost } from '../../tools/tools';
 import { selectionFocus } from '../../store/selectionFocus';
 import { readCameraView, writeCameraView, type CameraView } from '../../scene/cameraUrl';
+import { crowdFactor } from '../../scene/crowdDensity';
 import { isAlwaysDayRequested, pinnedCycleHourOf } from '../../store/dayCycleFlags';
 import { hideSplash, setSplashProgress } from '../system/splash';
 
@@ -81,7 +82,9 @@ export function SceneCanvas() {
     const showAnalytics = () => scene.setAnalyticsLayer(uiStore.getState().analyticsLayer, uiStore.getState().analyticsCategory, uiStore.getState().analyticsBuildingId);
     showAnalytics();
     const showTraffic = () => scene.setTrafficEnabled(prefsStore.getState().traffic && uiStore.getState().analyticsLayer === null);
+    const showPedestrians = () => scene.setPedestriansEnabled(prefsStore.getState().pedestrians && uiStore.getState().analyticsLayer === null);
     showTraffic();
+    showPedestrians();
     const showDayCycle = () => scene.setDayCycleOverride(prefsStore.getState().alwaysDay || isAlwaysDayRequested(window.location.search), pinnedCycleHourOf(window.location.search));
     showDayCycle();
     scene.setBrushMode(uiStore.getState().tool?.kind === 'brush');
@@ -93,6 +96,8 @@ export function SceneCanvas() {
     scene.onPick((x, y) => pickDotStore.getState().show(x, y));
     void scene.setPedestrianModel(prefsStore.getState().pedestrianModel);
     scene.camera.setFineRotation(prefsStore.getState().fineRotation);
+    const showCrowdDensity = () => scene.setCrowdDensity(crowdFactor(prefsStore.getState().trafficDensity), crowdFactor(prefsStore.getState().pedestrianDensity));
+    showCrowdDensity();
     scene.setLevel(uiStore.getState().level);
     const showSelection = () => {
       const state = gameStore.getState().state;
@@ -116,6 +121,7 @@ export function SceneCanvas() {
       if (store.serviceCoverageOpen !== previous.serviceCoverageOpen) showServiceCoverage();
       if (store.analyticsLayer !== previous.analyticsLayer || store.analyticsBuildingId !== previous.analyticsBuildingId || store.analyticsCategory !== previous.analyticsCategory) {
         showTraffic();
+        showPedestrians();
         showAnalytics();
         showSelection();
       }
@@ -128,8 +134,10 @@ export function SceneCanvas() {
     const unsubscribePrefs = prefsStore.subscribe((prefs, previous) => {
       if (prefs.serviceCoverageType !== previous.serviceCoverageType) showServiceCoverage();
       showTraffic();
+      showPedestrians();
       if (prefs.debug !== previous.debug || prefs.debugOffsetX !== previous.debugOffsetX || prefs.debugOffsetY !== previous.debugOffsetY) showPickOffset();
       if (prefs.alwaysDay !== previous.alwaysDay) showDayCycle();
+      if (prefs.trafficDensity !== previous.trafficDensity || prefs.pedestrianDensity !== previous.pedestrianDensity) showCrowdDensity();
       if (prefs.fineRotation !== previous.fineRotation) scene.camera.setFineRotation(prefs.fineRotation);
       if (prefs.pedestrianModel !== previous.pedestrianModel) void scene.setPedestrianModel(prefs.pedestrianModel);
       if (prefs.showReach !== previous.showReach) showSelection();

@@ -51,3 +51,11 @@ describe('chooseNextTile on a roundabout', () => {
     expect(chooseNextTile(graph, sideMiddle, arrivingFromAbove, 0.9)).toEqual({ x: 8, y: 10 });
   });
 });
+
+describe('chooseNextTile with weights', () => {
+  it('leans towards the heavier side of a junction', () => {
+    const tJunction = graphOf([[4, 5], [5, 5], [5, 4], [5, 6]]);
+    const towardsBottom = (tile: { x: number; y: number }) => (tile.y === 6 ? 100 : 1);
+    expect(chooseNextTile(tJunction, { x: 5, y: 5 }, { x: 4, y: 5 }, 0.1, towardsBottom)).toEqual({ x: 5, y: 6 });
+  });
+});

@@ -35,6 +35,16 @@ export function useLiveMatch(buildingId: number, lastStep: number, tickMs: numbe
       setSkipped(true);
       setStep(lastStep);
     },
+    // Going back to an earlier step cancels the decisions taken after it, since they belonged to a future that no longer happens.
+    seek: (target: number) => {
+      const kept = decisions.filter(decision => decision.minute <= target);
+      if (kept.length !== decisions.length) {
+        setDecisions(kept);
+        setRecorded(false);
+      }
+      setPlaying(false);
+      setStep(target);
+    },
     decide: (decision: MatchDecision) => {
       setRecorded(false);
       setDecisions([...decisions, decision]);

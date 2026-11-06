@@ -13,7 +13,7 @@ The Back office (`tools/back-office`) is a local single-page app that an Admin r
 - `docs/security.md` no longer says the `service_role` key lives nowhere: it lives in the Back office's `localStorage`, on the Admin's machine only. It is still never committed and never in `dist/`; the CI check on `dist/` stays.
 - The key is exposed to any script running on the Back office origin. The app therefore loads no third-party script, keeps its dependencies few, runs on a fixed port (5180) so no other local app shares its origin, and offers a button to forget the key.
 - The Back office is never part of the deployed site: it has its own Vite config and `npm run back-office` script, and the root build only bundles the game.
-- The game opens a Back office save through `postMessage`, in development only and only from the Back office origin. That session turns the Cloud save off, so a loaded city never reaches the Admin's own Player account.
+- The game opens a Back office save through `postMessage`, in development only and only from the Back office origin. That session is read-only: a loaded city never overwrites the Admin's local save and never reaches their own Player account.
 
 ## Alternatives rejected
 

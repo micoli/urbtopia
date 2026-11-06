@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import type { Formation, MatchState } from '../../core';
 import { t } from '../../i18n/t';
+import type { Jerseys } from './jerseyNumbers';
 import { PITCH, ballSpot, pitchPlayers } from './pitchLayout';
 
 interface FootballPitchProps {
@@ -8,13 +9,14 @@ interface FootballPitchProps {
   formation: Formation;
   seed: number;
   minuteMs: number;
+  jerseys: Jerseys;
 }
 
 const GOAL_DEPTH = 2;
 const BOX = { depth: 16.5, height: 40.3 };
 const CENTRE_RADIUS = 9.15;
 
-export function FootballPitch({ state, formation, seed, minuteMs }: FootballPitchProps) {
+export function FootballPitch({ state, formation, seed, minuteMs, jerseys }: FootballPitchProps) {
   const ball = ballSpot(state, seed);
   const scoring = state.events.some(event => event.type === 'goal' && event.minute === state.minute);
   return (
@@ -30,8 +32,8 @@ export function FootballPitch({ state, formation, seed, minuteMs }: FootballPitc
         <rect x={-GOAL_DEPTH} y={PITCH.height / 2 - 3.66} width={GOAL_DEPTH} height={7.32} />
         <rect x={PITCH.width} y={PITCH.height / 2 - 3.66} width={GOAL_DEPTH} height={7.32} />
       </g>
-      {pitchPlayers(state, formation, seed).map(player => (
-        <g key={`${player.side}-${player.number}`} className={`club-pitch__player club-pitch__player--${player.side === 0 ? 'home' : 'away'}`} style={{ transform: `translate(${player.x}px, ${player.y}px)` }}>
+      {pitchPlayers(state, formation, seed, jerseys).map(player => (
+        <g key={`${player.side}-${player.slot}`} className={`club-pitch__player club-pitch__player--${player.side === 0 ? 'home' : 'away'}`} style={{ transform: `translate(${player.x}px, ${player.y}px)` }}>
           <title>{player.name}</title>
           <circle r={1.9} />
           <text y={0.7}>{player.number}</text>

@@ -158,7 +158,7 @@ export class GameScene {
   private accessGlow = new HighlightLayer(0xffd23f);
   private levelBudget = new FrameBudgetMonitor();
   private slowForLevels = false;
-  private trafficEnabled = true;
+  private pedestriansEnabled = true;
   private pinnedCycleHour: number | null = null;
   private lastFrame = performance.now();
   private resizeObserver: ResizeObserver;
@@ -273,12 +273,21 @@ export class GameScene {
   }
 
   setTrafficEnabled(enabled: boolean): void {
-    this.trafficEnabled = enabled;
-    this.undergroundWalkers.root.visible = this.level === -1 && enabled;
     this.traffic.setEnabled(enabled);
+    this.serviceVehicles.setEnabled(enabled);
+  }
+
+  setPedestriansEnabled(enabled: boolean): void {
+    this.pedestriansEnabled = enabled;
+    this.undergroundWalkers.root.visible = this.level === -1 && enabled;
     this.pedestrians.setEnabled(enabled);
     this.attractionCrowd.setEnabled(enabled);
-    this.serviceVehicles.setEnabled(enabled);
+  }
+
+  setCrowdDensity(traffic: number, pedestrians: number): void {
+    this.traffic.setDensity(traffic);
+    this.pedestrians.setDensity(pedestrians);
+    this.undergroundWalkers.setDensity(pedestrians);
   }
 
   // The avatars are loaded when asked for; until they are in, the pedestrians stay stick figures.
@@ -339,7 +348,7 @@ export class GameScene {
     this.accessGlow.setVisible(this.level === -1);
     this.levelFloor.setLevel(this.level);
     this.underground.setLevel(this.level);
-    this.undergroundWalkers.root.visible = this.level === -1 && this.trafficEnabled;
+    this.undergroundWalkers.root.visible = this.level === -1 && this.pedestriansEnabled;
     this.ecologyLayer.transit.metroRoot.visible = this.level === -2;
     for (const root of [this.ground, this.parcels, this.scenery.root, this.ecologyLayer.root, this.congestion.root, this.bridges.root, this.serviceCoverageLayer.root]) root.visible = onSurface;
     this.world.setDisplay(surfaceDisplayOf(this.level, this.slowForLevels));

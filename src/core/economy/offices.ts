@@ -31,6 +31,11 @@ export function advanceOffice(building: Building, filledJobs: number, elapsedMs:
   return { ...building, taxCitizenMs: Math.min(cap, building.taxCitizenMs + filledJobs * elapsedMs) };
 }
 
+export function officeFillRatio(building: Building): number {
+  const cap = officeTierOf(building).jobs * OFFICE.capHours * OFFICE.hourMs;
+  return cap > 0 ? building.taxCitizenMs / cap : 0;
+}
+
 // `yieldMultiplier` is the one an Ordinance gives to the Urbs the Jobs earn.
 export function officeUrbsDue(building: Building, yieldMultiplier = 1): number {
   return Math.floor((building.taxCitizenMs * OFFICE.urbsPerJobPerHour * yieldMultiplier) / OFFICE.hourMs);
