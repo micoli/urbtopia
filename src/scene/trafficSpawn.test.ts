@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SPAWN, cumulativeWeights, pickByWeight, spawnWeight } from './trafficSpawn';
+import { SPAWN, cumulativeWeights, pickByWeight, spawnWeight, turnWeight } from './trafficSpawn';
 
 describe('spawnWeight', () => {
   it('keeps the floor weight on roads that are not saturated', () => {
@@ -34,5 +34,13 @@ describe('picking a spawn tile', () => {
     expect(pickByWeight(cumulative, 0)).toBe(0);
     expect(pickByWeight(cumulative, 0.999999)).toBe(2);
     expect(pickByWeight([], 0.5)).toBe(0);
+  });
+});
+
+describe('turnWeight', () => {
+  it('grows with the load of the section up to its capacity', () => {
+    expect(turnWeight(0)).toBe(1);
+    expect(turnWeight(0.5)).toBeGreaterThan(turnWeight(0.2));
+    expect(turnWeight(3)).toBe(turnWeight(1));
   });
 });

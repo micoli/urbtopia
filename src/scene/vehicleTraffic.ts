@@ -1,6 +1,6 @@
 import { tileKey, type Coord } from '../core';
 import { neighboursOf, type RoadGraph } from './roadGraph';
-import { chooseNextTile } from './roadWalk';
+import { chooseNextTile, type TileWeight } from './roadWalk';
 import { directionOf, sameTile, type Vehicle } from './vehicleMotion';
 
 // Lengths and gaps are in tiles. A vehicle with no length of its own is as long as a car at the scene scale.
@@ -148,14 +148,14 @@ function turnsBackAt(graph: RoadGraph, vehicle: TrafficVehicle): boolean {
   return neighboursOf(graph, vehicle.to).length <= 1;
 }
 
-export function advanceTrafficVehicle(graph: RoadGraph, vehicle: TrafficVehicle, deltaSeconds: number, random: () => number, others: readonly TrafficVehicle[], lanesAt: LanesAt, stopTiles: ReadonlySet<string> = NO_STOPS): boolean {
+export function advanceTrafficVehicle(graph: RoadGraph, vehicle: TrafficVehicle, deltaSeconds: number, random: () => number, others: readonly TrafficVehicle[], lanesAt: LanesAt, stopTiles: ReadonlySet<string> = NO_STOPS, weight?: TileWeight): boolean {
   const travel = allowedTravel(vehicle, (vehicle.speed * deltaSeconds) / edgeLength(vehicle.from, vehicle.to), others, stopTiles, deltaSeconds, turnsBackAt(graph, vehicle));
   vehicle.progress += travel;
   if (vehicle.progress < 1) return true;
   const previous = vehicle.from;
   vehicle.heading = directionOf(vehicle.from, vehicle.to);
   vehicle.from = vehicle.to;
-  vehicle.to = vehicle.run ? nextRunTile(vehicle.run) : chooseNextTile(graph, vehicle.from, previous, random());
+  vehicle.to = vehicle.run ? nextRunTile(vehicle.run) : chooseNextTile(graph, vehicle.from, previous, random(), weight);
   if (sameTile(vehicle.to, vehicle.from)) return false;
   vehicle.progress -= 1;
   vehicle.lanes = lanesAt(vehicle.from);

@@ -7,11 +7,17 @@ export type Layout = 'C' | 'A' | 'B';
 // How the pedestrians of the map are drawn: as stick figures, or as the avatars of the players.
 export type PedestrianModel = 'stickman' | 'avatar';
 
+// How many vehicles or pedestrians the map shows for the same city.
+export type CrowdDensity = 'low' | 'normal' | 'high';
+
 export interface Prefs {
   language: Language;
   layout: Layout;
   traffic: boolean;
+  pedestrians: boolean;
   pedestrianModel: PedestrianModel;
+  trafficDensity: CrowdDensity;
+  pedestrianDensity: CrowdDensity;
   confirmSale: boolean;
   showReach: boolean;
   showProductionPreview: boolean;
@@ -36,6 +42,7 @@ export const PREFS_KEY = 'urbtopia-prefs';
 const LANGUAGES: Language[] = ['en', 'fr'];
 const LAYOUTS: Layout[] = ['C', 'A', 'B'];
 const PEDESTRIAN_MODELS: PedestrianModel[] = ['stickman', 'avatar'];
+export const CROWD_DENSITIES: CrowdDensity[] = ['low', 'normal', 'high'];
 export const DEBUG_OFFSET_LIMIT = 60;
 export const MATCH_SPEEDS = [0.25, 0.5, 1, 2, 4, 8] as const;
 export type MatchSpeed = (typeof MATCH_SPEEDS)[number];
@@ -45,7 +52,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrianModel: 'stickman', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1 };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrians: true, pedestrianModel: 'stickman', trafficDensity: 'normal', pedestrianDensity: 'normal', confirmSale: true, showReach: true, showProductionPreview: true, showTaxBadges: true, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1 };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -53,7 +60,10 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       language: LANGUAGES.includes(parsed.language as Language) ? (parsed.language as Language) : fallback.language,
       layout: LAYOUTS.includes(parsed.layout as Layout) ? (parsed.layout as Layout) : fallback.layout,
       traffic: typeof parsed.traffic === 'boolean' ? parsed.traffic : fallback.traffic,
+      pedestrians: typeof parsed.pedestrians === 'boolean' ? parsed.pedestrians : fallback.pedestrians,
       pedestrianModel: PEDESTRIAN_MODELS.includes(parsed.pedestrianModel as PedestrianModel) ? (parsed.pedestrianModel as PedestrianModel) : fallback.pedestrianModel,
+      trafficDensity: CROWD_DENSITIES.includes(parsed.trafficDensity as CrowdDensity) ? (parsed.trafficDensity as CrowdDensity) : fallback.trafficDensity,
+      pedestrianDensity: CROWD_DENSITIES.includes(parsed.pedestrianDensity as CrowdDensity) ? (parsed.pedestrianDensity as CrowdDensity) : fallback.pedestrianDensity,
       confirmSale: typeof parsed.confirmSale === 'boolean' ? parsed.confirmSale : fallback.confirmSale,
       showReach: typeof parsed.showReach === 'boolean' ? parsed.showReach : fallback.showReach,
       showProductionPreview: typeof parsed.showProductionPreview === 'boolean' ? parsed.showProductionPreview : fallback.showProductionPreview,
@@ -88,9 +98,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }: Prefs): void {
+function writeStored({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showTaxBadges, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrianModel, confirmSale, showReach, showProductionPreview, showTaxBadges, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showTaxBadges, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -100,7 +110,10 @@ export interface PrefsStore extends Prefs {
   setLanguage: (language: Language) => void;
   setLayout: (layout: Layout) => void;
   setTraffic: (traffic: boolean) => void;
+  setPedestrians: (pedestrians: boolean) => void;
   setPedestrianModel: (model: PedestrianModel) => void;
+  setTrafficDensity: (density: CrowdDensity) => void;
+  setPedestrianDensity: (density: CrowdDensity) => void;
   setConfirmSale: (confirmSale: boolean) => void;
   setShowReach: (showReach: boolean) => void;
   setShowProductionPreview: (showProductionPreview: boolean) => void;
@@ -133,9 +146,21 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   setTraffic: (traffic) => {
     set({ traffic });
     writeStored(get());
+  },  setPedestrians: (pedestrians) => {
+    set({ pedestrians });
+    writeStored(get());
   },
+
   setPedestrianModel: (pedestrianModel) => {
     set({ pedestrianModel });
+    writeStored(get());
+  },
+  setTrafficDensity: (trafficDensity) => {
+    set({ trafficDensity });
+    writeStored(get());
+  },
+  setPedestrianDensity: (pedestrianDensity) => {
+    set({ pedestrianDensity });
     writeStored(get());
   },
   setConfirmSale: (confirmSale) => {

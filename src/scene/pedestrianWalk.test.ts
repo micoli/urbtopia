@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { newGame, pedestrianGraph, type GameState } from '../core';
-import { advancePedestrian, crossedTile, isOnGraph, nodePosition, pedestrianPose, startPedestrian, targetPedestrianCount, tileOfNode } from './pedestrianWalk';
+import { advancePedestrian, crossedTile, isOnGraph, loadWeights, nodePosition, pedestrianPose, startPedestrian, targetPedestrianCount, tileOfNode } from './pedestrianWalk';
 
 function graphOf(crossingAt: number[]) {
   const roads = Array.from({ length: 9 }, (_, x) => ({ x, y: 4, kind: crossingAt.includes(x) ? ('crossing' as const) : ('road' as const) }));
@@ -72,5 +72,17 @@ describe('pedestrian walk over a Bridge', () => {
 
   it('finds the tile of a node', () => {
     expect(tileOfNode('52,50:N')).toEqual({ x: 52, y: 50 });
+  });
+
+  it('leans towards the busier sidewalk at a junction', () => {
+    const graph = graphOf([]);
+    const weight = loadWeights(new Map([['5,4:N', 100]]));
+    const towardsBusy = startPedestrian(graph, '4,4:N', 1, 1, sequence([0.5]), weight)!;
+    expect(towardsBusy.to).toBe('5,4:N');
+  });
+
+  it('weighs every sidewalk the same when none is loaded', () => {
+    const weight = loadWeights(new Map());
+    expect(weight('1,1:N')).toBe(weight('2,2:S'));
   });
 });

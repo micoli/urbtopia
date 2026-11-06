@@ -7,7 +7,7 @@ import { buildRoadGraph, emptyRoadGraph, type RoadGraph } from './roadGraph';
 import { targetVehicleCount } from './trafficTarget';
 import { VEHICLE_CUMULATIVE_WEIGHTS, VEHICLE_MODELS } from './vehicleModels';
 import { poseOf } from './vehicleMotion';
-import { cumulativeWeights, pickByWeight } from './trafficSpawn';
+import { cumulativeWeights, pickByWeight, turnWeight } from './trafficSpawn';
 import { advanceTrafficVehicle, isOnTrafficRoad, isSpotFree, laneTileCount, startBusVehicle, startTrafficVehicle, type TrafficVehicle } from './vehicleTraffic';
 
 const VEHICLE_SCALE = 0.25;
@@ -59,6 +59,10 @@ export class TrafficLayer {
   private fitted = new THREE.Matrix4();
   private busSignature = '';
   private spawnWeights: number[] = [];
+  private commuters = 0;
+  private density = 1;
+  private sections: ReturnType<typeof congestionStats>['sections'] = new Map();
+  private turnWeightOf = (tile: Coord): number => turnWeight(this.sections.get(tileKey(tile))?.ratio ?? 0);
   private probe = new THREE.Vector3();
   private touch = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
 
@@ -77,8 +81,19 @@ export class TrafficLayer {
     if (state.roads !== this.roads || state.roundabouts !== this.roundabouts) this.rebuildGraph(state);
     this.syncBuses(state);
     const stats = congestionStats(state);
+    this.sections = stats.sections;
     this.spawnWeights = cumulativeWeights(this.roadTiles, (key) => stats.sections.get(key)?.ratio ?? 0);
-    this.target = targetVehicleCount({ commuters: stats.commuters, laneTiles: this.laneTiles, touch: this.touch });
+    this.commuters = stats.commuters;
+    this.retarget();
+  }
+
+  setDensity(density: number): void {
+    this.density = density;
+    this.retarget();
+  }
+
+  private retarget(): void {
+    this.target = targetVehicleCount({ commuters: this.commuters, laneTiles: this.laneTiles, touch: this.touch, density: this.density });
   }
 
   update(deltaSeconds: number, camera: THREE.Camera): void {
@@ -189,7 +204,7 @@ export class TrafficLayer {
 
   private moveVehicles(deltaSeconds: number): void {
     const others = this.externalVehicles.length > 0 ? [...this.vehicles, ...this.externalVehicles] : this.vehicles;
-    this.vehicles = this.vehicles.filter((vehicle) => (vehicle.progress < .5 && this.priorityTiles.has(tileKey(vehicle.to))) || advanceTrafficVehicle(this.graph, vehicle, deltaSeconds, this.random, others, this.lanesAt, this.stopTiles));
+    this.vehicles = this.vehicles.filter((vehicle) => (vehicle.progress < .5 && this.priorityTiles.has(tileKey(vehicle.to))) || advanceTrafficVehicle(this.graph, vehicle, deltaSeconds, this.random, others, this.lanesAt, this.stopTiles, this.turnWeightOf));
   }
 
   private adjustCount(): void {

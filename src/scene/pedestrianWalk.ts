@@ -2,6 +2,18 @@ import type { PedestrianGraph } from '../core';
 
 const SIDEWALK_INSET = 0.06;
 const CROSSING_PREFERENCE = 0.3;
+// A sidewalk carrying the busiest load attracts this many times more walkers than an empty one.
+const BUSIEST_WEIGHT = 20;
+
+export type NodeWeight = (node: string) => number;
+
+const UNIFORM: NodeWeight = () => 1;
+
+export function loadWeights(loads: ReadonlyMap<string, number>): NodeWeight {
+  const busiest = Math.max(0, ...loads.values());
+  if (busiest === 0) return UNIFORM;
+  return (node) => 1 + ((BUSIEST_WEIGHT - 1) * (loads.get(node) ?? 0)) / busiest;
+}
 
 export interface Pedestrian {
   id: number;
@@ -38,16 +50,16 @@ function parseNodePosition(node: string): { x: number; z: number } {
   return { x: x + 0.5, z: y + 0.5 };
 }
 
-export function startPedestrian(graph: PedestrianGraph, node: string, id: number, speed: number, random: () => number): Pedestrian | null {
-  const to = chooseNext(graph, node, null, random);
+export function startPedestrian(graph: PedestrianGraph, node: string, id: number, speed: number, random: () => number, weight: NodeWeight = UNIFORM): Pedestrian | null {
+  const to = chooseNext(graph, node, null, random, weight);
   if (to === null) return null;
   return { id, from: node, to, previous: null, progress: random(), speed };
 }
 
-export function advancePedestrian(graph: PedestrianGraph, pedestrian: Pedestrian, deltaSeconds: number, random: () => number): boolean {
+export function advancePedestrian(graph: PedestrianGraph, pedestrian: Pedestrian, deltaSeconds: number, random: () => number, weight: NodeWeight = UNIFORM): boolean {
   pedestrian.progress += (pedestrian.speed * deltaSeconds) / edgeLength(pedestrian.from, pedestrian.to);
   while (pedestrian.progress >= 1) {
-    const next = chooseNext(graph, pedestrian.to, pedestrian.from, random);
+    const next = chooseNext(graph, pedestrian.to, pedestrian.from, random, weight);
     if (next === null) return false;
     pedestrian.previous = pedestrian.from;
     pedestrian.from = pedestrian.to;
@@ -75,9 +87,9 @@ export function isOnGraph(graph: PedestrianGraph, pedestrian: Pedestrian): boole
   return graph.get(pedestrian.from)?.some((edge) => edge.to === pedestrian.to) ?? false;
 }
 
-export function targetPedestrianCount({ people, nodes, touch, max = MAX_PEDESTRIANS }: { people: number; nodes: number; touch: boolean; max?: number }): number {
+export function targetPedestrianCount({ people, nodes, touch, max = MAX_PEDESTRIANS, density = 1 }: { people: number; nodes: number; touch: boolean; max?: number; density?: number }): number {
   const ceiling = touch ? max / 2 : max;
-  return Math.min(Math.floor(people / PEOPLE_PER_FIGURE), Math.floor(nodes / NODES_PER_FIGURE), ceiling);
+  return Math.min(Math.floor((people * density) / PEOPLE_PER_FIGURE), Math.floor((nodes * density) / NODES_PER_FIGURE), ceiling);
 }
 
 export const MAX_PEDESTRIANS = 100;
@@ -85,7 +97,7 @@ export const MAX_CYCLISTS = 50;
 const PEOPLE_PER_FIGURE = 8;
 const NODES_PER_FIGURE = 3;
 
-function chooseNext(graph: PedestrianGraph, node: string, previous: string | null, random: () => number): string | null {
+function chooseNext(graph: PedestrianGraph, node: string, previous: string | null, random: () => number, weight: NodeWeight): string | null {
   const edges = graph.get(node) ?? [];
   if (edges.length === 0) return null;
   const forward = edges.filter((edge) => edge.to !== previous);
@@ -93,7 +105,17 @@ function chooseNext(graph: PedestrianGraph, node: string, previous: string | nul
   const crossings = options.filter((edge) => edge.crossing !== null);
   const flat = options.filter((edge) => edge.crossing === null);
   const pool = crossings.length > 0 && (flat.length === 0 || random() < CROSSING_PREFERENCE) ? crossings : flat;
-  return pool[Math.floor(random() * pool.length) % pool.length]?.to ?? null;
+  return pickWeighted(pool, random(), weight);
+}
+
+function pickWeighted(pool: readonly { to: string }[], roll: number, weight: NodeWeight): string | null {
+  const total = pool.reduce((sum, edge) => sum + weight(edge.to), 0);
+  let remaining = roll * total;
+  for (const edge of pool) {
+    remaining -= weight(edge.to);
+    if (remaining < 0) return edge.to;
+  }
+  return pool.at(-1)?.to ?? null;
 }
 
 // A Bridge over infrastructure links the sidewalks of its two ramps by one long edge: a walker crosses it at the usual pace.
