@@ -2,15 +2,12 @@ import { createStore } from 'zustand/vanilla';
 import { BugReportError, type BugReportClient, type BugReportSummary, type BugReportThread } from './types';
 
 export interface BugReportInboxStore {
-  open: boolean;
   reports: BugReportSummary[];
   unread: number;
   thread: BugReportThread | null;
   failed: BugReportError | null;
   busy: boolean;
   refresh: () => Promise<void>;
-  openInbox: () => void;
-  closeInbox: () => void;
   openThread: (id: number) => Promise<void>;
   backToList: () => void;
   reply: (body: string) => Promise<boolean>;
@@ -36,18 +33,12 @@ export function createBugReportInboxStore(getClient: () => Promise<BugReportClie
       if (reports) set({ reports, unread: reports.filter((report) => report.unread).length });
     };
     return {
-      open: false,
       reports: [],
       unread: 0,
       thread: null,
       failed: null,
       busy: false,
       refresh: load,
-      openInbox: () => {
-        set({ open: true, thread: null });
-        void load();
-      },
-      closeInbox: () => set({ open: false, thread: null, failed: null }),
       openThread: async (id) => {
         const thread = await run((client) => client.get(id));
         if (!thread) return;

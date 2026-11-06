@@ -13,7 +13,8 @@ Decisions are in [ADR 0058](../../docs/adr/0058-bug-reports-keep-attachments-in-
 ### Who and where
 
 - Only a Player account with an attached email can report. An anonymous account sees the entry point, which invites it to attach an email.
-- Entry points: a "Report a bug" button in the settings and a keyboard shortcut. No permanent HUD button.
+- Beta only: every bug report feature (entry, shortcut, Reports tab, unread polling) exists only once the Player has joined the beta in the settings; leaving the beta hides them.
+- Entry points: a "Report a bug" section in the Game tab of the settings, between City and Difficulty, and a keyboard shortcut (Alt+Shift+B). No permanent HUD button.
 - At most five Bug reports a day per Player account. Replies do not count.
 
 ### The form
@@ -36,7 +37,7 @@ Decisions are in [ADR 0058](../../docs/adr/0058-bug-reports-keep-attachments-in-
 ### Follow-up
 
 - Statuses: `new`, `seen`, `resolved`. "New message" for the player is a read flag, not a status.
-- Replies: text only, 500 characters, from the player or the Admin, open until `resolved`, closed after. The player reads them under "My reports" in the settings, with a badge when one is unread. No email is sent; the Admin may write to the attached email by hand.
+- Replies: text only, 500 characters, from the player or the Admin, open until `resolved`, closed after. The player reads them in the Reports tab of the settings, with a badge on the tab when one is unread. No email is sent; the Admin may write to the attached email by hand.
 - The Back office lists reports with their status, shows the capture, replies, changes the status and opens the City in the game.
 - Opening: like a Cloud save, the Back office opens the game dev server (`?bypass-tutorial&from-back-office`) and posts the City and the Camera pose to it. The game loads the City **read-only** (no autosave, no Cloud save, nothing written), applies the Camera pose and shows a banner. A message is accepted only from the Back office origins, in a development build. The Admin's own save is not replaced.
 

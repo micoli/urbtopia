@@ -114,4 +114,6 @@ export function createFeatureFlagStore(
 
 export const featureFlagStore = createFeatureFlagStore(import.meta.env.DEV);
 
+export const isBetaSubscribed = (): boolean => featureFlagStore.getState().subscribed;
+
 export const isFlagEnabled = (id: FlagId): boolean => featureFlagStore.getState().enabled[id];

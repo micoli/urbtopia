@@ -6,7 +6,6 @@ import { clubStore } from '../../store/clubStore';
 import { showDialogStore } from '../../store/showDialogStore';
 import { venueStore } from '../../store/venueStore';
 import { useAdvisor } from '../advisor/useAdvisor';
-import { BugReportInboxWindow } from '../bugReport/BugReportInboxWindow';
 import { BugReportWindow } from '../bugReport/BugReportWindow';
 import { useDialogs } from '../common/hooks';
 import { ChallengeSuccessOverlay } from '../market/ChallengeSuccessOverlay';
@@ -82,7 +81,6 @@ export function Overlays() {
       <OnDemand when={settingsOpen}><SettingsWindow /></OnDemand>
       <OnDemand when={advisorOpen}><AdvisorWindow /></OnDemand>
       <BugReportWindow />
-      <BugReportInboxWindow />
       <AdvisorDownloadConfirm />
       <ChallengeSuccessOverlay />
       {streetView || analytics || underground ? null : <FloatingBadges />}

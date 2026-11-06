@@ -6,6 +6,7 @@ import { ActionButton } from '../common/ActionButton';
 import { useGame, useUi } from '../common/hooks';
 import { SwitchField } from '../common/SwitchField';
 import { AdvisorSettings } from '../advisor/AdvisorSettings';
+import { BugReportSettings } from '../bugReport/BugReportSettings';
 import { DifficultySettings } from './DifficultySettings';
 import { SettingRow } from './SettingRow';
 import { SettingsSection } from './SettingsSection';
@@ -40,6 +41,7 @@ export function GameSettings() {
           <code className="setting-row__value">{seed}</code>
         </SettingRow>
       </SettingsSection>
+      <BugReportSettings />
       <DifficultySettings />
       <SettingsSection title={t('settings.section.time')} icon="clock">
         <SettingRow label={t('settings.skip.label')} description={t('settings.skip.description')}>

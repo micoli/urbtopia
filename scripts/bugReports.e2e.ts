@@ -1,7 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 
-async function openGame(page: Page) {
-  await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+async function openGame(page: Page, beta = true) {
+  await page.addInitScript((subscribed) => {
+    localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
+    localStorage.setItem('urbtopia-beta', String(subscribed));
+  }, beta);
   await page.goto('/?e2e');
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await page.evaluate(async () => {
@@ -103,8 +106,13 @@ test('reads an Admin reply in My reports, answers it, and finds the thread close
     await bugReportInboxStore.getState().refresh();
     return reportId;
   });
-  await page.evaluate(async () => (await import('../src/ui/bugReport/requestBugReport.ts')).openBugReportInbox());
-  const inbox = page.getByRole('dialog', { name: 'My reports' });
+  await page.evaluate(async () => {
+    const { uiStore } = await import('../src/store/uiStore.ts');
+    uiStore.getState().toggleSettings();
+    uiStore.getState().setSettingsTab('reports');
+  });
+  const inbox = page.getByRole('dialog', { name: 'Settings' });
+  await expect(inbox.getByRole('tab', { name: /Reports/ })).toContainText('1');
   await expect(inbox.getByText('New reply')).toBeVisible();
   await inbox.getByRole('button', { name: /Roads vanish/ }).click();
   await expect(inbox.getByText('Which lake?')).toBeVisible();
@@ -125,4 +133,27 @@ test('an account without an email gets a notice instead of the form', async ({ p
   await openForm(page);
   await expect(page.getByText('Attach an email to your account to report a bug.')).toBeVisible();
   await expect(page.getByRole('dialog', { name: 'Report a bug' })).toHaveCount(0);
+});
+
+test('the report features are absent until the Player joins the beta', async ({ page }) => {
+  await openGame(page, false);
+  await openForm(page);
+  await expect(page.getByRole('dialog', { name: 'Report a bug' })).toHaveCount(0);
+  await expect(page.getByText('Attach an email to your account to report a bug.')).toHaveCount(0);
+  await page.evaluate(async () => (await import('../src/store/uiStore.ts')).uiStore.getState().toggleSettings());
+  const settings = page.getByRole('dialog', { name: 'Settings' });
+  await expect(settings.getByRole('tab', { name: 'Game' })).toBeVisible();
+  await expect(settings.getByRole('tab', { name: /Reports/ })).toHaveCount(0);
+  await expect(settings.getByRole('button', { name: 'Report a bug' })).toHaveCount(0);
+});
+
+test('Report a bug sits between City and Difficulty in the Game tab', async ({ page }) => {
+  await openGame(page);
+  await page.evaluate(async () => (await import('../src/store/uiStore.ts')).uiStore.getState().toggleSettings());
+  const settings = page.getByRole('dialog', { name: 'Settings' });
+  await expect(settings.getByRole('heading', { name: 'Report a bug' })).toBeVisible();
+  const headings = await settings.locator('.settings-section h3').allTextContents();
+  const order = headings.map((text) => text.trim());
+  expect(order.indexOf('Report a bug')).toBe(order.indexOf('City') + 1);
+  expect(order.indexOf('Difficulty')).toBe(order.indexOf('Report a bug') + 1);
 });

@@ -21,7 +21,7 @@ const LOCATOR_DURATION_MS = 2000;
 export type Flyout = 'build' | 'roads' | 'land' | null;
 export type MarketTab = 'market' | 'events';
 export type SocialTab = 'friends' | 'groups' | 'exchanges' | 'hall' | 'profile';
-export type SettingsTab = 'game' | 'display' | 'saves' | 'app';
+export type SettingsTab = 'game' | 'display' | 'saves' | 'app' | 'reports';
 
 export interface UiStore {
   level: Level;
