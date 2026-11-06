@@ -50,7 +50,8 @@
           "tiles": 4
         }
       },
-      "model": "buildings-packhouse-2x2-t4-tone-a"
+      "model": "buildings-packhouse-2x2-t4-tone-a",
+      "durationFactor": 0.75
     },
     {
       "upgradeCost": {
@@ -59,7 +60,8 @@
           "tools": 4
         }
       },
-      "model": "buildings-packhouse-2x2-t5-tone-a"
+      "model": "buildings-packhouse-2x2-t5-tone-a",
+      "durationFactor": 0.5
     }
   ],
   "solarPanels": {
