@@ -1,4 +1,4 @@
-import { SHOP, canSell, isShopType, sellableGoodsOf, shopTierOf, stacksOf, type Building } from '../../core';
+import { SHOP, canSell, isShopType, saleIntervalOf, sellableGoodsOf, shopTierOf, stacksOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
 import { gameStore } from '../../store/gameStore';
@@ -14,6 +14,7 @@ interface SalesStacksProps {
 
 export function SalesStacks({ building }: SalesStacksProps) {
   const stock = useGame((store) => store.state.storage.goods);
+  const now = useGame((store) => store.state.lastSeen);
   const send = gameStore.getState().send;
   const stacks = stacksOf(building);
   const hasFreeSlot = stacks.some((stack) => stack.stock === 0);
@@ -27,7 +28,7 @@ export function SalesStacks({ building }: SalesStacksProps) {
     <SlotList>
       {stacks.map((stack, index) => (
         stack.good ? (
-          <SlotList.Slot key={index} status={stack.earned > 0 ? 'ready' : undefined}>
+          <SlotList.Slot key={index} status={stack.earned > 0 ? 'ready' : undefined} progress={saleProgress(stack.nextSaleAt, now, saleIntervalOf(building))}>
             <span>
               {itemName(stack.good)} × {stack.stock}
             </span>
@@ -51,4 +52,9 @@ export function SalesStacks({ building }: SalesStacksProps) {
       </ButtonRow>
     ) : null}
   </>;
+}
+
+function saleProgress(nextSaleAt: number | null, now: number, interval: number): number {
+  if (nextSaleAt === null) return 0;
+  return Math.min(1, Math.max(0, 1 - (nextSaleAt - now) / interval));
 }

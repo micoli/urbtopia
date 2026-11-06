@@ -1,4 +1,5 @@
 import type { Shipment } from '../../shipments/types';
+import { SlotList } from '../common/SlotList';
 import { ShipmentRow } from './ShipmentRow';
 
 interface ShipmentListProps {
@@ -16,11 +17,11 @@ export function ShipmentList({ title, shipments, direction, nameOf, waitingForRo
   return (
     <>
       <h4>{title}</h4>
-      <ul className="shipment-list">
+      <SlotList>
         {shipments.map((shipment) => (
           <ShipmentRow key={shipment.id} shipment={shipment} direction={direction} otherCityName={nameOf(shipment)} waitingForRoom={waitingForRoom.includes(shipment.id)} busy={busy} onCancel={() => onCancel(shipment.id)} />
         ))}
-      </ul>
+      </SlotList>
     </>
   );
 }
