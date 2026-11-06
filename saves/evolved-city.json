@@ -56,21 +56,21 @@
         "queue": [
           {
             "item": "gold",
-            "duration": 2160000,
+            "duration": 1440000,
             "startedAt": 1790000000000,
             "done": false,
             "quantity": 2
           },
           {
             "item": "sand",
-            "duration": 1080000,
+            "duration": 720000,
             "startedAt": null,
             "done": false,
             "quantity": 2
           },
           {
             "item": "coal",
-            "duration": 1440000,
+            "duration": 960000,
             "startedAt": null,
             "done": false,
             "quantity": 2
@@ -90,14 +90,14 @@
         "queue": [
           {
             "item": "crystal",
-            "duration": 1260000,
+            "duration": 840000,
             "startedAt": 1790000000000,
             "done": false,
             "quantity": 2
           },
           {
             "item": "steel",
-            "duration": 900000,
+            "duration": 600000,
             "startedAt": null,
             "done": false,
             "quantity": 2
@@ -237,7 +237,7 @@
         "queue": [
           {
             "item": "silicon",
-            "duration": 720000,
+            "duration": 480000,
             "startedAt": 1790000000000,
             "done": false,
             "quantity": 2
@@ -281,7 +281,7 @@
         "queue": [
           {
             "item": "metal",
-            "duration": 360000,
+            "duration": 240000,
             "startedAt": 1790000000000,
             "done": false,
             "quantity": 2
@@ -313,7 +313,7 @@
         "queue": [
           {
             "item": "jewelry",
-            "duration": 1080000,
+            "duration": 720000,
             "startedAt": 1790000000000,
             "done": false,
             "quantity": 2
@@ -365,7 +365,7 @@
         "queue": [
           {
             "item": "glass",
-            "duration": 540000,
+            "duration": 360000,
             "startedAt": 1790000000000,
             "done": false,
             "quantity": 2

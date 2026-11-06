@@ -24,7 +24,7 @@ const city: GameState = {
   storage: { materials: { wood: 10, stone: 10, clay: 10, metal: 10, silicon: 10 }, goods: {} },
 };
 
-const TIER_5_FACTOR = 0.75;
+const TIER_5_FACTOR = 0.5;
 const topTierCity: GameState = { ...city, buildings: city.buildings.map((b) => (b.id === 1 || b.id === 2 ? { ...b, tier: 5 } : b)) };
 
 function queue(buildingId: number, item: string, from: GameState = city): GameState {
@@ -44,7 +44,7 @@ describe('Materials of the full economy', () => {
     expect(entryOf(queue(1, item), 1)?.duration).toBe(minutes * MINUTE);
   });
 
-  it('silicon takes 16 minutes, 12 at Tier 5, and needs Tier 5', () => {
+  it('silicon takes 16 minutes, 8 at Tier 5, and needs Tier 5', () => {
     expect(entryOf(queue(1, 'silicon', topTierCity), 1)?.duration).toBe(16 * MINUTE * TIER_5_FACTOR);
     expect(() => queue(1, 'silicon')).toThrow('error.tierTooLow');
   });
@@ -87,7 +87,7 @@ describe('Late-game Materials and Goods', () => {
     ['sand', 24, 0, 1],
     ['coal', 32, 2, 3],
     ['gold', 48, 4, 5],
-  ])('%s takes %d minutes (0.75 at Tier 5) and unlocks with enough Citizens', (item, minutes, lockedHomes, unlockedHomes) => {
+  ])('%s takes %d minutes (0.5 at Tier 5) and unlocks with enough Citizens', (item, minutes, lockedHomes, unlockedHomes) => {
     expect(() => queue(1, item, citizens(lockedHomes))).toThrow('error.itemLocked');
     expect(entryOf(queue(1, item, citizens(unlockedHomes)), 1)?.duration).toBe(minutes * MINUTE * TIER_5_FACTOR);
   });
