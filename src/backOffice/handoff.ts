@@ -1,6 +1,7 @@
 export const BACK_OFFICE_ORIGINS = ['http://localhost:5180', 'http://127.0.0.1:5180'];
 export const READY_MESSAGE = 'urbix-back-office:ready';
 export const SAVE_MESSAGE = 'urbix-back-office:save';
+export const REPORT_MESSAGE = 'urbix-back-office:report';
 
 export interface BackOfficeSave {
   handle: string | null;
@@ -19,4 +20,19 @@ export function readSaveMessage(origin: string, data: unknown): BackOfficeSave |
   if (type !== SAVE_MESSAGE) return null;
   if (typeof envelope !== 'string' || !Number.isInteger(revision)) return null;
   return { handle: typeof handle === 'string' ? handle : null, revision: revision as number, envelope };
+}
+
+export interface BackOfficeReport {
+  reportId: number;
+  envelope: string;
+  camera: unknown;
+}
+
+export function readReportMessage(origin: string, data: unknown): BackOfficeReport | null {
+  if (!BACK_OFFICE_ORIGINS.includes(origin)) return null;
+  if (typeof data !== 'object' || data === null) return null;
+  const { type, reportId, envelope, camera } = data as Record<string, unknown>;
+  if (type !== REPORT_MESSAGE) return null;
+  if (typeof envelope !== 'string' || !Number.isInteger(reportId)) return null;
+  return { reportId: reportId as number, envelope, camera: camera ?? null };
 }

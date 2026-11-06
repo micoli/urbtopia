@@ -6,6 +6,10 @@ import { sceneHandle } from '../store/sceneHandle';
 import { uiStore } from '../store/uiStore';
 import { readCameraPose, type CameraPose } from './cameraPose';
 import { encodeCanvas } from './encodeImage';
+import { withTimeout } from './withTimeout';
+
+// A page the browser does not paint (a hidden tab) never finishes: the whole-screen capture is then given up.
+const SCREEN_CAPTURE_TIMEOUT_MS = 4000;
 
 // Everything a Bug report can carry, frozen at one moment.
 export interface ReportSnapshot {
@@ -43,11 +47,11 @@ function copyOf(source: HTMLCanvasElement): HTMLCanvasElement {
 async function captureScreen(map: HTMLCanvasElement, gameCanvas: HTMLCanvasElement | null): Promise<string | null> {
   try {
     const { toCanvas } = await import('html-to-image');
-    const page = await toCanvas(document.documentElement, {
-      pixelRatio: 1,
-      cacheBust: false,
-      filter: (node) => node !== gameCanvas,
-    });
+    const page = await withTimeout(
+      toCanvas(document.documentElement, { pixelRatio: 1, cacheBust: false, filter: (node) => node !== gameCanvas }),
+      SCREEN_CAPTURE_TIMEOUT_MS,
+    );
+    if (!page) return null;
     const composed = document.createElement('canvas');
     composed.width = page.width;
     composed.height = page.height;

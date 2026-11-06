@@ -3,6 +3,7 @@ import { createStore } from 'zustand/vanilla';
 export interface BackOfficeLoadedSave {
   handle: string | null;
   revision: number;
+  report?: boolean;
 }
 
 export interface BackOfficeStore {

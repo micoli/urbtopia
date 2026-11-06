@@ -38,7 +38,7 @@ Decisions are in [ADR 0058](../../docs/adr/0058-bug-reports-keep-attachments-in-
 - Statuses: `new`, `seen`, `resolved`. "New message" for the player is a read flag, not a status.
 - Replies: text only, 500 characters, from the player or the Admin, open until `resolved`, closed after. The player reads them under "My reports" in the settings, with a badge when one is unread. No email is sent; the Admin may write to the attached email by hand.
 - The Back office lists reports with their status, shows the capture, replies, changes the status and opens the City in the game.
-- Opening: the Back office launches the game with a development-only URL parameter (`?report=<id>`), accepted only against the project the Back office points at. The City loads read-only, with no local save and no Cloud save, and the Camera pose is applied. The Admin's own Cities are untouched.
+- Opening: like a Cloud save, the Back office opens the game dev server (`?bypass-tutorial&from-back-office`) and posts the City and the Camera pose to it. The game loads the City **read-only** (no autosave, no Cloud save, nothing written), applies the Camera pose and shows a banner. A message is accepted only from the Back office origins, in a development build. The Admin's own save is not replaced.
 
 ## Facts to check
 
