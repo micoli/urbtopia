@@ -1,5 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { useStore } from 'zustand';
 import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexId } from '../../codex/catalog';
+import { favoriteKeyOf, favoriteTargetOf, type FavoriteTarget } from '../../codex/favorites';
 import { matchesSearch } from '../../codex/matchesSearch';
 import { CODEX_PAGES, type CodexPage } from '../../codex/pages';
 import { ARTICLES, translationOf, type Article } from '../../guide/content/articles';
@@ -13,6 +15,8 @@ import { navButtonAt } from './navButtonAt';
 import { CodexEntryContent } from './CodexEntryContent';
 import { CodexArticle } from './CodexArticle';
 import { ARTICLE_GROUPS, CodexArticleNav } from './CodexArticleNav';
+import { CodexFavoriteButton } from './CodexFavoriteButton';
+import { CodexFavoritesNav } from './CodexFavoritesNav';
 import { CodexGuideLink } from './CodexGuideLink';
 import { CODEX_PAGE_COMPONENTS } from './codexPageComponents';
 import { useCodexManifest } from './useCodexManifest';
@@ -45,6 +49,8 @@ export function CodexPanel() {
   const searching = search.trim() !== '';
   const pageOpen = page !== null || article !== null;
   const [openSection, setOpenSection] = useState<string>(initialArticle ? groupTitleOf(initialArticle) : CODEX_PAGES.find(item => item.id === initialPage)?.section ?? CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
+  const [favoritesOpen, setFavoritesOpen] = useState(true);
+  const favoriteKeys = useStore(prefsStore, store => store.codexFavorites);
   const { manifest, failed, retry } = useCodexManifest();
   const entry = CODEX_ENTRIES.find(entry => entry.id === selected)!;
   const detail = useRef<HTMLElement>(null);
@@ -52,6 +58,16 @@ export function CodexPanel() {
   const filteredPages = CODEX_PAGES.filter(item => !isRulesWrittenUp(item.id) && matchesSearch(`${t(item.title)} ${t(item.description)} ${t(item.section)}`, search));
   const filteredArticles = ARTICLES.filter(item => matchesSearch(`${translationOf(item, language).meta.title} ${translationOf(item, language).meta.summary}`, search));
   const hasResults = !searching || filteredEntries.length > 0 || filteredPages.length > 0 || filteredArticles.length > 0;
+  const labelOfFavorite = (target: FavoriteTarget): string => {
+    if (target.kind === 'article') return translationOf(target.article, language).meta.title;
+    if (target.kind === 'page') return t(CODEX_PAGES.find(item => item.id === target.id)!.title);
+    return t(CODEX_ENTRIES.find(item => item.id === target.id)!.name);
+  };
+  const currentTarget: FavoriteTarget = article ? { kind: 'article', article } : page ? { kind: 'page', id: page } : { kind: 'entry', id: selected };
+  const favorites = favoriteKeys
+    .flatMap(key => favoriteTargetOf(key, ARTICLES) ?? [])
+    .map(target => ({ target, label: labelOfFavorite(target), current: favoriteKeyOf(target) === favoriteKeyOf(currentTarget) }))
+    .filter(({ label }) => matchesSearch(label, search));
   const Page = page ? CODEX_PAGE_COMPONENTS[page] : null;
   const pageTitle = article ? translationOf(article, language).meta.title : page ? t(CODEX_PAGES.find(item => item.id === page)!.title) : t(entry.name);
 
@@ -103,6 +119,12 @@ export function CodexPanel() {
     setShowDetail(true);
   };
 
+  const openFavorite = (target: FavoriteTarget) => {
+    if (target.kind === 'article') return openArticle(target.article);
+    if (target.kind === 'page') return openPage(target.id);
+    select(target.id);
+  };
+
   const linker: ArticleLinker = {
     language,
     entry: id => ({ href: '#', onClick: event => { event.preventDefault(); select(id); } }),
@@ -115,6 +137,7 @@ export function CodexPanel() {
       <header className="codex-header">
         <h2 id={heading}>{t('codex.title')}</h2>
         <div className="codex-header-actions">
+          <CodexFavoriteButton target={currentTarget} />
           <CodexGuideLink entry={entry} page={page} article={article} />
           {showDetail && <button type="button" className="codex-back" onClick={() => {
             setShowDetail(false);
@@ -127,6 +150,7 @@ export function CodexPanel() {
         <nav className="codex-list" aria-label={t('codex.title')}>
           <SearchField className="mb-3" label={t('codex.search')} value={search} onChange={setSearch} />
           {!hasResults && <p className="codex-search-empty" role="status">{t('codex.searchEmpty')}</p>}
+          <CodexFavoritesNav idPrefix={heading} favorites={favorites} expanded={searching || favoritesOpen} onToggle={() => setFavoritesOpen(open => !open)} onChoose={openFavorite} />
           <CodexArticleNav idPrefix={heading} articles={filteredArticles} language={language} current={article} forceOpen={searching} openGroup={openSection} onToggle={setOpenSection} onChoose={openArticle} />
           {CODEX_SECTIONS.map(section => {
             const sectionEntries = filteredEntries.filter(item => item.section === section);

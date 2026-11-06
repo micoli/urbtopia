@@ -38,6 +38,8 @@ export interface Prefs {
   advisorContextLevel: ContextLevel;
   serviceCoverageType: FacilityType;
   matchSpeed: MatchSpeed;
+  // Keys of the Codex pages the player pinned, see `favoriteKeyOf`.
+  codexFavorites: string[];
 }
 
 export const TAX_BADGE_THRESHOLDS = [1, 20, 30, 50] as const;
@@ -58,7 +60,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrians: true, pedestrianModel: 'stickman', trafficDensity: 'normal', pedestrianDensity: 'normal', confirmSale: true, showReach: true, showProductionPreview: true, showRecipeStock: false, showAutoProductionBadge: false, showTaxBadges: true, taxBadgeThreshold: 20, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1 };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrians: true, pedestrianModel: 'stickman', trafficDensity: 'normal', pedestrianDensity: 'normal', confirmSale: true, showReach: true, showProductionPreview: true, showRecipeStock: false, showAutoProductionBadge: false, showTaxBadges: true, taxBadgeThreshold: 20, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1, codexFavorites: [] };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -89,6 +91,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       advisorContextLevel: isContextLevel(parsed.advisorContextLevel) ? parsed.advisorContextLevel : fallback.advisorContextLevel,
       serviceCoverageType: typeof parsed.serviceCoverageType === 'string' && isFacilityType(parsed.serviceCoverageType) ? parsed.serviceCoverageType : fallback.serviceCoverageType,
       matchSpeed: MATCH_SPEEDS.includes(parsed.matchSpeed as MatchSpeed) ? (parsed.matchSpeed as MatchSpeed) : fallback.matchSpeed,
+      codexFavorites: Array.isArray(parsed.codexFavorites) ? parsed.codexFavorites.filter((key): key is string => typeof key === 'string') : fallback.codexFavorites,
     };
   } catch {
     return fallback;
@@ -107,9 +110,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }: Prefs): void {
+function writeStored({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed, codexFavorites }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed, codexFavorites }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -141,6 +144,7 @@ export interface PrefsStore extends Prefs {
   setAdvisorContextLevel: (level: ContextLevel) => void;
   setServiceCoverageType: (type: FacilityType) => void;
   setMatchSpeed: (matchSpeed: MatchSpeed) => void;
+  toggleCodexFavorite: (key: string) => void;
 }
 
 const browserLanguage = typeof navigator === 'undefined' ? undefined : navigator.language;
@@ -245,6 +249,11 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setMatchSpeed: (matchSpeed) => {
     set({ matchSpeed });
+    writeStored(get());
+  },
+  toggleCodexFavorite: (key) => {
+    const favorites = get().codexFavorites;
+    set({ codexFavorites: favorites.includes(key) ? favorites.filter(item => item !== key) : [...favorites, key] });
     writeStored(get());
   },
 }));
