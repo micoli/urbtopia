@@ -46,6 +46,10 @@ export function generatorOutput(state: GameState, b: Building, factors = factors
   return generatorCapacity(b) * generatorFactor(state, b, factors);
 }
 
+// Proportional sharing can sum to 0.9999999999999997 of a covered demand: that is not a shortage.
+const RATIO_EPSILON = 1e-9;
+const satisfactionRatio = (ratio: number) => ratio > 1 - RATIO_EPSILON ? 1 : ratio;
+
 const energyCache = new WeakMap<GameState, { now: number; stats: ReturnType<typeof computeEnergyStats> }>();
 
 export function energyStats(state: GameState, now = state.lastSeen): ReturnType<typeof computeEnergyStats> {
@@ -142,7 +146,7 @@ function computeEnergyStats(state: GameState, now: number) {
   const wind = outputOf('wind'), hydro = outputOf('hydro'), geothermal = outputOf('geothermal'), solar = outputOf('solar');
   return {
     demand, transitDemand, transitSupplied, transitRatio: transitDemand > 0 ? transitSupplied / transitDemand : 1, solar, wind, hydro, geothermal, coal: coalSupplied, coalCapacity, coalRates, backup: backed, supplied, transfers, batteryRates, surplus: grid,
-    unmet: [...need.values()].reduce((n, x) => n + x, 0) + transitDemand - transitSupplied, economicRatio: economicDemand > 0 ? economicSupplied / economicDemand : 1,
+    unmet: [...need.values()].reduce((n, x) => n + x, 0) + transitDemand - transitSupplied, economicRatio: economicDemand > 0 ? satisfactionRatio(economicSupplied / economicDemand) : 1,
     costPerHour: backed * ECOLOGY.backupCost + coalSupplied * ECOLOGY.coalCost,
     coalCostPerHour: coalSupplied * ECOLOGY.coalCost, coalEmissions: coalSupplied * ECOLOGY.coalEmissions,
     backupEmissions: backed * 2, emissions: backed * 2 + coalSupplied * ECOLOGY.coalEmissions,
