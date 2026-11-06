@@ -51,6 +51,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
     return <>{before}<StockCount>{count}</StockCount>{after}</>;
   };
   const multiplier = recipeMultiplierOf(building);
+  const yieldPerCycle = productionTierOf(building).yield;
   const isAvailable = (item: ItemId) => isItemUnlocked(state, item) && building.tier >= minTierOf(item);
   const lacksMaterials = (item: ItemId) => Object.entries(recipeOf(item)).some(([material, amount]) => (state.storage.materials[material as MaterialId] ?? 0) < amount * multiplier);
 
@@ -71,7 +72,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
               : formatDuration(entry.startedAt + entry.duration - now);
           return (
             <SlotList.Slot key={index} status={entry.done ? 'ready' : undefined} progress={slotProgress(entry, now)}>
-              <span>{itemName(entry.item)}</span>
+              <span>{itemName(entry.item)}{entry.quantity > 1 ? ` ×${entry.quantity}` : ''}</span>
               <span>{status}</span>
               {isRunning(entry) ? (
                 <ActionButton className="slot-rush" disabled={state.urbs < rushPrice(entry, now)} onClick={() => send({ type: 'RushProduction', buildingId: building.id })}>
@@ -94,7 +95,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
           {items.filter((item) => !filtering || !lacksMaterials(item)).map((item) =>
             isAvailable(item) ? (
               <ActionButton key={item} aria-disabled={lacksMaterials(item) || undefined} onClick={() => !lacksMaterials(item) && send({ type: 'QueueProduction', buildingId: building.id, item })}>
-                {itemName(item)}
+                {itemName(item)}{yieldPerCycle > 1 ? ` ×${yieldPerCycle}` : ''}
                 {showRecipeStock ? <> · {inStockLabel(stockOf(item))}</> : null}
                 <RecipeLabel item={item} materials={state.storage.materials} multiplier={multiplier} showStock={showRecipeStock} /> · {formatDuration(productionDurationOf(building, item))}
               </ActionButton>

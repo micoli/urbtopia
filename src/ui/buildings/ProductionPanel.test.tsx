@@ -48,3 +48,14 @@ describe('ProductionPanel power shortage', () => {
     expect(render([{ startedAt: NOW, done: false }])).not.toContain(t('power.halted'));
   });
 });
+
+describe('ProductionPanel yield', () => {
+  it('shows the yield multiplier on a queued production when it is above 1', () => {
+    const html = render([{ startedAt: NOW, done: false, quantity: 2 } as never]);
+    expect(html).toContain('×2');
+  });
+
+  it('shows no multiplier when the yield is 1', () => {
+    expect(render([{ startedAt: NOW, done: false }])).not.toContain('×');
+  });
+});
