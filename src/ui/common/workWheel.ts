@@ -1,4 +1,4 @@
-import type { QueueEntry } from '../../core';
+import { SHOP, stackSaleProgress, type QueueEntry, type ShopStack } from '../../core';
 
 export type SegmentState = 'done' | 'running' | 'waiting';
 
@@ -24,18 +24,31 @@ function progressOf(entry: QueueEntry, now: number): number {
   return clamp01((now - entry.startedAt) / entry.duration);
 }
 
-export function wheelSegments(queue: readonly QueueEntry[], now: number): WheelSegment[] {
-  const total = queue.reduce((sum, entry) => sum + entry.duration, 0);
+interface WheelItem {
+  duration: number;
+  state: SegmentState;
+  progress: number;
+}
+
+const stackState = (stack: ShopStack): SegmentState => (stack.nextSaleAt === null ? 'waiting' : 'running');
+
+function stackItems(stacks: readonly ShopStack[], now: number, saleIntervalMs: number): WheelItem[] {
+  return stacks
+    .filter((stack) => stack.good !== null && stack.stock > 0)
+    .map((stack) => ({ duration: SHOP.stackSize * saleIntervalMs, state: stackState(stack), progress: stackSaleProgress(stack, now, saleIntervalMs) }));
+}
+
+export function wheelSegments(queue: readonly QueueEntry[], now: number, stacks: readonly ShopStack[] = [], saleIntervalMs = 0): WheelSegment[] {
+  const items: WheelItem[] = [
+    ...queue.map((entry) => ({ duration: entry.duration, state: stateOf(entry), progress: progressOf(entry, now) })),
+    ...stackItems(stacks, now, saleIntervalMs),
+  ];
+  const total = items.reduce((sum, item) => sum + item.duration, 0);
   if (total <= 0) return [];
   let cursor = 0;
-  return queue.map((entry) => {
-    const span = (entry.duration / total) * FULL_TURN;
-    const segment: WheelSegment = {
-      startAngle: cursor,
-      endAngle: cursor + span,
-      state: stateOf(entry),
-      progress: progressOf(entry, now),
-    };
+  return items.map((item) => {
+    const span = (item.duration / total) * FULL_TURN;
+    const segment: WheelSegment = { startAngle: cursor, endAngle: cursor + span, state: item.state, progress: item.progress };
     cursor += span;
     return segment;
   });

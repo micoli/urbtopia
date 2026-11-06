@@ -119,7 +119,7 @@ export { ANIMAL_MODEL_FILES, penAnimalsOf, type PenAnimal } from './economy/pens
 export { OFFICE, OFFICE_TYPES, isOfficeType, officeFillRatio, officeTierOf, officeUrbsDue } from './economy/offices';
 export type { ShopTier } from './economy/shops';
 export { INDUSTRY_TYPES, PRODUCTION_TYPES, compartmentProducedBy, industryEmissionsOf, industryWeightOf, scalesRecipeWithYield, isIndustryType, isProductionType } from './economy/productionTypes';
-export { isWorking, productionDurationOf, recipeMultiplierOf, rushPrice, taxDue, taxFillRatio, workProgress } from './economy/production';
+export { isWorking, productionDurationOf, recipeMultiplierOf, rushPrice, stackSaleProgress, taxDue, taxFillRatio, workProgress } from './economy/production';
 export { farmTier, maxTierOf, productionTierOf, upgradeCostOf } from './economy/tiers';
 export type { UpgradeCost } from './economy/tiers';
 export { isCropUnlocked, isItemUnlocked, nextBuildingUnlock, nextUnlock } from './progression/unlocks';

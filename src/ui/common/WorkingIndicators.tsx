@@ -1,9 +1,10 @@
 import { useMemo, useRef } from 'react';
-import { footprintOf, isWorking, workProgress } from '../../core';
+import { footprintOf, isWorking, saleIntervalOf, sellsGoods, workProgress } from '../../core';
 import { sceneHandle } from '../../store/sceneHandle.ts';
 import { collectBadgeLabel } from '../collect/CollectBadge.tsx';
 import { useGame } from './hooks.ts';
 import { WorkWheel } from './WorkWheel.tsx';
+import { wheelSegments } from './workWheel';
 import { placeProjected, useFrameLoop } from './useProjectedPosition.ts';
 import { Icon } from './Icon';
 
@@ -33,7 +34,9 @@ export function WorkingIndicators() {
 
   return (
     <>
-      {working.map((building) => (
+      {working.map((building) => {
+        const segments = wheelSegments(building.queue, now, building.stacks, sellsGoods(building.type) ? saleIntervalOf(building) : 0);
+        return (
         <span
           key={building.id}
           ref={(element) => {
@@ -43,8 +46,8 @@ export function WorkingIndicators() {
           className="working-indicator"
           aria-hidden="true"
         >
-          {building.queue.length > 0 ? (
-            <WorkWheel queue={building.queue} now={now} />
+          {segments.length > 0 ? (
+            <WorkWheel segments={segments} />
           ) : (
             <>
               <svg className="working-ring" viewBox="0 0 32 32" aria-hidden="true">
@@ -62,7 +65,8 @@ export function WorkingIndicators() {
             </>
           )}
         </span>
-      ))}
+        );
+      })}
     </>
   );
 }

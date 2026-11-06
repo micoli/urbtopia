@@ -58,6 +58,18 @@ describe('Shop', () => {
     expect(stack(advance(state, T0 + 10 * MINUTE).state)).toMatchObject({ stock: 0, earned: 70, nextSaleAt: null });
   });
 
+  it('sells the stacks one after the other, each starting when the previous is sold', () => {
+    let state = succeed(stocked, stockShop('planks'));
+    state = succeed(state, stockShop('bricks'));
+    expect(stack(state, 1)).toEqual({ good: 'bricks', stock: 5, nextSaleAt: null, earned: 0 });
+    const midway = advance(state, T0 + 3 * 45 * SECOND).state;
+    expect(stack(midway, 0)).toMatchObject({ stock: 2 });
+    expect(stack(midway, 1)).toMatchObject({ stock: 5, earned: 0, nextSaleAt: null });
+    const afterFirst = advance(state, T0 + 6 * 45 * SECOND).state;
+    expect(stack(afterFirst, 0)).toMatchObject({ stock: 0, earned: 70 });
+    expect(stack(afterFirst, 1)).toMatchObject({ stock: 4, earned: 34, nextSaleAt: T0 + 7 * 45 * SECOND });
+  });
+
   it('does not store more than the value of one stack per Slot', () => {
     const sold = advance(succeed(stocked, stockShop('planks')), T0 + 10 * MINUTE).state;
     const restocked = succeed(sold, stockShop('planks'), T0 + 10 * MINUTE);
@@ -69,8 +81,17 @@ describe('Shop', () => {
     const before = sold.urbs;
     const collected = succeed(sold, { type: 'Collect', buildingId: SHOP_ID }, T0 + 5 * MINUTE);
     expect(collected.urbs).toBe(before + 5 * 34);
-    expect(stack(collected)?.earned).toBe(0);
+    expect(stack(collected)).toEqual({ good: null, stock: 0, nextSaleAt: null, earned: 0 });
     expect(failureKey(collected, { type: 'Collect', buildingId: SHOP_ID }, T0 + 5 * MINUTE)).toBe('error.nothingToCollect');
+  });
+
+  it('moves the stacks still selling up when a sold-out stack is collected', () => {
+    let state = succeed(stocked, stockShop('planks'));
+    state = succeed(state, stockShop('bricks'));
+    const at = T0 + 6 * 45 * SECOND;
+    const collected = succeed(advance(state, at).state, { type: 'Collect', buildingId: SHOP_ID }, at);
+    expect(stack(collected, 0)).toMatchObject({ good: 'bricks', stock: 4 });
+    expect(stack(collected, 1)).toEqual({ good: null, stock: 0, nextSaleAt: null, earned: 0 });
   });
 
   it('can get more Slots, the 4th costing 1,500 Urbs', () => {

@@ -60,7 +60,7 @@ import type { ChallengeRewardKind } from '../challenges/types';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import { buildPedestrianAccess, buildWalkway, demolishPedestrianAccess, demolishWalkways, movePedestrianAccess } from '../underground/walkways';
 import type { BlackjackAction } from '../leisure/blackjack';
-import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, NetworkMode, QueueEntry, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
+import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, NetworkMode, QueueEntry, ShopStack, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { colorVariantsOf, isRepaintableType } from '../buildings/paint';
 import { STOP_NAME_MAX_LENGTH, isTransitStopType } from '../transit/stopNames';
@@ -955,6 +955,12 @@ function collectCounter(state: GameState, building: Building): CommandOutcome {
   return paid ?? produced ?? fail('error.nothingToCollect');
 }
 
+// Sold-out stacks leave the counter and the stacks still selling move up.
+function withoutSoldOut(stacks: readonly ShopStack[]): ShopStack[] {
+  const remaining = stacks.filter((stack) => stack.stock > 0).map((stack) => ({ ...stack, earned: 0 }));
+  return [...remaining, ...Array.from({ length: stacks.length - remaining.length }, emptyStack)];
+}
+
 function collectShopEarnings(state: GameState, building: Building): CommandOutcome {
   const earned = building.stacks.reduce((total, stack) => total + stack.earned, 0);
   if (earned === 0) return fail('error.nothingToCollect');
@@ -963,7 +969,7 @@ function collectShopEarnings(state: GameState, building: Building): CommandOutco
       ...state,
       urbs: state.urbs + earned,
       buildings: state.buildings.map((candidate) =>
-        candidate === building ? { ...building, stacks: building.stacks.map((stack) => ({ ...stack, earned: 0 })) } : candidate,
+        candidate === building ? { ...building, stacks: withoutSoldOut(building.stacks) } : candidate,
       ),
     },
     events: [{ type: 'ItemsCollected', buildingId: building.id }],
@@ -980,8 +986,10 @@ function stockShop(state: GameState, buildingId: number, good: GoodId, now: numb
   if (slotIndex === -1) return fail('error.queueFull');
   const available = state.storage.goods[good] ?? 0;
   if (available < SHOP.stackSize) return fail('error.missingGoods');
+  const alreadySelling = current.some((stack) => stack.stock > 0);
+  const nextSaleAt = alreadySelling ? null : now + saleIntervalOf(building);
   const stacks = current.map((stack, index) =>
-    index === slotIndex ? { ...stack, good, stock: SHOP.stackSize, nextSaleAt: now + saleIntervalOf(building) } : stack,
+    index === slotIndex ? { ...stack, good, stock: SHOP.stackSize, nextSaleAt } : stack,
   );
   return {
     state: {

@@ -1446,7 +1446,6 @@ export const CATALOG = {
   'market.sellAll': ['Sell all', 'Tout vendre'],
   'market.empty': ['No Goods in the Storehouse.', "Aucun produit dans l'entrepôt."],
   'shop.stock': ['Stock', 'Stock'],
-  'shop.earned': ['Earned', 'Gagné'],
   'shop.needGoods': ['Free slot: the Storehouse needs at least 5 units of a Good to supply this shop.', "Emplacement libre : il faut au moins 5 unités d'un produit dans l'entrepôt pour approvisionner cette boutique."],
   'shop.units': ['units', 'unités'],
   'shop.category': ['Category', 'Catégorie'],

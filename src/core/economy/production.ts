@@ -57,6 +57,14 @@ export function workProgress(building: Building, now: number): number | null {
   return clamp01(1 - (Math.min(...nextSales) - now) / saleIntervalOf(building));
 }
 
+// Share of the whole stack sold, counting the unit being sold. 0 while the stack waits for its turn.
+export function stackSaleProgress(stack: ShopStack, now: number, saleIntervalMs: number): number {
+  if (stack.good === null) return 0;
+  const sold = SHOP.stackSize - stack.stock;
+  const current = stack.nextSaleAt === null || stack.stock === 0 ? 0 : clamp01(1 - (stack.nextSaleAt - now) / saleIntervalMs);
+  return (sold + current) / SHOP.stackSize;
+}
+
 const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
 
 export function isWorking(building: Building): boolean {
@@ -87,23 +95,47 @@ function advanceBuilding(building: Building, now: number): Advanced {
   return { building: { ...building, queue }, events };
 }
 
-function advanceStack(stack: ShopStack, now: number, saleIntervalMs: number): ShopStack {
-  if (stack.good === null || stack.stock === 0 || stack.nextSaleAt === null) return stack;
+interface SoldStack {
+  stack: ShopStack;
+  finishedAt: number | null;
+}
+
+function sellStack(stack: ShopStack, now: number, saleIntervalMs: number): SoldStack {
+  if (stack.good === null || stack.stock === 0 || stack.nextSaleAt === null) return { stack, finishedAt: null };
   const unitValue = GOODS[stack.good].value;
   const cap = SHOP.stackSize * unitValue;
   let { stock, earned } = stack;
   let nextSaleAt: number | null = stack.nextSaleAt;
+  let finishedAt: number | null = null;
   while (stock > 0 && nextSaleAt !== null && nextSaleAt <= now) {
     stock -= 1;
     earned = Math.min(cap, earned + unitValue);
+    if (stock === 0) finishedAt = nextSaleAt;
     nextSaleAt = stock > 0 ? nextSaleAt + saleIntervalMs : null;
   }
-  return { ...stack, stock, nextSaleAt, earned };
+  return { stack: { ...stack, stock, nextSaleAt, earned }, finishedAt };
 }
 
+const isStocked = (stack: ShopStack): boolean => stack.good !== null && stack.stock > 0;
+
+// Stacks sell one after the other: only the selling stack has a sale timer, the stocked ones wait in Slot order.
 function advanceShop(building: Building, now: number): Building {
   if (building.stacks.length === 0) return building;
-  return { ...building, stacks: building.stacks.map((stack) => advanceStack(stack, now, saleIntervalOf(building))) };
+  const interval = saleIntervalOf(building);
+  const selling = building.stacks.findIndex((stack) => isStocked(stack) && stack.nextSaleAt !== null);
+  let stacks = building.stacks.map((stack, index) => (index !== selling && stack.nextSaleAt !== null && isStocked(stack) ? { ...stack, nextSaleAt: null } : stack));
+  let startAt: number | null = null;
+  for (;;) {
+    const index = startAt === null && selling !== -1 ? selling : stacks.findIndex(isStocked);
+    if (index === -1) break;
+    const current = stacks[index]!;
+    const ready = current.nextSaleAt === null ? { ...current, nextSaleAt: (startAt ?? now) + interval } : current;
+    const { stack, finishedAt } = sellStack(ready, now, interval);
+    stacks = stacks.map((candidate, i) => (i === index ? stack : candidate));
+    if (finishedAt === null) break;
+    startAt = finishedAt;
+  }
+  return { ...building, stacks };
 }
 
 function advanceHome(building: Building, elapsedMs: number): Building {

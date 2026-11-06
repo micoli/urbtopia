@@ -1,16 +1,13 @@
-import type { QueueEntry } from '../../core';
 import { progressColor } from './progressColor';
-import { sectorPath, wheelSegments } from './workWheel';
+import { sectorPath, type WheelSegment } from './workWheel';
 
 const RADIUS = 15;
 
 interface WorkWheelProps {
-  queue: readonly QueueEntry[];
-  now: number;
+  segments: readonly WheelSegment[];
 }
 
-export function WorkWheel({ queue, now }: WorkWheelProps) {
-  const segments = wheelSegments(queue, now);
+export function WorkWheel({ segments }: WorkWheelProps) {
   return (
     <svg className="work-wheel" viewBox="-16 -16 32 32" aria-hidden="true">
       <g className="work-wheel-turn">
