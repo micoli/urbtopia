@@ -115,7 +115,8 @@
 }
 
 .bug-report-thread__replies {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-8);
   margin: 0;
   padding: 0;
@@ -125,14 +126,23 @@
 .bug-report-reply {
   display: grid;
   gap: var(--space-2);
+  max-width: 80%;
   padding: var(--space-8) var(--space-12);
-  border-radius: var(--radius-md);
-  background: var(--white-a06);
+  border-radius: var(--radius-lg);
   overflow-wrap: anywhere;
 }
 
 .bug-report-reply--team {
+  align-self: flex-start;
+  border-bottom-left-radius: var(--radius-xs);
   background: var(--white-a14);
+}
+
+.bug-report-reply--mine {
+  align-self: flex-end;
+  border-bottom-right-radius: var(--radius-xs);
+  background: var(--white-a06);
+  text-align: right;
 }
 
 .bug-report-thread__compose {

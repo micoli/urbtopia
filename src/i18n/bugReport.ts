@@ -1,6 +1,6 @@
 const texts = {
-  'bugReport.title': ['Report a bug', 'Signaler un bug'],
-  'bugReport.settings.description': ['Tell us what went wrong, with a screenshot and your city.', 'Dites-nous ce qui ne va pas, avec une capture et votre ville.'],
+  'bugReport.title': ['Report an issue', 'Signaler un bug/évolution'],
+  'bugReport.settings.description': ['Tell us what went wrong or what evolution you need, with a screenshot and your city.', 'Dites-nous ce qui ne va pas ou votre demande d\'évolution, avec une capture et votre ville.'],
   'bugReport.settings.needEmail': ['Attach an email to your account to report a bug.', 'Attachez un e-mail à votre compte pour signaler un bug.'],
   'bugReport.description.label': ['What happened?', "Que s'est-il passé ?"],
   'bugReport.description.placeholder': ['Describe the problem and how to see it again', 'Décrivez le problème et comment le revoir'],

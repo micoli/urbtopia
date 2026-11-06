@@ -25,7 +25,7 @@ export function BugReportThreadView({ thread }: { thread: BugReportThread }) {
       <BugReportStatusLabel status={thread.status} />
       <ul className="bug-report-thread__replies">
         {thread.replies.map((reply) => (
-          <li key={reply.id} className={reply.fromAdmin ? 'bug-report-reply bug-report-reply--team' : 'bug-report-reply'}>
+          <li key={reply.id} className={reply.fromAdmin ? 'bug-report-reply bug-report-reply--team' : 'bug-report-reply bug-report-reply--mine'}>
             <small>{reply.fromAdmin ? t('bugReport.thread.team') : t('bugReport.thread.you')}</small>
             <span>{reply.body}</span>
           </li>
