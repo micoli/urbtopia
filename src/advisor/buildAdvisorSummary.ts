@@ -1,12 +1,14 @@
 import {
   adoptedOrdinances, approvalOf, categoryCoverageRatio, cityBenefits, cityKnowledge, climateStats, congestionStats, difficultyOf, energyStats, isHomeType,
   needsPyramid, nextUnlock, totalCitizens, transportStats, utilityCapacity, utilityDemand, wasteSituation,
-  type Cause, type GameState, type NeedLevelId,
+  PACK_FORMATS, isGood, recipeOf,
+  type Cause, type GameState, type ItemId, type NeedLevelId,
 } from '../core';
 import { SERVICE_CATEGORIES, type ServiceCategory } from '../core/services/serviceCategories';
 import type { Language } from '../i18n/prefsStore';
 import type { MessageKey } from '../i18n/messages';
 import { DEFAULT_CONTEXT_LEVEL, type ContextLevel } from './contextLevel';
+import { unlockedProductionChains, type ChainOutput, type ProductionLine } from './unlockedProductionChains';
 import { messageIn } from './messageIn';
 
 type CauseDigest = Pick<Cause, 'key' | 'weight' | 'params'>;
@@ -30,6 +32,7 @@ export interface AdvisorSummary {
   wellbeing: { cooling: number; biodiversity: number; wellbeing: number; pollution: number; services: number; congestion: number };
   nextUnlock: { citizens: number; items: number } | null;
   ordinances: readonly string[];
+  productionChains: readonly ProductionLine[];
   causes: readonly CauseDigest[];
 }
 
@@ -102,6 +105,7 @@ export function buildAdvisorSummary(state: GameState, causes: readonly Cause[]):
     },
     nextUnlock: unlock ? { citizens: unlock.citizens, items: unlock.items.length } : null,
     ordinances: adoptedOrdinances(state),
+    productionChains: unlockedProductionChains(state),
     causes: [...causes].sort((a, b) => b.weight - a.weight || a.key.localeCompare(b.key)).slice(0, MAX_CAUSES).map(({ key, weight, params }) => ({ key, weight, params })),
   };
 }
@@ -123,6 +127,17 @@ export function summaryToText(summary: AdvisorSummary, language: Language, level
   const causes = shownCauses.length === 0
     ? label('advisor.summary.noCauses')
     : shownCauses.map(({ key, params }, index) => `${index + 1}. ${label(key as MessageKey, params)}`).join(' ');
+  const itemLabel = (item: ItemId): string => {
+    const suffix = PACK_FORMATS.find((format) => isGood(item) && item.endsWith(format.suffix))?.suffix;
+    if (!suffix) return label(`item.${item}` as MessageKey);
+    const [crop, count] = Object.entries(recipeOf(item))[0] ?? [];
+    return crop ? label(`pack.${suffix}` as MessageKey, { count: count!, crop: label(`item.${crop}` as MessageKey).toLowerCase() }) : item;
+  };
+  const outputLabel = ({ item, recipe }: ChainOutput): string => {
+    const inputs = Object.entries(recipe).map(([material, amount]) => `${amount} ${label(`item.${material}` as MessageKey)}`);
+    return inputs.length === 0 ? itemLabel(item) : `${itemLabel(item)} (${inputs.join(', ')})`;
+  };
+  const chains = summary.productionChains.map(({ building, outputs }) => `- ${buildingName(building)}: ${outputs.map(outputLabel).join(', ')}`);
   const { power, water, climate, waste, traffic, wellbeing } = summary;
   const lines: readonly (readonly [ContextLevel, string | null])[] = [
     [1, `${label('advisor.summary.title')}:`],
@@ -140,6 +155,7 @@ export function summaryToText(summary: AdvisorSummary, language: Language, level
     [4, label('advisor.summary.wellbeing', wellbeing)],
     [4, `${label('advisor.summary.buildings')}: ${list(Object.entries(summary.buildings).map(([type, count]) => `${buildingName(type)} ${count}`))}`],
     [4, summary.nextUnlock ? label('advisor.summary.nextUnlock', summary.nextUnlock) : null],
+    [5, chains.length === 0 ? null : `${label('advisor.summary.chains')}:\n${chains.join('\n')}`],
     [5, `${label('advisor.summary.ordinances')}: ${list(summary.ordinances)}`],
     [1, `${label('advisor.summary.causes')}: ${causes}`],
   ];

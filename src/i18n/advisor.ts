@@ -32,6 +32,7 @@ const texts = {
   'advisor.summary.knowledge': ['Knowledge (0-100): {knowledge}', 'Savoir (0-100) : {knowledge}'],
   'advisor.summary.wellbeing': ['Well-being: green cooling {cooling}, biodiversity {biodiversity}, bonus {wellbeing}, pollution malus {pollution}, missing services malus {services}, congestion malus {congestion}', 'Bien-être : fraîcheur verte {cooling}, biodiversité {biodiversity}, bonus {wellbeing}, malus pollution {pollution}, malus services manquants {services}, malus congestion {congestion}'],
   'advisor.summary.nextUnlock': ['Next unlock at {citizens} Citizens ({items} new items)', 'Prochain déblocage à {citizens} habitants ({items} nouveaux objets)'],
+  'advisor.summary.chains': ['Unlocked production chains (building: product (inputs))', 'Chaînes de production débloquées (bâtiment : produit (ingrédients))'],
   'advisor.summary.ordinances': ['Adopted Ordinances', 'Ordonnances adoptées'],
   'advisor.summary.causes': ['Main causes of trouble', 'Principales causes de problèmes'],
   'advisor.summary.noCauses': ['none', 'aucune'],

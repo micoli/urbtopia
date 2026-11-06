@@ -16,3 +16,25 @@ describe('advisorContextPreview', () => {
     expect(advisorContextPreview(state, 'fr', 3)).toContain('Que dois-je faire en premier ?');
   });
 });
+
+describe('advisorContextPreview production chains', () => {
+  const state = newGame({ seed: 'chains', now: 0 });
+
+  it('lists the unlocked productions with their inputs at the full context level', () => {
+    const preview = advisorContextPreview(state, 'en', 5);
+    expect(preview).toContain('Unlocked production chains');
+    expect(preview).toMatch(/- Factory: .*Planks \(2 Wood\)/);
+  });
+
+  it('keeps locked items out of the chains', () => {
+    expect(advisorContextPreview(state, 'en', 5)).not.toContain('Steel');
+  });
+
+  it('leaves the chains out below the full context level', () => {
+    expect(advisorContextPreview(state, 'en', 4)).not.toContain('Unlocked production chains');
+  });
+
+  it('follows the language', () => {
+    expect(advisorContextPreview(state, 'fr', 5)).toMatch(/- Usine: .*Planches \(2 Bois\)/);
+  });
+});
