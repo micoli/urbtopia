@@ -1,8 +1,6 @@
 import { advance } from '../core';
 import { applyCameraPose, parseCameraPose } from '../bugReports/cameraPose';
 import { parseEnvelope } from '../persistence/envelope';
-import { saveSession, saveStore } from '../persistence/instance';
-import { SAVE_KEY } from '../persistence/saveStore';
 import { backOfficeStore } from '../store/backOfficeStore';
 import { readOnlyStore } from '../store/readOnlyStore';
 import { sceneHandle } from '../store/sceneHandle';
@@ -32,8 +30,7 @@ export function installBackOffice(): () => void {
     if (!save) return;
     const parsed = parseEnvelope(save.envelope);
     if (!parsed.ok) return console.warn('back office save refused', parsed.reason);
-    saveSession.backupNow();
-    saveStore.put(SAVE_KEY, save.envelope);
+    readOnlyStore.getState().set(true);
     gameStore.getState().replaceState(advance(parsed.state, Date.now()).state, 'tick');
     backOfficeStore.getState().setLoaded({ handle: save.handle, revision: save.revision });
   };
