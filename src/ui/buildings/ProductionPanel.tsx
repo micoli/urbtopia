@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { SLOT_PRICES, hasCounter, isItemUnlocked, minTierOf, producibleItems, productionDurationOf, productionTierOf, recipeMultiplierOf, recipeOf, rushPrice, unlockCitizensOf, type Building, type ItemId, type MaterialId, type QueueEntry } from '../../core';
 import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
@@ -14,6 +13,7 @@ import { CheckboxField } from '../common/CheckboxField';
 import { SlotList } from '../common/SlotList';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { PowerShortageNote } from './PowerShortageNote';
+import { useOnlyCraftable } from './useOnlyCraftable';
 import { RecipeLabel } from './RecipeLabel';
 import { SalesStacks } from './SalesStacks';
 import { Icon } from '../common/Icon';
@@ -26,7 +26,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
   const state = useGame((store) => store.state);
   const now = state.lastSeen;
   const items = [...producibleItems(building.type)];
-  const [onlyCraftable, setOnlyCraftable] = useState(false);
+  const [onlyCraftable, setOnlyCraftable] = useOnlyCraftable();
   const hasFreeSlot = building.queue.length < building.slotCount;
   const counter = hasCounter(building.type);
   const hasReadyOutput = building.queue.some((entry) => entry.done) || building.stacks.some((stack) => stack.earned > 0);
