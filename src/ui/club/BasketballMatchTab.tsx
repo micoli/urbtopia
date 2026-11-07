@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useStore } from 'zustand';
 import { BASKETBALL, fixtureSeedOf, nextFixture, playBasketball, startBasketball, type Building } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
@@ -27,18 +27,16 @@ export function BasketballMatchTab({ building }: { building: Building }) {
   const club = building.club!;
   const now = useGame(store => store.state.lastSeen);
   const minuteMs = MINUTE_MS / useStore(prefsStore, store => store.matchSpeed);
-  const live = useLiveMatch(building.id, LAST_STEP, minuteMs);
+  const [lastStep, setLastStep] = useState(LAST_STEP);
+  const live = useLiveMatch(building.id, lastStep, minuteMs);
   const fixture = club.championship && nextFixture(club.championship);
   const index = fixture ? club.championship!.fixtures.indexOf(fixture) : -1;
   const opponent = fixture ? club.championship!.opponents[fixture.opponent]! : null;
   const state = useMemo(() => (fixture && opponent ? playBasketball(club, opponent, fixtureSeedOf(club, index), live.decisions, live.step) : null), [club, fixture, opponent, index, live.decisions, live.step]);
   const jerseys = useMemo(() => (fixture && opponent ? basketballJerseys(startBasketball(club, opponent, fixtureSeedOf(club, index))) : new Map<number, number>()), [club, fixture, opponent, index]);
   const over = state?.over ?? false;
-  const { playing, skip } = live;
-
-  useEffect(() => {
-    if (over && playing) skip();
-  }, [over, playing, skip]);
+  const endStep = state?.over ? state.minute : LAST_STEP;
+  if (lastStep !== endStep) setLastStep(endStep);
 
   if (!fixture || !opponent || !state) return <p className="note note--muted">{t('club.match.none')}</p>;
   if (now < fixture.at) return <p className="note note--muted">{t('club.match.next').replace('{opponent}', opponent.name).replace('{hours}', `${Math.ceil((fixture.at - now) / 3_600_000)}`)}</p>;
@@ -50,7 +48,7 @@ export function BasketballMatchTab({ building }: { building: Building }) {
       <p>{clockText(state.minute)}</p>
       <BasketballCourt state={state} seed={fixtureSeedOf(club, index)} minuteMs={minuteMs} jerseys={jerseys} />
       <MatchStep number={1} title={t('club.step.watch')}>
-        <ClubMatchPlayback live={live} durationMs={BASKETBALL.minutes * minuteMs} finished={over} lastStep={BASKETBALL.minutes} />
+        <ClubMatchPlayback live={live} durationMs={BASKETBALL.minutes * minuteMs} finished={over} lastStep={Math.max(BASKETBALL.minutes, over ? state.minute : 0)} />
       </MatchStep>
       <MatchStep number={2} title={t('club.step.decide')} hint={t(over ? 'club.match.decideClosed' : 'club.match.decideHintBasketball')}>
         {over ? null : <BasketballMatchControls state={state} jerseys={jerseys} onDecide={live.decide} />}

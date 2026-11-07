@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import type { BasketballState } from '../../core';
 import { t } from '../../i18n/t';
-import { COURT, HOOP_X, ballSpot, courtPlayers } from './courtLayout';
+import { COURT, HOOP_X, ballSpot, courtPlayers, isScoreEvent } from './courtLayout';
 import type { Jerseys } from './jerseyNumbers';
 
 interface BasketballCourtProps {
@@ -14,11 +14,10 @@ interface BasketballCourtProps {
 const KEY = { depth: 19, width: 16 };
 const CIRCLE_RADIUS = 6;
 const THREE_RADIUS = 23.75;
-const SCORES = ['two', 'three', 'freeThrows'];
 
 export function BasketballCourt({ state, seed, minuteMs, jerseys }: BasketballCourtProps) {
   const ball = ballSpot(state, seed);
-  const scoring = state.events.some(event => event.minute === state.minute && SCORES.includes(event.type));
+  const scoring = state.events.some(event => event.minute === state.minute && isScoreEvent(event));
   return (
     <svg className="club-court" viewBox={`0 0 ${COURT.width} ${COURT.height}`} role="img" aria-label={t('club.court')} style={{ '--club-minute': `${minuteMs}ms` } as CSSProperties}>
       <rect className="club-court__floor" x={0} y={0} width={COURT.width} height={COURT.height} />

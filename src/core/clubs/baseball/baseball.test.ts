@@ -82,6 +82,13 @@ describe('Baseball simulation', () => {
     expect(state.events.filter(event => event.type === 'change')).toHaveLength(3);
   });
 
+  it('shows a decision at the inning it is taken, before the next inning is played', () => {
+    const club = founded();
+    const state = playUntil(club, opponent(55), 3, [{ minute: 3, kind: 'tactic', tactic: 'power' }], 3);
+    expect(state.inning).toBe(3);
+    expect(state.sides[0].approach).toBe('power');
+  });
+
   it('hits more home runs with the power approach', () => {
     const club = rated(founded(), 60);
     const homers = (approach: string) => Array.from({ length: 80 }, (_, seed) => playUntil({ ...club, lineup: { formation: 'standard', starters: autoStarters(club.squad), tactic: approach } }, opponent(60), seed + 1, []).events.filter(event => event.type === 'homer' && event.side === 0).length).reduce((a, b) => a + b, 0);

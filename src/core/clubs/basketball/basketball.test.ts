@@ -87,19 +87,41 @@ describe('Basketball simulation', () => {
   it('changes tactic and substitutes bench players only, up to the limit', () => {
     const club = founded();
     const side = clubSide(club);
-    const [first, second] = side.court;
-    const [benchFirst, benchSecond] = side.bench;
+    const first = side.court.find(player => player.position === 'guard')!;
+    const second = side.court.find(player => player.position === 'wing')!;
+    const benchFirst = side.bench.find(player => player.position === 'guard')!;
+    const benchSecond = side.bench.find(player => player.position === 'wing')!;
     const decisions: MatchDecision[] = [
       { minute: 10, kind: 'tactic', tactic: 'threePoint' },
-      { minute: 20, kind: 'substitute', out: first!.id, in: benchFirst!.id },
-      { minute: 30, kind: 'substitute', out: second!.id, in: benchSecond!.id },
+      { minute: 20, kind: 'substitute', out: first.id, in: benchFirst.id },
+      { minute: 30, kind: 'substitute', out: second.id, in: benchSecond.id },
       { minute: 40, kind: 'substitute', out: side.court[2]!.id, in: 9999 },
     ];
     const state = playUntil(club, opponent(55), 3, decisions);
     expect(state.sides[0].tactic).toBe('threePoint');
     expect(state.sides[0].substitutions).toBe(2);
     expect(state.events.filter(event => event.type === 'substitution')).toHaveLength(2);
-    expect(state.sides[0].court.map(player => player.id)).toContain(benchFirst!.id);
+    expect(state.sides[0].court.map(player => player.id)).toContain(benchFirst.id);
+  });
+
+  it('shows a decision at the minute it is taken, before the next minute is played', () => {
+    const club = founded();
+    const side = clubSide(club);
+    const guard = side.court.find(player => player.position === 'guard')!;
+    const benchGuard = side.bench.find(player => player.position === 'guard')!;
+    const state = playUntil(club, opponent(55), 3, [{ minute: 10, kind: 'tactic', tactic: 'threePoint' }, { minute: 10, kind: 'substitute', out: guard.id, in: benchGuard.id }], 10);
+    expect(state.minute).toBe(10);
+    expect(state.sides[0].tactic).toBe('threePoint');
+    expect(state.sides[0].court.map(player => player.id)).toContain(benchGuard.id);
+  });
+
+  it('refuses a substitute who does not play the same position', () => {
+    const side = clubSide(founded());
+    const guard = side.court.find(player => player.position === 'guard')!;
+    const center = side.bench.find(player => player.position === 'center')!;
+    const state = playUntil(founded(), opponent(55), 3, [{ minute: 5, kind: 'substitute', out: guard.id, in: center.id }]);
+    expect(state.sides[0].substitutions).toBe(0);
+    expect(state.sides[0].court.map(player => player.id)).toContain(guard.id);
   });
 });
 
@@ -115,6 +137,13 @@ describe('Basketball balance', () => {
 
   it('keeps an underdog in the game: ten less rating still wins now and then', () => {
     expect(winRate(rated(founded(), 50), opponent(60))).toBeGreaterThan(0.12);
+  });
+
+  it('does not cripple a Squad that has no center', () => {
+    const noCenter = (club: ClubData): ClubData => ({ ...club, squad: club.squad.filter(player => player.position !== 'center') });
+    const rate = winRate(rated(noCenter(founded()), 60), opponent(60));
+    expect(rate).toBeGreaterThan(0.38);
+    expect(rate).toBeLessThan(0.62);
   });
 
   it('lets no tactic dominate at equal strength', () => {

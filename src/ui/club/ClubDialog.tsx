@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useStore } from 'zustand';
-import type { Building } from '../../core';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
 import { t } from '../../i18n/t';
 import { clubStore, type ClubTabId } from '../../store/clubStore';
@@ -31,16 +30,6 @@ const TABS: readonly { id: ClubTabId; icon: IconName }[] = [
 const LINEUP_TABS = { football: ClubLineupTab, baseball: BaseballLineupTab, basketball: BasketballLineupTab };
 const MATCH_TABS = { football: ClubMatchTab, baseball: BaseballMatchTab, basketball: BasketballMatchTab };
 
-const LineupTab = ({ building }: { building: Building }) => {
-  const Tab = LINEUP_TABS[building.club!.sport];
-  return <Tab building={building} />;
-};
-
-const MatchTab = ({ building }: { building: Building }) => {
-  const Tab = MATCH_TABS[building.club!.sport];
-  return <Tab building={building} />;
-};
-
 export function ClubDialog() {
   const buildingId = useStore(clubStore, store => store.buildingId);
   const tab = useStore(clubStore, store => store.tab);
@@ -60,6 +49,8 @@ export function ClubDialog() {
   }, [open]);
 
   if (!open || !building?.club) return null;
+  const LineupTab = LINEUP_TABS[building.club.sport];
+  const MatchTab = MATCH_TABS[building.club.sport];
   return (
     <div className="club-view" role="dialog" aria-modal="true" aria-label={t('club.title')}>
       <header className="club-view__header">

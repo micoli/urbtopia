@@ -1,4 +1,4 @@
-import type { BasketballState } from '../../core';
+import type { BasketballEvent, BasketballState } from '../../core';
 import { clamp, noise } from './seededNoise';
 
 // The court is 94 by 50 feet, the home side defends the left hoop and attacks to the right.
@@ -26,14 +26,14 @@ const CUT_LENGTH = 9;
 
 const goalOf = (side: 0 | 1): Spot => ({ x: side === 0 ? COURT.width - HOOP_X : HOOP_X, y: COURT.height / 2 });
 
-const SCORES = new Set(['two', 'three', 'freeThrows']);
+export const isScoreEvent = (event: BasketballEvent): event is Extract<BasketballEvent, { points: number }> => event.type === 'two' || event.type === 'three' || event.type === 'freeThrows';
 
-const scoreOf = (state: Pick<BasketballState, 'minute' | 'events'>) => state.events.filter(event => event.minute === state.minute && SCORES.has(event.type)).at(-1);
+const scoreOf = (state: Pick<BasketballState, 'minute' | 'events'>) => state.events.filter(event => event.minute === state.minute).filter(isScoreEvent).at(-1);
 
 // The side with the ball this minute: the one that scored, otherwise a draw that swaps from minute to minute.
 export function attackingSide(state: Pick<BasketballState, 'minute' | 'events'>, seed: number): 0 | 1 {
   const score = scoreOf(state);
-  if (score && SCORES.has(score.type)) return score.side;
+  if (score) return score.side;
   return noise(seed, state.minute, 31) < 0.5 ? 0 : 1;
 }
 

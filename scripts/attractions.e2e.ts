@@ -317,6 +317,7 @@ test.describe('basketball Club', () => {
     await court.screenshot({ path: process.env.COURT_SHOT ?? 'test-results/court.png' });
     await dialog.getByRole('button', { name: 'Pause', exact: true }).click();
     await dialog.getByRole('radio', { name: 'Defensive' }).click();
+    await expect(dialog.getByRole('radio', { name: 'Defensive' })).toHaveAttribute('aria-checked', 'true');
     await dialog.getByRole('button', { name: 'Skip to the end' }).click();
     await expect(dialog.getByText(/^(Quarter 4|Overtime \d) · minute \d+$/)).toBeVisible();
     await dialog.getByRole('button', { name: 'Record the decisions' }).click();

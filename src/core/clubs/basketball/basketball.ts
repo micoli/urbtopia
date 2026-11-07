@@ -118,9 +118,11 @@ const simPlayer = (player: Player): SimPlayer => ({ id: player.id, name: player.
 
 const effective = (player: SimPlayer): number => player.rating * (0.9 + 0.2 * (player.form / 100));
 
+// A position nobody on the court plays counts as the whole court: a Squad short of a position is not crippled.
 const average = (players: readonly SimPlayer[], position: string): number => {
   const line = players.filter(player => player.position === position);
-  return line.length === 0 ? 0 : line.reduce((total, player) => total + effective(player), 0) / line.length;
+  const pool = line.length === 0 ? players : line;
+  return pool.length === 0 ? 0 : pool.reduce((total, player) => total + effective(player), 0) / pool.length;
 };
 
 const clamp = (value: number, low: number, high: number): number => Math.min(high, Math.max(low, value));
@@ -165,7 +167,7 @@ function applyDecision(state: BasketballState, decision: MatchDecision): Basketb
   if (mine.substitutions >= BASKETBALL.maxSubstitutions) return state;
   const leaving = mine.court.find(player => player.id === decision.out);
   const coming = mine.bench.find(player => player.id === decision.in);
-  if (!leaving || !coming) return state;
+  if (!leaving || !coming || leaving.position !== coming.position) return state;
   const court = mine.court.map(player => (player === leaving ? coming : player));
   const bench = [...mine.bench.filter(player => player !== coming), leaving];
   return { ...state, sides: [{ ...mine, court, bench, substitutions: mine.substitutions + 1 }, theirs], events: [...state.events, { minute: state.minute, side: 0, type: 'substitution', player: coming.name, replaced: leaving.name }] };
@@ -224,6 +226,8 @@ export function playUntil(club: ClubData, opponent: Opponent, seed: number, deci
     while (next < ordered.length && ordered[next]!.minute <= state.minute) state = applyDecision(state, ordered[next++]!);
     state = playMinute(state);
   }
+  // A decision taken at the minute the clock stands on shows at once, not when the next minute is played.
+  while (!state.over && next < ordered.length && ordered[next]!.minute <= state.minute) state = applyDecision(state, ordered[next++]!);
   if (state.over && state.score[0] === state.score[1]) {
     const edge = attackOf(state.sides[0]) / (attackOf(state.sides[0]) + attackOf(state.sides[1]));
     const last = nextRandom(state.rng);

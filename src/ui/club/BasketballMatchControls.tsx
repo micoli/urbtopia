@@ -15,6 +15,8 @@ export function BasketballMatchControls({ state, jerseys, onDecide }: Basketball
   const [out, setOut] = useState<number | null>(null);
   const [mine] = state.sides;
   const left = BASKETBALL.maxSubstitutions - mine.substitutions;
+  const leaving = mine.court.find(player => player.id === out);
+  const eligible = leaving ? mine.bench.filter(player => player.position === leaving.position) : mine.bench;
   const substitute = (incoming: number) => {
     if (out === null) return;
     onDecide({ minute: state.minute, kind: 'substitute', out, in: incoming });
@@ -42,7 +44,8 @@ export function BasketballMatchControls({ state, jerseys, onDecide }: Basketball
           ))}
         </ul>
         <ul className="club-subs__list" aria-label={t('club.bench')}>
-          {mine.bench.map(player => (
+          {leaving && eligible.length === 0 && <li className="note note--muted">{t('club.match.noEligible')}</li>}
+          {eligible.map(player => (
             <li key={player.id}>
               <button type="button" className="club-subs__player" disabled={out === null || left === 0} onClick={() => substitute(player.id)}>{row(player)}</button>
             </li>

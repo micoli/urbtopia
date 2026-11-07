@@ -1,4 +1,5 @@
-export type ClubSport = 'football' | 'baseball' | 'basketball';
+export const CLUB_SPORTS = ['football', 'baseball', 'basketball'] as const;
+export type ClubSport = (typeof CLUB_SPORTS)[number];
 
 export interface PlayerContract {
   // Last game year the contract covers.
