@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { STOP_NAME_MAX_LENGTH, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
+import { TextField } from '../common/TextField';
 
 export function StopNameField({ building }: { building: Building }) {
   const [draft, setDraft] = useState(building.name ?? '');
@@ -12,14 +13,14 @@ export function StopNameField({ building }: { building: Building }) {
   };
   return <label className="stop-name-field">
     <span>{t('transit.stopName')}</span>
-    <input
-      type="text"
+    <TextField
+      label={t('transit.stopName')}
       value={draft}
       maxLength={STOP_NAME_MAX_LENGTH}
       placeholder={t(`building.${building.type}`)}
-      onChange={event => setDraft(event.target.value)}
+      onChange={setDraft}
+      onSubmit={commit}
       onBlur={commit}
-      onKeyDown={event => event.key === 'Enter' && event.currentTarget.blur()}
     />
   </label>;
 }

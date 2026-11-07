@@ -3,6 +3,7 @@ interface TextFieldProps {
   value: string;
   onChange: (value: string) => void;
   onSubmit?: () => void;
+  onBlur?: () => void;
   placeholder?: string;
   maxLength?: number;
   type?: 'text' | 'search';
@@ -10,7 +11,7 @@ interface TextFieldProps {
   className?: string;
 }
 
-export function TextField({ label, value, onChange, onSubmit, placeholder, maxLength, type = 'text', autoFocus, className }: TextFieldProps) {
+export function TextField({ label, value, onChange, onSubmit, onBlur, placeholder, maxLength, type = 'text', autoFocus, className }: TextFieldProps) {
   return (
     <input
       type={type}
@@ -22,6 +23,7 @@ export function TextField({ label, value, onChange, onSubmit, placeholder, maxLe
       placeholder={placeholder}
       maxLength={maxLength}
       onChange={(event) => onChange(event.target.value)}
+      onBlur={onBlur}
       onKeyDown={(event) => event.key === 'Enter' && onSubmit?.()}
     />
   );
