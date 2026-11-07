@@ -25,6 +25,7 @@ export function FarmPanel(_props: FarmPanelProps) {
       <p>
           {t('farm.fields')}: {state.fields.length}/{fieldCap(state)}
       </p>
+      <hr/>
       <div className="crops">
         {CROP_IDS.map((crop) => (
           <CropRow

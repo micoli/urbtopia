@@ -21,12 +21,12 @@ export function ShopPanel({ building }: ShopPanelProps) {
   return <DrawerPanel>
       <PowerShortageNote />
       <DrawerPanel.LabelValue label={t('shop.category')} value={t(`goodCategory.${goodCategoryOf(building)}`)} />
-      {nextGoods.length > 0 ? <Note tone="muted">{t('shop.nextTier')}: {nextGoods.map(itemName).join(', ')}</Note> : null}
       <SalesStacks building={building} />
       {slotPrice !== undefined ? (
         <ActionButton block onClick={() => send({ type: 'BuySlot', buildingId: building.id })}>
           {t('panel.buySlot')} (<UrbsAmount value={slotPrice} />)
         </ActionButton>
       ) : null}
+      {nextGoods.length > 0 ? <Note tone="muted">{t('shop.nextTier')}: {nextGoods.map(itemName).join(', ')}</Note> : null}
   </DrawerPanel>
 }
