@@ -274,6 +274,57 @@ test.describe('baseball club', () => {
   });
 });
 
+test.describe('basketball Club', () => {
+  test.use({ viewport: { width: 1280, height: 900 } });
+
+  test('the player founds a basketball Club, picks the best five and plays a Match', async ({ page }) => {
+    test.setTimeout(90_000);
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.addInitScript(() => {
+      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
+      localStorage.setItem('urbtopia-flags', JSON.stringify({ clubs: true }));
+    });
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      const { uiStore } = await import('../src/store/uiStore.ts');
+      const { newGame, createBuilding } = await import('../src/core/index.ts');
+      const state = newGame({ seed: 'basketball-e2e', now: Date.now() });
+      gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [createBuilding(50, 'basketballArena', 64, 64, 0), createBuilding(51, 'home', 56, 64, 0)], nextId: 52 });
+      uiStore.getState().select(50);
+    });
+    await page.getByRole('button', { name: 'Found a Club' }).click();
+    await page.getByRole('button', { name: 'Manage the Club' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Club management' });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('tab', { name: /Lineup/ }).click();
+    await dialog.getByRole('radio', { name: '3-1-1' }).click();
+    await expect(dialog.getByRole('radio', { name: '3-1-1' })).toHaveAttribute('aria-checked', 'true');
+    await dialog.getByRole('radio', { name: 'Fast break' }).click();
+    await dialog.getByRole('button', { name: 'Pick the best five' }).click();
+    await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().send({ type: 'SkipTime', hours: 7 }));
+    await dialog.getByRole('tab', { name: /^Match/ }).click();
+    const court = dialog.getByRole('img', { name: 'Court: the players and the ball' });
+    await expect(court).toBeVisible();
+    await expect(court.locator('.club-court__player')).toHaveCount(10);
+    const playerAt = () => court.locator('.club-court__player').first().evaluate(element => getComputedStyle(element).transform);
+    const before = await playerAt();
+    await dialog.getByRole('button', { name: 'Play', exact: true }).click();
+    await expect.poll(playerAt, { timeout: 15_000 }).not.toBe(before);
+    await expect(dialog.getByText(/Quarter 1 · minute [1-9]/)).toBeVisible({ timeout: 15_000 });
+    await court.screenshot({ path: process.env.COURT_SHOT ?? 'test-results/court.png' });
+    await dialog.getByRole('button', { name: 'Pause', exact: true }).click();
+    await dialog.getByRole('radio', { name: 'Defensive' }).click();
+    await dialog.getByRole('button', { name: 'Skip to the end' }).click();
+    await expect(dialog.getByText(/^(Quarter 4|Overtime \d) · minute \d+$/)).toBeVisible();
+    await dialog.getByRole('button', { name: 'Record the decisions' }).click();
+    await expect(dialog.getByText('Decisions recorded for the Match.')).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+});
+
 test.describe('feature flags', () => {
   test.use({ viewport: { width: 1280, height: 900 } });
 

@@ -2,7 +2,7 @@ import { t } from '../../i18n/t';
 import type { MessageKey } from '../../i18n/messages';
 
 export type MatchPhase = 'ready' | 'playing' | 'paused' | 'finished';
-export type MatchSport = 'football' | 'baseball';
+export type MatchSport = 'football' | 'baseball' | 'basketball';
 
 interface MatchGuideProps {
   phase: MatchPhase;

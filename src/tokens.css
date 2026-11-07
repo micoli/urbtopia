@@ -182,6 +182,8 @@
   --color-pitch-stripe: #358a41;
   --color-pitch-line: var(--white-a85);
   --color-dirt: #b0794a;
+  --color-court: #c8742c;
+  --color-court-key: #3d5fcf;
   --color-team-home: var(--color-accent);
   --color-team-away: var(--color-danger);
 

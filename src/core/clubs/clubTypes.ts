@@ -1,4 +1,4 @@
-export type ClubSport = 'football' | 'baseball';
+export type ClubSport = 'football' | 'baseball' | 'basketball';
 
 export interface PlayerContract {
   // Last game year the contract covers.

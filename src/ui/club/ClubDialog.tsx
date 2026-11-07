@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useStore } from 'zustand';
+import type { Building } from '../../core';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
 import { t } from '../../i18n/t';
 import { clubStore, type ClubTabId } from '../../store/clubStore';
@@ -9,6 +10,8 @@ import { useGame } from '../common/hooks';
 import { Tabs } from '../common/Tabs';
 import { BaseballLineupTab } from './BaseballLineupTab';
 import { BaseballMatchTab } from './BaseballMatchTab';
+import { BasketballLineupTab } from './BasketballLineupTab';
+import { BasketballMatchTab } from './BasketballMatchTab';
 import { ClubLineupTab } from './ClubLineupTab';
 import { ClubMarketTab } from './ClubMarketTab';
 import { ClubMatchTab } from './ClubMatchTab';
@@ -24,6 +27,19 @@ const TABS: readonly { id: ClubTabId; icon: IconName }[] = [
   { id: 'match', icon: 'medal' },
   { id: 'table', icon: 'trophy' },
 ];
+
+const LINEUP_TABS = { football: ClubLineupTab, baseball: BaseballLineupTab, basketball: BasketballLineupTab };
+const MATCH_TABS = { football: ClubMatchTab, baseball: BaseballMatchTab, basketball: BasketballMatchTab };
+
+const LineupTab = ({ building }: { building: Building }) => {
+  const Tab = LINEUP_TABS[building.club!.sport];
+  return <Tab building={building} />;
+};
+
+const MatchTab = ({ building }: { building: Building }) => {
+  const Tab = MATCH_TABS[building.club!.sport];
+  return <Tab building={building} />;
+};
 
 export function ClubDialog() {
   const buildingId = useStore(clubStore, store => store.buildingId);
@@ -54,9 +70,9 @@ export function ClubDialog() {
       <Tabs label={t('club.title')} idPrefix="club-tab" panelId="club-panel" tabs={TABS.map(({ id, icon }) => ({ id, icon, label: t(`club.tab.${id}`) }))} selected={tab} onSelect={id => clubStore.getState().select(id)} />
       <div id="club-panel" role="tabpanel" aria-labelledby={`club-tab-${tab}`} className="club-view__panel">
         {tab === 'squad' ? <ClubSquadTab building={building} /> : null}
-        {tab === 'lineup' ? (building.club.sport === 'baseball' ? <BaseballLineupTab building={building} /> : <ClubLineupTab building={building} />) : null}
+        {tab === 'lineup' ? <LineupTab building={building} /> : null}
         {tab === 'market' ? <ClubMarketTab building={building} /> : null}
-        {tab === 'match' ? (building.club.sport === 'baseball' ? <BaseballMatchTab building={building} /> : <ClubMatchTab building={building} />) : null}
+        {tab === 'match' ? <MatchTab building={building} /> : null}
         {tab === 'table' ? <ClubTableTab building={building} /> : null}
       </div>
     </div>

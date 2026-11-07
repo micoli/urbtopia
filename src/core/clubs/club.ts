@@ -115,4 +115,4 @@ export function advanceClub(rules: SportRules, club: ClubData, hours: number): C
   return next.budget < CLUB.debtLimit ? { ...next, budget: CLUB.debtLimit } : next;
 }
 
-export const isClubSport = (value: unknown): value is ClubSport => value === 'football' || value === 'baseball';
+export const isClubSport = (value: unknown): value is ClubSport => value === 'football' || value === 'baseball' || value === 'basketball';

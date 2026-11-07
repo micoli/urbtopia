@@ -1,4 +1,4 @@
-import type { MatchState } from '../../core';
+import type { BasketballState, MatchState } from '../../core';
 
 export type Jerseys = ReadonlyMap<number, number>;
 
@@ -6,4 +6,10 @@ export type Jerseys = ReadonlyMap<number, number>;
 export function footballJerseys(start: MatchState): Jerseys {
   const [mine] = start.sides;
   return new Map([...mine.pitch, ...mine.bench].map((player, index) => [player.id, index + 1]));
+}
+
+// Basketball shirts start at 4, as in international play: the starters first, then the bench.
+export function basketballJerseys(start: BasketballState): Jerseys {
+  const [mine] = start.sides;
+  return new Map([...mine.court, ...mine.bench].map((player, index) => [player.id, index + 4]));
 }

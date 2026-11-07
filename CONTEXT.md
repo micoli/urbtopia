@@ -429,7 +429,7 @@ The standing of an Artist, from 1 to 5. A higher Fame draws a bigger crowd and a
 _Avoid_: Popularity, rating, Reputation (a Hotel's note)
 
 **Club**:
-The team a football stadium or baseball field hosts, run by the player from a dedicated management page. It has a Squad, a budget fed by the stadium's Takings, and takes part in a Championship. Saved with the city.
+The team a football stadium, baseball field or basketball arena hosts, run by the player from a dedicated management page. It has a Squad, a budget fed by the stadium's Takings, and takes part in a Championship. Saved with the city.
 _Avoid_: Team, franchise, Venue
 
 **Squad**:
@@ -437,7 +437,7 @@ The individual players of a Club, each with a position, a rating, a form, a mora
 _Avoid_: Roster, Staff
 
 **Championship**:
-The calendar of a Club's Matches over one year of the Club, ending with a ranking and a prize in Urbs. Football and baseball each have one; a stadium with no Club holds Meetings, with no ranking.
+The calendar of a Club's Matches over one year of the Club, ending with a ranking and a prize in Urbs. Football, baseball and basketball each have one; a stadium with no Club holds Meetings, with no ranking.
 _Avoid_: Season (taken by Annual event), league, tournament
 
 **Vehicle**:
