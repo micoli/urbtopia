@@ -654,8 +654,12 @@ The simulated (non-player) buyer that purchases Goods from the player.
 _Avoid_: Trade hub, exchange, auction
 
 **Donation**:
-A voluntary gift of Goods to a simulated association, with no Urbs received in exchange, that fills the city's Solidarity reserve and counts towards a permanent Medal.
+A voluntary gift of Goods or Materials to a simulated association, with no Urbs received in exchange, that fills the city's Solidarity reserve and counts towards a permanent Medal.
 _Avoid_: Trade offer (a gift to a Friend), sale
+
+**Donation value**:
+The worth of a Donation, which fills the Solidarity reserve and counts towards the Medal: the fixed base value of a Good, or 25% of the base value of a Material, rounded down. A Material whose quarter value rounds to zero (Crop Materials, valued 0) cannot be donated.
+_Avoid_: Donation price (nothing is paid)
 
 **Solidarity reserve**:
 A capped reserve filled by Donations that gradually depletes and temporarily raises Well-being across the city. Further Donations refill the same reserve rather than stacking bonuses.

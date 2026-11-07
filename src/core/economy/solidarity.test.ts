@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advance, createBuilding, dispatch, homeBenefits, needsPyramid, newGame, SOLIDARITY, type GameState } from '../index';
+import { advance, createBuilding, MATERIALS, dispatch, homeBenefits, needsPyramid, newGame, SOLIDARITY, type GameState } from '../index';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import { donationQuote, solidarityCost } from './solidarity';
 
@@ -20,7 +20,7 @@ function city(): GameState {
 describe('charitable donations', () => {
   it('consumes Goods without paying Urbs or changing Market prices, and survives a save round trip', () => {
     const before = city();
-    const result = dispatch(before, { type: 'DonateGoods', id: ID, good: 'tools', quantity: 2 }, NOW);
+    const result = dispatch(before, { type: 'DonateItems', id: ID, item: 'tools', quantity: 2 }, NOW);
     if (!result.ok) throw new Error(result.error.key);
     expect(result.state.storage.goods.tools).toBe(8);
     expect(result.state.storage.materials).toEqual(before.storage.materials);
@@ -34,19 +34,36 @@ describe('charitable donations', () => {
     expect(parseEnvelope(serializeEnvelope(before, NOW)).ok).toBe(true);
   });
 
-  it('rejects invalid quantities, Materials, insufficient stock, and a locked Market', () => {
+  it('rejects invalid quantities, unknown items, insufficient stock, and a locked Market', () => {
     for (const quantity of [0, -1, 1.5, Infinity, 11]) {
-      expect(dispatch(city(), { type: 'DonateGoods', id: ID, good: 'tools', quantity }, NOW).ok).toBe(false);
+      expect(dispatch(city(), { type: 'DonateItems', id: ID, item: 'tools', quantity }, NOW).ok).toBe(false);
     }
-    expect(dispatch(city(), { type: 'DonateGoods', id: ID, good: 'wood' as 'tools', quantity: 1 }, NOW).ok).toBe(false);
-    expect(dispatch({ ...city(), marketUnlocked: false }, { type: 'DonateGoods', id: ID, good: 'tools', quantity: 1 }, NOW).ok).toBe(false);
+    expect(dispatch(city(), { type: 'DonateItems', id: ID, item: 'nothing' as 'tools', quantity: 1 }, NOW).ok).toBe(false);
+    expect(dispatch({ ...city(), marketUnlocked: false }, { type: 'DonateItems', id: ID, item: 'tools', quantity: 1 }, NOW).ok).toBe(false);
+  });
+
+  it('counts a Material for a quarter of its value and consumes it from the Materials stock', () => {
+    const before = city();
+    const unit = MATERIALS.wood.value;
+    const result = dispatch(before, { type: 'DonateItems', id: ID, item: 'wood', quantity: 8 }, NOW);
+    if (!result.ok) throw new Error(result.error.key);
+    expect(result.state.storage.materials.wood).toBe(2);
+    expect(result.state.storage.goods).toEqual(before.storage.goods);
+    expect(result.state.urbs).toBe(before.urbs);
+    expect(result.state.donations).toEqual([{ id: ID, value: Math.floor(unit * 8 * 0.25) }]);
+    expect(dispatch(before, { type: 'DonateItems', id: ID, item: 'wood', quantity: 11 }, NOW).ok).toBe(false);
+  });
+
+  it('refuses a Material whose quarter value rounds to nothing', () => {
+    const before = { ...city(), storage: { materials: { wheat: 5 }, goods: {} } };
+    expect(dispatch(before, { type: 'DonateItems', id: ID, item: 'wheat', quantity: 5 }, NOW).ok).toBe(false);
   });
 
   it('counts a full Donation towards the Medal even when the reserve is full', () => {
     const before = { ...city(), solidarityMs: SOLIDARITY.durationMs };
     const quote = donationQuote(before, 'tools', 2);
     expect(quote).toMatchObject({ value: 160, addedMs: 0, excessValue: 160 });
-    const result = dispatch(before, { type: 'DonateGoods', id: ID, good: 'tools', quantity: 2 }, NOW);
+    const result = dispatch(before, { type: 'DonateItems', id: ID, item: 'tools', quantity: 2 }, NOW);
     if (!result.ok) throw new Error(result.error.key);
     expect(result.state.solidarityMs).toBe(SOLIDARITY.durationMs);
     expect(result.state.donations?.[0]?.value).toBe(160);

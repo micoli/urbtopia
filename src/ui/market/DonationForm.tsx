@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { donationQuote, type GoodId } from '../../core';
+import { donationQuote, isGood, type ItemId } from '../../core';
 import { itemName } from '../../i18n/itemName';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
@@ -11,30 +11,32 @@ import { useCloud, useGame, useReadOnly, useSolidarity } from '../common/hooks';
 import { SolidarityProgress } from '../social/SolidarityProgress';
 
 interface DonationFormProps {
-  good: GoodId;
+  item: ItemId;
   onClose: () => void;
 }
 
-export function DonationForm({ good, onClose }: DonationFormProps) {
+export function DonationForm({ item, onClose }: DonationFormProps) {
   const state = useGame(store => store.state);
   const accountId = useCloud(store => store.account?.email ? store.account.userId : undefined);
   const total = useSolidarity(store => store.value);
   const readOnly = useReadOnly();
   const [quantity, setQuantity] = useState(1);
-  const available = state.storage.goods[good] ?? 0;
+  const stock: Partial<Record<ItemId, number>> = isGood(item) ? state.storage.goods : state.storage.materials;
+  const available = stock[item] ?? 0;
   const amount = Math.min(quantity, available);
   const valid = Number.isSafeInteger(amount) && amount > 0 && amount <= available;
-  const quote = donationQuote(state, good, valid ? amount : 0);
-  const stockText = t('solidarity.stock').replace('{quantity}', String(amount)).replace('{good}', itemName(good));
+  const quote = donationQuote(state, item, valid ? amount : 0);
+  const stockText = t('solidarity.stock').replace('{quantity}', String(amount)).replace('{good}', itemName(item));
   return <form className="donation-form" onSubmit={event => {
     event.preventDefault();
     if (!valid || readOnly) return;
-    gameStore.getState().send({ type: 'DonateGoods', id: crypto.randomUUID(), good, quantity: amount, accountId });
+    gameStore.getState().send({ type: 'DonateItems', id: crypto.randomUUID(), item, quantity: amount, accountId });
     if (!gameStore.getState().lastError) onClose();
   }}>
     <NumberStepper label={t('solidarity.quantity')} value={amount} min={1} max={available} onChange={setQuantity} />
     {valid && <div className="donation-preview" aria-live="polite">
       <p>{stockText}</p>
+      {!isGood(item) && <p>{t('solidarity.materialNote')}</p>}
       <p>{t('solidarity.value').replace('{value}', String(quote.value))}</p>
       <p>{t('solidarity.added').replace('{duration}', formatSolidarityDuration(quote.addedMs))}</p>
       <p>{t('solidarity.after').replace('{duration}', formatSolidarityDuration(quote.remainingMs))}</p>
@@ -43,7 +45,7 @@ export function DonationForm({ good, onClose }: DonationFormProps) {
       <SolidarityProgress value={total + quote.value} />
     </div>}
     <ButtonRow align="stretch" spaced>
-      <ActionButton type="submit" variant="primary" disabled={!valid || readOnly}>{t('solidarity.confirm').replace('{quantity}', valid ? String(amount) : '—').replace('{good}', itemName(good))}</ActionButton>
+      <ActionButton type="submit" variant="primary" disabled={!valid || readOnly}>{t('solidarity.confirm').replace('{quantity}', valid ? String(amount) : '—').replace('{good}', itemName(item))}</ActionButton>
       <ActionButton onClick={onClose}>{t('solidarity.cancel')}</ActionButton>
     </ButtonRow>
   </form>;

@@ -26,6 +26,6 @@ export function MarketGoodRow({ good }: { good: GoodId }) {
       <ActionButton disabled={readOnly} onClick={() => send({ type: 'SellToMarket', good, quantity: amount })}>{t('market.sellAll')} (+{all})</ActionButton>
       <ActionButton disabled={readOnly} aria-expanded={donating} onClick={() => setDonating(value => !value)}>{t('solidarity.donate')}</ActionButton>
     </ButtonRow>
-    {donating && <DonationForm good={good} onClose={() => setDonating(false)} />}
+    {donating && <DonationForm item={good} onClose={() => setDonating(false)} />}
   </li>;
 }
