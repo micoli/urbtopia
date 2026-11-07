@@ -1,5 +1,17 @@
 const CACHE = 'urbtopia-__BUILD_ID__';
+const FILES_CACHE = 'urbtopia-files';
 const PRECACHED_FILES = __PRECACHED_FILES__;
+const VERSIONED_FILES = __VERSIONED_FILES__;
+const WARM_CONCURRENCY = 3;
+const WARM_GAP_MS = 100;
+const TOO_MANY_REQUESTS = 429;
+
+const versionedKeys = new Map(
+  Object.entries(VERSIONED_FILES).map(([path, version]) => {
+    const url = new URL(path, self.location).href;
+    return [url, `${url}?v=${version}`];
+  }),
+);
 const ASSET_PATTERN = /(?:src|href)="([^"]+\/assets\/[^"]+)"/g;
 
 const precache = async () => {
@@ -13,6 +25,36 @@ const precache = async () => {
   await cache.addAll([...assets, ...files]);
 };
 
+const pruneFiles = async () => {
+  const cache = await caches.open(FILES_CACHE);
+  const current = new Set(versionedKeys.values());
+  const stored = await cache.keys();
+  await Promise.all(stored.filter((request) => !current.has(request.url)).map((request) => cache.delete(request)));
+};
+
+const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const warmFiles = async () => {
+  const cache = await caches.open(FILES_CACHE);
+  const stored = new Set((await cache.keys()).map((request) => request.url));
+  const pending = [...versionedKeys].filter(([, key]) => !stored.has(key));
+  let halted = false;
+  const worker = async () => {
+    while (!halted && pending.length > 0) {
+      const [url, key] = pending.pop();
+      try {
+        const response = await fetch(url);
+        if (response.status === TOO_MANY_REQUESTS) halted = true;
+        else if (response.ok) await cache.put(key, response);
+      } catch {
+        halted = true;
+      }
+      await pause(WARM_GAP_MS);
+    }
+  };
+  await Promise.all(Array.from({ length: WARM_CONCURRENCY }, worker));
+};
+
 self.addEventListener('install', (event) => {
   event.waitUntil(precache().then(() => self.skipWaiting()));
 });
@@ -21,8 +63,10 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
-      .then(() => self.clients.claim()),
+      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE && key !== FILES_CACHE).map((key) => caches.delete(key))))
+      .then(pruneFiles)
+      .then(() => self.clients.claim())
+      .then(warmFiles),
   );
 });
 
@@ -46,10 +90,21 @@ const cacheFirst = async (request) => {
   return response;
 };
 
+const versionedFirst = async (request, key) => {
+  const cache = await caches.open(FILES_CACHE);
+  const cached = await cache.match(key);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response.ok) cache.put(key, response.clone());
+  return response;
+};
+
 const isGuide = (url) => url.startsWith(new URL('./docs/', self.location).href);
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin || isGuide(request.url)) return;
-  event.respondWith(request.mode === 'navigate' ? networkFirst(request) : cacheFirst(request));
+  if (request.mode === 'navigate') return event.respondWith(networkFirst(request));
+  const key = versionedKeys.get(request.url);
+  event.respondWith(key ? versionedFirst(request, key) : cacheFirst(request));
 });

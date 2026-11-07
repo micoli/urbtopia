@@ -59,9 +59,11 @@ describe('service worker stamping', () => {
     expect(respondedTo('https://example.com/urbtopia/')).toBe(true);
   });
 
-  it('lists the files to precache for offline play', () => {
-    const stamped = stampSource(source, 'aaa', ['./models/roads/road-end.glb']);
-    expect(stamped).toContain('["./models/roads/road-end.glb"]');
+  it('lists the shell files to precache and the versioned files kept across builds', () => {
+    const stamped = stampSource(source, 'aaa', ['./icon-192.png'], { './models/roads/road-end.glb': 'abc123' });
+    expect(stamped).toContain('["./icon-192.png"]');
+    expect(stamped).toContain('{"./models/roads/road-end.glb":"abc123"}');
     expect(stamped).not.toContain('__PRECACHED_FILES__');
+    expect(stamped).not.toContain('__VERSIONED_FILES__');
   });
 });
