@@ -4,6 +4,7 @@ import { itemName } from '../../i18n/itemName';
 import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { ItemIcon } from '../common/ItemIcon';
 import { useGame, useReadOnly } from '../common/hooks';
 import { DonationForm } from './DonationForm';
 
@@ -12,7 +13,8 @@ export function MarketMaterialRow({ material }: { material: MaterialId }) {
   const readOnly = useReadOnly();
   const [donating, setDonating] = useState(false);
   return <li className="market-row">
-    <div>
+    <div className="market-item">
+      <ItemIcon item={material} />
       <strong>{itemName(material)} × {amount}</strong>
     </div>
     <ButtonRow align="stretch" spaced>

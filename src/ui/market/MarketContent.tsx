@@ -20,7 +20,7 @@ export function MarketContent() {
         {goods.map(good => <MarketGoodRow key={good} good={good} />)}
         {materials.map(material => <MarketMaterialRow key={material} material={material} />)}
       </ul>
-      <ActionButton onClick={() => openCodex(undefined, 'market')}>{t('codex.market.open')}</ActionButton>
+      <ActionButton className="market-rules" onClick={() => openCodex(undefined, 'market')}>{t('codex.market.open')}</ActionButton>
     </>
   );
 }

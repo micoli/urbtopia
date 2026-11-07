@@ -19,7 +19,7 @@ export function EventsContent() {
   const markSeen = useChallenges((store) => store.markSeen);
   const openSettings = useUi((store) => store.openSettingsFromSocial);
   const openCodex = useUi((store) => store.openCodex);
-  const rules = <ActionButton onClick={() => openCodex(undefined, 'challenges')}>{t('codex.challenges.open')}</ActionButton>;
+  const rules = <ActionButton className="challenge-rules" onClick={() => openCodex(undefined, 'challenges')}>{t('codex.challenges.open')}</ActionButton>;
   const shown = snapshot ? visibleChallenges(state, snapshot.challenges, true) : [];
   const shownIds = shown.filter((challenge) => isChallengePlayable(state, challenge)).map(({ id }) => id).join(',');
 
