@@ -20,6 +20,7 @@ export type ModelId =
   | 'buildings-bakery-2x2-t4-tone-a'
   | 'buildings-bakery-2x2-t5-tone-a'
   | 'buildings-ballpark-7x7-tone-a'
+  | 'buildings-basketball-arena-10x8-tone-a'
   | 'buildings-basketball-court-2x3'
   | 'buildings-battery-1x1'
   | 'buildings-casino-2x2-t1-tone-a'
