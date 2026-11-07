@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Flyout } from './Flyout';
 
-const meta = { title: 'Layout/Flyout', component: Flyout, parameters: { game: 'evolved' } } satisfies Meta<typeof Flyout>;
+const meta = { title: 'Main/Layout/Flyout', component: Flyout, parameters: { game: 'evolved' } } satisfies Meta<typeof Flyout>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

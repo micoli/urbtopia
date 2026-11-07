@@ -10,5 +10,5 @@ interface BuildingOfTypeProps {
 export function BuildingOfType({ type, children }: BuildingOfTypeProps) {
   const building = useGame((store) => store.state.buildings.find((candidate) => candidate.type === type));
   if (!building) throw new Error(`The game fixture has no "${type}" building`);
-  return <>{children(building)}</>;
+  return <div className="story-sheet">{children(building)}</div>;
 }

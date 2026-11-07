@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { PoliticsWindow } from './PoliticsWindow';
 
-const meta = { title: 'Politics/PoliticsWindow', parameters: { game: 'political', stores: { ui: { politicsOpen: true } } } } satisfies Meta;
+const meta = { title: 'Main/Politics/PoliticsWindow', parameters: { game: 'political', stores: { ui: { politicsOpen: true } } } } satisfies Meta;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

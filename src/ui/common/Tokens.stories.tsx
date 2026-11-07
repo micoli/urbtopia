@@ -62,7 +62,7 @@ function Tokens() {
   );
 }
 
-const meta = { title: 'Design/Tokens', component: Tokens, parameters: { layout: 'padded' } } satisfies Meta<typeof Tokens>;
+const meta = { title: 'Main/Design/Tokens', component: Tokens, parameters: { layout: 'padded' } } satisfies Meta<typeof Tokens>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

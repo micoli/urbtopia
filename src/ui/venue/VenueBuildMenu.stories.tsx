@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { VenueBuildMenu } from './VenueBuildMenu';
 
 const meta = {
-  title: 'Venue/VenueBuildMenu',
+  title: 'Main/Venue/VenueBuildMenu',
   component: VenueBuildMenu,
   args: { tier: 3, rank: 3, venueType: 'arcade' },
   argTypes: { venueType: { control: 'inline-radio', options: ['arcade', 'hotel', 'supermarket'] } },

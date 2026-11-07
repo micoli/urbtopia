@@ -3,7 +3,7 @@ import type { GameState, TutorialStep } from '../../core';
 import { gameStore } from '../../store/gameStore';
 import { TutorialBanner } from './TutorialBanner';
 
-const meta = { title: 'Tutorial/TutorialBanner', component: TutorialBanner, parameters: { layout: 'fullscreen', game: 'tutorial' } } satisfies Meta<typeof TutorialBanner>;
+const meta = { title: 'Main/Tutorial/TutorialBanner', component: TutorialBanner, parameters: { layout: 'fullscreen', game: 'tutorial' } } satisfies Meta<typeof TutorialBanner>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

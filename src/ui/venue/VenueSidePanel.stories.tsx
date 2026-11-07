@@ -3,7 +3,7 @@ import { BuildingOfType } from '../../../.storybook/BuildingOfType';
 import { venueStore } from '../../store/venueStore';
 import { VenueSidePanel } from './VenueSidePanel';
 
-const meta = { title: 'Venue/VenueSidePanel', parameters: { game: 'showcase' } } satisfies Meta;
+const meta = { title: 'Main/Venue/VenueSidePanel', parameters: { game: 'showcase' } } satisfies Meta;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

@@ -13,7 +13,13 @@ declare module 'storybook/internal/csf' {
 
 const preview: Preview = {
   decorators: [withGame],
-  parameters: { layout: 'centered', controls: { expanded: true } },
+  parameters: {
+    layout: 'centered',
+    controls: { expanded: true },
+    options: { storySort: { order: ['Main'] } },
+    backgrounds: { options: { game: { name: 'Game', value: 'var(--color-surface-solid)' } } },
+  },
+  initialGlobals: { backgrounds: { value: 'game' } },
 };
 
 export default preview;

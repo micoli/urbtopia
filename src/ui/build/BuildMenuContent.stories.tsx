@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { BuildMenuContent } from './BuildMenuContent';
 
-const meta = { title: 'Build/BuildMenuContent', component: BuildMenuContent, parameters: { game: 'evolved' } } satisfies Meta<typeof BuildMenuContent>;
+const meta = { title: 'Main/Build/BuildMenuContent', component: BuildMenuContent, parameters: { game: 'evolved' } } satisfies Meta<typeof BuildMenuContent>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

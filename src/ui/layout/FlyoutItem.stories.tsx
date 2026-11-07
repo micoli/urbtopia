@@ -3,7 +3,7 @@ import { UrbsAmount } from '../common/UrbsAmount';
 import { FlyoutItem } from './FlyoutItem';
 
 const meta = {
-  title: 'Layout/FlyoutItem',
+  title: 'Main/Layout/FlyoutItem',
   component: FlyoutItem,
   args: { label: 'Home', cost: <UrbsAmount value={250} />, onChoose: () => {} },
 } satisfies Meta<typeof FlyoutItem>;

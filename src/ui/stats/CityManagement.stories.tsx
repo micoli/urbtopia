@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CityManagement } from './CityManagement';
 
-const meta = { title: 'Stats/CityManagement', component: CityManagement } satisfies Meta<typeof CityManagement>;
+const meta = { title: 'Main/Stats/CityManagement', component: CityManagement } satisfies Meta<typeof CityManagement>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

@@ -1,1 +1,21 @@
 @import '../src/styles.css';
+
+/* In the game, panels inherit their text colour from the surface that holds them (.sheet, .dialog…); stories render bare. */
+@layer legacy {
+  body {
+    color: var(--color-text);
+  }
+}
+
+/* Same box as the game's side panel in the default layout C (layout.css), minus the fixed positioning that would escape the story canvas; it fills the canvas height, which is much shorter than a game window. */
+@layer legacy {
+  .story-sheet {
+    box-sizing: border-box;
+    width: min(240px, 60vw);
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    padding: var(--space-12);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+}

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MarketModal } from './MarketModal';
 
-const meta = { title: 'Market/MarketModal', component: MarketModal, parameters: { layout: 'fullscreen', game: 'evolved' } } satisfies Meta<typeof MarketModal>;
+const meta = { title: 'Main/Market/MarketModal', component: MarketModal, parameters: { layout: 'fullscreen', game: 'evolved' } } satisfies Meta<typeof MarketModal>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

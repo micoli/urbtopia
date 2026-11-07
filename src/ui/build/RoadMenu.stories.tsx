@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RoadMenu } from './RoadMenu';
 
-const meta = { title: 'Build/RoadMenu', component: RoadMenu, parameters: { game: 'evolved' } } satisfies Meta<typeof RoadMenu>;
+const meta = { title: 'Main/Build/RoadMenu', component: RoadMenu, parameters: { game: 'evolved' } } satisfies Meta<typeof RoadMenu>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

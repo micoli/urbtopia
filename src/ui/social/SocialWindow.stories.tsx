@@ -3,7 +3,7 @@ import { GROUP_ACTIONS, SOCIAL_ACTIONS, SOCIAL_GROUPS, SOCIAL_PROFILE } from '..
 import type { CloudActions } from '../../store/cloudStore';
 import { SocialWindow } from './SocialWindow';
 
-const meta = { title: 'Social/SocialWindow', component: SocialWindow, parameters: { layout: 'fullscreen', game: 'evolved' } } satisfies Meta<typeof SocialWindow>;
+const meta = { title: 'Main/Social/SocialWindow', component: SocialWindow, parameters: { layout: 'fullscreen', game: 'evolved' } } satisfies Meta<typeof SocialWindow>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

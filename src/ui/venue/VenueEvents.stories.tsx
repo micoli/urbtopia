@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { BuildingOfType } from '../../../.storybook/BuildingOfType';
 import { VenueEvents } from './VenueEvents';
 
-const meta = { title: 'Venue/VenueEvents', parameters: { game: 'showcase' } } satisfies Meta;
+const meta = { title: 'Main/Venue/VenueEvents', parameters: { game: 'showcase' } } satisfies Meta;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
