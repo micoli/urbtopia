@@ -28,7 +28,7 @@ export function MarinaPanel({ building }: MarinaPanelProps) {
       <p><Icon name="anchor" /> {t('marina.boats')}: {boats.length}/{capacity}</p>
       {costPerHour > 0 ? <p>{t('marina.cost')}: <UrbsAmount value={costPerHour} />/h</p> : null}
       {boats.some((boat) => boat.family === 'fishing') ? (
-        <ActionButton disabled={fish === 0} onClick={() => send({ type: 'CollectCatch', marinaId: building.id })}>
+        <ActionButton block disabled={fish === 0} onClick={() => send({ type: 'CollectCatch', marinaId: building.id })}>
           {t('marina.collect')} · {fish}
         </ActionButton>
       ) : null}
@@ -38,11 +38,11 @@ export function MarinaPanel({ building }: MarinaPanelProps) {
       {boats.map((boat) => (
         <div key={boat.id}>
           {boat.family === 'casino' ? <CasinoBoatRow boat={boat} /> : <p>{t(`boat.${boat.family}`)}</p>}
-          <ActionButton onClick={() => send({ type: 'SellBoat', id: boat.id })}>{t('marina.sell')} · {t(`boat.${boat.family}`)}</ActionButton>
+          <ActionButton block onClick={() => send({ type: 'SellBoat', id: boat.id })}>{t('marina.sell')} · {t(`boat.${boat.family}`)}</ActionButton>
         </div>
       ))}
       {MARINA_BOAT_FAMILIES.filter((family) => citizens >= BOATS[family].unlockCitizens).map((family) => (
-        <ActionButton key={family} disabled={boats.length >= capacity} onClick={() => chooseTool({ kind: 'boat', family, marinaId: building.id })}>
+        <ActionButton block key={family} disabled={boats.length >= capacity} onClick={() => chooseTool({ kind: 'boat', family, marinaId: building.id })}>
           {t('marina.buy')} · {t(`boat.${family}`)} · <UrbsAmount value={BOATS[family].cost} />
         </ActionButton>
       ))}

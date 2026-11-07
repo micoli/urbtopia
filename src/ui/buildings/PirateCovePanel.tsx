@@ -27,12 +27,12 @@ export function PirateCovePanel({ building }: { building: Building }) {
       {ships.length === 0 ? <BlockedReason reason={t('error.noPirateShip')} /> : null}
       {locked ? <BlockedReason reason={t('error.showLocksCove')} /> : null}
       {ships.map((ship) => (
-        <ActionButton key={ship.id} disabled={locked} onClick={() => send({ type: 'SellBoat', id: ship.id })}>
+        <ActionButton block key={ship.id} disabled={locked} onClick={() => send({ type: 'SellBoat', id: ship.id })}>
           {t('marina.sell')} · {t(`boat.${ship.family}`)}
         </ActionButton>
       ))}
       {COVE_BOAT_FAMILIES.filter((family) => citizens >= BOATS[family].unlockCitizens).map((family) => (
-        <ActionButton key={family} disabled={room <= 0} onClick={() => uiStore.getState().chooseTool({ kind: 'boat', family, marinaId: building.id })}>
+        <ActionButton block key={family} disabled={room <= 0} onClick={() => uiStore.getState().chooseTool({ kind: 'boat', family, marinaId: building.id })}>
           {t('marina.buy')} · {t(`boat.${family}`)} · <UrbsAmount value={BOATS[family].cost} />
         </ActionButton>
       ))}

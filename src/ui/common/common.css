@@ -215,6 +215,7 @@
 
 .slot {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-8);
   justify-content: space-between;
@@ -224,7 +225,7 @@
 }
 
 .slot-rush {
-  flex-shrink: 0;
+  flex: 1 1 100%;
 }
 
 .slot-free {
@@ -232,7 +233,7 @@
 }
 
 .note--muted {
-  margin: var(--space-8) 0 0;
+  margin: var(--space-8) 0 var(--space-8);
   font-size: 0.85em;
   opacity: 0.7;
 }
