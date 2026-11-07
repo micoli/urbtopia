@@ -48,7 +48,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
   const stockOf = (item: ItemId): number => (isMaterial(item) ? state.storage.materials[item] : state.storage.goods[item]) ?? 0;
   const inStockLabel = (count: number) => {
     const [before, after] = t('panel.inStock').split('{count}');
-    return <>{before}<StockCount>{count}</StockCount>{after}</>;
+    return<StockCount>{before}{count}{after}</StockCount>;
   };
   const multiplier = recipeMultiplierOf(building);
   const yieldPerCycle = productionTierOf(building).yield;
@@ -91,7 +91,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
         <CheckboxField label={t('panel.onlyCraftable')} checked={onlyCraftable} onChange={setOnlyCraftable} />
       ) : null}
       {hasFreeSlot ? (
-        <ButtonRow align="stretch" spaced>
+        <ButtonRow align="stretch" spaced twoColumns>
           {items.filter((item) => !filtering || !lacksMaterials(item)).map((item) =>
             isAvailable(item) ? (
               <ActionButton key={item} aria-disabled={lacksMaterials(item) || undefined} onClick={() => !lacksMaterials(item) && send({ type: 'QueueProduction', buildingId: building.id, item })}>
