@@ -115,7 +115,7 @@ test('codex previews remain available offline after PWA installation', async ({ 
   const dialog = page.getByRole('dialog', { name: 'Codex' });
   await dialog.getByRole('button', { name: 'Logement solaire', exact: true }).click();
   await expect(dialog.locator('img')).toHaveCount(8);
-  await page.waitForLoadState('networkidle');
+  await expect.poll(() => dialog.locator('img').evaluateAll(images => images.every(image => (image as HTMLImageElement).naturalWidth > 0)), { timeout: 30_000 }).toBe(true);
   await context.setOffline(true);
   const sources = await dialog.locator('img').evaluateAll(images => images.map(image => (image as HTMLImageElement).src));
   expect(await page.evaluate(async sources => {
