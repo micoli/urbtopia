@@ -13,6 +13,10 @@
       "en": "Shrubs support biodiversity, cooling and nearby Citizen well-being. Range: {radius} tiles. Adjacent vegetation gains 20%; benefits have diminishing returns and never cancel emissions. No road, power, water or maintenance required.",
       "fr": "Les buissons et plantes favorisent la biodiversité, la fraîcheur et le bien-être des citoyens proches. Rayon : {radius} cases. La végétation adjacente gagne 20 % ; les bénéfices ont un rendement décroissant et ne compensent jamais les émissions. Aucune route, électricité, eau ou entretien requis."
     },
+    "hedge": {
+      "en": "A low hedge, about two thirds of a floor high. Neighbouring hedges join into straight runs, corners, T junctions and crossings. Range: {radius} tiles; it supports Citizen well-being and biodiversity, with diminishing returns. No road, power, water or maintenance required.",
+      "fr": "Une haie basse, haute des deux tiers d'un étage. Les haies voisines se rejoignent en lignes droites, coudes, T et croisements. Rayon : {radius} cases ; elle soutient le bien-être des citoyens et la biodiversité, avec un rendement décroissant. Aucune route, électricité, eau ou entretien requis."
+    },
     "flower": {
       "en": "Flowers, mushrooms and lilies strongly support biodiversity and Citizen well-being, with a small cooling benefit. Range: {radius} tiles. Adjacent vegetation gains 20%; benefits have diminishing returns and never cancel emissions. No road, power, water or maintenance required.",
       "fr": "Les fleurs, champignons et nénuphars favorisent fortement la biodiversité et le bien-être, avec un petit bénéfice de fraîcheur. Rayon : {radius} cases. La végétation adjacente gagne 20 % ; les bénéfices ont un rendement décroissant et ne compensent jamais les émissions. Aucune route, électricité, eau ou entretien requis."

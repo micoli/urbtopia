@@ -9,6 +9,7 @@ import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from '.
 import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
 import { SERVICE_VEHICLE_MODELS } from './serviceTrip';
+import { HEDGE_MODELS, hedgePiece } from './hedgePieces';
 import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
 
 export const TEXTURE_VARIANTS = ['roads-a', 'roads-pedestrian'] as const;
@@ -121,6 +122,7 @@ export const MODEL_KEYS: readonly string[] = [
     ...Object.values(VENUE_STAFF_MODELS).flat(),
     ...FIXTURE_MODELS,
     ...RAIL_MODELS,
+    ...Object.values(HEDGE_MODELS),
     ...TRAIN_MODELS,
     ...VEHICLE_MODELS,
     ...Object.values(SERVICE_VEHICLE_MODELS),
@@ -350,7 +352,9 @@ function penAnimalItems(building: Building, rotation: number, x: number, z: numb
 }
 
 function buildingItems(state: GameState): RenderItem[] {
+  const hedgeKeys = new Set(state.buildings.filter(({ type }) => type === 'hedge').map(tileKey));
   return state.buildings.flatMap((building) => {
+    if (building.type === 'hedge') return [{ ...hedgePiece(building, key => hedgeKeys.has(key)), x: building.x + 0.5, z: building.y + 0.5, buildingId: building.id }];
     const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
     const x = building.x + width / 2;
     const z = building.y + depth / 2;

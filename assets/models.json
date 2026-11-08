@@ -1545,6 +1545,42 @@
       5
     ]
   },
+  "buildings-hedge-corner": {
+    "file": "buildings/hedge-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "buildings-hedge-cross": {
+    "file": "buildings/hedge-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "buildings-hedge-straight": {
+    "file": "buildings/hedge-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "buildings-hedge-t": {
+    "file": "buildings/hedge-t",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
+  },
   "buildings-high-school-3x2": {
     "file": "buildings/high-school-3x2",
     "source": "managed",

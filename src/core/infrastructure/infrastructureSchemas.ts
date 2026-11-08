@@ -20,6 +20,11 @@ export const railsInfrastructureSchema = z
   .strictObject({ ...schemaField, straight: modelId, corner: modelId })
   .meta({ title: 'Rails', description: 'assets/defs/infrastructure/rails.json: the Model ids of the rail pieces.' });
 
+// A hedge tile is a straight piece, a corner, a T or a cross, chosen by its neighbouring hedges.
+export const hedgesInfrastructureSchema = z
+  .strictObject({ ...schemaField, straight: modelId, corner: modelId, t: modelId, cross: modelId })
+  .meta({ title: 'Hedges', description: 'assets/defs/infrastructure/hedges.json: the Model ids of the hedge pieces.' });
+
 // The corridor is open at both ends of its walkway, or closed at one (west or east, seen with the stair to the south); the stair is mirrored, entered from the north or the south edge.
 const footbridgeSchema = z.strictObject({ corridor: modelId, corridorClosedWest: modelId, corridorClosedEast: modelId, deck: modelId, stairLeft: modelId, stairRight: modelId });
 

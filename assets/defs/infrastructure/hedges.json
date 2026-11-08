@@ -1,0 +1,7 @@
+{
+  "$schema": "../schemas/infrastructure-hedges.schema.json",
+  "straight": "buildings-hedge-straight",
+  "corner": "buildings-hedge-corner",
+  "t": "buildings-hedge-t",
+  "cross": "buildings-hedge-cross"
+}

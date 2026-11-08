@@ -62,6 +62,24 @@
           ],
           "additionalProperties": false
         },
+        "hedge": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
         "flower": {
           "type": "object",
           "properties": {
@@ -157,6 +175,7 @@
         "tree",
         "grass",
         "shrub",
+        "hedge",
         "flower",
         "habitat",
         "conifer",

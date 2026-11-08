@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "straight": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    },
+    "corner": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    },
+    "t": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    },
+    "cross": {
+      "type": "string",
+      "pattern": "\\S",
+      "modelId": true
+    }
+  },
+  "required": [
+    "straight",
+    "corner",
+    "t",
+    "cross"
+  ],
+  "additionalProperties": false,
+  "title": "Hedges",
+  "description": "assets/defs/infrastructure/hedges.json: the Model ids of the hedge pieces."
+}

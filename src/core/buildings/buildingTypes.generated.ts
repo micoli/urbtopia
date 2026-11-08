@@ -50,6 +50,7 @@ export type BuildingId =
   | 'halloweenManor'
   | 'halloweenPumpkin'
   | 'halloweenWitchHat'
+  | 'hedge'
   | 'highSchool'
   | 'hive'
   | 'holiday-bench'
@@ -368,6 +369,7 @@ export type SportVenueType =
   | 'stadium';
 
 export type NatureType =
+  | 'hedge'
   | 'holiday-bench'
   | 'holiday-lantern'
   | 'mini-forest-building-platform'
