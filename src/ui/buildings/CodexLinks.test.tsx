@@ -21,4 +21,14 @@ describe('CodexLinks', () => {
   it('gives no Politics link to other buildings', () => {
     expect(renderToStaticMarkup(<CodexLinks building={createBuilding(1, 'school', 8, 8, 0)} />)).not.toContain('Politics');
   });
+
+  it('links the Venues that hire staff to the Venue staff page', () => {
+    for (const type of ['supermarket', 'restaurant', 'hotel', 'arcade'] as const) {
+      expect(renderToStaticMarkup(<CodexLinks building={createBuilding(1, type, 8, 8, 0)} />)).toContain('title="Venue staff"');
+    }
+  });
+
+  it('gives no Venue staff link to buildings without staff', () => {
+    expect(renderToStaticMarkup(<CodexLinks building={createBuilding(1, 'school', 8, 8, 0)} />)).not.toContain('Venue staff');
+  });
 });
