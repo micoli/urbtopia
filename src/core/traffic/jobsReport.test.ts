@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { congestionStats, createBuilding, newGame, type Building, type GameState } from '../index';
-import { jobKindOf, jobsByKind, jobsByMode, venueStaffRows } from './jobsReport';
+import { jobKindOf, jobsByKind, jobsByMode, jobsSummary, venueStaffRows } from './jobsReport';
 
 const arcade: Building = { ...createBuilding(41, 'arcade', 60, 59, 0), tier: 3, venue: { fixtures: [], nextFixtureId: 1, takings: 0, staff: { employee: 2 } } };
 const home: Building = { ...createBuilding(40, 'home', 55, 59, 0), tier: 1 };
@@ -27,6 +27,18 @@ describe('jobs report', () => {
     const city = state([arcade, home]);
     const modes = jobsByMode(congestionStats(city));
     expect(modes.walking + modes.cycling + modes.car + modes.transit).toBeCloseTo(jobsByKind(city, congestionStats(city))[0]!.filled);
+  });
+
+  it('adds up Citizens, filled Jobs, Unemployed and the Citizens with no Job who are not counted', () => {
+    const cut = state([home]);
+    const alone = jobsSummary(cut, congestionStats(cut));
+    expect(alone.citizens).toBeGreaterThan(0);
+    expect(alone.filled).toBe(0);
+    expect(alone.unemployed + alone.uncounted).toBe(alone.citizens);
+    const city = state([arcade, home]);
+    const summary = jobsSummary(city, congestionStats(city));
+    expect(summary.filled + summary.unemployed + summary.uncounted).toBeCloseTo(summary.citizens);
+    expect(summary.unfilled).toBeCloseTo(summary.offered - summary.filled);
   });
 
   it('lists the Venues with Staff, the least filled first', () => {

@@ -4,6 +4,7 @@ import { isShopType } from '../economy/shops';
 import { isFacilityType } from '../services/facilities';
 import { isVenueType } from '../venues/profiles';
 import { postsAtTier, totalStaff } from '../venues/staff';
+import { totalCitizens } from '../buildings/city';
 import type { Building, GameState, VenueType } from '../engine/state';
 import type { CongestionStats, JobModes } from './congestion';
 import { jobsOf, workplaceTypes } from './jobs';
@@ -22,6 +23,31 @@ export interface VenueStaffRow {
   hired: number;
   filled: number;
   posts: number;
+}
+
+export interface JobsSummary {
+  citizens: number;
+  offered: number;
+  filled: number;
+  unfilled: number;
+  // Citizens counted Unemployed: they reach a workplace but lose the competition for its Jobs.
+  unemployed: number;
+  // Citizens with no Job who are not counted Unemployed: their Home reaches no workplace, or has no Road (ADR 0059).
+  uncounted: number;
+}
+
+export function jobsSummary(state: GameState, congestion: CongestionStats): JobsSummary {
+  const citizens = totalCitizens(state);
+  const filled = [...congestion.filledJobs.values()].reduce((sum, count) => sum + count, 0);
+  const withoutJob = Math.max(0, citizens - filled);
+  return {
+    citizens,
+    offered: congestion.jobs,
+    filled,
+    unfilled: Math.max(0, congestion.jobs - filled),
+    unemployed: congestion.unemployed,
+    uncounted: Math.max(0, withoutJob - congestion.unemployed),
+  };
 }
 
 export function jobKindOf(building: Building): JobKind | null {
