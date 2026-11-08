@@ -29,7 +29,7 @@ export function ReleaseNotesDialog({ notes, index, language, onSelect, onClose }
             <u>
               <time dateTime={note.publishedAt}>{formatReleaseDate(note.publishedAt, language)}</time>
               {' · '}
-              {t('releaseNotes.position').replace('{index}', String(index + 1)).replace('{total}', String(notes.length))}
+              {t('releaseNotes.position').replace('{index}', String(notes.length - index)).replace('{total}', String(notes.length))}
             </u>
           </p>
           <h3><InlineMarkdown text={note.title[language]} /></h3>
