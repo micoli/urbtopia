@@ -17,6 +17,7 @@ import { ConfirmPad } from '../build/ConfirmPad';
 import { ConfirmSaleDialog } from '../build/ConfirmSaleDialog';
 import { AnnualEventNotice } from '../system/AnnualEventNotice';
 import { ExportReminder } from '../system/ExportReminder';
+import { ReleaseNotes } from '../system/ReleaseNotes';
 import { BackOfficeBanner } from '../system/BackOfficeBanner';
 import { ReadOnlyBanner } from '../system/ReadOnlyBanner';
 import { VisitBanner } from '../system/VisitBanner';
@@ -98,6 +99,7 @@ export function Overlays() {
       <SaveFailedDialog />
       <SaveConflictOverlay />
       <SignInPrompt />
+      <ReleaseNotes />
       <RecoveryScreen />
       <Toast />
       <TutorialBanner />
