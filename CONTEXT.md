@@ -401,7 +401,7 @@ A person from outside the city drawn by its Attractions and the Gatherings of it
 _Avoid_: Visitor (a customer of a Venue), Citizen, guest
 
 **Attraction**:
-A building that Tourists come to see all day long: a Museum, the Colosseum, a Casino, a Marina and its Boats, or an amusement ride. It holds no Gathering, except the Colosseum. A Hotel is not an Attraction: it lodges Tourists. Each Attraction has its own drawing power, raised by its Tiers.
+A building that Tourists come to see all day long: a Museum, the Colosseum, a Casino, a Marina and its Boats, or an amusement ride. It holds no Gathering, except the Colosseum. A Hotel is not an Attraction: it lodges Tourists. Each Attraction has its own drawing power, raised by its Tiers. A Museum is not a Culture facility (no Service coverage), but it is a Culture destination of the Walking trips, so it also gives Well-being to the Homes that walk to it.
 _Avoid_: Landmark, sight, Minigame
 
 **Arena**:
