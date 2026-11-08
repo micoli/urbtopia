@@ -5,12 +5,18 @@ import { reloadApp } from '../../pwa/reloadApp';
 import { useInstallPrompt } from '../../pwa/useInstallPrompt';
 import { dialogStore } from '../../store/dialogStore';
 import { releaseNotesStore } from '../../store/releaseNotesStore';
+import { uiStore } from '../../store/uiStore';
 import { ActionButton } from '../common/ActionButton';
 import { SwitchField } from '../common/SwitchField';
 import { BetaSettings } from './BetaSettings';
 import { PickOffsetSlider } from './PickOffsetSlider';
 import { SettingRow } from './SettingRow';
 import { SettingsSection } from './SettingsSection';
+
+function reviewReleaseNotes() {
+  uiStore.getState().toggleSettings();
+  releaseNotesStore.getState().setReviewing(true);
+}
 
 export function AppSettings() {
   const debug = useStore(prefsStore, (store) => store.debug);
@@ -35,7 +41,7 @@ export function AppSettings() {
         </SettingRow>
         {hasReleaseNotes ? (
           <SettingRow label={t('settings.releaseNotes')} description={t('settings.releaseNotes.description')}>
-            <ActionButton size="sm" onClick={() => releaseNotesStore.getState().setReviewing(true)}>{t('settings.releaseNotes.action')}</ActionButton>
+            <ActionButton size="sm" onClick={reviewReleaseNotes}>{t('settings.releaseNotes.action')}</ActionButton>
           </SettingRow>
         ) : null}
         <SettingRow label={t('settings.version')}>
