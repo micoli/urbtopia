@@ -27,7 +27,7 @@ export interface Prefs {
   managementTabs: boolean;
   taxBadgeThreshold: TaxBadgeThreshold;
   debug: boolean;
-  // With the debug mode: how many pixels a click or a touch is moved before it picks a tile, to adjust the selection of buildings.
+  // How many pixels a click or a touch is moved before it picks a tile, to adjust the selection of buildings.
   debugOffsetX: number;
   debugOffsetY: number;
   alwaysDay: boolean;

@@ -53,14 +53,12 @@ export function AppSettings() {
       </SettingsSection>
       <BetaSettings />
       <SettingsSection title={t('settings.section.advanced')} icon="repair">
+        <div>
+          <small className="setting-text__description">{t('prefs.debugOffset.hint')}</small>
+          <PickOffsetSlider axis="x" />
+          <PickOffsetSlider axis="y" />
+        </div>
         <SwitchField label={t('prefs.debug')} description={t('prefs.debug.description')} checked={debug} onChange={prefsStore.getState().setDebug} />
-        {debug ? (
-          <div className="setting-indented">
-            <small className="setting-text__description">{t('prefs.debugOffset.hint')}</small>
-            <PickOffsetSlider axis="x" />
-            <PickOffsetSlider axis="y" />
-          </div>
-        ) : null}
       </SettingsSection>
     </>
   );

@@ -89,8 +89,8 @@ export function SceneCanvas() {
     showDayCycle();
     scene.setBrushMode(uiStore.getState().tool?.kind === 'brush');
     const showPickOffset = () => {
-      const { debug, debugOffsetX, debugOffsetY } = prefsStore.getState();
-      scene.setPickOffset(debug ? debugOffsetX : 0, debug ? debugOffsetY : 0);
+      const { debugOffsetX, debugOffsetY } = prefsStore.getState();
+      scene.setPickOffset(debugOffsetX, debugOffsetY);
     };
     showPickOffset();
     scene.onPick((x, y) => pickDotStore.getState().show(x, y));
@@ -135,7 +135,7 @@ export function SceneCanvas() {
       if (prefs.serviceCoverageType !== previous.serviceCoverageType) showServiceCoverage();
       showTraffic();
       showPedestrians();
-      if (prefs.debug !== previous.debug || prefs.debugOffsetX !== previous.debugOffsetX || prefs.debugOffsetY !== previous.debugOffsetY) showPickOffset();
+      if (prefs.debugOffsetX !== previous.debugOffsetX || prefs.debugOffsetY !== previous.debugOffsetY) showPickOffset();
       if (prefs.alwaysDay !== previous.alwaysDay) showDayCycle();
       if (prefs.trafficDensity !== previous.trafficDensity || prefs.pedestrianDensity !== previous.pedestrianDensity) showCrowdDensity();
       if (prefs.fineRotation !== previous.fineRotation) scene.camera.setFineRotation(prefs.fineRotation);
