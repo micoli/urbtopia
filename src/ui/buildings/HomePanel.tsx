@@ -34,7 +34,7 @@ export function HomePanel({ building }: HomePanelProps) {
   const missing = missingServicesOf(state, building, building.tier, coverage);
   const spec = HOME_TIERS[building.tier - 1];
   const commute = congestionStats(state).homes.get(building.id);
-  const working = !commute || commute.disconnected ? 0 : citizensOf(building.tier) - commute.unemployed;
+  const working = !commute || commute.disconnected ? 0 : commute.commuters + commute.walkers + commute.cyclists + commute.riders;
   const due = taxDue(building);
   const insulationCost = ECOLOGY.insulationCost * building.tier;
   const sanction = difficultyOf(state) === 'cozy' ? null : homeSanction(state, building, needsContext(state));
