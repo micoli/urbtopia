@@ -10,6 +10,7 @@ const MEASURES: Partial<Record<NeedFactorId, MessageKey>> = {
     water: 'needs.measure.water',
     pollution: 'needs.measure.pollution',
     congestion: 'needs.measure.congestion',
+    employment: 'needs.measure.employment',
     climate: 'needs.measure.climate',
     leisure: 'needs.measure.leisure',
     walking: 'needs.measure.walking',

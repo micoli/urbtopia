@@ -35,7 +35,19 @@ export const wagesPerHour = (venue: VenueData): number =>
 
 export const frontRate = (venue: VenueData, type: VenueType): number => Math.min(1, STAFF.frontBaseRate + STAFF.frontRatePerHire * hiredOf(venue, FRONT_ROLE[type]));
 
-export const securityRate = (venue: VenueData, type: VenueType): number =>
-  !STAFF_ROLES_BY_VENUE[type].includes('security') || hiredOf(venue, 'security') > 0 ? 1 : STAFF.withoutSecurityRate;
+// How much of a post is covered, from 0 to 1: a fraction when only part of the hired Staff comes to work.
+export const presenceOf = (venue: VenueData, role: StaffRole): number => Math.min(1, hiredOf(venue, role));
 
-export const managerYield = (venue: VenueData): number => (hiredOf(venue, 'manager') > 0 ? STAFF.managerYield : 1);
+export const securityRate = (venue: VenueData, type: VenueType): number => {
+  if (!STAFF_ROLES_BY_VENUE[type].includes('security')) return 1;
+  const presence = presenceOf(venue, 'security');
+  return presence + (1 - presence) * STAFF.withoutSecurityRate;
+};
+
+export const managerYield = (venue: VenueData): number => 1 + (STAFF.managerYield - 1) * presenceOf(venue, 'manager');
+
+export const postsAtTier = (type: VenueType, tier: number): number => staffRolesOf(type).reduce((total, role) => total + postsOf(type, role, tier), 0);
+
+// The Staff that actually comes to work: the hired Staff in proportion to the Fill rate.
+export const filledStaff = (venue: VenueData, fillRate: number): VenueData =>
+  fillRate >= 1 ? venue : { ...venue, staff: Object.fromEntries(STAFF_ROLES.map(role => [role, hiredOf(venue, role) * fillRate])) };

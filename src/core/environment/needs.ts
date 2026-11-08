@@ -10,7 +10,7 @@ import { isHomeType } from '../buildings/buildingDefinitions';
 import type { ServiceCategory } from '../services/serviceCategories';
 import { coveredCategories, serviceCoverage, type ServiceCoverage } from '../services/services';
 import { congestionStats, type CongestionStats } from '../traffic/congestion';
-import { CONGESTION } from '../traffic/roadTier';
+import { CONGESTION, UNEMPLOYMENT } from '../traffic/roadTier';
 import { leisureRetention } from '../leisure/leisure';
 import { poweredCasinoIds } from '../leisure/poweredCasinos';
 import type { Building, GameState } from '../engine/state';
@@ -26,7 +26,7 @@ export type { NeedFactorId };
 
 export type NeedEffect = 'supply' | 'wellbeing' | 'tierUpgrade' | 'sanction' | 'none';
 
-export type NeedSection = 'eco-energy' | 'eco-water' | 'eco-services' | 'eco-nature' | 'eco-traffic' | 'eco-emissions';
+export type NeedSection = 'eco-energy' | 'eco-water' | 'eco-services' | 'eco-nature' | 'eco-traffic' | 'eco-jobs' | 'eco-emissions';
 
 export interface NeedFactor {
   optional?: boolean;
@@ -62,6 +62,7 @@ const FACTORS: readonly FactorSpec[] = [
   { id: 'health', level: 'safety', effects: ['wellbeing', 'tierUpgrade'], section: 'eco-services' },
   { id: 'pollution', level: 'safety', effects: ['wellbeing'], section: 'eco-energy' },
   { id: 'congestion', level: 'safety', effects: ['wellbeing'], section: 'eco-traffic' },
+  { id: 'employment', level: 'safety', effects: ['wellbeing'], section: 'eco-jobs' },
   { id: 'climate', level: 'safety', effects: ['none'], section: 'eco-emissions' },
   { id: 'culture', level: 'belonging', effects: ['wellbeing'], section: 'eco-services' },
   { id: 'leisure', level: 'belonging', effects: ['wellbeing'], section: null },
@@ -106,6 +107,7 @@ export function homeNeedSatisfactions(state: GameState, home: Building, { energy
   if (waste.required) result.set('waste', isWasteCovered(waste, home.id) ? 100 : 0);
   result.set('pollution', 100 - share(benefits.pollutionPenalty + benefits.odorPenalty, ECOLOGY.coalWellbeingCap));
   result.set('congestion', 100 - share(benefits.congestionPenalty, CONGESTION.penaltyCap));
+  result.set('employment', 100 - share(benefits.unemploymentPenalty, UNEMPLOYMENT.maxPenalty));
   result.set('leisure', leisureRetention(state, home, poweredCasinos, 100) < 1 ? 100 : 0);
   result.set('walking', 100 * (congestion.homes.get(home.id)?.walkAccess ?? 0));
   result.set('solidarity', solidarityBonus(state) > 0 ? 100 : 0);

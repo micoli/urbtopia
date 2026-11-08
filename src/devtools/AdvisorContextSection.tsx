@@ -19,9 +19,9 @@ export function AdvisorContextSection() {
   const { answer, asking, error, ask, stop } = useAdvisorChat();
   const text = question.trim() || undefined;
 
-  const show = () => {
+  const show = async () => {
     const { language, advisorContextLevel } = prefsStore.getState();
-    setPreview(advisorContextPreview(gameStore.getState().state, language, advisorContextLevel, text));
+    setPreview(await advisorContextPreview(gameStore.getState().state, language, advisorContextLevel, text));
   };
 
   const send = async () => {

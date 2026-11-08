@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from
 import { WALKING } from './walking';
 import { parseEnvelope, serializeEnvelope } from '../../persistence/envelope';
 import { pedestrianGraph, pedestrianWayNode } from '../map/pedestrianGraph';
-import { GOODS, SHOP, advance, congestionStats, createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../index';
+import { GOODS, SHOP, advance, citizensOf, congestionStats, createBuilding, newGame, transportStats, type GameState, type TransitTile } from '../index';
 
 const walkingEnabled = WALKING.enabled;
 beforeAll(() => {
@@ -145,8 +145,9 @@ describe('workplaces reached only by a BRT corridor', () => {
     const stats = congestionStats(swapWorkshop('hospital')(brtDistrict({ roads: true })));
     expect(stats.commuters).toBe(0);
     expect(stats.homes.get(4)!.riders).toBe(stats.filledJobs.get(5));
-    expect(stats.homes.get(4)!.unemployed).toBe(0);
-    expect(stats.unemployed).toBe(0);
+    // The Citizens of a Home with no Road who find no Job are Unemployed like any other (ADR 0063).
+    const home = stats.homes.get(4)!;
+    expect(home.unemployed).toBeCloseTo(citizensOf(3) - home.riders - home.walkers - home.cyclists);
   });
 
   it('makes a covered BRT-only facility a destination for Riders', () => {

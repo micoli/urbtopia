@@ -141,7 +141,7 @@ function layoutSignature(state: GameState, now: number): string {
   const network = transitNetwork(state, now);
   const buildings = state.buildings
     .filter((building) => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null || sellsTickets(building) || (TOURIST_GATES as readonly string[]).includes(building.type))
-    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${sellsTickets(building) ? ticketOf(building) : ''}:${network.coveredActivities.has(building.id) ? 1 : 0}:${frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier).join('+')}`);
+    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${jobsOf(building)}:${sellsTickets(building) ? ticketOf(building) : ''}:${network.coveredActivities.has(building.id) ? 1 : 0}:${frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier).join('+')}`);
   const openings = [...closedFractionsByTile(state)].map(([key, fraction]) => `${key}=${fraction.toFixed(3)}`);
   const pedestrianWays = (state.pedestrianWays ?? []).map(tileKey).sort().join(';');
   const gatherings = state.buildings.flatMap((building) => (movingGathering(building, now) ? [`${building.id}`] : [])).join(',');
@@ -296,7 +296,8 @@ function calculateCongestion(state: GameState, now: number, network: TransitNetw
     const reachesSomething = candidates.some((candidate) => candidate.home === homeId);
     walkTripsByHome.set(homeId, share.walking + (walkedServicesByHome.get(homeId) ?? 0));
     if (!reachesSomething && isBrtOnly(state, home)) {
-      const entry = { ...brtOnlyEntry(network.homeOptions.has(homeId)), walkAccess };
+      const entry = { ...brtOnlyEntry(network.homeOptions.has(homeId), citizensOf(home.building.tier)), walkAccess };
+      unemployedTotal += entry.unemployed;
       result.set(homeId, entry);
       if (entry.disconnected) brtOnlyDisconnected.push(footprintTiles(home.building));
       continue;
@@ -306,8 +307,7 @@ function calculateCongestion(state: GameState, now: number, network: TransitNetw
       result.set(homeId, { commuters: citizensOf(home.building.tier), walkers: 0, cyclists: 0, riders: 0, walkAccess, unemployed: 0, ratio: CONGESTION.maxRatio, disconnected: true });
       continue;
     }
-    // A Home with no Road (BRT or Pedestrian way only) is not blamed for a Job it cannot reach: its Citizens are not counted Unemployed.
-    const jobless = home.access.length === 0 ? 0 : unemployed.get(homeId) ?? 0;
+    const jobless = unemployed.get(homeId) ?? 0;
     commutersTotal += share.car;
     walkersTotal += share.walking;
     cyclistsTotal += share.cycling;
@@ -390,8 +390,9 @@ function isBrtOnly(state: GameState, home: Endpoint): boolean {
   return hasBrtOnlyAccess(state, home.building);
 }
 
-function brtOnlyEntry(covered: boolean): HomeCongestion {
-  return { commuters: 0, walkers: 0, cyclists: 0, riders: 0, walkAccess: 0, unemployed: 0, ratio: covered ? 0 : CONGESTION.maxRatio, disconnected: !covered };
+// A BRT-only Home served by a line that reaches no workplace has all its Citizens Unemployed; one the lines do not serve is cut off, which the Congestion already charges.
+function brtOnlyEntry(covered: boolean, citizens: number): HomeCongestion {
+  return { commuters: 0, walkers: 0, cyclists: 0, riders: 0, walkAccess: 0, unemployed: covered ? citizens : 0, ratio: covered ? 0 : CONGESTION.maxRatio, disconnected: !covered };
 }
 
 function noCommute(state: GameState, homes: Endpoint[], jobs: number, network: TransitNetwork): CongestionStats {
@@ -409,7 +410,7 @@ function noCommute(state: GameState, homes: Endpoint[], jobs: number, network: T
     const walkedBefore = tripsTotal(walkingTrips);
     const walkAccess = WALKING.enabled ? walkServices(walk, destinations, citizensOf(home.building.tier), pedestrians, walkingTrips, cyclingTrips, sidewalkLoads, walkArrivals, (site, count, nodes) => trips.push({ from: home.building.id, to: site, mode: 'walk', count, path: tilesOfNodes(nodes) })) : 0;
     walkTripsByHome.set(home.building.id, tripsTotal(walkingTrips) - walkedBefore);
-    if (isBrtOnly(state, home)) return [home.building.id, { ...brtOnlyEntry(network.homeOptions.has(home.building.id)), walkAccess }];
+    if (isBrtOnly(state, home)) return [home.building.id, { ...brtOnlyEntry(network.homeOptions.has(home.building.id), 0), walkAccess }];
     return [home.building.id, { commuters: 0, walkers: 0, cyclists: 0, riders: 0, walkAccess, unemployed: 0, ratio: 0, disconnected: false }];
   });
   const stranded = homes.filter((home) => isBrtOnly(state, home) && !network.homeOptions.has(home.building.id));

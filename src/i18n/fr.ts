@@ -5,6 +5,7 @@ import { betaMessages } from './beta';
 import { bugReportMessages } from './bugReport';
 import { congestionDiagnosisMessages } from './congestionDiagnosis';
 import { wasteDiagnosisMessages } from './wasteDiagnosis';
+import { jobsDiagnosisMessages } from './jobsDiagnosis';
 import { casinoMessages } from './casino';
 import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
@@ -61,4 +62,5 @@ export const FR: Record<MessageKey, string> = {
   ...bugReportMessages('fr'),
   ...congestionDiagnosisMessages('fr'),
   ...wasteDiagnosisMessages('fr'),
+  ...jobsDiagnosisMessages('fr'),
 };

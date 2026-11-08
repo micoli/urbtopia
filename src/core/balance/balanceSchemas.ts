@@ -47,8 +47,14 @@ export const venuesBalanceSchema = z
 
 // What building a road costs per tile, and how fast a car drives on it, by road Tier.
 export const trafficBalanceSchema = z
-  .strictObject({ ...schemaField, roadTierCosts: z.array(count).min(1), roadSpeeds: z.array(positive).min(1) })
-  .meta({ title: 'Traffic balance', description: 'assets/defs/balance/traffic.json: the cost of a road tile and the free-flow speed of a car, in tiles per minute, by Tier.' });
+  .strictObject({
+    ...schemaField,
+    roadTierCosts: z.array(count).min(1),
+    roadSpeeds: z.array(positive).min(1),
+    // The Well-being a Home loses to its Unemployed Citizens: none up to the tolerance (a share of its Citizens), then linear to the cap.
+    unemployment: z.strictObject({ tolerance: share, maxPenalty: positive }),
+  })
+  .meta({ title: 'Traffic balance', description: 'assets/defs/balance/traffic.json: the cost of a road tile and the free-flow speed of a car, in tiles per minute, by Tier, and the Well-being lost to Unemployed Citizens.' });
 
 const DIFFICULTY_IDS = ['cozy', 'easy', 'medium', 'hard'] as const;
 

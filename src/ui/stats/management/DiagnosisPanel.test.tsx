@@ -5,7 +5,7 @@ import { prefsStore } from '../../../i18n/prefsStore';
 import { DiagnosisPanel } from './DiagnosisPanel';
 
 vi.mock('../../common/hooks', () => ({
-  useUi: (selector: (store: { showTile: () => void }) => unknown) => selector({ showTile: () => {} }),
+  useUi: (selector: (store: { showTile: () => void; enterAnalytics: () => void }) => unknown) => selector({ showTile: () => {}, enterAnalytics: () => {} }),
 }));
 
 describe('DiagnosisPanel', () => {
@@ -18,6 +18,14 @@ describe('DiagnosisPanel', () => {
     const html = renderToStaticMarkup(<DiagnosisPanel diagnosis={{ causes: [{ key: 'diagnosis.title', weight: 0.5, params: {}, focus: [{ x: 1, y: 2 }] }, { key: 'diagnosis.title', weight: 0.3, params: {}, focus: [] }] }} />);
     expect(html.match(/<button/g)).toHaveLength(1);
     expect(html).toContain('Show on map');
+  });
+
+  it('opens a layer instead of pointing at the map when given one', () => {
+    prefsStore.getState().setLanguage('en');
+    const html = renderToStaticMarkup(<DiagnosisPanel layer="data.jobs" diagnosis={{ causes: [{ key: 'diagnosis.title', weight: 0.5, params: {}, focus: [{ x: 1, y: 2 }] }] }} />);
+    expect(html.match(/<button/g)).toHaveLength(1);
+    expect(html).toContain('Show the Jobs layer');
+    expect(html).not.toContain('Show on map');
   });
 
   it('offers an Explain button on each Cause only when the Advisor is on', () => {

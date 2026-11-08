@@ -7,6 +7,7 @@ import { buildAdvisorRequest } from './advisorRequest';
 import { buildAdvisorSummary } from './buildAdvisorSummary';
 import { classifyAdvisorFailure } from './classifyAdvisorFailure';
 import { advisorEngine } from './currentAdvisorEngine';
+import { rulesContextFor } from './loadRulesPassages';
 import { questionHistoryStore } from './questionHistoryStore';
 
 // The answer lives in this component only: it is never saved, exported or shared.
@@ -25,11 +26,14 @@ export function useAdvisorChat() {
     questionHistoryStore.getState().record(question);
     const state = gameStore.getState().state;
     const summary = buildAdvisorSummary(state, advisorCauses(state));
-    const messages = buildAdvisorRequest(question, summary, prefsStore.getState().language, prefsStore.getState().advisorContextLevel);
+    const { language, advisorContextLevel } = prefsStore.getState();
     setAnswer('');
     setError(null);
     setAsking(true);
     try {
+      const rules = await rulesContextFor(question, language).catch(() => undefined);
+      if (controller.signal.aborted) return;
+      const messages = buildAdvisorRequest(question, summary, language, advisorContextLevel, rules);
       for await (const chunk of advisorEngine().ask(messages, controller.signal)) setAnswer((text) => text + chunk);
     } catch (failure) {
       if (!controller.signal.aborted) setError(classifyAdvisorFailure(failure).kind);

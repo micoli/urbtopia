@@ -22,7 +22,7 @@ function facilitySections(type: string): readonly ManagementSectionId[] {
 export function managementSectionsOf({ type }: Pick<Building, 'type'>): readonly ManagementSectionId[] {
   if (wasteKindOf(type)) return facilitySections(type);
   switch (kindOf(type)) {
-    case 'home': return ['eco-needs', 'eco-services'];
+    case 'home': return ['eco-needs', 'eco-services', 'eco-jobs'];
     case 'production':
     case 'farm':
     case 'storage': return ['eco-production'];

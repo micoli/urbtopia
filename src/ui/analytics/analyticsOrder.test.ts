@@ -14,7 +14,7 @@ describe('analytics order', () => {
 
   it('steps through the categories of the coverage layer', () => {
     expect(stepAnalytics('data.coverage', 'education', 1)).toEqual({ layer: 'data.coverage', category: 'administration' });
-    expect(stepAnalytics('data.knowledge', 'education', 1)).toEqual({ layer: 'data.coverage', category: 'education' });
+    expect(stepAnalytics('data.jobs', 'education', 1)).toEqual({ layer: 'data.coverage', category: 'education' });
   });
 
   it('wraps around both ends', () => {

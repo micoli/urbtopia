@@ -79,3 +79,12 @@ describe('probe', () => {
     expect(JSON.stringify(state)).toBe(before);
   });
 });
+
+describe('jobs probe', () => {
+  it('reads the Unemployed Citizens of a Home and the Fill rate of a workplace', () => {
+    const state = { ...newGame({ seed: 'jobs-probe', now: 0 }), tutorial: null, adaptationUntil: 0, buildings: [{ ...createBuilding(900, 'office', 60, 59, 0), tier: 1 }, { ...createBuilding(901, 'home', 55, 59, 0), tier: 1 }] };
+    expect(probeOf(state, 'data.jobs', 'education', { x: 55, y: 59 })?.lines[0]?.key).toBe('analytics.jobs.unemployed');
+    expect(probeOf(state, 'data.jobs', 'education', { x: 60, y: 59 })?.lines[0]?.key).toBe('analytics.jobs.fillRate');
+    expect(probeOf(state, 'data.jobs', 'education', { x: 80, y: 80 })).toBeNull();
+  });
+});

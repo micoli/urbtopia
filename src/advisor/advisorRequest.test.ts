@@ -73,6 +73,27 @@ describe('buildAdvisorRequest', () => {
     expect(user!.content.length - withoutQuestion).toBeLessThanOrEqual(MAX_QUESTION_LENGTH);
   });
 
+  describe('with game rules', () => {
+    const rules = { passages: [{ title: 'Waste - Facilities', text: 'A landfill treats a fixed amount per day.' }], aboutCity: false };
+
+    it('puts the rules passages between the figures and the question', () => {
+      const content = buildAdvisorRequest('How does a landfill work?', summary, 'en', 3, rules)[1]!.content;
+      expect(content).toContain('Game rules:\nWaste - Facilities\nA landfill treats a fixed amount per day.');
+      expect(content.indexOf('Game rules')).toBeLessThan(content.indexOf('Question:'));
+    });
+
+    it('trims the city figures to make room when the question is about the rules', () => {
+      const withRules = buildAdvisorRequest('How does a landfill work?', summary, 'en', 5, rules)[1]!.content;
+      expect(withRules).not.toContain('Adopted Ordinances');
+      const aboutCity = buildAdvisorRequest('Why is my city dirty?', summary, 'en', 5, { ...rules, aboutCity: true })[1]!.content;
+      expect(aboutCity).toContain('Adopted Ordinances');
+    });
+
+    it('leaves the request unchanged when no rule was found', () => {
+      expect(buildAdvisorRequest('Why?', summary, 'en', 5, { passages: [], aboutCity: false })).toEqual(buildAdvisorRequest('Why?', summary, 'en', 5));
+    });
+  });
+
   it('turns a Cause into a question', () => {
     expect(explainCauseQuestion(cause, 'en')).toContain('Explain this problem');
   });

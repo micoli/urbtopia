@@ -70,6 +70,18 @@ describe('city management panel', () => {
     expect(html).not.toContain('NaN');
     expect(html).not.toContain('undefined');
   });
+  it.each(['en', 'fr'] as const)('gathers the Jobs in their own section, with the Venue Staff and the workplaces by kind, in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    const start = newGame({ seed: 'jobs-panel', now: 0 });
+    const arcade = { ...createBuilding(41, 'arcade', 60, 59, 0), tier: 3, venue: { fixtures: [], nextFixtureId: 1, takings: 0, staff: { employee: 2 } } };
+    context.state = { ...start, buildings: [...start.buildings, arcade, { ...createBuilding(40, 'home', 55, 59, 0), tier: 4 }] };
+    const html = renderToStaticMarkup(<CityManagement />);
+    expect(html).toContain('id="eco-jobs"');
+    expect(html).toContain(language === 'fr' ? 'Personnel des lieux' : 'Venue Staff');
+    expect(html).toContain(language === 'fr' ? 'Emplois par type de lieu de travail' : 'Jobs by kind of workplace');
+    expect(html).not.toContain('NaN');
+    expect(html).not.toContain('undefined');
+  });
   it.each(['en', 'fr'] as const)('explains why the roads jam, and stays silent on a quiet city, in %s', language => {
     prefsStore.getState().setLanguage(language);
     const start = newGame({ seed: 'diagnosis-panel', now: 0 });

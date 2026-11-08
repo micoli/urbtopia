@@ -3,10 +3,11 @@ import { advance, createBuilding, dispatch, newGame, type Building, type Command
 import { HOTEL, VENUE_PROFILES, cityAttractiveness, priceMultiplier, reputationOf, roomsOf, venuePerformance } from './venues';
 
 const H = 3_600_000;
+import { commuteRoad } from './commuteRoad';
 const building = (id: number, type: Building['type'], x: number, y: number, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
 const city = (extra: Building[] = [], urbs = 100_000): GameState => ({
-  ...newGame({ seed: 'hotel', now: 0 }), nextId: 100, urbs, tutorial: null, adaptationUntil: 0, lastSeen: 0,
-  buildings: [building(1, 'hotel', 55, 50), building(3, 'coalPlant', 90, 40, { tier: 4 }), ...extra],
+  ...newGame({ seed: 'hotel', now: 0 }), nextId: 100, urbs, tutorial: null, adaptationUntil: 0, roads: commuteRoad, lastSeen: 0,
+  buildings: [building(1, 'hotel', 55, 50), building(2, 'home', 52, 50, { tier: 4 }), building(3, 'coalPlant', 90, 40, { tier: 4 }), ...extra],
 });
 const send = (state: GameState, command: Command, now = 0) => {
   const result = dispatch(state, command, now);

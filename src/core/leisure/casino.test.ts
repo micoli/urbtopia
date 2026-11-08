@@ -84,7 +84,11 @@ describe('Casino energy', () => {
 describe('Casino Well-being', () => {
   const home = () => building(1, 'home', 50, 50, { tier: 5 });
   const plant = () => building(3, 'coalPlant', 90, 40, { tier: 4 });
-  const wellbeingOf = (state: GameState) => homeBenefits(state, state.buildings.find(b => b.type === 'home')!).wellbeing;
+  // The Unemployed Citizens of a Home next to a Casino are not part of what the Casino gives.
+  const wellbeingOf = (state: GameState) => {
+    const benefits = homeBenefits(state, state.buildings.find(b => b.type === 'home')!);
+    return benefits.wellbeing + benefits.unemploymentPenalty;
+  };
   const without = () => wellbeingOf(city([home(), plant()]));
 
   it('raises the Well-being of Homes in reach only while powered', () => {
@@ -93,7 +97,7 @@ describe('Casino Well-being', () => {
     expect(wellbeingOf(powered) - without()).toBeCloseTo(6, 5);
     const shut = city([home(), building(2, 'casino', 54, 50), building(3, 'coalPlant', 90, 40)]);
     expect(isCasinoPowered(shut, shut.buildings[1]!)).toBe(false);
-    expect(wellbeingOf(shut)).toBe(wellbeingOf(city([home(), building(3, 'coalPlant', 90, 40)])));
+    expect(wellbeingOf(shut)).toBeCloseTo(wellbeingOf(city([home(), building(3, 'coalPlant', 90, 40)])), 5);
   });
 
   it('ignores Homes out of reach and stacks several Casinos with diminishing returns', () => {
@@ -101,6 +105,6 @@ describe('Casino Well-being', () => {
     expect(wellbeingOf(far)).toBe(without());
     const two = city([home(), building(2, 'casino', 54, 50), building(4, 'casino', 54, 53), plant()]);
     expect(wellbeingOf(two) - without()).toBeCloseTo(100 * (1 - 0.94 * 0.94), 5);
-    expect(cityBenefits(two).wellbeing).toBeCloseTo(wellbeingOf(two), 5);
+    expect(cityBenefits(two).wellbeing + cityBenefits(two).unemploymentPenalty).toBeCloseTo(wellbeingOf(two), 5);
   });
 });

@@ -11,6 +11,8 @@ export const ROAD_TIER_SPEEDS: readonly number[] = traffic.roadSpeeds;
 // Tiles a car covers per minute on a road of this Tier when nothing slows it.
 export const roadSpeed = (tier: number): number => ROAD_TIER_SPEEDS[Math.min(Math.max(tier, 1), MAX_ROAD_TIER) - 1]!;
 
+export const UNEMPLOYMENT: { tolerance: number; maxPenalty: number } = traffic.unemployment;
+
 export const CONGESTION = {
   laneCapacities: [100, 250, 500],
   maxRatio: 2,

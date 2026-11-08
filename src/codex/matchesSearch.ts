@@ -3,9 +3,9 @@ const LONG_TERM_LENGTH = 8;
 
 export type SearchMatch = 'exact' | 'fuzzy';
 
-const normalized = (text: string): string => text.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’'`]/g, '').toLocaleLowerCase();
+export const normalized = (text: string): string => text.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’'`]/g, '').toLocaleLowerCase();
 
-const wordsOf = (text: string): string[] => text.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+export const wordsOf = (text: string): string[] => text.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
 
 const allowedErrorsOf = (term: string): number => {
   if (term.length < MIN_FUZZY_LENGTH) return 0;

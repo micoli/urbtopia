@@ -97,3 +97,20 @@ describe('HomePanel Knowledge', () => {
     expect(renderToStaticMarkup(<HomePanel building={building} />)).toContain(`${t('home.knowledge')}: 15`);
   });
 });
+
+describe('HomePanel jobs', () => {
+  it.each(['en', 'fr'] as const)('shows the Citizens at work next to the Citizens in %s', language => {
+    prefsStore.getState().setLanguage(language);
+    const home = { ...createBuilding(901, 'home', 55, 59, 0), tier: 4 };
+    const office = { ...createBuilding(900, 'office', 60, 59, 0), tier: 7 };
+    context.state = { ...newGame({ seed: 'home-jobs', now: 0 }), tutorial: null, adaptationUntil: 0, buildings: [home, office] };
+    const html = renderToStaticMarkup(<HomePanel building={home} />);
+    expect(html).toContain(`${t('home.citizens')}: 60 · ${t('home.working')} 60`);
+  });
+
+  it('shows none at work when the Home is cut off from every workplace', () => {
+    const home = { ...createBuilding(901, 'home', 55, 59, 0), tier: 4 };
+    context.state = { ...newGame({ seed: 'home-cut', now: 0 }), tutorial: null, adaptationUntil: 0, buildings: [home] };
+    expect(renderToStaticMarkup(<HomePanel building={home} />)).toContain('Citizens: 60 · working 0');
+  });
+});
