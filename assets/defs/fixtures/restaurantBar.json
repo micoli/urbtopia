@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "restaurant",
+  "category": "bar",
+  "name": {
+    "en": "Bar",
+    "fr": "Bar"
+  },
+  "model": "restaurant-bar",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "wear": 0.08,
+  "drinks": 16,
+  "stools": 3
+}

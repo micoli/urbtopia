@@ -43,5 +43,15 @@
   "coffeeCorner",
   "hotelWall",
   "hotelWindow",
-  "miniFridge"
+  "miniFridge",
+  "cooktop",
+  "prepTable",
+  "restaurantTable",
+  "restaurantChair",
+  "restaurantBar",
+  "restaurantStool",
+  "restaurantCheckout",
+  "waitingArmchair",
+  "restaurantWall",
+  "restaurantWindow"
 ]

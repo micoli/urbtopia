@@ -337,7 +337,7 @@ The Urbs the player puts on a Minigame round, from fixed steps capped by the Cas
 _Avoid_: Bet, wager, buy-in
 
 **Venue**:
-A building the player fits out and runs from the inside: Arcade, Supermarket or Hotel. Unlike a Casino, the player never plays in it: simulated visitors do, and the player manages Fixtures, Staff and prices to earn Urbs. Its Tier sets the size of its interior and its number of Staff posts.
+A building the player fits out and runs from the inside: Arcade, Supermarket, Hotel or Restaurant. Unlike a Casino, the player never plays in it: simulated visitors do, and the player manages Fixtures, Staff and prices to earn Urbs. Its Tier sets the size of its interior and its number of Staff posts.
 _Avoid_: Establishment, business, Casino
 
 **Management view**:
@@ -349,7 +349,7 @@ An item the player places inside a Venue's interior: a counter, a table, a chair
 _Avoid_: Furniture, equipment, decoration
 
 **Staff**:
-The workers of a Venue, held as roles, not as individuals: manager, employee, technician and security in an Arcade; manager, cashier, stocker and security in a Supermarket; manager, receptionist, housekeeper and technician in a Hotel. Each role fills a post of the Venue's Tier (the manager from Tier 2, the technician from Tier 3), is staffed by Citizens like a Job, costs a one-off hiring fee of five days of wages, then a daily wage in Urbs.
+The workers of a Venue, held as roles, not as individuals: manager, employee, technician and security in an Arcade; manager, cashier, stocker and security in a Supermarket; manager, receptionist, housekeeper and technician in a Hotel; cook, kitchen assistant, maître d', waiter and bartender in a Restaurant. Each role fills a post of the Venue's Tier (the manager from Tier 2, the technician from Tier 3), is staffed by Citizens like a Job, costs a one-off hiring fee of five days of wages, then a daily wage in Urbs.
 _Avoid_: Employee (one of the roles), worker, personnel
 
 **Condition**:
@@ -363,6 +363,14 @@ _Avoid_: Maintenance, replacement, fix
 **Shelf**:
 A Supermarket Fixture that holds units of one Good taken from the Storehouse, for a handling fee. It sells them to Shoppers at the value of the Good plus a markup; an empty Shelf earns nothing.
 _Avoid_: Stand, rack, Shop stack
+
+**Restaurant**:
+A Venue split into a kitchen and a dining room by Wall Fixtures. Its Diners are seated at Tables with Chairs or at the Bar, welcomed by the maître d', served by waiters and cooked for by the kitchen; the Checkout takes their payment and the Waiting armchair holds those who wait. It serves only dishes made from edible Goods and Materials taken from the Storehouse.
+_Avoid_: Café, diner (a Diner is a customer), canteen
+
+**Menu**:
+The ingredients a Restaurant serves, chosen by the player from the edible Goods and Materials, up to a number set by the Venue's Tier. Each Diner served uses up one unit of an ingredient of the Menu, taken from the Storehouse.
+_Avoid_: Carte, recipe (the game has no dishes)
 
 **Room**:
 A Hotel bed with a bathroom piece within reach. A bed without one counts for nothing. The comfort Fixtures near it set its Standing.
@@ -385,7 +393,7 @@ The Urbs a Venue has earned and not yet collected, net of Staff wages and Fixtur
 _Avoid_: Revenue, income, till
 
 **Visitor**:
-A simulated customer of a Venue, modelled in aggregate. Arcade and Supermarket draw them from the surrounding Citizens; a Hotel draws them from outside the city, by the city's attractiveness and its Reputation. In a Supermarket they are called Shoppers, in a Hotel guests. Only a visual silhouette is shown, never saved.
+A simulated customer of a Venue, modelled in aggregate. Arcade, Supermarket and Restaurant draw them from the surrounding Citizens; a Hotel draws them from outside the city, by the city's attractiveness and its Reputation. In a Supermarket they are called Shoppers, in a Hotel guests, in a Restaurant Diners. Only a visual silhouette is shown, never saved.
 _Avoid_: Customer, guest, Citizen
 
 **Tourist**:

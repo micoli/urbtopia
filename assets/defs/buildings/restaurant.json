@@ -1,0 +1,91 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "venue",
+  "section": "build.shops",
+  "cost": 6000,
+  "unlockCitizens": 600,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Restaurant",
+    "fr": "Restaurant"
+  },
+  "description": {
+    "en": "A Venue you fit out and run from the inside. Cook with Goods and Materials from the Storehouse, seat Diners at tables and the bar, and let the staff of the kitchen and the dining room serve them.",
+    "fr": "Un établissement que vous aménagez et gérez de l'intérieur. Cuisinez avec les marchandises et matières de l'entrepôt, installez les clients aux tables et au bar, et laissez la cuisine et la salle les servir."
+  },
+  "tiers": [
+    {
+      "model": "buildings-restaurant-1x1-t1-tone-a",
+      "footprint": [1, 1],
+      "gridSize": 8,
+      "takingsCap": 500,
+      "power": 2.5,
+      "eventBudget": 300,
+      "eventMultiplier": 1.5,
+      "menuSlots": 3,
+      "posts": {
+        "cook": 1,
+        "kitchenAssistant": 1,
+        "maitreD": 1,
+        "waiter": 1,
+        "bartender": 1
+      }
+    },
+    {
+      "gridSize": 10,
+      "takingsCap": 1100,
+      "power": 5,
+      "eventBudget": 600,
+      "eventMultiplier": 2,
+      "menuSlots": 5,
+      "posts": {
+        "cook": 1,
+        "kitchenAssistant": 2,
+        "maitreD": 1,
+        "waiter": 2,
+        "bartender": 1
+      },
+      "upgradeCost": {
+        "urbs": 10000,
+        "goods": {}
+      },
+      "model": "buildings-restaurant-2x1-t2-tone-a",
+      "footprint": [2, 1]
+    },
+    {
+      "gridSize": 12,
+      "takingsCap": 2200,
+      "power": 7.5,
+      "eventBudget": 1200,
+      "eventMultiplier": 2.5,
+      "menuSlots": 8,
+      "posts": {
+        "cook": 1,
+        "kitchenAssistant": 3,
+        "maitreD": 1,
+        "waiter": 4,
+        "bartender": 1
+      },
+      "upgradeCost": {
+        "urbs": 22000,
+        "goods": {}
+      },
+      "model": "buildings-restaurant-2x2-t3-tone-a",
+      "footprint": [2, 2]
+    }
+  ],
+  "rankAt": [1500, 6000],
+  "staffRoles": ["cook", "kitchenAssistant", "maitreD", "waiter", "bartender"],
+  "frontRole": "maitreD",
+  "fixtureCategories": ["kitchen", "dining", "bar", "service", "walls"],
+  "shell": {
+    "floor": "restaurant-floor",
+    "wall": "restaurant-wall",
+    "corner": "restaurant-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  },
+  "staffModels": ["restaurant-character-cook", "restaurant-character-kitchen-assistant", "restaurant-character-maitre-d", "restaurant-character-waiter", "restaurant-character-bartender"]
+}

@@ -14,6 +14,7 @@ export type FixtureId =
   | 'checkout'
   | 'clawMachine'
   | 'coffeeCorner'
+  | 'cooktop'
   | 'counter'
   | 'danceMachine'
   | 'displayBread'
@@ -29,8 +30,16 @@ export type FixtureId =
   | 'miniFridge'
   | 'pinball'
   | 'pottedPlant'
+  | 'prepTable'
   | 'prizeWheel'
   | 'receptionDesk'
+  | 'restaurantBar'
+  | 'restaurantChair'
+  | 'restaurantCheckout'
+  | 'restaurantStool'
+  | 'restaurantTable'
+  | 'restaurantWall'
+  | 'restaurantWindow'
   | 'rug'
   | 'shelfBags'
   | 'shelfBoxes'
@@ -44,7 +53,8 @@ export type FixtureId =
   | 'television'
   | 'ticketMachine'
   | 'toilet'
-  | 'vendingMachine';
+  | 'vendingMachine'
+  | 'waitingArmchair';
 
 export type ArcadeFixtureId =
   | 'airHockey'
@@ -96,3 +106,15 @@ export type HotelFixtureId =
   | 'sofa'
   | 'television'
   | 'toilet';
+
+export type RestaurantFixtureId =
+  | 'cooktop'
+  | 'prepTable'
+  | 'restaurantBar'
+  | 'restaurantChair'
+  | 'restaurantCheckout'
+  | 'restaurantStool'
+  | 'restaurantTable'
+  | 'restaurantWall'
+  | 'restaurantWindow'
+  | 'waitingArmchair';

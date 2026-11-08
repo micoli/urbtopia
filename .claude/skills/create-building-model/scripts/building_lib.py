@@ -47,7 +47,7 @@ FLOOR_HEIGHT = {"house": 0.30, "apartment": 0.28, "office": 0.32}
 FLOOR_RANGE = {"house": (1, 3), "apartment": (3, 12), "office": (4, 20)}
 ROOF_STYLES = ("flat", "gable_half", "gable_third", "hip", "mansard", "shed", "gable_cross", "sawtooth")
 FEATURES = ("sign", "chimney", "antenna", "awning", "balcony", "skylight", "monumental_door",
-            "vent", "solar_panels", "bushes", "clock_tower", "flagpole", "smokestack", "roller_door", "storefront", "penthouse", "portico", "red_cross", "door_hood", "penthouse_terrace", "stair_head", "round_dormer", "round_window", "roof_lantern", "striped_awning", "stall", "material_yard", "marquee", "wall_tools", "bush_at", "industrial_door", "hazard_band", "hardware_display", "roof_reel", "curved_marquee", "pilasters", "crystals", "red_carpet", "roof_tank", "roof_pipes", "loading_dock", "crate_stacks", "side_conveyor", "bulb_row", "stone_accents", "roof_vents", "roof_coin", "poster", "roof_die", "roof_card", "door_at", "colonnade", "dome", "raised_center", "barrel_wings", "cypresses")
+            "vent", "solar_panels", "bushes", "clock_tower", "flagpole", "smokestack", "roller_door", "storefront", "penthouse", "portico", "red_cross", "door_hood", "penthouse_terrace", "stair_head", "round_dormer", "round_window", "roof_lantern", "striped_awning", "stall", "material_yard", "marquee", "wall_tools", "bush_at", "industrial_door", "hazard_band", "hardware_display", "roof_reel", "curved_marquee", "pilasters", "crystals", "red_carpet", "roof_tank", "roof_pipes", "loading_dock", "crate_stacks", "side_conveyor", "bulb_row", "stone_accents", "roof_vents", "roof_coin", "poster", "roof_die", "roof_card", "door_at", "colonnade", "dome", "raised_center", "barrel_wings", "cypresses", "pergola")
 FRONT_FEATURES = ("sign", "awning", "monumental_door", "bushes", "door_hood", "round_window")
 FACES = ("front", "back", "left", "right")
 
@@ -120,6 +120,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
 
 COLONNADE_PROJECTION = 0.22  # a colonnade stands this far out of the front wall
+PERGOLA_DEPTH = 0.4  # default reach of a pergola out of the front wall
 PORTICO_PROJECTION = 0.18  # how far a portico stands out of the front wall: the body footprint is smaller by this much
 SAWTOOTH_HEIGHT = 0.16
 SAWTOOTH_TOOTH = 0.5
@@ -1120,6 +1121,45 @@ def add_flagpole(spec, parts):
     parts.append(lpm.box("flag_cloth", (0.14, 0.008, 0.08), at=(x + 0.075, y, base + 0.4), color=accent))
 
 
+def pergola_depth(spec):
+    feature = next((f for f in spec.get("features", []) if f["type"] == "pergola"), None)
+    return 0.0 if feature is None else feature.get("depth", PERGOLA_DEPTH)
+
+
+def add_pergola(spec, parts, along=0.0, width=None, depth=PERGOLA_DEPTH, tables=1):
+    """A timber pergola in front of the entrance: four posts, a frame, slats across, a few leaves and a terrace table."""
+    floor = spec["floor_height"]
+    length, _ = wall_extent(spec, "front")
+    wood, leaf = PALETTE_NAMES.index("uwood"), PALETTE_NAMES.index("bush")
+    white = PALETTE_NAMES.index("white")
+    width = width if width else min(1.2, length * 0.8)
+    plane = wall_half(spec, "front")
+    top = floor * 0.88
+    post, beam = 0.035, 0.03
+
+    def out(name, at, c, z, size, color):
+        parts.append(wall_box(spec, name, "front", at, z, size, color, half=plane + c - size[1] / 2 + 0.01))
+
+    for side in (-1, 1):
+        out(f"pergola_post_{side}", along + side * (width / 2 - post / 2), depth - post / 2, 0.0, (post, post, top), wood)
+        out(f"pergola_side_beam_{side}", along + side * (width / 2 - post / 2), depth / 2, top, (post, depth, beam), wood)
+    out("pergola_back_beam", along, 0.02, top, (width, 0.04, beam), wood)
+    out("pergola_front_beam", along, depth - post / 2, top, (width, post, beam), wood)
+    slats = max(4, int(width / 0.1))
+    slat = 0.016
+    for index in range(slats):
+        x = along - width / 2 + (index + 0.5) * width / slats
+        out(f"pergola_slat_{index}", x, depth / 2, top + beam, (slat, depth, slat), wood)
+    for index in range(0, slats, 2):
+        x = along - width / 2 + (index + 0.5) * width / slats
+        out(f"pergola_leaf_{index}", x, depth * (0.35 + 0.3 * (index % 4 == 0)), top + beam + slat, (0.07, 0.1, 0.03), leaf)
+    for number in range(tables):
+        spot = along + (number - (tables - 1) / 2) * 0.4
+        out(f"pergola_table_{number}", spot, depth * 0.55, 0.0, (0.1, 0.1, 0.075), white)
+        for side in (-1, 1):
+            out(f"pergola_chair_{number}_{side}", spot + side * 0.12, depth * 0.55, 0.0, (0.06, 0.06, 0.05), wood)
+
+
 def add_portico(spec, parts):
     """A flat canopy on two columns over the front door, on a low step: a wide, readable entrance."""
     floor = spec["floor_height"]
@@ -1813,6 +1853,8 @@ def add_feature(spec, parts, feature):
         add_penthouse(spec, parts, feature.get("scale", 0.58), tuple(feature.get("offset", (0.0, 0.0))))
     elif kind == "portico":
         add_portico(spec, parts)
+    elif kind == "pergola":
+        add_pergola(spec, parts, feature.get("along", 0.0), feature.get("width"), feature.get("depth", PERGOLA_DEPTH), feature.get("tables", 1))
     elif kind == "colonnade":
         add_colonnade(spec, parts, feature.get("columns", 4), feature.get("text"), feature.get("width"))
     elif kind == "dome":
@@ -4639,6 +4681,121 @@ def build_basketball_arena(spec, out_dir):
         parts.append(lpm.prism(f"trunk_{number}", 5, 0.02, 0.1, at=(x, y, 0.06), color=slab))
         parts.append(lpm.lathe(f"crown_{number}", [(0.0, 0.14), (0.12, 0.18), (0.14, 0.28), (0.08, 0.38), (0.0, 0.42)], segments=6, at=(x, y, 0.06), color=grass))
     ob = lpm.finish(spec["id"], parts, palette, budget=16000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def build_swimming_pool(spec, out_dir):
+    """A public swimming pool filling 6x3: a five-lane basin with lane ropes and floats, starting blocks and black lane lines in the shallow part, a deeper diving well closed by a float rope, three diving stands of growing height (two springboards and a railed platform) with ladders on the east deck, a changing block with doors and an awning along the back, a lifeguard chair, loungers under parasols, a shower and trees on a grey apron."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    slab, white, grey, black, wall, glass, sun, shallow, deep, red, orange, grass, accent, lane_line = (
+        index(n) for n in ("uslab", "white", "utrim", "graphite", "uwall", "glass_blue", "sun", "aqua", "sky", "coral", "tangerine", "bush", "vtone1", "navy"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    base = 0.02
+    parts.append(lpm.box("apron", (6.0, 3.0, base), at=(0, 0, 0), color=slab))
+
+    x0, x1, y0, y1, rim = -2.55, 2.2, -1.1, 0.7, 0.06
+    rim_height = 0.04
+    water_top = base + 0.03
+    wx0, wx1, wy0, wy1 = x0 + rim, x1 - rim, y0 + rim, y1 - rim
+    split = 0.9
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    parts.append(lpm.box("coping_south", (x1 - x0, rim, rim_height), at=(cx, y0 + rim / 2, base), color=white))
+    parts.append(lpm.box("coping_north", (x1 - x0, rim, rim_height), at=(cx, y1 - rim / 2, base), color=white))
+    parts.append(lpm.box("coping_west", (rim, y1 - y0 - 2 * rim, rim_height), at=(x0 + rim / 2, cy, base), color=white))
+    parts.append(lpm.box("coping_east", (rim, y1 - y0 - 2 * rim, rim_height), at=(x1 - rim / 2, cy, base), color=white))
+    parts.append(lpm.box("water_shallow", (split - wx0, wy1 - wy0, 0.03), at=((wx0 + split) / 2, cy, base), color=shallow))
+    parts.append(lpm.box("water_deep", (wx1 - split, wy1 - wy0, 0.03), at=((split + wx1) / 2, cy, base), color=deep))
+
+    lanes = 5
+    lane_width = (wy1 - wy0) / lanes
+    centers = [wy0 + lane_width * (k + 0.5) for k in range(lanes)]
+    for k, y in enumerate(centers):
+        parts.append(lpm.box(f"lane_line_{k}", (split - wx0 - 0.4, 0.012, 0.002), at=((wx0 + split) / 2, y, water_top), color=lane_line))
+        for end, x in enumerate((wx0 + 0.12, split - 0.12)):
+            parts.append(lpm.box(f"lane_mark_{k}_{end}", (0.012, 0.1, 0.002), at=(x, y, water_top), color=lane_line))
+        parts.append(lpm.box(f"start_block_{k}", (0.12, 0.14, 0.06), at=(x0 - 0.1, y, base), color=accent))
+        parts.append(lpm.box(f"start_block_top_{k}", (0.12, 0.14, 0.012), at=(x0 - 0.1, y, base + 0.06), color=white))
+
+    float_step = 0.17
+    for k in range(1, lanes):
+        y = wy0 + lane_width * k
+        parts.append(lpm.box(f"rope_{k}", (split - wx0, 0.01, 0.01), at=((wx0 + split) / 2, y, water_top), color=grey))
+        for number in range(int((split - wx0 - 0.12) / float_step) + 1):
+            parts.append(lpm.box(f"float_{k}_{number}", (0.1, 0.03, 0.026), at=(wx0 + 0.06 + number * float_step + 0.05, y, water_top), color=red if number % 2 == 0 else white))
+    parts.append(lpm.box("divider_rope", (0.01, wy1 - wy0, 0.01), at=(split, cy, water_top), color=grey))
+    for number in range(int((wy1 - wy0 - 0.08) / 0.14) + 1):
+        parts.append(lpm.box(f"divider_float_{number}", (0.03, 0.09, 0.026), at=(split, wy0 + 0.06 + number * 0.14 + 0.045, water_top), color=sun if number % 2 == 0 else white))
+
+    stand_x, ladder_x = 2.62, 2.8
+    stands = [(-0.7, 0.16, 0.16, 0.12, orange, 0.75), (-0.2, 0.30, 0.2, 0.14, red, 0.75), (0.3, 0.46, 0.24, 0.2, white, 0.6)]
+    for number, (y, height, column, board_width, board_color, board_length) in enumerate(stands):
+        parts.append(lpm.box(f"stand_{number}", (column, column, height), at=(stand_x, y, base), color=wall))
+        parts.append(lpm.box(f"stand_band_{number}", (column + 0.012, column + 0.012, 0.03), at=(stand_x, y, base + height - 0.05), color=accent))
+        board_start = stand_x + column / 2
+        board_z = base + height
+        parts.append(lpm.box(f"board_{number}", (board_length, board_width, 0.022 if number < 2 else 0.03), at=(board_start - board_length / 2, y, board_z), color=board_color))
+        for side in (-1, 1):
+            parts.append(lpm.box(f"ladder_rail_{number}_{side}", (0.015, 0.015, height), at=(ladder_x, y + side * 0.05, base), color=grey))
+        for rung in range(int(height / 0.06)):
+            parts.append(lpm.box(f"ladder_rung_{number}_{rung}", (0.015, 0.11, 0.01), at=(ladder_x, y, base + 0.04 + rung * 0.06), color=grey))
+        if number < 2:
+            parts.append(lpm.box(f"board_fulcrum_{number}", (0.05, board_width, 0.03), at=(stand_x - column / 2 - 0.08, y, board_z - 0.03), color=grey))
+            continue
+        rail_z = board_z + 0.03
+        for side in (-1, 1):
+            parts.append(lpm.box(f"platform_rail_{side}", (0.44, 0.01, 0.01), at=(board_start - 0.22, y + side * 0.09, rail_z + 0.07), color=grey))
+            for post, x in enumerate((board_start, board_start - 0.22, board_start - 0.44)):
+                parts.append(lpm.box(f"platform_post_{side}_{post}", (0.012, 0.012, 0.07), at=(x, y + side * 0.09, rail_z), color=grey))
+
+    block_x0, block_x1, block_y0, block_y1, block_height = -2.9, -0.3, 1.0, 1.45, 0.34
+    block_cx, block_cy = (block_x0 + block_x1) / 2, (block_y0 + block_y1) / 2
+    parts.append(lpm.box("block_plinth", (block_x1 - block_x0 + 0.04, block_y1 - block_y0 + 0.04, 0.04), at=(block_cx, block_cy, base), color=grey))
+    parts.append(lpm.box("block", (block_x1 - block_x0, block_y1 - block_y0, block_height), at=(block_cx, block_cy, base + 0.04), color=wall))
+    parts.append(lpm.box("block_band", (block_x1 - block_x0 + 0.01, 0.012, 0.05), at=(block_cx, block_y0 - 0.003, base + 0.27), color=accent))
+    parts.append(lpm.box("block_roof", (block_x1 - block_x0 + 0.1, block_y1 - block_y0 + 0.1, 0.025), at=(block_cx, block_cy, base + 0.04 + block_height), color=white))
+    for number, x in enumerate((-2.55, -2.1, -1.65)):
+        parts.append(lpm.box(f"block_window_{number}", (0.3, 0.012, 0.12), at=(x, block_y0 - 0.004, base + 0.12), color=glass))
+        parts.append(lpm.box(f"block_window_frame_{number}", (0.32, 0.008, 0.14), at=(x, block_y0 - 0.002, base + 0.11), color=grey))
+    for number, (x, door_color) in enumerate(((-1.1, accent), (-0.65, red))):
+        parts.append(lpm.box(f"block_door_{number}", (0.16, 0.014, 0.22), at=(x, block_y0 - 0.004, base + 0.04), color=black))
+        parts.append(lpm.box(f"block_door_leaf_{number}", (0.13, 0.018, 0.2), at=(x, block_y0 - 0.006, base + 0.04), color=door_color))
+    parts.append(lpm.box("block_awning", (0.7, 0.16, 0.015), at=(-0.88, block_y0 - 0.08, base + 0.28), color=accent))
+    for number, x in enumerate((-1.2, -0.56)):
+        parts.append(lpm.box(f"block_awning_post_{number}", (0.015, 0.015, 0.24), at=(x, block_y0 - 0.15, base + 0.04), color=grey))
+
+    chair_x, chair_y = 0.2, 1.1
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            parts.append(lpm.box(f"chair_leg_{sx}_{sy}", (0.02, 0.02, 0.22), at=(chair_x + sx * 0.07, chair_y + sy * 0.07, base), color=white))
+            parts.append(lpm.box(f"chair_post_{sx}_{sy}", (0.01, 0.01, 0.14), at=(chair_x + sx * 0.14, chair_y + sy * 0.14, base + 0.24), color=white))
+    parts.append(lpm.box("chair_seat", (0.2, 0.2, 0.02), at=(chair_x, chair_y, base + 0.22), color=accent))
+    parts.append(lpm.box("chair_back", (0.2, 0.02, 0.1), at=(chair_x, chair_y + 0.09, base + 0.24), color=accent))
+    parts.append(lpm.box("chair_canopy", (0.32, 0.32, 0.015), at=(chair_x, chair_y, base + 0.38), color=red))
+    parts.append(lpm.box("chair_step_low", (0.16, 0.05, 0.03), at=(chair_x, chair_y - 0.15, base), color=white))
+    parts.append(lpm.box("chair_step_high", (0.16, 0.05, 0.03), at=(chair_x, chair_y - 0.11, base + 0.1), color=white))
+
+    for number, x in enumerate((0.75, 1.55)):
+        parts.append(lpm.box(f"lounger_{number}", (0.14, 0.34, 0.025), at=(x, 1.15, base), color=white))
+        parts.append(lpm.box(f"lounger_back_{number}", (0.14, 0.12, 0.04), at=(x, 1.28, base + 0.025), color=accent))
+    for number, (x, color) in enumerate(((1.15, red), (2.35, sun))):
+        parts.append(lpm.prism(f"parasol_pole_{number}", 6, 0.01, 0.3, at=(x, 1.15, base), color=white))
+        parts.append(lpm.lathe(f"parasol_{number}", [(0.0, 0.27), (0.2, 0.25), (0.0, 0.33)], segments=8, at=(x, 1.15, base), color=color))
+    parts.append(lpm.box("lounger_extra", (0.14, 0.34, 0.025), at=(2.35, 1.0, base), color=white))
+    parts.append(lpm.box("lounger_extra_back", (0.14, 0.12, 0.04), at=(2.35, 1.13, base + 0.025), color=accent))
+
+    parts.append(lpm.prism("shower_pole", 6, 0.012, 0.3, at=(-2.8, 0.85, base), color=grey))
+    parts.append(lpm.box("shower_head", (0.08, 0.05, 0.015), at=(-2.76, 0.85, base + 0.3), color=grey))
+    parts.append(lpm.box("shower_base", (0.12, 0.12, 0.01), at=(-2.8, 0.85, base), color=accent))
+
+    for number, (x, y) in enumerate(((-2.75, -1.3), (2.75, -1.3), (2.75, 1.25))):
+        parts.append(lpm.box(f"planter_{number}", (0.3, 0.3, 0.04), at=(x, y, base), color=grey))
+        parts.append(lpm.prism(f"trunk_{number}", 5, 0.02, 0.1, at=(x, y, 0.06), color=slab))
+        parts.append(lpm.lathe(f"crown_{number}", [(0.0, 0.14), (0.12, 0.18), (0.14, 0.28), (0.08, 0.38), (0.0, 0.42)], segments=6, at=(x, y, 0.06), color=grass))
+    ob = lpm.finish(spec["id"], parts, palette, budget=8000, center=False)
     return export_model(ob, spec, out_dir)
 
 
@@ -8777,7 +8934,7 @@ def build(spec, out_dir):
     for volume in volumes:
         parts += build_volume(specs[volume["role"]], volume, rng, bushes)
     assert_closed(parts)
-    projection = COLONNADE_PROJECTION if has_feature(spec, "colonnade") else PORTICO_PROJECTION if has_feature(spec, "portico") else 0.0
+    projection = COLONNADE_PROJECTION if has_feature(spec, "colonnade") else PORTICO_PROJECTION if has_feature(spec, "portico") else pergola_depth(spec)
     shift(parts, 0, projection / 2)
 
     extra_volumes = len(volumes) - 1

@@ -50,6 +50,7 @@ export type BuildingId =
   | 'halloweenManor'
   | 'halloweenPumpkin'
   | 'halloweenWitchHat'
+  | 'hedge'
   | 'highSchool'
   | 'hive'
   | 'holiday-bench'
@@ -316,6 +317,7 @@ export type BuildingId =
   | 'powerPlant'
   | 'railStation'
   | 'recyclingPlant'
+  | 'restaurant'
   | 'school'
   | 'seaFort3x3'
   | 'seaFort3x4'
@@ -340,6 +342,7 @@ export type BuildingId =
   | 'summerSandCastle'
   | 'summerSurfboard'
   | 'supermarket'
+  | 'swimmingPool'
   | 'synagogue'
   | 'textileMill'
   | 'theater'
@@ -365,9 +368,11 @@ export type SportVenueType =
   | 'foot5'
   | 'footballStadium'
   | 'padelCourts'
-  | 'stadium';
+  | 'stadium'
+  | 'swimmingPool';
 
 export type NatureType =
+  | 'hedge'
   | 'holiday-bench'
   | 'holiday-lantern'
   | 'mini-forest-building-platform'
@@ -593,6 +598,7 @@ export type FacilityType =
 export type VenueType =
   | 'arcade'
   | 'hotel'
+  | 'restaurant'
   | 'supermarket';
 
 export type ShopType =

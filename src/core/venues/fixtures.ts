@@ -35,20 +35,31 @@ export interface FixtureSpec {
   sleeps?: number;
   bath?: number;
   comfort?: number;
+  // Restaurant: dishes a cooktop cooks per hour, a prep table, the kind of host a seat faces, seats a table serves,
+  // drinks and stools of a bar, Diners a checkout takes payment from and an armchair holds while they wait.
+  cook?: number;
+  prep?: true;
+  seat?: 'table' | 'bar';
+  seats?: number;
+  drinks?: number;
+  stools?: number;
+  waiting?: number;
   // Decoration: attractiveness it adds.
   attract?: number;
   // A wall: it only divides the room, and earns, serves and wears nothing.
   partition?: true;
+  joins?: { elbow: string; tee: string; cross: string };
 }
 
 // Checked against their schema by the definitions plugin at dev start and build, and by the tests.
 const files = import.meta.glob<FixtureDefinition>('../../../assets/defs/fixtures/*.json', { eager: true, import: 'default' });
 
-const specOf = ({ id: _id, kind: _kind, name: _name, model, tint, footprint, ...fixture }: FixtureDefinition & { id: FixtureId }): FixtureSpec => ({
+const specOf = ({ id: _id, kind: _kind, name: _name, model, tint, footprint, joins, ...fixture }: FixtureDefinition & { id: FixtureId }): FixtureSpec => ({
   playsPerHour: 0,
   ...fixture,
   model: modelFileOf(model),
   footprint: [footprint[0], footprint[1]],
+  ...(joins ? { joins: { elbow: modelFileOf(joins.elbow), tee: modelFileOf(joins.tee), cross: modelFileOf(joins.cross) } } : {}),
   ...(tint ? { tint: Number.parseInt(tint.slice(1), 16) } : {}),
 });
 
@@ -62,4 +73,4 @@ export const fixtureIdsOf = (venue: VenueType): FixtureId[] => FIXTURE_IDS.filte
 
 export const fixtureIdsInCategory = (venue: VenueType, category: FixtureCategory): FixtureId[] => fixtureIdsOf(venue).filter(id => FIXTURES[id].category === category);
 
-export const FIXTURE_MODELS: readonly string[] = [...new Set(Object.values(FIXTURES).map(spec => spec.model))];
+export const FIXTURE_MODELS: readonly string[] = [...new Set(Object.values(FIXTURES).flatMap(spec => [spec.model, ...(spec.joins ? Object.values(spec.joins) : [])]))];

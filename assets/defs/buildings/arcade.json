@@ -77,9 +77,9 @@
     "floor": "mini-arcade-floor",
     "wall": "mini-arcade-wall",
     "corner": "mini-arcade-wall-corner",
-    "cornerX": -0.1,
-    "cornerZ": -0.1,
-    "cornerRotation": 90
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
   },
   "staffModels": ["mini-arcade-character-employee"]
 }

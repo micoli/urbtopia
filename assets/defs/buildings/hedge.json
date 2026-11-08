@@ -1,0 +1,10 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "nature",
+  "model": "buildings-hedge-straight",
+  "name": {
+    "en": "Hedge",
+    "fr": "Haie"
+  },
+  "family": "hedge"
+}

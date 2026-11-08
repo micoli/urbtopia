@@ -1,7 +1,7 @@
 import type { z } from 'zod';
 import type { Reference } from './collections.ts';
 import { economyBalanceSchema, knowledgeBalanceSchema, politicsBalanceSchema, sanctionsBalanceSchema, trafficBalanceSchema, transitReachBalanceSchema, venuesBalanceSchema, wasteBalanceSchema } from '../src/core/balance/balanceSchemas.ts';
-import { bridgeInfrastructureSchema, railsInfrastructureSchema, roadsInfrastructureSchema, sceneryInfrastructureSchema } from '../src/core/infrastructure/infrastructureSchemas.ts';
+import { bridgeInfrastructureSchema, railsInfrastructureSchema, hedgesInfrastructureSchema, roadsInfrastructureSchema, sceneryInfrastructureSchema } from '../src/core/infrastructure/infrastructureSchemas.ts';
 import { natureDescriptionsSchema, NATURE_DESCRIPTION_VALUES } from '../src/core/descriptions/descriptionSchemas.ts';
 import { templateProblems } from '../src/core/descriptions/descriptionProblems.ts';
 import { packFormatsSchema } from '../src/core/economy/itemSchemas.ts';
@@ -44,6 +44,13 @@ export const SINGLETONS = {
     schemaName: 'infrastructure-rails',
     schema: railsInfrastructureSchema,
     references: ({ straight, corner }: { straight: string; corner: string }) => [model(straight, 'straight'), model(corner, 'corner')],
+  },
+  hedges: {
+    file: 'assets/defs/infrastructure/hedges.json',
+    title: 'Hedges',
+    schemaName: 'infrastructure-hedges',
+    schema: hedgesInfrastructureSchema,
+    references: ({ straight, corner, t, cross }: { straight: string; corner: string; t: string; cross: string }) => [model(straight, 'straight'), model(corner, 'corner'), model(t, 't'), model(cross, 'cross')],
   },
   bridge: {
     file: 'assets/defs/infrastructure/bridge.json',

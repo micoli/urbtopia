@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "restaurant",
+  "category": "service",
+  "name": {
+    "en": "Waiting armchair",
+    "fr": "Fauteuil d'attente"
+  },
+  "model": "restaurant-waiting-armchair",
+  "footprint": [1, 1],
+  "price": 90,
+  "minTier": 1,
+  "wear": 0.02,
+  "waiting": 2
+}

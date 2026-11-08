@@ -1,4 +1,4 @@
-import { MAX_RANK, VENUE, earnedOf, hiredOf, isVenue, markupOf, netPerHour, nextRankAt, priceOf, takingsCapOf, takingsDue, venueRankOf, venueTypeOf, type Building } from '../../core';
+import { MAX_RANK, VENUE, earnedOf, hiredOf, isVenue, markupOf, netPerHour, nextRankAt, priceOf, staffRolesOf, takingsCapOf, takingsDue, venueRankOf, venueTypeOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
@@ -20,6 +20,7 @@ export function VenueTakings({ building, editable = false }: VenueTakingsProps) 
   const type = venueTypeOf(building);
   const rank = venueRankOf(building);
   const nextAt = nextRankAt(type, rank);
+  const hasManager = staffRolesOf(type).includes('manager');
   const full = building.venue.takings >= takingsCapOf(venueTypeOf(building), building.tier);
   return (
     <>
@@ -31,12 +32,12 @@ export function VenueTakings({ building, editable = false }: VenueTakingsProps) 
       {type === 'hotel' ? null : <DrawerPanel.LabelValue label={t(`venue.served.${type}`)} value={performance.served.toFixed(1)} />}
       <DrawerPanel.LabelValue label={t('venue.rank')} value={rank >= MAX_RANK || nextAt === undefined ? `${rank}` : `${rank} · ${Math.floor(earnedOf(building.venue))} / ${nextAt}`} />
       <DrawerPanel.LabelValue label={t('venue.earnings')} value={<UrbsAmount value={performance.earningsPerHour} />} />
-      {editable && hiredOf(building.venue, 'manager') > 0 ? (
+      {editable && hasManager && hiredOf(building.venue, 'manager') > 0 ? (
         <NumberStepper label={t(`venue.price.${type}`)} value={priceOf(building.venue)} min={VENUE.minPrice} max={VENUE.maxPrice} onChange={price => gameStore.getState().send({ type: 'SetVenuePrice', buildingId: building.id, price })} />
       ) : (
-        <DrawerPanel.LabelValue label={t(`venue.price.${type}`)} value={type === 'arcade' ? <UrbsAmount value={priceOf(building.venue)} /> : type === 'supermarket' ? `${Math.round(markupOf(priceOf(building.venue)) * 100)} %` : priceOf(building.venue)} />
+        <DrawerPanel.LabelValue label={t(`venue.price.${type}`)} value={type === 'arcade' ? <UrbsAmount value={priceOf(building.venue)} /> : type === 'supermarket' || type === 'restaurant' ? `${Math.round(markupOf(priceOf(building.venue)) * 100)} %` : priceOf(building.venue)} />
       )}
-      {editable && hiredOf(building.venue, 'manager') === 0 ? <p className="note note--muted">{t('venue.priceLocked')}</p> : null}
+      {editable && hasManager && hiredOf(building.venue, 'manager') === 0 ? <p className="note note--muted">{t('venue.priceLocked')}</p> : null}
       <DrawerPanel.LabelValue label={t('venue.wages')} value={<UrbsAmount value={performance.wagesPerHour} />} />
       <DrawerPanel.LabelValue label={t('venue.net')} value={<UrbsAmount value={netPerHour(performance)} />} />
       {performance.closed ? <p className="note note--warn">{t('venue.closed')}</p> : null}

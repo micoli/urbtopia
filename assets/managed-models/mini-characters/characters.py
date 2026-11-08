@@ -40,6 +40,11 @@ PEOPLE = {
     "mini-characters/character-male-f": ("hair_red", "beard", "skin1", "purple", "khaki"),
     "mini-arcade/character-employee": ("hair_black", "cap", "skin3", "purple", "charcoal"),
     "mini-market/character-employee": ("hair_brown", "apron", "skin2", "white", "denim"),
+    "restaurant/character-cook": ("hair_black", "short", "skin3", "white", "charcoal", "cook"),
+    "restaurant/character-kitchen-assistant": ("hair_blond", "ponytail", "skin1", "white", "charcoal", "kitchen-assistant"),
+    "restaurant/character-maitre-d": ("hair_grey", "short", "skin2", "charcoal", "charcoal", "maitre-d"),
+    "restaurant/character-waiter": ("hair_brown", "bun", "skin4", "white", "charcoal", "waiter"),
+    "restaurant/character-bartender": ("hair_red", "beard", "skin2", "white", "charcoal", "bartender"),
 }
 
 # Bone: (head, tail, parent). Arms and legs point down from the shoulder and the hip.
@@ -99,7 +104,28 @@ def hair(style, color, skin):
     return parts
 
 
-def person(hair_color, style, skin, shirt, trousers):
+def outfit_parts(role):
+    """The clothes of a Restaurant role, worn over the common body: hats, aprons, vests, ties."""
+    if role == "cook":
+        return [box("toque_band", -0.135, 0.135, -0.125, 0.125, 0.76, 0.83, "white", "head"), box("toque_top", -0.17, 0.17, -0.16, 0.16, 0.83, 0.96, "white", "head"),
+                box("kerchief", -0.075, 0.075, -0.085, 0.075, 0.45, 0.5, "red", "torso"), box("buttons", -0.012, 0.012, -0.076, -0.07, 0.33, 0.48, "charcoal", "torso")]
+    if role == "kitchen-assistant":
+        return [box("cap", -0.14, 0.14, -0.13, 0.13, 0.72, 0.79, "white", "head"), box("apron", -0.1, 0.1, -0.085, -0.07, 0.14, 0.47, "denim", "torso"),
+                box("apron_bib", -0.07, 0.07, -0.085, -0.07, 0.4, 0.5, "denim", "torso")]
+    if role == "maitre-d":
+        return [box("shirt_front", -0.04, 0.04, -0.076, -0.07, 0.33, 0.5, "white", "torso"), box("bow_left", -0.05, -0.005, -0.082, -0.07, 0.46, 0.5, "red", "torso"),
+                box("bow_right", 0.005, 0.05, -0.082, -0.07, 0.46, 0.5, "red", "torso"), box("lapel_left", -0.105, -0.04, -0.078, -0.07, 0.36, 0.5, "shoe", "torso"),
+                box("lapel_right", 0.04, 0.105, -0.078, -0.07, 0.36, 0.5, "shoe", "torso")]
+    if role == "waiter":
+        return [box("vest", -0.11, 0.11, -0.078, -0.07, 0.31, 0.49, "charcoal", "torso"), box("apron", -0.11, 0.11, -0.085, -0.07, 0.12, 0.3, "charcoal", "torso"),
+                box("bow", -0.04, 0.04, -0.082, -0.07, 0.47, 0.5, "shoe", "torso")]
+    if role == "bartender":
+        return [box("vest", -0.11, 0.11, -0.078, -0.07, 0.31, 0.49, "red", "torso"), box("towel", 0.05, 0.14, -0.05, 0.06, 0.49, 0.53, "white", "torso"),
+                box("towel_front", 0.07, 0.13, -0.085, -0.06, 0.4, 0.52, "white", "torso")]
+    return []
+
+
+def person(hair_color, style, skin, shirt, trousers, role=None):
     parts = []
     for side, bone in ((1, "leg-left"), (-1, "leg-right")):
         x = side * 0.055
@@ -119,7 +145,7 @@ def person(hair_color, style, skin, shirt, trousers):
     for side in (-1, 1):
         parts.append(box(f"eye{side}", side * 0.05 - 0.018, side * 0.05 + 0.018, -0.13, -0.118, 0.62, 0.66, "eye", "head"))
     parts.append(box("nose", -0.015, 0.015, -0.14, -0.12, 0.58, 0.61, skin, "head"))
-    return parts + hair(style, hair_color, skin)
+    return parts + hair(style, hair_color, skin) + outfit_parts(role)
 
 
 def armature():

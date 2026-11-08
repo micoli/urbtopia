@@ -1,7 +1,7 @@
 import { createStore } from 'zustand/vanilla';
 import type { FixtureId } from '../core';
 
-export type VenuePanelId = 'build' | 'staff' | 'events' | 'takings';
+export type VenuePanelId = 'build' | 'staff' | 'menu' | 'events' | 'takings';
 
 export interface VenueStore {
   venueId: number | null;

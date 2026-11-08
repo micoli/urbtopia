@@ -4,7 +4,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import block, checker_floor, disc  # noqa: E402
+from venue_lib import along, block, checker_floor, disc  # noqa: E402
 
 P = lpm.Palette([
     ("wall", "#f1ebe0", 0.0, 0.9), ("trim", "#c9b79c", 0.0, 0.9), ("floor", "#d8b98e", 0.0, 0.8), ("floor_dark", "#c4a276", 0.0, 0.8),
@@ -152,15 +152,49 @@ def toilet(rng):
             block("button", -0.03, 0.03, 0.1, 0.16, 0.62, 0.63, P["chrome"])]
 
 
-def thin_wall(rng, window=False):
-    if not window:
-        return [block("wall", 0, 1, 0, 0.05, 0, 1.29, P["wall"]), block("skirting", 0, 1, -0.01, 0.0, 0, 0.08, P["trim"]),
-                block("cornice", 0, 1, -0.01, 0.0, 1.22, 1.29, P["trim"])]
-    return [block("left", 0, 0.25, 0, 0.05, 0, 1.29, P["wall"]), block("right", 0.75, 1, 0, 0.05, 0, 1.29, P["wall"]),
-            block("low", 0.25, 0.75, 0, 0.05, 0, 0.45, P["wall"]), block("high", 0.25, 0.75, 0, 0.05, 1.05, 1.29, P["wall"]),
-            block("glass", 0.25, 0.75, 0.02, 0.03, 0.45, 1.05, P["glass"]), block("sill", 0.22, 0.78, -0.02, 0.07, 0.43, 0.46, P["trim"]),
-            block("frame_l", 0.23, 0.26, -0.01, 0.06, 0.45, 1.05, P["trim"]), block("frame_r", 0.74, 0.77, -0.01, 0.06, 0.45, 1.05, P["trim"]),
-            block("frame_t", 0.23, 0.77, -0.01, 0.06, 1.04, 1.07, P["trim"]), block("mullion", 0.49, 0.51, 0.015, 0.035, 0.45, 1.05, P["trim"])]
+def thin_wall(rng):
+    return [block("wall", 0, 1, 0, 0.05, 0, 1.29, P["wall"]), block("skirting", 0, 1, -0.01, 0.0, 0, 0.08, P["trim"]),
+            block("cornice", 0, 1, -0.01, 0.0, 1.22, 1.29, P["trim"])]
+
+
+WALL_H = 1.29
+HALF = 0.025
+
+
+def _trim_strips(arms):
+    """Skirting and cornice on both faces of every arm and around the centre square on the sides without an arm."""
+    t = 0.01
+    parts = []
+    for z0, z1 in ((0.0, 0.08), (1.22, WALL_H)):
+        for side in "ESWN":
+            if side in arms:
+                parts += [along(side, HALF, 0.5, o0, o1, z0, z1, P["trim"], f"trim{side}{z0}{k}") for k, (o0, o1) in enumerate(((HALF, HALF + t), (-HALF - t, -HALF)))]
+                continue
+            parts.append(along(side, HALF, HALF + t, -HALF - t, HALF + t, z0, z1, P["trim"], f"trim_end{side}{z0}"))
+    return parts
+
+
+def partition_junction(arms):
+    """The centre of thin walls that meet, with arms to the given sides (E, S, W, N), as an elbow, a T or a cross."""
+    def build(rng):
+        parts = [block("centre", -HALF, HALF, -HALF, HALF, 0, WALL_H, P["wall"])]
+        parts += [along(side, HALF, 0.5, -HALF, HALF, 0, WALL_H, P["wall"], f"arm{side}") for side in arms]
+        return parts + _trim_strips(arms)
+    return build
+
+
+def partition(rng):
+    """A thin wall centred on its tile, so that neighbours join into corners, Ts and crosses."""
+    return [block("wall", -0.5, 0.5, -HALF, HALF, 0, WALL_H, P["wall"])] + _trim_strips("EW")
+
+
+def partition_window(rng):
+    h = HALF
+    return [block("left", -0.5, -0.25, -h, h, 0, WALL_H, P["wall"]), block("right", 0.25, 0.5, -h, h, 0, WALL_H, P["wall"]),
+            block("low", -0.25, 0.25, -h, h, 0, 0.45, P["wall"]), block("high", -0.25, 0.25, -h, h, 1.05, WALL_H, P["wall"]),
+            block("glass", -0.25, 0.25, -0.005, 0.005, 0.45, 1.05, P["glass"]), block("sill", -0.28, 0.28, -0.045, 0.045, 0.43, 0.46, P["trim"]),
+            block("frame_l", -0.27, -0.24, -0.035, 0.035, 0.45, 1.05, P["trim"]), block("frame_r", 0.24, 0.27, -0.035, 0.035, 0.45, 1.05, P["trim"]),
+            block("frame_t", -0.27, 0.27, -0.035, 0.035, 1.04, 1.07, P["trim"]), block("mullion", -0.01, 0.01, -0.01, 0.01, 0.45, 1.05, P["trim"])] + _trim_strips("EW")
 
 
 def thin_corner(rng):
@@ -175,5 +209,6 @@ if __name__ == "__main__":
         "kitchenCoffeeMachine": coffee_machine, "kitchenFridgeSmall": fridge, "lampRoundFloor": floor_lamp, "loungeSofa": sofa,
         "pottedPlant": potted_plant, "rugRectangle": rug, "shower": shower, "stoolBar": stool, "table": table,
         "televisionModern": television, "toilet": toilet,
-        "wall": thin_wall, "wallWindow": lambda rng: thin_wall(rng, window=True), "wallCorner": thin_corner,
+        "wall": thin_wall, "wallCorner": thin_corner,
+        "partition": partition, "partitionWindow": partition_window, "partitionElbow": partition_junction("ES"), "partitionTee": partition_junction("WES"), "partitionCross": partition_junction("ESWN"),
     }, P, 600, HERE, boxes=BOXES, center=False, ground=False)

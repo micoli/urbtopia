@@ -1545,6 +1545,42 @@
       5
     ]
   },
+  "buildings-hedge-corner": {
+    "file": "buildings/hedge-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "buildings-hedge-cross": {
+    "file": "buildings/hedge-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "buildings-hedge-straight": {
+    "file": "buildings/hedge-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
+  },
+  "buildings-hedge-t": {
+    "file": "buildings/hedge-t",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ]
+  },
   "buildings-high-school-3x2": {
     "file": "buildings/high-school-3x2",
     "source": "managed",
@@ -17231,6 +17267,90 @@
     ],
     "rotationOffset": 180
   },
+  "buildings-restaurant-1x1-t1-tone-a": {
+    "file": "buildings/restaurant-1x1-t1-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-restaurant-2x1-t2-tone-a": {
+    "file": "buildings/restaurant-2x1-t2-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-restaurant-2x2-t3-tone-a": {
+    "file": "buildings/restaurant-2x2-t3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "rotationOffset": 180,
+    "tones": {
+      "a": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "b": {
+        "name": "bluegrey",
+        "color": "#8ea3bd"
+      },
+      "c": {
+        "name": "mint",
+        "color": "#96ddbc"
+      },
+      "d": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      }
+    }
+  },
   "buildings-school-2x2": {
     "file": "buildings/school-2x2",
     "source": "managed",
@@ -18681,6 +18801,33 @@
       "d": {
         "name": "greygreen",
         "color": "#6f8f7c"
+      }
+    }
+  },
+  "buildings-swimming-pool-6x3-tone-a": {
+    "file": "buildings/swimming-pool-6x3-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      6,
+      3
+    ],
+    "tones": {
+      "a": {
+        "name": "coral",
+        "color": "#ff5a4e"
+      },
+      "b": {
+        "name": "cobalt",
+        "color": "#3b4bff"
+      },
+      "c": {
+        "name": "sun",
+        "color": "#ffd21f"
+      },
+      "d": {
+        "name": "mint",
+        "color": "#2fd6a2"
       }
     }
   },
@@ -21131,6 +21278,56 @@
     },
     "flush": true
   },
+  "furniture-partition": {
+    "file": "furniture/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "furniture-partitioncross": {
+    "file": "furniture/partitionCross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "furniture-partitionelbow": {
+    "file": "furniture/partitionElbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "furniture-partitiontee": {
+    "file": "furniture/partitionTee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "furniture-partitionwindow": {
+    "file": "furniture/partitionWindow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "furniture-pottedplant": {
     "file": "furniture/pottedPlant",
     "source": "managed",
@@ -21253,20 +21450,6 @@
     ],
     "fit": {
       "width": 0.6,
-      "height": 1.4
-    },
-    "flush": true
-  },
-  "furniture-wallwindow": {
-    "file": "furniture/wallWindow",
-    "source": "managed",
-    "license": "Own work",
-    "footprint": [
-      1,
-      1
-    ],
-    "fit": {
-      "width": 1,
       "height": 1.4
     },
     "flush": true
@@ -21680,6 +21863,46 @@
     ],
     "flush": true
   },
+  "mini-arcade-partition": {
+    "file": "mini-arcade/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mini-arcade-partition-cross": {
+    "file": "mini-arcade/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mini-arcade-partition-elbow": {
+    "file": "mini-arcade/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mini-arcade-partition-tee": {
+    "file": "mini-arcade/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "mini-arcade-pinball": {
     "file": "mini-arcade/pinball",
     "source": "managed",
@@ -22018,6 +22241,46 @@
   },
   "mini-market-freezers-standing": {
     "file": "mini-market/freezers-standing",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mini-market-partition": {
+    "file": "mini-market/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mini-market-partition-cross": {
+    "file": "mini-market/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mini-market-partition-elbow": {
+    "file": "mini-market/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mini-market-partition-tee": {
+    "file": "mini-market/partition-tee",
     "source": "managed",
     "license": "Own work",
     "footprint": [
@@ -23573,6 +23836,206 @@
     "file": "pirate/patch-grass-foliage",
     "source": "managed",
     "license": "Own work",
+    "flush": true
+  },
+  "restaurant-bar": {
+    "file": "restaurant/bar",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-chair": {
+    "file": "restaurant/chair",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-character-bartender": {
+    "file": "restaurant/character-bartender",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-character-cook": {
+    "file": "restaurant/character-cook",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-character-kitchen-assistant": {
+    "file": "restaurant/character-kitchen-assistant",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-character-maitre-d": {
+    "file": "restaurant/character-maitre-d",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-character-waiter": {
+    "file": "restaurant/character-waiter",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-cooktop": {
+    "file": "restaurant/cooktop",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-floor": {
+    "file": "restaurant/floor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-partition": {
+    "file": "restaurant/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-partition-cross": {
+    "file": "restaurant/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-partition-elbow": {
+    "file": "restaurant/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-partition-tee": {
+    "file": "restaurant/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-prep-table": {
+    "file": "restaurant/prep-table",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-stool": {
+    "file": "restaurant/stool",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-table": {
+    "file": "restaurant/table",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-waiting-armchair": {
+    "file": "restaurant/waiting-armchair",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-wall": {
+    "file": "restaurant/wall",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-wall-corner": {
+    "file": "restaurant/wall-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "restaurant-wall-window": {
+    "file": "restaurant/wall-window",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
     "flush": true
   },
   "roads-footbridge-corridor": {

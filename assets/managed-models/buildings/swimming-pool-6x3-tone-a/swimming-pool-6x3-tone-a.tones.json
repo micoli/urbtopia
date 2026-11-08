@@ -1,0 +1,18 @@
+{
+ "a": {
+  "name": "coral",
+  "color": "#ff5a4e"
+ },
+ "b": {
+  "name": "cobalt",
+  "color": "#3b4bff"
+ },
+ "c": {
+  "name": "sun",
+  "color": "#ffd21f"
+ },
+ "d": {
+  "name": "mint",
+  "color": "#2fd6a2"
+ }
+}

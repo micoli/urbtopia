@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "restaurant",
+  "category": "kitchen",
+  "name": {
+    "en": "Cooktop",
+    "fr": "Plaque de cuisson"
+  },
+  "model": "restaurant-cooktop",
+  "footprint": [1, 1],
+  "price": 400,
+  "minTier": 1,
+  "wear": 0.1,
+  "cook": 12
+}

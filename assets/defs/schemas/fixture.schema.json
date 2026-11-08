@@ -46,7 +46,10 @@
             "bathroom",
             "comfort",
             "reception",
-            "walls"
+            "walls",
+            "kitchen",
+            "dining",
+            "bar"
           ]
         },
         "model": {
@@ -101,6 +104,29 @@
         "partition": {
           "type": "boolean",
           "const": true
+        },
+        "joins": {
+          "type": "object",
+          "properties": {
+            "elbow": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "tee": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "cross": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "elbow",
+            "tee",
+            "cross"
+          ],
+          "additionalProperties": false
         },
         "attract": {
           "type": "number",
@@ -170,7 +196,10 @@
             "bathroom",
             "comfort",
             "reception",
-            "walls"
+            "walls",
+            "kitchen",
+            "dining",
+            "bar"
           ]
         },
         "model": {
@@ -225,6 +254,29 @@
         "partition": {
           "type": "boolean",
           "const": true
+        },
+        "joins": {
+          "type": "object",
+          "properties": {
+            "elbow": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "tee": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "cross": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "elbow",
+            "tee",
+            "cross"
+          ],
+          "additionalProperties": false
         },
         "attract": {
           "type": "number",
@@ -298,7 +350,10 @@
             "bathroom",
             "comfort",
             "reception",
-            "walls"
+            "walls",
+            "kitchen",
+            "dining",
+            "bar"
           ]
         },
         "model": {
@@ -354,6 +409,29 @@
           "type": "boolean",
           "const": true
         },
+        "joins": {
+          "type": "object",
+          "properties": {
+            "elbow": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "tee": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "cross": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "elbow",
+            "tee",
+            "cross"
+          ],
+          "additionalProperties": false
+        },
         "attract": {
           "type": "number",
           "exclusiveMinimum": 0
@@ -375,6 +453,191 @@
         "comfort": {
           "type": "number",
           "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "venue",
+        "kind",
+        "name",
+        "category",
+        "model",
+        "footprint",
+        "price",
+        "minTier"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "venue": {
+          "type": "string",
+          "const": "restaurant"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "const": "fixture"
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "games",
+            "service",
+            "furniture",
+            "shelves",
+            "checkouts",
+            "decor",
+            "beds",
+            "bathroom",
+            "comfort",
+            "reception",
+            "walls",
+            "kitchen",
+            "dining",
+            "bar"
+          ]
+        },
+        "model": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "footprint": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "price": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "minTier": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "minRank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "wear": {
+          "type": "number",
+          "minimum": 0
+        },
+        "tint": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "loud": {
+          "type": "boolean",
+          "const": true
+        },
+        "partition": {
+          "type": "boolean",
+          "const": true
+        },
+        "joins": {
+          "type": "object",
+          "properties": {
+            "elbow": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "tee": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "cross": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "elbow",
+            "tee",
+            "cross"
+          ],
+          "additionalProperties": false
+        },
+        "attract": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "cook": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "prep": {
+          "type": "boolean",
+          "const": true
+        },
+        "seat": {
+          "type": "string",
+          "enum": [
+            "table",
+            "bar"
+          ]
+        },
+        "seats": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "drinks": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "stools": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "checkout": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "waiting": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
         }
       },
       "required": [
