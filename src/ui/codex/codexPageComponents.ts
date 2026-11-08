@@ -14,6 +14,7 @@ import { ProductionChainsPage } from './ProductionChainsPage';
 import { RecurringCostsPage } from './RecurringCostsPage';
 import { SanctionsPage } from './SanctionsPage';
 import { SolidarityPage } from './SolidarityPage';
+import { StaffPage } from './StaffPage';
 import { StorageRulesPage } from './StorageRulesPage';
 import { TransitReachPage } from './TransitReachPage';
 import { WastePage } from './WastePage';
@@ -36,4 +37,5 @@ export const CODEX_PAGE_COMPONENTS: Record<CodexPage, ComponentType> = {
   dayCycle: DayCyclePage,
   annualEvents: AnnualEventsPage,
   climate: ClimatePage,
+  staff: StaffPage,
 };

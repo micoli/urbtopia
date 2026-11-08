@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type StaffRole } from '../index';
 import { GOODS } from '../economy/items';
 import { SUPERMARKET, VENUE_PROFILES, hasStock, markupOf, restockFee, stockOf, takingsCapOf, unitPrice, venueBoundaries, venuePerformance } from './venues';
+import { stockerRestocks } from './supermarket';
 
 const H = 3_600_000;
 const building = (id: number, type: Building['type'], x: number, y: number, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
@@ -130,15 +131,58 @@ describe('Supermarket Venue', () => {
     expect(store(stepped).venue!.fixtures.map(stockOf)).toEqual(store(once).venue!.fixtures.map(stockOf));
   });
 
-  it('lets a stocker refill a shelf each hour from the Storehouse, paying from the Takings', () => {
+  it('lets a stocker refill the shelves every 20 minutes from the Storehouse, paying from the Takings', () => {
     const state = hire(stocked(), 'stocker');
     const drained: GameState = { ...state, buildings: state.buildings.map(b => b.type === 'supermarket' ? { ...b, venue: { ...b.venue!, takings: 50, fixtures: b.venue!.fixtures.map(f => f.good ? { ...f, stock: 2 } : f) } } : b) };
     const before = drained.storage.goods.planks ?? 0;
-    const later = advance(drained, 1 * H).state;
+    const later = advance(drained, H / 3).state;
     expect(stockOf(shelfOf(later, 0)) + stockOf(shelfOf(later, 1))).toBeGreaterThan(4 - 2 * 1.5);
     const taken = (before - (later.storage.goods.planks ?? 0)) + ((drained.storage.goods.bricks ?? 0) - (later.storage.goods.bricks ?? 0));
     expect(taken).toBeGreaterThan(0);
-    expect(taken).toBeLessThanOrEqual(SUPERMARKET.stockerUnitsPerHour * 1);
+    expect(taken).toBeLessThanOrEqual(SUPERMARKET.stockerUnitsPerPass);
+  });
+
+  it('spreads the budget of a stocker over several shelves, the emptiest first', () => {
+    const state = hire(stocked(), 'stocker');
+    const [first, second] = [shelfOf(state, 0), shelfOf(state, 1)];
+    const emptied: GameState = { ...state, buildings: state.buildings.map(b => b.type === 'supermarket' ? { ...b, venue: { ...b.venue!, takings: 500, fixtures: b.venue!.fixtures.map(f => f.id === first.id ? { ...f, stock: 0 } : f.id === second.id ? { ...f, stock: 6 } : f) } } : b) };
+    const result = stockerRestocks(store(emptied).venue!.fixtures, 1, emptied.storage.goods, 500);
+    const filled = (id: number) => stockOf(result.fixtures.find(f => f.id === id)!);
+    expect(filled(first.id)).toBe(12);
+    expect(filled(second.id)).toBe(12);
+    expect(result.fee).toBeGreaterThan(0);
+  });
+
+  it('never gives a stocker more than its budget in one pass', () => {
+    const state = stocked();
+    const bare = store(state).venue!.fixtures.map(f => f.good ? { ...f, stock: 0 } : f);
+    const result = stockerRestocks(bare, 1, { planks: 100, bricks: 100 }, 10_000);
+    const added = result.fixtures.reduce((sum, f) => sum + stockOf(f), 0);
+    expect(added).toBeLessThanOrEqual(SUPERMARKET.stockerUnitsPerPass);
+  });
+
+  it('stops a stocker when the Takings cannot pay the handling fee', () => {
+    const state = stocked();
+    const bare = store(state).venue!.fixtures.map(f => f.good ? { ...f, stock: 0 } : f);
+    const result = stockerRestocks(bare, 2, { planks: 100, bricks: 100 }, 0);
+    expect(result.fee).toBe(0);
+    expect(result.fixtures.every(f => stockOf(f) === 0)).toBe(true);
+  });
+
+  it('stops the simulation at each stocker pass, and gives the same stock in one Catch-up or in steps', () => {
+    const state = hire(stocked(), 'stocker');
+    const passes = venueBoundaries(state, 0).filter(at => at % (SUPERMARKET.stockerPassMinutes * 60_000) === 0);
+    expect(passes).toContain(SUPERMARKET.stockerPassMinutes * 60_000);
+    const once = advance(state, 3 * H).state;
+    let stepped = state;
+    for (let step = 1; step <= 9; step++) stepped = advance(stepped, step * (H / 3)).state;
+    expect(store(stepped).venue!.fixtures.map(stockOf)).toEqual(store(once).venue!.fixtures.map(stockOf));
+    expect(store(stepped).venue!.takings).toBeCloseTo(store(once).venue!.takings, 6);
+  });
+
+  it('does not stop at stocker passes when nobody is hired for it', () => {
+    const passes = venueBoundaries(stocked(), 0).filter(at => at === SUPERMARKET.stockerPassMinutes * 60_000);
+    expect(passes).toEqual([]);
   });
 
   it('needs a manager for the markup, which trades Visitors for margin', () => {

@@ -151,6 +151,7 @@ export class GameScene {
   // What moves on the Surface sits in one group, so an underground Level hides it whatever each layer does with its own visibility.
   private movers = new THREE.Group();
   private pickOffset = { x: 0, y: 0 };
+  private pickMode: 'base' | '3d' = '3d';
   private reportPick: ((x: number, y: number) => void) | null = null;
   // The Metro stations of the Surface, drawn in full colour on Level -2 where the rest of the Surface is a ghost, and the places to find from below.
   private stationWorld = new ChunkedWorld(this.library);
@@ -181,13 +182,13 @@ export class GameScene {
     this.streetView = new StreetViewController(canvas);
     this.scene.add(this.streetView.markers);
     this.controller.onTap = (clientX, clientY, shiftKey) => {
-      if (this.pickOffset.x !== 0 || this.pickOffset.y !== 0) this.reportPick?.(clientX + this.pickOffset.x, clientY + this.pickOffset.y);
-      this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile, shiftKey, this.buildingOnTile(tile)));
+      if (this.pickMode === 'base' && (this.pickOffset.x !== 0 || this.pickOffset.y !== 0)) this.reportPick?.(clientX + this.pickOffset.x, clientY + this.pickOffset.y);
+      this.withTileAt(clientX, clientY, (tile) => this.handlers.onTap(tile, shiftKey, this.buildingPicked(clientX, clientY, tile)));
     };
     this.controller.onLongPress = (clientX, clientY) => {
       let handled = false;
       this.withTileAt(clientX, clientY, (tile) => {
-        const buildingId = this.buildingOnTile(tile);
+        const buildingId = this.buildingPicked(clientX, clientY, tile);
         handled = buildingId !== null && this.handlers.onLongPress(buildingId);
       });
       return handled;
@@ -629,14 +630,32 @@ export class GameScene {
     this.reportPick = report;
   }
 
-  // The debug mode moves the point a click or a touch picks, in pixels, to adjust the selection of buildings.
+  // The offset moves the point a click or a touch picks, in pixels, in the base mode.
   setPickOffset(x: number, y: number): void {
     this.pickOffset = { x, y };
   }
 
+  // In the 3D mode a building is picked on its model, wherever it is drawn on the screen; in the base mode, on the tile of the ground.
+  setPickMode(mode: 'base' | '3d'): void {
+    this.pickMode = mode;
+  }
+
+  private pickOffsetNow(): { x: number; y: number } {
+    return this.pickMode === 'base' ? this.pickOffset : { x: 0, y: 0 };
+  }
+
+  // The model under the pointer wins over the tile behind it; where no model is hit, the tile decides.
+  private buildingPicked(clientX: number, clientY: number, tile: Coord): number | null {
+    if (this.pickMode === 'base' || this.level !== SURFACE) return this.buildingOnTile(tile);
+    const rect = this.canvas.getBoundingClientRect();
+    this.raycaster.setFromCamera(new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1), this.controller.camera);
+    return this.world.buildingIdAt(this.raycaster) ?? this.buildingOnTile(tile);
+  }
+
   private withTileAt(clientX: number, clientY: number, use: (tile: Coord) => void): void {
     const rect = this.canvas.getBoundingClientRect();
-    const pointer = new THREE.Vector2(((clientX + this.pickOffset.x - rect.left) / rect.width) * 2 - 1, -((clientY + this.pickOffset.y - rect.top) / rect.height) * 2 + 1);
+    const offset = this.pickOffsetNow();
+    const pointer = new THREE.Vector2(((clientX + offset.x - rect.left) / rect.width) * 2 - 1, -((clientY + offset.y - rect.top) / rect.height) * 2 + 1);
     this.raycaster.setFromCamera(pointer, this.controller.camera);
     const hit = this.raycaster.ray.intersectPlane(this.groundPlane, new THREE.Vector3());
     if (!hit) return;

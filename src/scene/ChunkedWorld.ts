@@ -82,6 +82,18 @@ export class ChunkedWorld {
     this.chunks.set(key, { signature, group, bounds });
   }
 
+  // The building whose 3D model the ray hits first, if any: the ray goes through the instanced meshes, each instance knows its building.
+  buildingIdAt(raycaster: THREE.Raycaster): number | null {
+    if (!this.root.visible || this.display !== 'full') return null;
+    const hits = raycaster.intersectObject(this.root, true);
+    for (const hit of hits) {
+      const ids = hit.object.userData.buildingIds as (number | undefined)[] | undefined;
+      const id = hit.instanceId === undefined ? undefined : ids?.[hit.instanceId];
+      if (id !== undefined) return id;
+    }
+    return null;
+  }
+
   // A City has thousands of instanced meshes: hiding a whole chunk spares three.js from testing each of them every frame.
   cull(camera: THREE.Camera): void {
     camera.updateMatrixWorld();
@@ -150,6 +162,7 @@ export class ChunkedWorld {
           instanced.setMatrixAt(index, combined);
         });
         instanced.computeBoundingSphere();
+        instanced.userData.buildingIds = modelItems.map((item) => item.buildingId);
         instanced.matrixAutoUpdate = false;
         group.add(instanced);
       });

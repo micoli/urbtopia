@@ -27,7 +27,8 @@ export interface Prefs {
   managementTabs: boolean;
   taxBadgeThreshold: TaxBadgeThreshold;
   debug: boolean;
-  // With the debug mode: how many pixels a click or a touch is moved before it picks a tile, to adjust the selection of buildings.
+  pickMode: PickMode;
+  // How many pixels a click or a touch is moved before it picks a tile, to adjust the selection of buildings.
   debugOffsetX: number;
   debugOffsetY: number;
   alwaysDay: boolean;
@@ -51,6 +52,9 @@ const LANGUAGES: Language[] = ['en', 'fr'];
 const LAYOUTS: Layout[] = ['C', 'A', 'B'];
 const PEDESTRIAN_MODELS: PedestrianModel[] = ['stickman', 'avatar'];
 export const CROWD_DENSITIES: CrowdDensity[] = ['low', 'normal', 'high'];
+// How a click or a touch finds a building: on the 3D model it hits, or on the tile of the ground it lands on, which the X and Y offset can move.
+export type PickMode = 'base' | '3d';
+export const PICK_MODES: PickMode[] = ['3d', 'base'];
 export const DEBUG_OFFSET_LIMIT = 60;
 export const MATCH_SPEEDS = [0.25, 0.5, 1, 2, 4, 8] as const;
 export type MatchSpeed = (typeof MATCH_SPEEDS)[number];
@@ -60,7 +64,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrians: true, pedestrianModel: 'stickman', trafficDensity: 'normal', pedestrianDensity: 'normal', confirmSale: true, showReach: true, showProductionPreview: true, showRecipeStock: false, showAutoProductionBadge: false, showTaxBadges: true, taxBadgeThreshold: 20, managementTabs: true, debug: false, debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1, codexFavorites: [] };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrians: true, pedestrianModel: 'stickman', trafficDensity: 'normal', pedestrianDensity: 'normal', confirmSale: true, showReach: true, showProductionPreview: true, showRecipeStock: false, showAutoProductionBadge: false, showTaxBadges: true, taxBadgeThreshold: 20, managementTabs: true, debug: false, pickMode: '3d', debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1, codexFavorites: [] };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -80,6 +84,7 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       showTaxBadges: typeof parsed.showTaxBadges === 'boolean' ? parsed.showTaxBadges : fallback.showTaxBadges,
       managementTabs: typeof parsed.managementTabs === 'boolean' ? parsed.managementTabs : fallback.managementTabs,
       taxBadgeThreshold: TAX_BADGE_THRESHOLDS.includes(parsed.taxBadgeThreshold as TaxBadgeThreshold) ? (parsed.taxBadgeThreshold as TaxBadgeThreshold) : fallback.taxBadgeThreshold,
+      pickMode: PICK_MODES.includes(parsed.pickMode as PickMode) ? (parsed.pickMode as PickMode) : fallback.pickMode,
       debug: typeof parsed.debug === 'boolean' ? parsed.debug : fallback.debug,
       debugOffsetX: offsetOf(parsed.debugOffsetX),
       debugOffsetY: offsetOf(parsed.debugOffsetY),
@@ -110,9 +115,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed, codexFavorites }: Prefs): void {
+function writeStored({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, pickMode, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed, codexFavorites }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed, codexFavorites }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, pickMode, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed, codexFavorites }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -124,6 +129,7 @@ export interface PrefsStore extends Prefs {
   setTraffic: (traffic: boolean) => void;
   setPedestrians: (pedestrians: boolean) => void;
   setPedestrianModel: (model: PedestrianModel) => void;
+  setPickMode: (pickMode: PickMode) => void;
   setTrafficDensity: (density: CrowdDensity) => void;
   setPedestrianDensity: (density: CrowdDensity) => void;
   setConfirmSale: (confirmSale: boolean) => void;
@@ -167,6 +173,10 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
     writeStored(get());
   },
 
+  setPickMode: (pickMode) => {
+    set({ pickMode });
+    writeStored(get());
+  },
   setPedestrianModel: (pedestrianModel) => {
     set({ pedestrianModel });
     writeStored(get());

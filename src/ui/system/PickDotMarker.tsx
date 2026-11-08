@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useStore } from 'zustand';
 import { PICK_DOT_MS, pickDotStore } from '../../store/pickDotStore';
 
-// A small blinking dot on the point a click picked, for two seconds.
+// A small blinking dot on the point a click picked, for one second.
 export function PickDotMarker() {
   const dot = useStore(pickDotStore, (store) => store.dot);
   useEffect(() => {

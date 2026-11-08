@@ -187,7 +187,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.role.receptionist': ['Receptionist', 'Réceptionniste'],
   'venue.role.housekeeper': ['Housekeeper', 'Personnel de ménage'],
   'venue.roleEffect.cashier': ['Runs the checkouts: faster service', 'Tient les caisses : service plus rapide'],
-  'venue.roleEffect.stocker': ['Refills a shelf each hour from the Storehouse', 'Remplit un rayon par heure depuis l’entrepôt'],
+  'venue.roleEffect.stocker': ['Refills the shelves from the Storehouse every 20 minutes', 'Remplit les rayons depuis l’entrepôt toutes les 20 minutes'],
   'venue.roleEffect.receptionist': ['Checks guests in: more stays', 'Accueille les clients : plus de séjours'],
   'venue.roleEffect.housekeeper': ['Cleans 10 rooms a day: a clean hotel keeps its reputation', 'Nettoie 10 chambres par jour : un hôtel propre garde sa réputation'],
   'venue.category.walls': ['Walls', 'Murs'],

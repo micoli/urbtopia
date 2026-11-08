@@ -12,7 +12,7 @@ vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
   useUi: (selector: (store: { toggleSettings: () => void; settingsTab: SettingsTab; setSettingsTab: () => void }) => unknown) => selector({ toggleSettings: () => {}, settingsTab: context.tab, setSettingsTab: () => {} }),
 }));
-vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn(), newGame: vi.fn() }) } }));
+vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn(), newGame: vi.fn() }), subscribe: vi.fn() } }));
 vi.mock('./CloudSaveSection', () => ({ CloudSaveSection: () => null }));
 vi.mock('./DifficultySettings', () => ({ DifficultySettings: () => null }));
 vi.mock('../../pwa/useInstallPrompt', () => ({ useInstallPrompt: () => ({ canInstall: false, install: () => {} }) }));

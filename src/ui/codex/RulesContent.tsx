@@ -15,6 +15,7 @@ import { ProductionChainsRules } from './ProductionChainsRules';
 import { RecurringCostsRules } from './RecurringCostsRules';
 import { SanctionsRules } from './SanctionsRules';
 import { SolidarityPage } from './SolidarityPage';
+import { StaffRules } from './StaffRules';
 import { StorageRules } from './StorageRules';
 import { TransitReachRules } from './TransitReachRules';
 import { WasteRules } from './WasteRules';
@@ -41,6 +42,7 @@ const RULES: Record<CodexPage, ComponentType<RulesProps>> = {
   dayCycle: DayCycleRules,
   annualEvents: AnnualEventsRules,
   climate: ClimateRules,
+  staff: StaffRules,
   politics: PoliticsRules,
 };
 
