@@ -477,7 +477,7 @@ The share of a workplace's Jobs that Citizens fill. For a Venue it is the filled
 _Avoid_: Occupancy, staffing level
 
 **Unemployed**:
-A Citizen who finds no Job within reach on their Commute. Their share in a Home lowers its Well-being above a tolerance, up to a cap, through the Employment Need factor; it never causes a Sanction or blocks a Tier upgrade, and changes neither Tax nor Needs otherwise. A Citizen of a Home with no Road, reached only by a BRT corridor or Pedestrian ways, is never counted Unemployed.
+A Citizen who finds no Job within reach on their Commute. Their share in a Home lowers its Well-being above a tolerance, up to a cap, through the Employment Need factor; it never causes a Sanction or blocks a Tier upgrade, and changes neither Tax nor Needs otherwise. A Citizen of a Home cut off from every workplace is not counted Unemployed: being cut off already weighs on its Well-being through Congestion. A Home with no Road, reached only by a BRT corridor or Pedestrian ways, counts its Citizens Unemployed like any other.
 _Avoid_: Jobless, out of work
 
 **Travel time**:

@@ -541,7 +541,7 @@ export const CATALOG = {
   'eco.unfilledJobsTotal': ['Jobs nobody fills', 'Emplois non pourvus'],
   'eco.citizensAtWork': ['Working', 'Au travail'],
   'eco.uncountedJobless': ['Without a job, not counted', 'Sans emploi, non comptés'],
-  'eco.uncountedJoblessHelp': ['Citizens without a job who are not counted as unemployed and do not lower Well-being through unemployment: their Home reaches no workplace (it is marked cut off), or has no Road (only a BRT corridor or Pedestrian ways). Connect those Homes to the Jobs.', 'Habitants sans emploi qui ne sont pas comptés comme chômeurs et ne baissent pas le bien-être par le chômage : leur logement n’atteint aucun lieu de travail (il est signalé coupé), ou n’a pas de route (seulement un BHNS ou des voies piétonnes). Reliez ces logements aux emplois.'],
+  'eco.uncountedJoblessHelp': ['Citizens without a job whose Home is cut off from every workplace (it is marked cut off). They are not counted as unemployed, since being cut off already weighs on Well-being. Connect those Homes to the Jobs.', 'Habitants sans emploi dont le logement est coupé de tout lieu de travail (il est signalé coupé). Ils ne sont pas comptés comme chômeurs, car être coupé pèse déjà sur le bien-être. Reliez ces logements aux emplois.'],
   'eco.showJobs': ['Show Jobs', 'Voir les emplois'],
   'eco.jobsByKind': ['Jobs by kind of workplace', 'Emplois par type de lieu de travail'],
   'eco.jobsKind.industry': ['Industry', 'Industrie'],

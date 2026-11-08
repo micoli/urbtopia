@@ -32,7 +32,7 @@ export interface JobsSummary {
   unfilled: number;
   // Citizens counted Unemployed: they reach a workplace but lose the competition for its Jobs.
   unemployed: number;
-  // Citizens with no Job who are not counted Unemployed: their Home reaches no workplace, or has no Road (ADR 0059).
+  // Citizens with no Job who are not counted Unemployed: their Home is cut off from every workplace, which the Congestion already charges (ADR 0063).
   uncounted: number;
 }
 

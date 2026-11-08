@@ -19,7 +19,7 @@ export function JobsSection({state, congestion}: JobsSectionProps) {
     const diagnosis = useMemo(() => diagnoseJobs(state, congestion), [state, congestion]);
     return <section id="eco-jobs">
         <SectionHeading icon={MANAGEMENT_SECTIONS['eco-jobs'].icon}>{t('eco.jobsSection')}</SectionHeading>
-        <p>{t('stat.citizens')}: {summary.citizens} · {t('eco.citizensAtWork')}: {summary.filled.toFixed(0)} · {t('eco.unemployed')}: {summary.unemployed.toFixed(0)}{summary.uncounted >= 1 && <> · {t('eco.uncountedJobless')}: {summary.uncounted.toFixed(0)}</>}</p>
+        <p>{t('stat.citizens')}: <b>{summary.citizens}</b> · {t('eco.citizensAtWork')}: <b>{summary.filled.toFixed(0)}</b> · {t('eco.unemployed')}: <b>{summary.unemployed.toFixed(0)}</b>{summary.uncounted >= 1 && <> · {t('eco.uncountedJobless')}: <b>{summary.uncounted.toFixed(0)}</b></>}</p>
         {summary.uncounted >= 1 && <p>{t('eco.uncountedJoblessHelp')}</p>}
         <p>{t('eco.jobs')}: {summary.offered.toFixed(0)} · {t('eco.unfilledJobsTotal')}: {summary.unfilled.toFixed(0)}</p>
         <p>{t('eco.unemployedHelp')}</p>
