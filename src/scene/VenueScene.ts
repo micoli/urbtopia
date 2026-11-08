@@ -44,6 +44,11 @@ export class VenueScene {
   private fixturesSignature = '';
   private zoom = 1;
   private pan = { x: 0, z: 0 };
+  private yaw = Math.PI / 4;
+  private yawTarget = Math.PI / 4;
+  private northWalls = new THREE.Group();
+  private westWalls = new THREE.Group();
+  private cornerPost = new THREE.Group();
   private brokenRoot = new THREE.Group();
   private wearRoot = new THREE.Group();
   private shelfStock = new ShelfStockLayer(() => { this.dirty = true; });
@@ -213,15 +218,20 @@ export class VenueScene {
     if (!this.library.has(this.shellModels.floor) || this.builtSize === this.size) return;
     this.builtSize = this.size;
     this.clear(this.shell);
+    this.clear(this.northWalls);
+    this.clear(this.westWalls);
+    this.clear(this.cornerPost);
     const entrance = entranceCell(this.tier);
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) this.place(this.shell, this.shellModels.floor, x + 0.5, y + 0.5, 0);
     }
     for (let index = 0; index < this.size; index++) {
-      if (index !== entrance.x) this.place(this.shell, this.shellModels.wall, index + 0.5, 0, 0);
-      this.place(this.shell, this.shellModels.wall, 0, index + 0.5, Math.PI / 2);
+      if (index !== entrance.x) this.place(this.northWalls, this.shellModels.wall, index + 0.5, 0, 0);
+      this.place(this.westWalls, this.shellModels.wall, 0, index + 0.5, Math.PI / 2);
     }
-    this.place(this.shell, this.shellModels.corner, this.cornerPlacement.x, this.cornerPlacement.z, this.cornerPlacement.rotation);
+    this.place(this.cornerPost, this.shellModels.corner, this.cornerPlacement.x, this.cornerPlacement.z, this.cornerPlacement.rotation);
+    this.shell.add(this.northWalls, this.westWalls, this.cornerPost);
+    this.showWalls();
     const mat = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), new THREE.MeshBasicMaterial({ color: ENTRANCE_COLOR }));
     mat.rotation.x = -Math.PI / 2;
     mat.position.set(entrance.x + 0.5, 0.04, entrance.y + 0.5);
@@ -407,11 +417,38 @@ export class VenueScene {
     this.camera.top = halfHeight;
     this.camera.bottom = -halfHeight;
     this.pan = clampPan(this.pan, this.zoom, this.size);
-    const center = this.size / 2, distance = 40, pitch = Math.atan(1 / Math.SQRT2), yaw = Math.PI / 4;
-    const focusX = center + this.pan.x, focusZ = center + this.pan.z;
-    this.camera.position.set(focusX + Math.sin(yaw) * Math.cos(pitch) * distance, Math.sin(pitch) * distance, focusZ + Math.cos(yaw) * Math.cos(pitch) * distance);
-    this.camera.lookAt(focusX, 0.3, focusZ);
+    this.placeCamera();
     this.camera.updateProjectionMatrix();
+    this.dirty = true;
+  }
+
+  // Turns the room by a quarter turn, as the buttons of the city map do.
+  rotate(direction: number): void {
+    this.yawTarget += direction * Math.PI / 2;
+    this.dirty = true;
+  }
+
+  private placeCamera(): void {
+    const center = this.size / 2, distance = 40, pitch = Math.atan(1 / Math.SQRT2);
+    const focusX = center + this.pan.x, focusZ = center + this.pan.z;
+    this.camera.position.set(focusX + Math.sin(this.yaw) * Math.cos(pitch) * distance, Math.sin(pitch) * distance, focusZ + Math.cos(this.yaw) * Math.cos(pitch) * distance);
+    this.camera.lookAt(focusX, 0.3, focusZ);
+    this.showWalls();
+  }
+
+  // The perimeter walls on the side the camera looks from would hide the room: they show only when they stand behind it.
+  private showWalls(): void {
+    const north = Math.cos(this.yaw) > 0.05, west = Math.sin(this.yaw) > 0.05;
+    this.northWalls.visible = north;
+    this.westWalls.visible = west;
+    this.cornerPost.visible = north && west;
+  }
+
+  private turnTowardTarget(delta: number): void {
+    if (this.yaw === this.yawTarget) return;
+    const step = (this.yawTarget - this.yaw) * Math.min(1, delta * 10);
+    this.yaw = Math.abs(this.yawTarget - this.yaw) < 0.002 ? this.yawTarget : this.yaw + step;
+    this.placeCamera();
     this.dirty = true;
   }
 
@@ -423,6 +460,7 @@ export class VenueScene {
     }
     const delta = Math.min(0.1, Math.max(0, elapsed / 1000));
     this.lastFrame = now;
+    this.turnTowardTarget(delta);
     this.crowd.update(delta, this.camera);
     if (this.crowd.active) this.dirty = true;
     if (this.dirty) {

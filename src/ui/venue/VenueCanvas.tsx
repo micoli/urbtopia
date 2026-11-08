@@ -3,6 +3,7 @@ import { canPlaceFixture, entranceCell, fixtureTiles, gridSizeOf, hiredOf, isBro
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
 import { gameStore } from '../../store/gameStore';
+import { venueSceneHandle } from '../../store/venueSceneHandle';
 import { venueStore } from '../../store/venueStore';
 
 const venueOf = (venueId: number): (Building & { venue: VenueData }) | undefined => {
@@ -23,6 +24,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
     const initial = venueOf(venueId);
     if (!canvas || !initial) return;
     const scene = new VenueScene(canvas, gridSizeOf(venueType, initial.tier), initial.tier, venueType, venueId);
+    venueSceneHandle.current = scene;
     let hovered: Coord | null = null;
     // The piece of furniture under a press, and where inside it the press landed.
     let grab: { id: number; offset: Coord; carrying: boolean } | null = null;
@@ -131,6 +133,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
     return () => {
       unsubscribeGame();
       unsubscribeVenue();
+      if (venueSceneHandle.current === scene) venueSceneHandle.current = null;
       scene.dispose();
     };
   }, [venueId, venueType]);

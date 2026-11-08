@@ -3,10 +3,12 @@ import { useStore } from 'zustand';
 import { venueTypeOf } from '../../core';
 import { t } from '../../i18n/t';
 import { sceneHandle } from '../../store/sceneHandle';
+import { venueSceneHandle } from '../../store/venueSceneHandle';
 import { venueStore } from '../../store/venueStore';
 import { useGame } from '../common/hooks';
 import { VenueCanvas } from './VenueCanvas';
 import { VenueMenus } from './VenueMenus';
+import { VenueRotateButtons } from './VenueRotateButtons';
 
 export function VenueDialog() {
   const venueId = useStore(venueStore, store => store.venueId);
@@ -23,6 +25,9 @@ export function VenueDialog() {
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
+      const typing = event.target instanceof HTMLElement && (event.target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName));
+      if (event.key === 'q' && !typing) return venueSceneHandle.current?.rotate(-1);
+      if (event.key === 'e' && !typing) return venueSceneHandle.current?.rotate(1);
       if (event.key !== 'Escape') return;
       const { movingId, placedId, selectedFixture, panel, stopMove, selectPlaced, selectFixture, closePanel, close } = venueStore.getState();
       if (movingId !== null) return stopMove();
@@ -41,6 +46,7 @@ export function VenueDialog() {
       <VenueCanvas venueId={venueId} venueType={venueTypeOf(venue)} />
       <h2 className="venue-view__title">{t(`building.${venue.type}`)}</h2>
       <VenueMenus venue={venue} />
+      <VenueRotateButtons />
     </div>
   );
 }
