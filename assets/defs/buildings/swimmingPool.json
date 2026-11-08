@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "sport",
+  "section": "build.sport",
+  "model": "buildings-swimming-pool-6x3-tone-a",
+  "footprint": [6, 3],
+  "cost": 6000,
+  "unlockCitizens": 500,
+  "requiresRoad": true,
+  "name": {
+    "en": "Public swimming pool",
+    "fr": "Piscine publique"
+  },
+  "description": {
+    "en": "A public Sport building with a five-lane basin, a deep diving well and three diving stands of growing height, beside a changing block. It raises the Well-being of Homes in a {side}-tile square around it (+{wellbeingBonus}, like a service) and needs no power. It covers {width}×{depth} tiles; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs.",
+    "fr": "Un bâtiment de sport public avec un bassin de cinq couloirs, une fosse de plongée et trois plongeoirs de hauteurs croissantes, à côté d’un vestiaire. Il augmente le bien-être des logements à moins de {side} cases (+{wellbeingBonus}) et ne consomme pas d’électricité. Il occupe {width}×{depth} cases ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
+  },
+  "radius": 10,
+  "wellbeingBonus": 8
+}

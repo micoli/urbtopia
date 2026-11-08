@@ -748,6 +748,7 @@ export type ModelId =
   | 'buildings-supermarket-2x2-t1-tone-a'
   | 'buildings-supermarket-3x2-t2-tone-a'
   | 'buildings-supermarket-3x2-t3-tone-a'
+  | 'buildings-swimming-pool-6x3-tone-a'
   | 'buildings-textile-mill-2x2-t1-tone-a'
   | 'buildings-textile-mill-2x2-t2-tone-a'
   | 'buildings-textile-mill-2x2-t3-tone-a'

@@ -341,6 +341,7 @@ export type BuildingId =
   | 'summerSandCastle'
   | 'summerSurfboard'
   | 'supermarket'
+  | 'swimmingPool'
   | 'synagogue'
   | 'textileMill'
   | 'theater'
@@ -366,7 +367,8 @@ export type SportVenueType =
   | 'foot5'
   | 'footballStadium'
   | 'padelCourts'
-  | 'stadium';
+  | 'stadium'
+  | 'swimmingPool';
 
 export type NatureType =
   | 'hedge'
