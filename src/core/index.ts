@@ -268,3 +268,6 @@ export { BASEBALL, BASEBALL_RULES, APPROACHES, HITTERS } from './clubs/baseball/
 export type { BaseballEvent, BaseballState } from './clubs/baseball/baseball';
 export { playUntil as playBaseball, autoStarters as baseballAutoStarters, lineupIssue as baseballLineupIssue, effectiveLineup as baseballLineup } from './clubs/baseball/baseball';
 export { isFormation } from './clubs/football/football';
+export { BASKETBALL, BASKETBALL_RULES, BASKETBALL_FORMATIONS, BASKETBALL_FORMATION_IDS, BASKETBALL_TACTICS, isBasketballFormation } from './clubs/basketball/basketball';
+export type { BasketballEvent, BasketballFormation, BasketballState, BasketballTactic } from './clubs/basketball/basketball';
+export { playUntil as playBasketball, startMatch as startBasketball, autoStarters as basketballAutoStarters, lineupIssue as basketballLineupIssue, effectiveLineup as basketballLineup } from './clubs/basketball/basketball';

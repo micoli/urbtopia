@@ -7,16 +7,15 @@ import { TutorialBannerFrame } from './TutorialBannerFrame';
 import { VenueTutorialBanner } from './VenueTutorialBanner';
 
 export function TutorialBanner() {
-  const state = useGame((store) => store.state);
+  const step = useGame((store) => store.state.tutorial);
+  const canSkipTime = useGame((store) => store.state.tutorial !== null && tutorialSkipMs(store.state, store.state.lastSeen) !== null);
+  const challengeRunning = useGame((store) => store.state.challenge !== undefined);
   const settingsOpen = useUi(store => store.settingsOpen);
   const codexOpen = useUi(store => store.codexOpen);
-  const step = state.tutorial;
   if (settingsOpen || codexOpen) return null;
   if (step === null) return <VenueTutorialBanner />;
 
   const send = gameStore.getState().send;
-  const canSkipTime = tutorialSkipMs(state, state.lastSeen) !== null;
-  const challengeRunning = state.challenge !== undefined;
 
   return (
     <TutorialBannerFrame

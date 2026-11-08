@@ -209,6 +209,8 @@ export function playUntil(club: ClubData, opponent: Opponent, seed: number, deci
     while (next < ordered.length && ordered[next]!.minute <= state.minute) state = applyDecision(state, ordered[next++]!);
     state = playMinute(state);
   }
+  // A decision taken at the minute the clock stands on shows at once, not when the next minute is played.
+  while (state.minute < FOOTBALL.minutes && next < ordered.length && ordered[next]!.minute <= state.minute) state = applyDecision(state, ordered[next++]!);
   return state;
 }
 

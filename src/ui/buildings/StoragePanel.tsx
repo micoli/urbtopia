@@ -1,3 +1,4 @@
+import { useShallow } from 'zustand/react/shallow';
 import { compartmentOf, storageTierOf, isStorageType, storageCapacity, storageUsed, type Building, type GoodId, type ItemId, type MaterialId } from '../../core';
 import { t } from '../../i18n/t';
 import { itemName } from '../../i18n/itemName';
@@ -13,14 +14,15 @@ interface StoragePanelProps {
 type Compartment = 'materials' | 'crops' | 'goods';
 
 export function StoragePanel({ building }: StoragePanelProps) {
-  const state = useGame((store) => store.state);
-  const capacity = storageCapacity(state);
-  const used = storageUsed(state.storage);
-  const stocked = Object.entries(state.storage.materials).filter(([, amount]) => (amount ?? 0) > 0);
+  const capacity = useGame(useShallow((store) => storageCapacity(store.state)));
+  const materials = useGame((store) => store.state.storage.materials);
+  const goods = useGame((store) => store.state.storage.goods);
+  const used = storageUsed({ materials, goods });
+  const stocked = Object.entries(materials).filter(([, amount]) => (amount ?? 0) > 0);
   const stock: Record<Compartment, [string, number | undefined][]> = {
     materials: stocked.filter(([item]) => compartmentOf(item) === 'materials'),
     crops: stocked.filter(([item]) => compartmentOf(item) === 'crops'),
-    goods: Object.entries(state.storage.goods).filter(([, amount]) => (amount ?? 0) > 0),
+    goods: Object.entries(goods).filter(([, amount]) => (amount ?? 0) > 0),
   };
   const compartments = (['materials', 'crops', 'goods'] as const).filter((compartment) => isStorageType(building.type) && storageTierOf(building.type, building.tier)[compartment] > 0);
 

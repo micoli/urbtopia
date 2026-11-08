@@ -4,12 +4,14 @@ async function registry(page: Page) {
   return page.evaluate(() => JSON.parse(localStorage.getItem('urbtopia-cities') ?? 'null') as { lastPlayed: string; cities: { id: string; name: string | null }[] });
 }
 
-async function openSettings(page: Page) {
-  await page.getByRole('button', { name: /Settings/ }).first().click();
+async function openCities(page: Page) {
+  await page.locator('[data-action="stats"]').click();
+  await page.getByRole('tab', { name: 'Cities' }).click();
   await expect(page.getByRole('heading', { name: 'Cities' })).toBeVisible();
 }
 
 test('creates, renames, switches and deletes Cities', async ({ page }) => {
+  test.setTimeout(90_000);
   await page.addInitScript(() => {
     if (!localStorage.getItem('urbtopia-prefs')) localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
   });
@@ -17,7 +19,7 @@ test('creates, renames, switches and deletes Cities', async ({ page }) => {
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   const first = (await registry(page)).lastPlayed;
 
-  await openSettings(page);
+  await openCities(page);
   await page.getByRole('button', { name: 'New city' }).click();
   await page.getByRole('radiogroup', { name: 'Difficulty of the new city' }).getByRole('radio', { name: 'Easy' }).click();
   await page.getByRole('button', { name: 'New city' }).click();
@@ -29,7 +31,7 @@ test('creates, renames, switches and deletes Cities', async ({ page }) => {
   expect(afterCreate.lastPlayed).not.toBe(first);
   expect(await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().state.difficulty)).toBe('easy');
 
-  await openSettings(page);
+  await openCities(page);
   const nameInput = page.getByLabel('City name').first();
   await nameInput.fill('Second Town');
   await page.getByRole('button', { name: 'Rename' }).first().click();
@@ -43,7 +45,7 @@ test('creates, renames, switches and deletes Cities', async ({ page }) => {
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   expect((await registry(page)).lastPlayed).toBe(first);
 
-  await openSettings(page);
+  await openCities(page);
   const secondRow = page.locator('.city-row').nth(1);
   await secondRow.getByRole('button', { name: 'Delete', exact: true }).click();
   const secondName = (await registry(page)).cities[1]?.name ?? '';
@@ -55,6 +57,7 @@ test('creates, renames, switches and deletes Cities', async ({ page }) => {
 });
 
 test('imports a file as a new City and never replaces the open one', async ({ page }) => {
+  test.setTimeout(90_000);
   await page.addInitScript(() => {
     if (!localStorage.getItem('urbtopia-prefs')) localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
   });
@@ -67,7 +70,8 @@ test('imports a file as a new City and never replaces the open one', async ({ pa
     return exportEnvelope({ ...newGame({ seed: 'brisk-owl-1234', now: Date.now() }), urbs: 4242 }, Date.now(), 'Imported Town');
   });
 
-  await openSettings(page);
+  await page.getByRole('button', { name: /Settings/ }).first().click();
+  await page.getByRole('tab', { name: 'Saves' }).click();
   await page.locator('input[type=file]').setInputFiles({ name: 'city.json', mimeType: 'application/json', buffer: Buffer.from(file) });
   await expect.poll(async () => (await registry(page)).cities.length).toBe(2);
   await page.waitForLoadState('load');

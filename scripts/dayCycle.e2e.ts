@@ -41,7 +41,7 @@ test.describe('day cycle', () => {
       const hour = cycleHourOf(cycleTimeOf(state, state.lastSeen));
       gameStore.getState().send({ type: 'SkipTime', hours: (((23.5 - hour) % 24) + 24) % 24 / 12 });
     });
-    await expect(page.locator('.game-clock')).toContainText('🌙');
+    await expect(page.locator('.game-clock .lucide-moon')).toBeVisible();
     await settle(page);
     expect(await lightOf(page)).toBeCloseTo(noon, 1);
 

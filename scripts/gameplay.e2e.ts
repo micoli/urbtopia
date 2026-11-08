@@ -4,7 +4,7 @@ for (const touch of [false, true]) {
   test.describe(touch ? 'touch selection' : 'mouse selection', () => {
     test.use({ hasTouch: touch, isMobile: touch, viewport: touch ? { width: 390, height: 844 } : { width: 1280, height: 900 } });
     test('selecting a Storehouse does not click through to its sale button', async ({ page }) => {
-      await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+      await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', taxBadgeThreshold: 1, layout: 'C' })));
       await page.goto('/?e2e');
       await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.evaluate(async () => {
@@ -15,8 +15,9 @@ for (const touch of [false, true]) {
         gameStore.getState().replaceState({ ...state, buildings: [createBuilding(50, 'storehouse', 64, 64, 0)], nextId: 51 });
         uiStore.getState().select(50);
       });
-      const sell = page.locator('.side-panel-actions button').last();
+      const sell = page.locator('.side-panel').getByRole('button', { name: /^Vendre/ });
       await expect(sell).toBeVisible();
+      await sell.click({ trial: true });
       const bounds = (await sell.boundingBox())!;
       const target = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 };
       await page.evaluate(async target => {
@@ -49,7 +50,7 @@ for (const touch of [false, true]) {
     test('coal controls, upgrades, local pollution and saved choices work in the city UI', async ({ page }, testInfo) => {
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
-      await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+      await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', taxBadgeThreshold: 1, managementTabs: false, layout: 'C' })));
       await page.goto('/?e2e');
       await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.getByRole('button', { name: 'Construire', exact: true }).click();
@@ -65,7 +66,7 @@ for (const touch of [false, true]) {
         uiStore.getState().select(50);
       });
       const panel = page.locator('.side-panel');
-      await expect(panel.getByRole('heading', { name: 'Centrale à charbon 1', exact: true })).toBeVisible();
+      await expect(panel.getByRole('heading', { name: /^Niveau 1 Centrale à charbon/ })).toBeVisible();
       const toggle = panel.getByRole('switch', { name: 'Production au charbon activée', exact: true });
       await expect(toggle).toBeChecked();
       await toggle.click();
@@ -75,7 +76,7 @@ for (const touch of [false, true]) {
       await expect(toggle).toBeChecked();
       for (const tier of [2, 3, 4]) {
         await panel.getByRole('button', { name: `Améliorer → ${tier}`, exact: true }).click();
-        await expect(panel.getByRole('heading', { name: `Centrale à charbon ${tier}`, exact: true })).toBeVisible();
+        await expect(panel.getByRole('heading', { name: new RegExp(`^Niveau ${tier} Centrale à charbon`) })).toBeVisible();
       }
       await expect(panel).toContainText('Unités nominales/heure: 64');
       await page.evaluate(async () => (await import('../src/store/uiStore.ts')).uiStore.getState().select(null));
@@ -95,7 +96,7 @@ for (const touch of [false, true]) {
       await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.evaluate(async () => (await import('../src/store/uiStore.ts')).uiStore.getState().select(50));
       await expect(toggle).not.toBeChecked();
-      await expect(panel.getByRole('heading', { name: 'Centrale à charbon 4', exact: true })).toBeVisible();
+      await expect(panel.getByRole('heading', { name: /^Niveau 4 Centrale à charbon/ })).toBeVisible();
       await page.screenshot({ path: testInfo.outputPath('coal-tier-four.png') });
       expect(errors).toEqual([]);
     });
@@ -104,7 +105,7 @@ for (const touch of [false, true]) {
 
 for (const layout of ['B', 'C']) {
   test(`city management shortcut opens from layout ${layout} navigation`, async ({ page }) => {
-    await page.addInitScript(layout => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout })), layout);
+    await page.addInitScript(layout => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', taxBadgeThreshold: 1, managementTabs: false, layout })), layout);
     await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu', exact: true }).click();
@@ -126,7 +127,7 @@ for (const layout of ['B', 'C']) {
 test('dragging the brush lays Fields, plants them and harvests them by sweeping their bubbles', async ({ page }, testInfo) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+  await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', taxBadgeThreshold: 1, layout: 'C' })));
   await page.goto('/?e2e');
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await page.evaluate(async () => {

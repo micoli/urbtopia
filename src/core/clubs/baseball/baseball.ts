@@ -234,6 +234,8 @@ export function playUntil(club: ClubData, opponent: Opponent, seed: number, deci
     while (next < ordered.length && ordered[next]!.minute <= state.inning) state = applyDecision(state, ordered[next++]!);
     state = playInning(state);
   }
+  // A decision taken at the inning the clock stands on shows at once, not when the next inning is played.
+  while (!state.over && next < ordered.length && ordered[next]!.minute <= state.inning) state = applyDecision(state, ordered[next++]!);
   // A tie after the extra innings goes to the stronger side's last at-bat.
   if (state.over && state.score[0] === state.score[1]) {
     const edge = effective(state.sides[0].lineup[0]!) / (effective(state.sides[0].lineup[0]!) + effective(state.sides[1].lineup[0]!));

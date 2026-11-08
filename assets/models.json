@@ -333,6 +333,33 @@
       }
     }
   },
+  "buildings-basketball-arena-10x8-tone-a": {
+    "file": "buildings/basketball-arena-10x8-tone-a",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      10,
+      8
+    ],
+    "tones": {
+      "a": {
+        "name": "sky",
+        "color": "#3d9bff"
+      },
+      "b": {
+        "name": "brick",
+        "color": "#c2432e"
+      },
+      "c": {
+        "name": "greygreen",
+        "color": "#6f8f7c"
+      },
+      "d": {
+        "name": "violet",
+        "color": "#8a4dff"
+      }
+    }
+  },
   "buildings-basketball-court-2x3": {
     "file": "buildings/basketball-court-2x3",
     "source": "managed",

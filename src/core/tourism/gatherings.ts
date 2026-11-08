@@ -35,7 +35,7 @@ export const GATHERING = {
   citizenShare: 0.5,
   reach: GATHERING_REACH,
   defaultQuality: 0.5,
-  capacity: { theater: 150, concertHall: 400, colosseum: 1200, stadium: 600, footballStadium: 3000, baseballField: 1200 } as Readonly<Record<string, number>>,
+  capacity: { theater: 150, concertHall: 400, colosseum: 1200, stadium: 600, footballStadium: 3000, baseballField: 1200, basketballArena: 2000 } as Readonly<Record<string, number>>,
   meetingCapacity: 600,
   meetingQuality: 0.5,
 };

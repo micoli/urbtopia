@@ -5,7 +5,7 @@ import type { Command } from '../core';
 export const FLAGS = {
   clubs: {
     label: 'Gestion des clubs',
-    description: 'Clubs de football et de baseball : effectif, composition, championnat, matchs.',
+    description: 'Clubs de football, de baseball et de basket : effectif, composition, championnat, matchs.',
     commands: ['FoundClub', 'SignPlayer', 'ReleasePlayer', 'SetLineup', 'PlayMatch'] as readonly Command['type'][],
   },
   advisor: {

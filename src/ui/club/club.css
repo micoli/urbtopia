@@ -437,3 +437,71 @@
   font-weight: var(--font-weight-semibold);
   text-align: right;
 }
+
+.club-court {
+  width: 100%;
+  max-width: 56rem;
+  border-radius: var(--radius-sm);
+}
+
+.club-court__floor {
+  fill: var(--color-court);
+}
+
+.club-court__key {
+  fill: var(--color-court-key);
+}
+
+.club-court__lines {
+  fill: none;
+  stroke: var(--color-pitch-line);
+  stroke-width: 0.3;
+}
+
+.club-court__hoop {
+  fill: none;
+  stroke: var(--color-danger);
+  stroke-width: 0.4;
+}
+
+.club-court__player,
+.club-court__ball {
+  transition: transform var(--club-minute, var(--duration-base)) linear;
+}
+
+.club-court__player circle {
+  stroke: var(--color-white);
+  stroke-width: 0.3;
+}
+
+.club-court__player--home circle {
+  fill: var(--color-team-home);
+}
+
+.club-court__player--away circle {
+  fill: var(--color-team-away);
+}
+
+.club-court__player text {
+  fill: var(--color-white);
+  font-size: 1.9px;
+  font-weight: var(--font-weight-semibold);
+  text-anchor: middle;
+}
+
+.club-court__ball {
+  fill: var(--color-white);
+  stroke: var(--color-ink);
+  stroke-width: 0.2;
+}
+
+.club-court__ball--score {
+  fill: var(--color-warning);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .club-court__player,
+  .club-court__ball {
+    transition: none;
+  }
+}

@@ -10,8 +10,8 @@ export function AnalyticsReadout() {
   const layer = useUi(store => store.analyticsLayer);
   const category = useUi(store => store.analyticsCategory);
   const tile = useUi(store => store.analyticsProbe);
-  const state = useGame(store => store.state);
-  const probe = useMemo(() => (layer && tile ? probeOf(state, layer, category, tile) : null), [state, layer, category, tile]);
+  const state = useGame(store => (layer && tile ? store.state : null));
+  const probe = useMemo(() => (state && layer && tile ? probeOf(state, layer, category, tile) : null), [state, layer, category, tile]);
 
   if (!layer || layer === 'movement.flows') return null;
   if (!tile) return <p className="analytics-readout analytics-readout-hint">{t('analytics.probe.empty')}</p>;

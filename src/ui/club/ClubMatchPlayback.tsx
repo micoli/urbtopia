@@ -17,7 +17,7 @@ export function ClubMatchPlayback({ live, durationMs, finished = live.finished, 
     <>
       <div className="club-transport">
         <ActionButton variant="primary" disabled={finished} onClick={live.toggle}>{live.playing ? t('club.match.pause') : t('club.match.play')}</ActionButton>
-        {lastStep !== undefined && <MatchTimeSlider step={live.step} lastStep={lastStep} onSeek={live.seek} />}
+        {lastStep !== undefined && <MatchTimeSlider step={Math.min(live.step, lastStep)} lastStep={lastStep} onSeek={live.seek} />}
       </div>
       <div className="club-actions">
         <ActionButton variant="default" disabled={finished} onClick={live.skip}>{t('club.match.skip')}</ActionButton>

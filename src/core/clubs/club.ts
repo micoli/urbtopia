@@ -1,6 +1,6 @@
 import { hashSeed, nextRandom } from '../engine/random';
 import { FIRST_NAMES, LAST_NAMES } from './names';
-import type { ClubData, ClubError, ClubSport, Player, SportRules } from './clubTypes';
+import { CLUB_SPORTS, type ClubData, type ClubError, type ClubSport, type Player, type SportRules } from './clubTypes';
 
 export const CLUB = {
   startBudget: 5000,
@@ -115,4 +115,4 @@ export function advanceClub(rules: SportRules, club: ClubData, hours: number): C
   return next.budget < CLUB.debtLimit ? { ...next, budget: CLUB.debtLimit } : next;
 }
 
-export const isClubSport = (value: unknown): value is ClubSport => value === 'football' || value === 'baseball';
+export const isClubSport = (value: unknown): value is ClubSport => (CLUB_SPORTS as readonly unknown[]).includes(value);

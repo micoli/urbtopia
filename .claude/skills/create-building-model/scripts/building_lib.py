@@ -38,7 +38,7 @@ PALETTE_HEX = dict(PALETTE_ENTRIES)
 # Colors measured on the Kenney suburban and commercial kits (palette cells of the "urbtopia" style only, so the
 # palette image of every other style stays byte-identical).
 URBTOPIA_ENTRIES = [
-    ("uwall", "#f1f1f6"), ("uroof", "#96ddbc"), ("utrim", "#9ea2b4"), ("uframe", "#a3a7b8"), ("udark", "#7a7d8c"), ("uslab", "#b4b8c8"), ("uwood", "#c58b52"), ("usand", "#e3cc92"), ("vtone1", "#c2432e"), ("vtone2", "#a63a28"), ("vtone3", "#9ea2b4"),
+    ("uwall", "#f1f1f6"), ("uroof", "#96ddbc"), ("utrim", "#9ea2b4"), ("uframe", "#a3a7b8"), ("udark", "#7a7d8c"), ("uslab", "#b4b8c8"), ("uwood", "#c58b52"), ("usand", "#e3cc92"), ("vtone1", "#c2432e"), ("vtone2", "#a63a28"), ("vtone3", "#9ea2b4"), ("ugreyviolet", "#9b93b8"),
 ]
 
 # The "vtone" cells are role cells: a family sets them to the colors of its first tone, and the build writes one palette PNG per other tone, so the game repaints a model by swapping its palette texture.
@@ -4486,6 +4486,159 @@ def build_basketball_court(spec, out_dir):
         gaps = ((1.2, 1.8),) if side == 1 else ()
         net_run(parts, f"side_{side}", (side * fence_x, -fence_y), (side * fence_x, fence_y), 0.24, base, frame, net, gaps=gaps)
     ob = lpm.finish(spec["id"], parts, palette, budget=6000, center=False)
+    return export_model(ob, spec, out_dir)
+
+
+def build_basketball_arena(spec, out_dir):
+    """An open-air basketball arena filling 10x8: an orange court with white lines, blue keys, two hoops, a scorer table and team benches inside a rounded-rectangle bowl of four seat tiers (tone color) on all four sides, a concrete facade with a glass band under four white sail-shaped canopy blades (one per side, tilted up toward the court, seat-colored underside and lip, on raked masts) leaving the corners open, a four-sided video screen hung over the center circle by stays from the blades, and trees at the corners. No floodlight masts."""
+    style = spec.get("style", "urbtopia")
+    entries = palette_for(spec, style)
+    index = PALETTE_NAMES.index
+    slab, white, grey, black, wall, glass, sun, court_color, key_color, rim_color, grass, seat, blue_grey, grey_violet = (
+        index(n) for n in ("uslab", "white", "utrim", "graphite", "uwall", "glass_blue", "sun", "tangerine", "cobalt", "brick", "bush", "vtone1", "bluegrey", "ugreyviolet"))
+    lpm.reset()
+    palette = lpm.Palette([(name, hex_, 0.0, 0.7) for name, hex_ in entries])
+    parts = []
+    count = 40
+
+    def oval(a, b, points=count):
+        return oval_points(a, b, points)
+
+    base, half_x, half_y = 0.02, 2.4, 1.3
+    parts.append(lpm.sweep("bowl_floor", oval(2.75, 1.65), 0.006, at=(0, 0, base), color=slab, axis="z"))
+    parts.append(lpm.box("court", (2 * half_x, 2 * half_y, 0.012), at=(0, 0, base), color=court_color))
+    top = base + 0.012
+    line = 0.014
+    hoop_x = half_x - 0.2
+
+    for end in (-1, 1):
+        parts.append(lpm.box(f"key_{end}", (0.9, 0.7, 0.002), at=(end * (half_x - 0.45), 0, top), color=key_color))
+        parts.append(lpm.box(f"free_throw_{end}", (line, 0.7 + line, 0.004), at=(end * (half_x - 0.9), 0, top), color=white))
+        for side in (-1, 1):
+            parts.append(lpm.box(f"key_side_{end}_{side}", (0.9, line, 0.004), at=(end * (half_x - 0.45), side * 0.35, top), color=white))
+            parts.append(lpm.box(f"three_point_side_{end}_{side}", (0.89, line, 0.004), at=(end * (1.51 + 0.445), side * 1.1, top), color=white))
+        parts.append(lpm.box(f"end_line_{end}", (line, 2 * half_y - 0.02, 0.004), at=(end * (half_x - line / 2), 0, top), color=white))
+        circle_start, circle_stop = (90, 270) if end == 1 else (-90, 90)
+        arc_line(parts, f"free_throw_circle_{end}", (end * (half_x - 0.9), 0), 0.3, circle_start, circle_stop, top, white, step=20.0)
+        arc_start, arc_stop = (122.2, 237.8) if end == 1 else (-57.8, 57.8)
+        arc_line(parts, f"three_point_{end}", (end * hoop_x, 0), 1.3, arc_start, arc_stop, top, white, step=10.0)
+    for side in (-1, 1):
+        parts.append(lpm.box(f"side_line_{side}", (2 * half_x, line, 0.004), at=(0, side * (half_y - line / 2), top), color=white))
+    parts.append(lpm.box("half_line", (line, 2 * half_y - 0.02, 0.004), at=(0, 0, top), color=white))
+    arc_line(parts, "center_circle", (0, 0), 0.3, 0, 360, top, white, step=20.0)
+    arc_line(parts, "center_dot", (0, 0), 0.04, 0, 360, top, white, width=0.04, step=45.0)
+
+    for end in (-1, 1):
+        parts.append(lpm.prism(f"pole_{end}", 6, 0.016, 0.34, at=(end * 2.62, 0, base), color=black))
+        parts.append(lpm.box(f"pole_pad_{end}", (0.05, 0.05, 0.12), at=(end * 2.62, 0, base), color=rim_color))
+        parts.append(lpm.box(f"arm_{end}", (0.34, 0.02, 0.02), at=(end * 2.46, 0, top + 0.28), color=black))
+        parts.append(lpm.box(f"board_{end}", (0.008, 0.22, 0.13), at=(end * 2.3, 0, top + 0.22), color=white))
+        parts.append(lpm.box(f"board_mark_{end}", (0.009, 0.08, 0.05), at=(end * 2.29, 0, top + 0.24), color=black))
+        parts.append(lpm.lathe(f"rim_{end}", [(0.04, 0.0), (0.04, 0.006), (0.052, 0.006), (0.052, 0.0)], segments=10, at=(end * hoop_x, 0, top + 0.235), color=rim_color))
+        parts.append(lpm.prism(f"hoop_net_{end}", 8, 0.046, 0.05, at=(end * hoop_x, 0, top + 0.185), color=white, radius_top=0.026))
+
+    parts.append(lpm.box("scorer_table", (0.8, 0.1, 0.045), at=(0, -1.47, base + 0.006), color=slab))
+    parts.append(lpm.box("scorer_table_front", (0.8, 0.012, 0.03), at=(0, -1.415, base + 0.016), color=seat))
+    for number, x in enumerate((-1.0, 1.0)):
+        parts.append(lpm.box(f"bench_{number}", (0.6, 0.07, 0.03), at=(x, 1.47, base + 0.006), color=seat))
+        parts.append(lpm.box(f"bench_back_{number}", (0.6, 0.012, 0.05), at=(x, 1.52, base + 0.036), color=grey))
+        parts.append(lpm.box(f"bench_glass_{number}", (0.64, 0.01, 0.12), at=(x, 1.56, base + 0.006), color=glass))
+
+    tiers = [((2.75, 1.65), (3.25, 2.15), 0.26), ((3.25, 2.15), (3.45, 2.35), 0.28), ((3.45, 2.35), (4.0, 2.9), 0.5), ((4.0, 2.9), (4.7, 3.7), 0.74)]
+    for number, (inner, outer, height) in enumerate(tiers):
+        colour = slab if number == 1 else seat
+        parts.append(loop_solid(f"tier_{number}", oval(*outer), oval(*inner), (base, height), (base, height), colour))
+        parts.append(loop_solid(f"tier_rail_{number}", oval(*inner), oval(inner[0] + 0.03, inner[1] + 0.03), (height - 0.02, height + 0.025), (height - 0.02, height + 0.025), grey))
+    for number, ((a, b), z, length) in enumerate((((3.75, 2.65), 0.5, 0.55), ((4.35, 3.3), 0.74, 0.7))):
+        for step, (x, y) in enumerate(oval_points(a, b, 16)):
+            aisle = lpm.box(f"aisle_{number}_{step}", (0.04, length, 0.02), at=(0, 0, 0), color=wall)
+            lpm.rotate(aisle, math.degrees(math.atan2(y * 0.67, x * 0.67)) + 90)
+            lpm.move(aisle, x, y, z)
+            parts.append(aisle)
+    parts.append(loop_solid("facade", oval(4.9, 3.9), oval(4.7, 3.7), (base, 0.9), (base, 0.9), wall))
+    parts.append(loop_solid("facade_glass", oval(4.92, 3.92), oval(4.9, 3.9), (0.24, 0.66), (0.24, 0.66), glass))
+    parts.append(loop_solid("facade_plinth", oval(4.94, 3.94), oval(4.9, 3.9), (base, 0.1), (base, 0.1), grey))
+    parts.append(loop_solid("facade_band", oval(4.94, 3.94), oval(4.9, 3.9), (0.78, 0.9), (0.78, 0.9), seat))
+
+    for number, (nx, ny, reach) in enumerate(((1, 0, 4.93), (-1, 0, 4.93), (0, 1, 3.93), (0, -1, 3.93))):
+        def gate(name, depth, width, height, along, z, color):
+            size = (depth, width, height) if nx else (width, depth, height)
+            at = (nx * reach, along, z) if nx else (along, ny * reach, z)
+            parts.append(lpm.box(f"gate_{number}_{name}", size, at=at, color=color))
+
+        gate("opening", 0.06, 0.56, 0.5, 0, base, black)
+        for side in (-1, 1):
+            gate(f"leaf_{side}", 0.07, 0.26, 0.46, side * 0.14, base + 0.02, glass)
+            gate(f"pillar_{side}", 0.09, 0.06, 0.62, side * 0.31, base, white)
+        gate("mullion", 0.075, 0.02, 0.46, 0, base + 0.02, black)
+        gate("lintel", 0.1, 0.68, 0.08, 0, 0.55, index(("cobalt", "sun", "coral", "lime")[number]))
+        gate("canopy", 0.11, 0.8, 0.025, 0, 0.62, white)
+    parts.append(loop_solid("parapet",oval(4.94, 3.94), oval(4.7, 3.7), (0.9, 0.95), (0.9, 0.95), white))
+
+    blade_points, blade_z_outer, blade_z_inner, blade_thickness = 32, 1.18, 1.62, 0.07
+    outer_edge, inner_edge, lip_edge = oval(4.98, 3.98, blade_points), oval(4.1, 3.05, blade_points), oval(4.2, 3.14, blade_points)
+
+    def blade(name, outer, inner, z_outer, z_inner, thickness, color):
+        n = len(outer)
+        verts = [(x, y, z_outer) for x, y in outer] + [(x, y, z_inner) for x, y in inner]
+        verts += [(x, y, z_outer - thickness) for x, y in outer] + [(x, y, z_inner - thickness) for x, y in inner]
+        faces = [(0, n, 3 * n, 2 * n), (n - 1, 2 * n + n - 1, 3 * n + n - 1, 2 * n - 1)]
+        for k in range(n - 1):
+            faces += [(k, k + 1, n + k + 1, n + k), (2 * n + k, 3 * n + k, 3 * n + k + 1, 2 * n + k + 1)]
+            faces += [(2 * n + k, 2 * n + k + 1, k + 1, k), (3 * n + k + 1, 3 * n + k, n + k, n + k + 1)]
+        return lpm._object(name, _bm(verts, faces), color)
+
+    def beam(name, start, end, thickness, color):
+        run = math.hypot(end[0] - start[0], end[1] - start[1])
+        piece = lpm.box(name, (math.dist(start, end), thickness, thickness), at=(0, 0, 0), color=color)
+        lpm.rotate(piece, -math.degrees(math.atan2(end[2] - start[2], run)), "Y")
+        lpm.rotate(piece, math.degrees(math.atan2(end[1] - start[1], end[0] - start[0])), "Z")
+        lpm.move(piece, (start[0] + end[0]) / 2, (start[1] + end[1]) / 2, (start[2] + end[2]) / 2 - thickness / 2)
+        parts.append(piece)
+
+    side_centers = (0, 8, 16, 24)
+    for number, centre in enumerate(side_centers):
+        span = [(centre + step) % blade_points for step in range(-3, 4)]
+        pick = lambda edge: [edge[k] for k in span]
+        parts.append(blade(f"blade_{number}", pick(outer_edge), pick(inner_edge), blade_z_outer, blade_z_inner, blade_thickness, blue_grey if centre % 16 == 0 else grey_violet))
+        parts.append(blade(f"blade_under_{number}", pick(outer_edge), pick(inner_edge), blade_z_outer - blade_thickness, blade_z_inner - blade_thickness, 0.02, seat))
+        parts.append(blade(f"blade_lip_{number}", pick(lip_edge), pick(inner_edge), blade_z_inner + 0.04, blade_z_inner + 0.04, 0.1, seat))
+        for end in (-3, 3):
+            k = (centre + end) % blade_points
+            fraction = 0.55
+            top_x = outer_edge[k][0] + (inner_edge[k][0] - outer_edge[k][0]) * fraction
+            top_y = outer_edge[k][1] + (inner_edge[k][1] - outer_edge[k][1]) * fraction
+            top_z = blade_z_outer + (blade_z_inner - blade_z_outer) * fraction - blade_thickness
+            foot_x, foot_y = oval(4.96, 3.96, blade_points)[k]
+            beam(f"mast_{number}_{end}", (foot_x, foot_y, base), (top_x, top_y, top_z), 0.06, wall)
+
+    cube_bottom, cube_height, cube_half = 0.8, 0.42, 0.42
+    cube_top = cube_bottom + cube_height
+    parts.append(lpm.box("screen_body", (2 * cube_half, 2 * cube_half, cube_height), at=(0, 0, cube_bottom), color=black))
+    parts.append(lpm.box("screen_top", (2 * cube_half + 0.06, 2 * cube_half + 0.06, 0.03), at=(0, 0, cube_top), color=white))
+    parts.append(lpm.box("screen_bottom", (2 * cube_half + 0.06, 2 * cube_half + 0.06, 0.03), at=(0, 0, cube_bottom - 0.03), color=grey))
+    for face, (nx, ny) in enumerate(((0, -1), (0, 1), (-1, 0), (1, 0))):
+        wide = (0.74, 0.012, 0.3) if nx == 0 else (0.012, 0.74, 0.3)
+        parts.append(lpm.box(f"screen_{face}", wide, at=(nx * (cube_half + 0.004), ny * (cube_half + 0.004), cube_bottom + 0.06), color=glass))
+        for number, offset in enumerate((-0.19, 0.19)):
+            size = (0.24, 0.016, 0.11) if nx == 0 else (0.016, 0.24, 0.11)
+            parts.append(lpm.box(f"screen_score_{face}_{number}", size, at=(nx * (cube_half + 0.01) + (offset if nx == 0 else 0), ny * (cube_half + 0.01) + (offset if ny == 0 else 0), cube_bottom + 0.1), color=white))
+        size = (0.2, 0.016, 0.04) if nx == 0 else (0.016, 0.2, 0.04)
+        parts.append(lpm.box(f"screen_clock_{face}", size, at=(nx * (cube_half + 0.01), ny * (cube_half + 0.01), cube_bottom + 0.28), color=sun))
+    corner = cube_half + 0.03
+    for number, centre in enumerate(side_centers):
+        for end in (-3, 3):
+            k = (centre + end) % blade_points
+            x, y = inner_edge[k]
+            anchor = (math.copysign(corner, x), math.copysign(corner, y), cube_top + 0.03)
+            beam(f"stay_{number}_{end}", anchor, (x, y, blade_z_inner - blade_thickness), 0.04, black)
+
+    trees = [(sx * x, sy * y) for sx in (-1, 1) for sy in (-1, 1) for x, y in ((4.6, 3.6), (3.5, 3.65), (4.7, 2.6))]
+    for number, (x, y) in enumerate(trees):
+        parts.append(lpm.box(f"planter_{number}", (0.3, 0.3, 0.04), at=(x, y, base), color=grey))
+        parts.append(lpm.prism(f"trunk_{number}", 5, 0.02, 0.1, at=(x, y, 0.06), color=slab))
+        parts.append(lpm.lathe(f"crown_{number}", [(0.0, 0.14), (0.12, 0.18), (0.14, 0.28), (0.08, 0.38), (0.0, 0.42)], segments=6, at=(x, y, 0.06), color=grass))
+    ob = lpm.finish(spec["id"], parts, palette, budget=16000, center=False)
     return export_model(ob, spec, out_dir)
 
 

@@ -89,6 +89,13 @@ describe('Football simulation', () => {
     expect(state.events.filter(event => event.type === 'tactic')).toHaveLength(1);
   });
 
+  it('shows a decision at the minute it is taken, before the next minute is played', () => {
+    const club = founded();
+    const state = playUntil(club, opponent(55), 3, [{ minute: 20, kind: 'tactic', tactic: 'attacking' }], 20);
+    expect(state.minute).toBe(20);
+    expect(state.sides[0].tactic).toBe('attacking');
+  });
+
   it('weakens a side that lost a player to a red card', () => {
     const club = rated(founded(), 70);
     const reds = Array.from({ length: 400 }, (_, seed) => playUntil(club, opponent(70), seed + 1, []).sides[0].reds).reduce((a, b) => a + b, 0);

@@ -1,4 +1,5 @@
 import { FORMATIONS, type Formation, type MatchEvent, type MatchState } from '../../core';
+import { clamp, noise } from './seededNoise';
 
 // The pitch is 105 by 68, the home side defends the left goal and attacks to the right.
 export const PITCH = { width: 105, height: 68 };
@@ -22,13 +23,6 @@ export function formationSpots(formation: Formation): Spot[] {
 }
 
 const mirror = (spot: Spot): Spot => ({ x: PITCH.width - spot.x, y: PITCH.height - spot.y });
-
-const noise = (seed: number, minute: number, salt: number): number => {
-  const value = Math.sin(seed * 0.001 + minute * 12.9898 + salt * 78.233) * 43758.5453;
-  return value - Math.floor(value);
-};
-
-const clamp = (value: number, low: number, high: number): number => Math.min(high, Math.max(low, value));
 
 const RECENT_MINUTES = 3;
 

@@ -1,3 +1,4 @@
+import { useShallow } from 'zustand/react/shallow';
 import {CROP_IDS, fieldCap, isCropUnlocked, seedStockCapacity, seedStockUsed, type Building} from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
@@ -13,26 +14,31 @@ interface FarmPanelProps {
 }
 
 export function FarmPanel(_props: FarmPanelProps) {
-  const state = useGame((store) => store.state);
+  const fieldCount = useGame((store) => store.state.fields.length);
+  const cap = useGame((store) => fieldCap(store.state));
+  const seedsUsed = useGame((store) => seedStockUsed(store.state));
+  const seedsCapacity = useGame((store) => seedStockCapacity(store.state));
+  const seedStock = useGame((store) => store.state.seedStock);
+  const unlocked = useGame(useShallow((store) => CROP_IDS.map((crop) => isCropUnlocked(store.state, crop))));
   const { chooseTool, selectCrop } = uiStore.getState();
   const send = gameStore.getState().send;
 
   return (
     <section className="farm">
       <p>
-          {t('farm.seeds')}: {seedStockUsed(state)}/{seedStockCapacity(state)}
+          {t('farm.seeds')}: {seedsUsed}/{seedsCapacity}
       </p>
       <p>
-          {t('farm.fields')}: {state.fields.length}/{fieldCap(state)}
+          {t('farm.fields')}: {fieldCount}/{cap}
       </p>
       <hr/>
       <div className="crops">
-        {CROP_IDS.map((crop) => (
+        {CROP_IDS.map((crop, index) => (
           <CropRow
             key={crop}
             crop={crop}
-            unlocked={isCropUnlocked(state, crop)}
-            stock={state.seedStock[crop] ?? 0}
+            unlocked={unlocked[index] ?? false}
+            stock={seedStock[crop] ?? 0}
             onPlant={() => {
               selectCrop(crop);
               chooseTool({ kind: 'brush', action: 'plant', crop, tiles: [] });
@@ -42,10 +48,10 @@ export function FarmPanel(_props: FarmPanelProps) {
           />
         ))}
       </div>
-        <BlockedReason reason={state.fields.length >= fieldCap(state) ? t('farm.fieldCap') : state.fields.length === 0 ? t('farm.noFields') : null} />
+        <BlockedReason reason={fieldCount >= cap ? t('farm.fieldCap') : fieldCount === 0 ? t('farm.noFields') : null} />
         <ButtonRow align="stretch" spaced>
-            <ActionButton disabled={state.fields.length >= fieldCap(state)} onClick={() => chooseTool({ kind: 'brush', action: 'layField', tiles: [] })}>{t('farm.layFields')}</ActionButton>
-            <ActionButton disabled={state.fields.length === 0} onClick={() => chooseTool({ kind: 'brush', action: 'removeField', tiles: [] })}>{t('farm.removeFields')}</ActionButton>
+            <ActionButton disabled={fieldCount >= cap} onClick={() => chooseTool({ kind: 'brush', action: 'layField', tiles: [] })}>{t('farm.layFields')}</ActionButton>
+            <ActionButton disabled={fieldCount === 0} onClick={() => chooseTool({ kind: 'brush', action: 'removeField', tiles: [] })}>{t('farm.removeFields')}</ActionButton>
         </ButtonRow>
     </section>
   );

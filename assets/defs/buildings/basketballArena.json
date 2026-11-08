@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "sport",
+  "section": "build.sport",
+  "model": "buildings-basketball-arena-10x8-tone-a",
+  "footprint": [10, 8],
+  "cost": 12000,
+  "unlockCitizens": 800,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt"],
+  "name": {
+    "en": "Basketball arena",
+    "fr": "Arène de basket"
+  },
+  "description": {
+    "en": "An open-air Sport building with an orange court, stands on all four sides and a video screen hung over the center circle. It raises the Well-being of Homes in a {side}-tile square around it (+{wellbeingBonus}, like a service) and needs no power. It covers {width}×{depth} tiles; unlocks at {unlockCitizens} Citizens, costs {cost} Urbs.",
+    "fr": "Un bâtiment de sport en plein air avec un parquet orange, des gradins sur les quatre côtés et un écran vidéo suspendu au-dessus du rond central. Il augmente le bien-être des logements à moins de {side} cases (+{wellbeingBonus}) et ne consomme pas d’électricité. Il occupe {width}×{depth} cases ; se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs."
+  },
+  "radius": 12,
+  "wellbeingBonus": 10
+}

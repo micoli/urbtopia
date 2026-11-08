@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="../icon-192.png" />
     <title>Urbtopia Guide</title>
+    <style>
+      /* Fixed before any stylesheet loads: the game CSS the Guide shares declares its layers in its own order. */
+      @layer theme, base, components, legacy, utilities;
+    </style>
     <script>
       (function () {
         var stored = null;
