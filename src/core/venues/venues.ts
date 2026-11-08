@@ -9,7 +9,8 @@ import { entranceCell, gridSizeOf, takingsCapOf, VENUE as SHARED } from './share
 import { EVENT, eventBoundaries, eventBudgetOf, eventMultiplier, inCooldown, isEventActive } from './events';
 import { drawBreakdowns, isBroken, repairCost, restored, technicianRepairs, wearFixtures } from './wear';
 import { hashSeed } from '../engine/random';
-import { hiredOf, hireFeeOf, managerYield, postsOf, staffRolesOf, wagesPerHour } from './staff';
+import { filledStaff, hiredOf, hireFeeOf, managerYield, postsOf, staffRolesOf, totalStaff, wagesPerHour } from './staff';
+import { congestionStats } from '../traffic/congestion';
 import { earnedOf, rankOf } from './rank';
 import { isAdapting } from '../environment/adaptation';
 import { energyStats } from '../environment/energy';
@@ -34,7 +35,7 @@ export type { Layout, LayoutHint } from './layout';
 export type { RoomReport } from './rules';
 export { EVENT, eventBudgetOf, eventMultiplierOf, isEventActive, isEventScheduled, inCooldown, eventBoundaries } from './events';
 export { WEAR, conditionOf, isBroken, repairCost, technicianRepairCost } from './wear';
-export { STAFF, STAFF_ROLES, FRONT_ROLE, hiredOf, hireFeeOf, minTierOfRole, postsOf, staffRolesOf, totalStaff, wagesPerHour } from './staff';
+export { STAFF, STAFF_ROLES, FRONT_ROLE, hiredOf, hireFeeOf, minTierOfRole, postsOf, postsAtTier, staffRolesOf, totalStaff, wagesPerHour } from './staff';
 export { MAX_RANK, earnedOf, nextRankAt, rankOf } from './rank';
 
 export const isVenue = (building: Building): building is Building & { venue: VenueData } => building.venue !== undefined && isVenueType(building.type);
@@ -85,12 +86,20 @@ export function isVenuePowered(state: GameState, venue: Building, supplied?: Rea
   return ((supplied ?? energyStats(state).supplied).get(venue.id) ?? 0) >= economicPower(venue, energySavingOf(state)) - POWER_EPSILON;
 }
 
+// The share of a Venue's hired Staff that Citizens fill on the Commute; a Venue with no hired Staff is complete.
+export function venueFillRate(state: GameState, venue: Building & { venue: VenueData }): number {
+  const hired = totalStaff(venue.venue);
+  if (hired === 0 || isAdapting(state)) return 1;
+  return Math.min(1, (congestionStats(state).filledJobs.get(venue.id) ?? 0) / hired);
+}
+
 export function venuePerformance(state: GameState, venue: Building & { venue: VenueData }, powered = isVenuePowered(state, venue), at = state.lastSeen): VenuePerformance {
   const price = priceOf(venue.venue);
   const working: VenueData = { ...venue.venue, fixtures: venue.venue.fixtures.filter(fixture => !isBroken(fixture)) };
   const context: RuleContext = { working, price, surge: eventMultiplier(venue.venue, venueTypeOf(venue), venue.tier, at) };
-  const evaluation = evaluators[venueTypeOf(venue)](state, venue, context);
-  const yieldRate = managerYield(venue.venue);
+  const staffed = { ...venue, venue: filledStaff(venue.venue, venueFillRate(state, venue)) };
+  const evaluation = evaluators[venueTypeOf(venue)](state, staffed, context);
+  const yieldRate = managerYield(staffed.venue);
   const grossPerHour = evaluation.gross * yieldRate;
   const wages = wagesPerHour(venue.venue);
   const closed = venue.venue.takings <= 0 && grossPerHour < wages;

@@ -141,7 +141,7 @@ function layoutSignature(state: GameState, now: number): string {
   const network = transitNetwork(state, now);
   const buildings = state.buildings
     .filter((building) => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null || sellsTickets(building) || (TOURIST_GATES as readonly string[]).includes(building.type))
-    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${sellsTickets(building) ? ticketOf(building) : ''}:${network.coveredActivities.has(building.id) ? 1 : 0}:${frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier).join('+')}`);
+    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${jobsOf(building)}:${sellsTickets(building) ? ticketOf(building) : ''}:${network.coveredActivities.has(building.id) ? 1 : 0}:${frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier).join('+')}`);
   const openings = [...closedFractionsByTile(state)].map(([key, fraction]) => `${key}=${fraction.toFixed(3)}`);
   const pedestrianWays = (state.pedestrianWays ?? []).map(tileKey).sort().join(';');
   const gatherings = state.buildings.flatMap((building) => (movingGathering(building, now) ? [`${building.id}`] : [])).join(',');

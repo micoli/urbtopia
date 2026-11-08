@@ -1108,6 +1108,8 @@ export const CATALOG = {
   'panel.sportVisitors': ['Visitors on foot per day', 'Visiteurs à pied par jour'],
   'panel.sportUnused': ['Unused: no Home within walking range', 'Inutilisé : aucun logement à portée de marche'],
   'panel.jobs': ['Jobs filled', 'Emplois occupés'],
+  'panel.venueStaffJobs': ['Staff hired {hired} · Filled {filled} · Posts at this Tier {posts}', 'Personnel embauché {hired} · Pourvu {filled} · Postes à ce niveau {posts}'],
+  'panel.venueFillRate': ['Unfilled Staff weakens the Venue: {rate}% of its Staff comes to work', 'Le personnel non pourvu affaiblit le lieu : {rate}% de son personnel vient travailler'],
   'office.income': ['Income', 'Revenu'],
   'office.due': ['Earned', 'À récupérer'],
   'event.gatheringStarted': ['A Gathering has started.', 'Un rassemblement a commencé.'],

@@ -40,6 +40,14 @@ describe('BuildingJobs', () => {
     expect(render(office)).toContain(`0 / ${jobsOf(office)}`);
   });
 
+  it('shows hired, filled and Tier posts side by side for a Venue, with its Fill rate when Staff is missing', () => {
+    const arcade = { ...createBuilding(900, 'arcade', 57, 56, 0), tier: 3, venue: { fixtures: [], nextFixtureId: 1, takings: 0, staff: { employee: 2 } } };
+    const html = render(arcade);
+    expect(html).toContain('Staff hired 2');
+    expect(html).toContain('Posts at this Tier');
+    expect(html).toContain('0% of its Staff comes to work');
+  });
+
   it('shows nothing for a building that offers no Job', () => {
     const home = createBuilding(900, 'home', 56, 59, 0);
     expect(render(home)).toBe('');

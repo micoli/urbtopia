@@ -2,7 +2,7 @@ import { isGood, valueOf, type ItemId } from '../economy/items';
 import { FIXTURES } from './fixtures';
 import { tilesOf, type LayoutHint } from './layout';
 import { clamp01, emptyLayout, serviceRatio, type Evaluate } from './rules';
-import { frontRate, hiredOf } from './staff';
+import { frontRate, hiredOf, presenceOf } from './staff';
 import { neighbourhoodVisitors, priceAcceptance } from './shared';
 import { venueTierOf } from './profiles';
 import type { Rotation, Storage, VenueData, VenueFixture } from '../engine/state';
@@ -125,7 +125,7 @@ export const evaluateRestaurant: Evaluate = (state, venue, { working, price, sur
 
   const cooktops = fixtures.filter(fixture => FIXTURES[fixture.type].cook !== undefined);
   const preps = fixtures.filter(fixture => FIXTURES[fixture.type].prep);
-  const cookRate = (hiredOf(venue.venue, 'cook') > 0 ? 1 : RESTAURANT.withoutCookRate) * (1 + RESTAURANT.assistantBoost * hiredOf(venue.venue, 'kitchenAssistant'));
+  const cookRate = (presenceOf(venue.venue, 'cook') + (1 - presenceOf(venue.venue, 'cook')) * RESTAURANT.withoutCookRate) * (1 + RESTAURANT.assistantBoost * hiredOf(venue.venue, 'kitchenAssistant'));
   const hasPrep = (cooktop: VenueFixture): boolean => preps.some(prep => withinReach(cooktop, prep));
   const kitchen = cooktops.reduce((total, cooktop) => total + FIXTURES[cooktop.type].cook! * (hasPrep(cooktop) ? 1 + RESTAURANT.prepBonus : 1), 0) * cookRate;
   const waiters = hiredOf(venue.venue, 'waiter');
@@ -138,7 +138,7 @@ export const evaluateRestaurant: Evaluate = (state, venue, { working, price, sur
   const served = servedItems.length > 0 ? Math.min(accepted, capacity) : 0;
 
   const bars = fixtures.filter(fixture => FIXTURES[fixture.type].drinks !== undefined);
-  const barRate = hiredOf(venue.venue, 'bartender') > 0 ? 1 : RESTAURANT.withoutBartenderRate;
+  const barRate = presenceOf(venue.venue, 'bartender') + (1 - presenceOf(venue.venue, 'bartender')) * RESTAURANT.withoutBartenderRate;
   const barCapacity = sum(bars, fixture => FIXTURES[fixture.type].drinks) * barRate;
   const drinks = Math.min(barCapacity, served * RESTAURANT.drinkShare + seating.barSeats * RESTAURANT.stoolDrinks);
 

@@ -6,9 +6,10 @@ import { FIXTURES, fixtureIdsInCategory } from './fixtures';
 import { venueBoundaries, venuePerformance } from './venues';
 
 const H = 3_600_000;
+import { commuteRoad } from './commuteRoad';
 const building = (id: number, type: Building['type'], x: number, y: number, extra: Partial<Building> = {}): Building => ({ ...createBuilding(id, type, x, y, 0), ...extra });
 const city = (storage: GameState['storage'] = { materials: { milk: 100, henEgg: 100 }, goods: { bread: 100, cannedFish: 100 } }, urbs = 100_000): GameState => ({
-  ...newGame({ seed: 'restaurant', now: 0 }), nextId: 100, urbs, tutorial: null, adaptationUntil: 0, lastSeen: 0, storage,
+  ...newGame({ seed: 'restaurant', now: 0 }), nextId: 100, urbs, tutorial: null, adaptationUntil: 0, roads: commuteRoad, lastSeen: 0, storage,
   buildings: [building(1, 'restaurant', 55, 50), building(2, 'home', 52, 50, { tier: 4 }), building(3, 'coalPlant', 90, 40, { tier: 4 })],
 });
 const send = (state: GameState, command: Command, now = 0) => {
