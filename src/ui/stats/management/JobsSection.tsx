@@ -23,7 +23,7 @@ export function JobsSection({state, congestion}: JobsSectionProps) {
         {summary.uncounted >= 1 && <p>{t('eco.uncountedJoblessHelp')}</p>}
         <p>{t('eco.jobs')}: {summary.offered.toFixed(0)} · {t('eco.unfilledJobsTotal')}: {summary.unfilled.toFixed(0)}</p>
         <p>{t('eco.unemployedHelp')}</p>
-        <DiagnosisPanel diagnosis={diagnosis}/>
+        <DiagnosisPanel diagnosis={diagnosis} layer="data.jobs"/>
         <p>{t('panel.jobsModes').replace('{walking}', String(Math.round(modes.walking))).replace('{cycling}', String(Math.round(modes.cycling))).replace('{transit}', String(Math.round(modes.transit))).replace('{car}', String(Math.round(modes.car)))}</p>
         <JobsByKind state={state} congestion={congestion}/>
         <VenueStaffList state={state} congestion={congestion}/>

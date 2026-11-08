@@ -1,6 +1,7 @@
 const texts = {
   'diagnosis.title': ['Why?', 'Pourquoi ?'],
   'diagnosis.showOnMap': ['Show on map', 'Voir sur la carte'],
+  'diagnosis.showLayer': ['Show the {layer} layer', 'Voir le calque {layer}'],
 };
 
 export type DiagnosisMessageKey = keyof typeof texts;
