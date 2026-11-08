@@ -1,5 +1,9 @@
 {
   "$schema": "../schemas/balance-traffic.schema.json",
   "roadTierCosts": [0, 8, 20],
-  "roadSpeeds": [1.5, 2, 2.5]
+  "roadSpeeds": [1.5, 2, 2.5],
+  "unemployment": {
+    "tolerance": 0.05,
+    "maxPenalty": 20
+  }
 }

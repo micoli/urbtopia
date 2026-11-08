@@ -5,6 +5,7 @@ import { betaMessages } from './beta';
 import { bugReportMessages } from './bugReport';
 import { congestionDiagnosisMessages } from './congestionDiagnosis';
 import { wasteDiagnosisMessages } from './wasteDiagnosis';
+import { jobsDiagnosisMessages } from './jobsDiagnosis';
 import { casinoMessages } from './casino';
 import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
@@ -60,6 +61,7 @@ export const MESSAGES = {
   ...bugReportMessages('en'),
   ...congestionDiagnosisMessages('en'),
   ...wasteDiagnosisMessages('en'),
+  ...jobsDiagnosisMessages('en'),
 };
 
 export type MessageKey = keyof typeof MESSAGES;

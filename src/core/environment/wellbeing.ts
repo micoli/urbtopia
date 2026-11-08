@@ -7,7 +7,7 @@ import { citizensOf, totalCitizens } from '../buildings/city';
 import { coveredServiceUnits, missingServices, serviceCoverage, type ServiceCoverage } from '../services/services';
 import { isAdapting } from './adaptation';
 import { congestionStats, type CongestionStats } from '../traffic/congestion';
-import { CONGESTION } from '../traffic/roadTier';
+import { CONGESTION, UNEMPLOYMENT } from '../traffic/roadTier';
 import { WALKING } from '../traffic/walking';
 import { leisureRetention } from '../leisure/leisure';
 import { poweredCasinoIds } from '../leisure/poweredCasinos';
@@ -31,6 +31,17 @@ export function wellbeingTaxFactor(wellbeing: number): number {
 export function congestionPenaltyOf(ratio: number): number {
   if (ratio <= 1) return 0;
   return CONGESTION.penaltyCap * Math.min(1, (ratio - 1) / (CONGESTION.maxRatio - 1));
+}
+
+// The Well-being a Home loses to its Unemployed Citizens: none up to the tolerance, then linear to the cap at a Home with no Citizen in work.
+export function unemploymentPenaltyOf(unemployedShare: number): number {
+  if (unemployedShare <= UNEMPLOYMENT.tolerance) return 0;
+  return UNEMPLOYMENT.maxPenalty * Math.min(1, (unemployedShare - UNEMPLOYMENT.tolerance) / (1 - UNEMPLOYMENT.tolerance));
+}
+
+function unemployedShareOf(home: Building, congestion: CongestionStats): number {
+  const citizens = citizensOf(home.tier);
+  return citizens > 0 ? (congestion.homes.get(home.id)?.unemployed ?? 0) / citizens : 0;
 }
 
 interface HomeBenefitsEntry {
@@ -74,22 +85,23 @@ function computeHomeBenefits(state: GameState, home: Building, coalRates: Readon
   const servicePenalty = Math.min(SERVICES.penaltyCap, missing * SERVICES.missingPenalty);
   const congestionPenalty = isAdapting(state) ? 0 : congestionPenaltyOf(congestion.homes.get(home.id)?.ratio ?? 0);
   const gatheringPenalty = isAdapting(state) ? 0 : gatheringPenaltyOf(state, home, congestion);
+  const unemploymentPenalty = isAdapting(state) ? 0 : unemploymentPenaltyOf(unemployedShareOf(home, congestion));
   const walkingBonus = Math.max(0, Math.min(WELLBEING_LIMIT - withServices, Math.round(WALKING.wellbeingBonus * (congestion.homes.get(home.id)?.walkAccess ?? 0))));
   const beltBonus = green.wellbeing > 0 ? Math.max(0, Math.min(greenBeltBonusOf(state), WELLBEING_LIMIT - withServices - walkingBonus)) : 0;
   const knowledgeBonus = Math.max(0, Math.min(knowledgeEffect(state, 'wellbeing'), WELLBEING_LIMIT - withServices - walkingBonus - beltBonus));
-  const withoutSolidarity = withServices + walkingBonus + beltBonus + knowledgeBonus - pollutionPenalty - odorPenalty - servicePenalty - congestionPenalty - gatheringPenalty;
+  const withoutSolidarity = withServices + walkingBonus + beltBonus + knowledgeBonus - pollutionPenalty - odorPenalty - servicePenalty - congestionPenalty - gatheringPenalty - unemploymentPenalty;
   const solidarity = Math.min(solidarityBonus(state), WELLBEING_LIMIT - withoutSolidarity);
-  return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, odorPenalty, servicePenalty, congestionPenalty, gatheringPenalty, walkingBonus, knowledgeBonus, solidarityBonus: solidarity };
+  return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, odorPenalty, servicePenalty, congestionPenalty, gatheringPenalty, unemploymentPenalty, walkingBonus, knowledgeBonus, solidarityBonus: solidarity };
 }
 
 export function cityBenefits(state: GameState, coalRates: ReadonlyMap<number, number> = energyStats(state).coalRates) {
   const green = cityGreenBenefits(state);
   const citizens = totalCitizens(state);
-  if (!citizens) return { ...green, pollutionPenalty: 0, servicePenalty: 0, congestionPenalty: 0 };
+  if (!citizens) return { ...green, pollutionPenalty: 0, servicePenalty: 0, congestionPenalty: 0, unemploymentPenalty: 0 };
   const coverage = serviceCoverage(state);
   const poweredCasinos = poweredCasinoIds(state);
   const congestion = congestionStats(state);
-  const total = { wellbeing: 0, pollutionPenalty: 0, servicePenalty: 0, congestionPenalty: 0 };
+  const total = { wellbeing: 0, pollutionPenalty: 0, servicePenalty: 0, congestionPenalty: 0, unemploymentPenalty: 0 };
   for (const home of state.buildings) {
     if (!isHomeType(home.type)) continue;
     const weight = citizensOf(home.tier) / citizens;
@@ -98,6 +110,7 @@ export function cityBenefits(state: GameState, coalRates: ReadonlyMap<number, nu
     total.pollutionPenalty += benefits.pollutionPenalty * weight;
     total.servicePenalty += benefits.servicePenalty * weight;
     total.congestionPenalty += benefits.congestionPenalty * weight;
+    total.unemploymentPenalty += benefits.unemploymentPenalty * weight;
   }
   return { ...green, ...total };
 }

@@ -21,13 +21,33 @@
         "type": "number",
         "exclusiveMinimum": 0
       }
+    },
+    "unemployment": {
+      "type": "object",
+      "properties": {
+        "tolerance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maxPenalty": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "tolerance",
+        "maxPenalty"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
     "roadTierCosts",
-    "roadSpeeds"
+    "roadSpeeds",
+    "unemployment"
   ],
   "additionalProperties": false,
   "title": "Traffic balance",
-  "description": "assets/defs/balance/traffic.json: the cost of a road tile and the free-flow speed of a car, in tiles per minute, by Tier."
+  "description": "assets/defs/balance/traffic.json: the cost of a road tile and the free-flow speed of a car, in tiles per minute, by Tier, and the Well-being lost to Unemployed Citizens."
 }

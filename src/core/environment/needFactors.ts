@@ -1,6 +1,6 @@
 export const NEED_FACTOR_IDS = [
   'electricity', 'water', 'food', 'waste',
-  'safety', 'health', 'pollution', 'congestion', 'climate',
+  'safety', 'health', 'pollution', 'congestion', 'employment', 'climate',
   'culture', 'leisure', 'walking', 'solidarity',
   'education', 'knowledge', 'administration', 'shops',
   'worship', 'greenSpaces', 'biodiversity',

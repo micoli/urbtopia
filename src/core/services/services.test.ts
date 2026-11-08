@@ -129,40 +129,45 @@ describe('Service coverage', () => {
 });
 
 describe('Well-being from services', () => {
+  // These tests read the Well-being the Services give: the Unemployed Citizens of a Home next to a facility are not part of it.
+  const servicesWellbeing = (state: GameState, home: Building): number => {
+    const benefits = homeBenefits(state, home);
+    return benefits.wellbeing + benefits.unemploymentPenalty;
+  };
   it('adds 10 for a covered Service category', () => {
     const home = b(2, 'home', 2);
-    expect(homeBenefits(city([b(1, 'school', 0), home]), home).wellbeing).toBeCloseTo(10);
+    expect(servicesWellbeing(city([b(1, 'school', 0), home]), home)).toBeCloseTo(10);
   });
 
   it('has diminishing returns and stays under 100', () => {
     const home = b(2, 'home', 2);
     const state = city([home, b(1, 'school', 0), b(3, 'hospital', 0, 3), b(4, 'townHall', 0, 6), b(5, 'fireStation', 0, 9), b(6, 'communityHall', 0, 12)]);
-    const wellbeing = homeBenefits(state, home).wellbeing;
+    const wellbeing = servicesWellbeing(state, home);
     expect(wellbeing).toBeGreaterThan(19);
     expect(wellbeing).toBeLessThan(50);
   });
 
   it('counts a Service category once but stacks different Culture facilities', () => {
     const home = b(2, 'home', 2);
-    const education = homeBenefits(city([home, b(1, 'school', 0), b(3, 'middleSchool', 0, 4)]), home).wellbeing;
+    const education = servicesWellbeing(city([home, b(1, 'school', 0), b(3, 'middleSchool', 0, 4)]), home);
     expect(education).toBeCloseTo(10);
-    const culture = homeBenefits(city([home, b(1, 'communityHall', 0), b(3, 'theater', 0, 4)]), home).wellbeing;
+    const culture = servicesWellbeing(city([home, b(1, 'communityHall', 0), b(3, 'theater', 0, 4)]), home);
     expect(culture).toBeCloseTo(19);
   });
 
   it('penalises each missing required service by 10, capped at 40, outside the Adaptation period', () => {
     const home = b(2, 'home', 2, 0, { tier: 6 });
-    expect(homeBenefits(city([home]), home).wellbeing).toBe(-40);
+    expect(servicesWellbeing(city([home]), home)).toBe(-40);
     const fifth = b(6, 'home', 2, 0, { tier: 5 });
-    expect(homeBenefits(city([fifth, b(1, 'school', 0), b(3, 'highSchool', 0, 4)]), fifth).wellbeing).toBeCloseTo(0);
-    expect(homeBenefits(city([home], { adaptationUntil: H }), home).wellbeing).toBe(0);
-    expect(homeBenefits(city([b(5, 'home', 2, 0, { tier: 2 })]), b(5, 'home', 2, 0, { tier: 2 })).wellbeing).toBe(0);
+    expect(servicesWellbeing(city([fifth, b(1, 'school', 0), b(3, 'highSchool', 0, 4)]), fifth)).toBeCloseTo(0);
+    expect(servicesWellbeing(city([home], { adaptationUntil: H }), home)).toBe(0);
+    expect(servicesWellbeing(city([b(5, 'home', 2, 0, { tier: 2 })]), b(5, 'home', 2, 0, { tier: 2 }))).toBe(0);
   });
 
   it('only penalises services the current Tier requires', () => {
     const home = b(2, 'home', 2, 0, { tier: 3 });
     expect(missingServices(serviceCoverage(city([home])), home)).toEqual(['school']);
-    expect(homeBenefits(city([home]), home).wellbeing).toBe(-10);
+    expect(servicesWellbeing(city([home]), home)).toBe(-10);
   });
 });
 

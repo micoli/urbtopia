@@ -221,6 +221,7 @@ export type { TradeEffect, TradeLedgerEntry, TradeLine } from './trade/types';
 export { DIAGNOSIS, diagnosisOf } from './diagnosis/diagnosis';
 export type { Cause, Diagnosis } from './diagnosis/diagnosis';
 export { CONGESTION_DIAGNOSIS, diagnoseCongestion } from './traffic/diagnosis';
+export { diagnoseJobs } from './traffic/jobsDiagnosis';
 export { WASTE_DIAGNOSIS, diagnoseWaste } from './waste/diagnosis';
 export { ANALYTICS_LAYERS, DATA_LAYERS, MOVEMENT_LAYERS, isAnalyticsLayerId, levelOfLayer } from './analytics/layers';
 export type { AnalyticsLayerId, DataLayer, MovementLayer } from './analytics/layers';

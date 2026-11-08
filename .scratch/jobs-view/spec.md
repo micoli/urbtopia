@@ -18,7 +18,7 @@ Jobs are hard to read in the game:
 - A Venue's Staff counts for its performance in proportion to its **Fill rate** (front rate, security rate and manager yield).
 - A **Jobs** Data layer paints Homes by share of Unemployed Citizens and workplaces by Fill rate.
 - A **Jobs** section in City management (sub-tab "city") holds the totals, the split by kind of workplace, the modes, the Venues and the list of Unfilled Jobs, moved from the Traffic section.
-- Unemployed stays a statistic (ADR 0059 unchanged).
+- Unemployed lowers Well-being (ADR 0062, ticket 04); it was a pure statistic in ADR 0059.
 
 ## User Stories
 
@@ -26,8 +26,8 @@ Jobs are hard to read in the game:
 2. As a player, I want a Venue with Unfilled Jobs to perform less, so that hiring Staff nobody fills is not free of consequence.
 3. As a player, I want a Jobs Layer on the map, so that I see where Citizens lack Jobs and where workplaces lack Citizens.
 4. As a player, I want a Jobs section in City management, so that I do not look for employment in Traffic.
-5. As a player, I want Unemployed to stay without effect on Tax, Well-being or Sanction.
+5. As a player, I want Unemployed Citizens to lower the Well-being of their Home, so that the Jobs my city offers matter (amended by ADR 0062, ticket 04).
 
 ## Out of scope
 
-Any effect of Unemployed on Tax, Well-being, Needs or Sanction.
+A Sanction or a direct effect of Unemployed on the Tax (the Well-being effect of ticket 04 reaches the Tax only through Well-being).

@@ -177,7 +177,7 @@ A resident of a Home. The number of Citizens depends on the Home's tier and driv
 _Avoid_: Inhabitant, resident, sim
 
 **Well-being**:
-The satisfaction of a Home's Citizens, raised by nearby Green spaces, Public facility coverage and an active Solidarity reserve, lowered by coal pollution, missing services and Congestion on its Commute. It modulates the Home's Tax.
+The satisfaction of a Home's Citizens, raised by nearby Green spaces, Public facility coverage and an active Solidarity reserve, lowered by coal pollution, missing services, Congestion on its Commute and Unemployed Citizens. It modulates the Home's Tax.
 _Avoid_: Happiness, bonheur, mood, attractiveness
 
 **Mayor**:
@@ -477,7 +477,7 @@ The share of a workplace's Jobs that Citizens fill. For a Venue it is the filled
 _Avoid_: Occupancy, staffing level
 
 **Unemployed**:
-A Citizen who finds no Job within reach on their Commute. It is a statistic only: it changes neither Tax, Well-being, Needs nor Sanction. A Citizen of a Home with no Road, reached only by a BRT corridor or Pedestrian ways, is never counted Unemployed.
+A Citizen who finds no Job within reach on their Commute. Their share in a Home lowers its Well-being above a tolerance, up to a cap, through the Employment Need factor; it never causes a Sanction or blocks a Tier upgrade, and changes neither Tax nor Needs otherwise. A Citizen of a Home with no Road, reached only by a BRT corridor or Pedestrian ways, is never counted Unemployed.
 _Avoid_: Jobless, out of work
 
 **Travel time**:
