@@ -11,7 +11,8 @@ export const SUPERMARKET = {
   basket: 3,
   markupPerStep: 0.1,
   restockFee: 0.1,
-  stockerUnitsPerHour: 8,
+  stockerUnitsPerPass: 30,
+  stockerPassMinutes: 20,
   maxDecor: 0.15,
   stockEpsilon: 1e-6,
 };
@@ -101,23 +102,29 @@ export function restockShelf(fixtures: readonly VenueFixture[], goods: Storage['
   };
 }
 
-// Each stocker refills, every hour, the shelf with the lowest fill that already carries a Good.
+// Each stocker spends a budget of units per pass, always on the shelf with the lowest fill that already carries a Good.
 export function stockerRestocks(fixtures: readonly VenueFixture[], stockers: number, goods: Storage['goods'], funds: number): Restocked {
   let current = [...fixtures];
   let stock = goods;
   let spent = 0;
-  const served = new Set<number>();
   for (let index = 0; index < stockers; index++) {
-    const shelf = current
-      .filter(candidate => isShelf(candidate) && candidate.good !== undefined && !served.has(candidate.id) && stockOf(candidate) < FIXTURES[candidate.type].shelf!)
-      .sort((a, b) => stockOf(a) / FIXTURES[a.type].shelf! - stockOf(b) / FIXTURES[b.type].shelf! || a.id - b.id)[0];
-    if (!shelf) break;
-    served.add(shelf.id);
-    const result = restockShelf(current, stock, shelf.id, shelf.good!, funds - spent, SUPERMARKET.stockerUnitsPerHour);
-    if (!result) continue;
-    current = result.fixtures;
-    stock = result.goods;
-    spent += result.fee;
+    let budget = SUPERMARKET.stockerUnitsPerPass;
+    while (budget > 0) {
+      const shelf = lowestFilledShelf(current, stock);
+      if (!shelf) break;
+      const result = restockShelf(current, stock, shelf.id, shelf.good!, funds - spent, budget);
+      if (!result) break;
+      budget -= Math.floor(stockOf(result.fixtures.find(candidate => candidate.id === shelf.id)!) - stockOf(shelf));
+      current = result.fixtures;
+      stock = result.goods;
+      spent += result.fee;
+    }
   }
   return { fixtures: current, goods: stock, fee: spent };
+}
+
+function lowestFilledShelf(fixtures: readonly VenueFixture[], goods: Storage['goods']): VenueFixture | undefined {
+  return fixtures
+    .filter(candidate => isShelf(candidate) && candidate.good !== undefined && stockOf(candidate) < FIXTURES[candidate.type].shelf! && (goods[candidate.good] ?? 0) >= 1)
+    .sort((a, b) => stockOf(a) / FIXTURES[a.type].shelf! - stockOf(b) / FIXTURES[b.type].shelf! || a.id - b.id)[0];
 }

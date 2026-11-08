@@ -1,7 +1,7 @@
 import type { MessageKey } from '../i18n/messages';
 import type { CodexSection } from './catalog';
 
-export type CodexPage = 'economy' | 'storage' | 'energy' | 'sanctions' | 'market' | 'challenges' | 'solidarity' | 'waste' | 'politics' | 'transitReach' | 'chains' | 'analytics' | 'knowledge' | 'costs' | 'dayCycle' | 'annualEvents' | 'climate';
+export type CodexPage = 'economy' | 'storage' | 'energy' | 'sanctions' | 'market' | 'challenges' | 'solidarity' | 'waste' | 'politics' | 'transitReach' | 'chains' | 'analytics' | 'knowledge' | 'costs' | 'dayCycle' | 'annualEvents' | 'climate' | 'staff';
 
 export const CODEX_PAGES: readonly { id: CodexPage; section: CodexSection; title: MessageKey; description: MessageKey }[] = [
   { id: 'economy', section: 'codex.crops', title: 'codex.economy.title', description: 'codex.economy.intro' },
@@ -19,6 +19,7 @@ export const CODEX_PAGES: readonly { id: CodexPage; section: CodexSection; title
   { id: 'costs', section: 'codex.trade', title: 'codex.costs.title', description: 'codex.costs.intro' },
   { id: 'dayCycle', section: 'build.utilities', title: 'codex.dayCycle.title', description: 'codex.dayCycle.intro' },
   { id: 'climate', section: 'build.utilities', title: 'codex.climate.title', description: 'codex.climate.intro' },
+  { id: 'staff', section: 'build.shops', title: 'codex.staff.title', description: 'codex.staff.intro' },
   { id: 'annualEvents', section: 'build.annualEvents', title: 'codex.annualEvents.title', description: 'codex.annualEvents.intro' },
   { id: 'politics', section: 'build.publicFacilities', title: 'codex.politics.title', description: 'codex.politics.intro' },
 ];

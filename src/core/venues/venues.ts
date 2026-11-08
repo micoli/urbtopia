@@ -1,7 +1,7 @@
 import { FIXTURES } from './fixtures';
 import { evaluateArcade } from './arcade';
 import { evaluateHotel, stepReputation } from './hotel';
-import { evaluateSupermarket, nextStockOut, restockShelf, sellStock, stockerRestocks } from './supermarket';
+import { evaluateSupermarket, nextStockOut, restockShelf, sellStock, stockerRestocks, SUPERMARKET } from './supermarket';
 import { consumeIngredients, evaluateRestaurant, isIngredient, menuSlotsOf, nextIngredientOut } from './restaurant';
 import { isVenueType } from './profiles';
 import type { Layout } from './layout';
@@ -130,7 +130,16 @@ export const takingsPerHour = (state: GameState, venue: Building & { venue: Venu
 
 export const netPerHour = (performance: VenuePerformance): number => performance.closed || !performance.powered ? 0 : performance.grossPerHour - performance.wagesPerHour;
 
-const isHourBoundary = (state: GameState, time: number): boolean => (time + (state.timeOffset ?? 0)) % VENUE.hourMs === 0;
+const isBoundary = (state: GameState, time: number, periodMs: number): boolean => (time + (state.timeOffset ?? 0)) % periodMs === 0;
+
+const isHourBoundary = (state: GameState, time: number): boolean => isBoundary(state, time, VENUE.hourMs);
+
+const stockerPassMs = SUPERMARKET.stockerPassMinutes * 60_000;
+
+const nextStockerPass = (state: GameState, after: number): number => {
+  const offset = state.timeOffset ?? 0;
+  return (Math.floor((after + offset) / stockerPassMs) + 1) * stockerPassMs - offset;
+};
 
 interface Advanced {
   building: Building;
@@ -141,6 +150,7 @@ function advanceVenue(state: GameState, building: Building & { venue: VenueData 
   const type = venueTypeOf(building);
   const performance = venuePerformance(storage === state.storage ? state : { ...state, storage }, building, isVenuePowered(state, building, supplied), from);
   const boundary = isHourBoundary(state, to);
+  const stockerPass = type === 'supermarket' && isBoundary(state, to, stockerPassMs);
   if (performance.closed || !performance.powered) {
     if (type !== 'hotel' || !boundary) return { building, storage };
     return { building: { ...building, venue: { ...building.venue, reputation: stepReputation(building.venue, 0) } }, storage };
@@ -162,13 +172,13 @@ function advanceVenue(state: GameState, building: Building & { venue: VenueData 
     const repaired = technicianRepairs(fixtures, technicians, takings);
     fixtures = repaired.fixtures;
     takings -= repaired.spent;
-    if (type === 'supermarket') {
-      const restocked = stockerRestocks(fixtures, hiredOf(building.venue, 'stocker'), stored, takings);
-      fixtures = restocked.fixtures;
-      stored = restocked.goods;
-      takings -= restocked.fee;
-    }
     if (type === 'hotel') reputation = stepReputation(building.venue, performance.reputationTarget ?? 0);
+  }
+  if (stockerPass) {
+    const restocked = stockerRestocks(fixtures, hiredOf(building.venue, 'stocker'), stored, takings);
+    fixtures = restocked.fixtures;
+    stored = restocked.goods;
+    takings -= restocked.fee;
   }
   const next: VenueData = { ...building.venue, fixtures, takings, earned, ...(rng === undefined ? {} : { rng }), ...(reputation === undefined ? {} : { reputation }) };
   if (next.event && next.event.endsAt <= to) {
@@ -206,7 +216,8 @@ export function venueBoundaries(state: GameState, after: number, supplied?: Read
     if (type !== 'supermarket' && type !== 'restaurant') return events;
     const performance = venuePerformance(state, building, isVenuePowered(state, building, delivered), after);
     if (type === 'restaurant') return [...events, ...nextIngredientOut(state.storage, building.venue.eaten ?? {}, performance.consumptionPerHour, after, VENUE.hourMs)];
-    return [...events, ...nextStockOut(building.venue.fixtures, performance.salesByFixture, after, VENUE.hourMs)];
+    const passes = hiredOf(building.venue, 'stocker') > 0 ? [nextStockerPass(state, after)] : [];
+    return [...events, ...passes, ...nextStockOut(building.venue.fixtures, performance.salesByFixture, after, VENUE.hourMs)];
   });
 }
 
