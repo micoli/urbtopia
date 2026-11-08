@@ -1121,6 +1121,7 @@ export const CATALOG = {
   'stat.time': ['Time of day', 'Heure du jour'],
   'home.tier': ['Tier', 'Niveau'],
   'home.citizens': ['Citizens', 'Habitants'],
+  'home.working': ['working', 'au travail'],
   'home.tax': ['Tax due', 'Impôts à récupérer'],
   'panel.sportVisitors': ['Visitors on foot per day', 'Visiteurs à pied par jour'],
   'panel.sportUnused': ['Unused: no Home within walking range', 'Inutilisé : aucun logement à portée de marche'],
