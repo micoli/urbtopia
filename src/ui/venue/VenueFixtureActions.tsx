@@ -33,7 +33,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
     <section className="venue-build">
       <h3>{t(`venue.fixture.${fixture.type}`)}</h3>
       {partition ? null : <p><strong>{t('venue.condition')}</strong>: {Math.round(conditionOf(fixture))} %</p>}
-      {partition ? null : isBroken(fixture) ? <p className="note note--warn">{t('venue.broken')}</p> : conditionOf(fixture) < WEAR.breakdownBelow ? <p className="note note--warn">{t('venue.worn')}</p> : null}
+      {partition ? null : isBroken(fixture) ? <p className="note note--danger">{t('venue.broken')}</p> : conditionOf(fixture) < WEAR.breakdownBelow ? <p className="note note--warn">{t('venue.worn')}</p> : null}
       {hints.map(hint => <p key={hint} className="note note--warn">{t(`venue.hint.${hint}`)}</p>)}
       {movingId === null ? <VenueShelfStock venueId={venueId} fixture={fixture} /> : null}
       {earnings !== undefined ? <p><strong>{t('venue.fixtureEarnings')}</strong>: <UrbsAmount value={earnings} /></p> : null}
