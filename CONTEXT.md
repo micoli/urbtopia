@@ -349,7 +349,7 @@ An item the player places inside a Venue's interior: a counter, a table, a chair
 _Avoid_: Furniture, equipment, decoration
 
 **Staff**:
-The workers of a Venue, held as roles, not as individuals: manager, employee, technician and security in an Arcade; manager, cashier, stocker and security in a Supermarket; manager, receptionist, housekeeper and technician in a Hotel; cook, kitchen assistant, maître d', waiter and bartender in a Restaurant. Each role fills a post of the Venue's Tier (the manager from Tier 2, the technician from Tier 3), is staffed by Citizens like a Job, costs a one-off hiring fee of five days of wages, then a daily wage in Urbs.
+The workers of a Venue, held as roles, not as individuals: manager, employee, technician and security in an Arcade; manager, cashier, stocker and security in a Supermarket; manager, receptionist, housekeeper and technician in a Hotel; cook, kitchen assistant, maître d', waiter and bartender in a Restaurant. Each role fills a post of the Venue's Tier (the manager from Tier 2, the technician from Tier 3), is staffed by Citizens like a Job, costs a one-off hiring fee of five days of wages, then a daily wage in Urbs. Hired Staff are the Venue's Jobs; those Citizens do not come for are Unfilled Jobs.
 _Avoid_: Employee (one of the roles), worker, personnel
 
 **Condition**:
@@ -468,6 +468,14 @@ _Avoid_: Individual Citizen journey, Transit itinerary
 A place at a workplace that one Citizen can fill, whatever the way they get there. A workplace offers a number of Jobs set by its type and Tier.
 _Avoid_: Position, vacancy, employment
 
+**Unfilled Job**:
+A Job of a workplace that no Citizen fills on the Commute. For a Venue, the Jobs are its hired Staff: an Unfilled Job is a hired post nobody comes to, and its wage is still paid.
+_Avoid_: Vacancy, open position
+
+**Fill rate**:
+The share of a workplace's Jobs that Citizens fill. For a Venue it is the filled Staff over the hired Staff. It is a reading, never a rule, except that a Venue's Staff counts for its performance only in proportion to its Fill rate.
+_Avoid_: Occupancy, staffing level
+
 **Unemployed**:
 A Citizen who finds no Job within reach on their Commute. It is a statistic only: it changes neither Tax, Well-being, Needs nor Sanction. A Citizen of a Home with no Road, reached only by a BRT corridor or Pedestrian ways, is never counted Unemployed.
 _Avoid_: Jobless, out of work
@@ -536,7 +544,7 @@ A Layer showing how much Commuters or Pedestrians load the Roads and Sidewalks, 
 _Avoid_: Flow layer (Flow factor is a hydro term), traffic animation
 
 **Data layer**:
-A Layer showing a measure of the city over the map: Service coverage of one Service category, Well-being, Pollution, Congestion, Odor radius or Land value. Pollution, Odor, Congestion and Land value are read at every tile; Well-being and Service coverage are read per Home.
+A Layer showing a measure of the city over the map: Service coverage of one Service category, Well-being, Jobs, Pollution, Congestion, Odor radius or Land value. Pollution, Odor, Congestion and Land value are read at every tile; Well-being and Service coverage are read per Home; Jobs is read per Home (share of its Citizens Unemployed) and per workplace (Fill rate).
 
 **Land value**:
 A read-only indicator of how desirable a tile is: higher near Green spaces, Public facilities, Leisure buildings and Road or public transport access, lower near Pollution, Odor and Congestion. It has no effect on Parcel prices, Tax or Well-being.
