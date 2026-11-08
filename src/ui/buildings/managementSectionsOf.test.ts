@@ -7,7 +7,7 @@ const sectionsOf = (type: string) => managementSectionsOf({ type: type as Buildi
 
 describe('managementSectionsOf', () => {
   it.each([
-    ['home', ['eco-needs', 'eco-services']],
+    ['home', ['eco-needs', 'eco-services', 'eco-jobs']],
     ['workshop', ['eco-production']],
     ['waterTower', ['eco-water']],
     ['powerPlant', ['eco-energy']],

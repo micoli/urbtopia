@@ -25,6 +25,7 @@ import {SectionNavigation} from './management/SectionNavigation';
 import {TemperatureSection} from './management/TemperatureSection';
 import {TourismSection} from './management/TourismSection';
 import {TrafficSection} from './management/TrafficSection';
+import {JobsSection} from './management/JobsSection';
 import {RailMetroSection} from './management/railMetro/RailMetroSection';
 import {TransportMapSection} from './management/transportMap/TransportMapSection';
 import {TransportSection} from './management/TransportSection';
@@ -101,7 +102,8 @@ function CityManagementDialog() {
     const wasteSection = <WasteSection key="waste" state={state} onShowEmissions={() => showSection('eco-emissions')}/>;
     const emissionsSection = <EmissionsSection key="emissions" climate={climate} energy={energy} transport={transport}/>;
     const temperatureSection = <TemperatureSection key="temperature" breakdown={temperature} elements={coolingElements(state)} items={heatSourceItems(state, {climate, energy, transport, cooling: green.cooling})}/>;
-    const trafficSection = <TrafficSection key="traffic" state={state} congestion={congestion} transport={transport} onShowTransport={() => showSection('eco-transport')}/>;
+    const trafficSection = <TrafficSection key="traffic" state={state} congestion={congestion} transport={transport} onShowTransport={() => showSection('eco-transport')} onShowJobs={() => showSection('eco-jobs')}/>;
+    const jobsSection = <JobsSection key="jobs" state={state} congestion={congestion}/>;
     const railMetroSection = <RailMetroSection key="railMetro" state={state} transport={transport}/>;
     const transportSection = <TransportSection key="transport" transport={transport}/>;
     const transportMapSection = <TransportMapSection key="transportMap" state={state} transport={transport} congestion={congestion}/>;
@@ -119,6 +121,7 @@ function CityManagementDialog() {
         ],
         city: [
             servicesSection,
+            jobsSection,
             wellbeingSection,
         ],
         environment: [

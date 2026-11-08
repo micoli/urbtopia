@@ -1,6 +1,6 @@
 # Jobs view
 
-Status: needs-triage
+Status: implemented
 
 Follow-up to [job-search-by-travel-time](../job-search-by-travel-time/spec.md) and [ADR 0059](../../docs/adr/0059-every-citizen-looks-for-a-job-and-picks-the-mode-by-travel-time.md). Vocabulary (**Job**, **Unfilled Job**, **Fill rate**, **Unemployed**, **Staff**, **Data layer**) is in `CONTEXT.md`.
 

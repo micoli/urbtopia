@@ -196,6 +196,7 @@ export { SPORT_VENUES, SPORT_VENUE_TYPES, isSportVenueType, type SportVenueType 
 export { CONGESTION, ROAD_TIER_COSTS, MAX_ROAD_TIER, laneCapacity, roadTierOf, roadTierUpgradeCost } from './traffic/roadTier';
 export { JOBS, jobsOf } from './traffic/jobs';
 export { unfilledWorkplaces, type UnfilledWorkplace } from './traffic/unfilledJobs';
+export { JOB_KINDS, jobKindOf, jobsByKind, jobsByMode, venueStaffRows, type JobKind, type JobsOfKind, type VenueStaffRow } from './traffic/jobsReport';
 export { BUS_TRAFFIC } from './traffic/busTraffic';
 export { cityTransportStats } from './traffic/cityTransport';
 export { congestionStats, workplaceTypes } from './traffic/congestion';

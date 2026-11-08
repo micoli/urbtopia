@@ -1,6 +1,6 @@
 # 03: Jobs section in City management
 
-Status: needs-triage
+Status: done
 Blocked by: 01
 
 **What to build:** A `eco-jobs` section in `MANAGEMENT_SECTIONS`, in the group "city".
