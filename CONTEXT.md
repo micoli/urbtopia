@@ -249,7 +249,7 @@ The city management view that shows the five Need levels stacked, each with its 
 _Avoid_: Maslow pyramid, happiness chart
 
 **Worship place**:
-A Public facility of the Worship Service category (church, synagogue, mosque, Buddhist temple). Optional like Culture: its absence never lowers Well-being or blocks a Tier upgrade, and different Worship places stack their Well-being. It feeds the Worship factor of the Fulfilment Need level.
+A Public facility of the Worship Service category (church, synagogue, mosque, Buddhist temple). Optional like Culture: its absence never lowers Well-being or blocks a Tier upgrade, and several Worship places count once, at half the Well-being of another Service category. It feeds the Worship factor of the Fulfilment Need level.
 _Avoid_: Religious building, temple (one of the four)
 
 **Knowledge**:

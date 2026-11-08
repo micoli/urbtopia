@@ -1,7 +1,7 @@
 import { createBuilding } from '../buildings/buildingSpecs';
 import { citizensOf } from '../buildings/city';
 import { centerOf, distance } from '../environment/ecology';
-import { FACILITIES, FACILITY_TYPES, facilityCapacity, facilityRadius, SERVICE_CATEGORIES, facilitiesOfCategory, isWithinReach, requiredServices, type FacilityType, type ServiceCategory, type ServiceKey } from './facilities';
+import { FACILITIES, FACILITY_TYPES, SERVICES, facilityCapacity, facilityRadius, SERVICE_CATEGORIES, facilitiesOfCategory, isWithinReach, requiredServices, type FacilityType, type ServiceCategory, type ServiceKey } from './facilities';
 import type { Building, GameState, Rotation } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { isWasteCovered, isWasteMissing, wasteCauseOf, wasteReport, type WasteCause } from '../waste/waste';
@@ -176,14 +176,16 @@ export function coveredCategories(coverage: ServiceCoverage, homeId: number): Se
   return SERVICE_CATEGORIES.filter(category => facilitiesOfCategory(category).some(type => covered.has(type)));
 }
 
-const STACKING_CATEGORIES: readonly ServiceCategory[] = ['culture', 'worship'];
+const STACKING_CATEGORIES: readonly ServiceCategory[] = ['culture'];
 
 export function coveredServiceUnits(coverage: ServiceCoverage, homeId: number): number {
   const covered = coverage.get(homeId);
   if (!covered) return 0;
   const stackingTypes = STACKING_CATEGORIES.flatMap(category => facilitiesOfCategory(category)).filter(type => covered.has(type)).length;
-  const otherCategories = coveredCategories(coverage, homeId).filter(category => !STACKING_CATEGORIES.includes(category)).length;
-  return otherCategories + stackingTypes;
+  const categories = coveredCategories(coverage, homeId);
+  const otherCategories = categories.filter(category => !STACKING_CATEGORIES.includes(category) && category !== 'worship').length;
+  const worship = categories.includes('worship') ? SERVICES.worshipWeight : 0;
+  return otherCategories + stackingTypes + worship;
 }
 
 export function categoryCoverageRatio(state: GameState, category: ServiceCategory): number {
