@@ -249,7 +249,7 @@ The city management view that shows the five Need levels stacked, each with its 
 _Avoid_: Maslow pyramid, happiness chart
 
 **Worship place**:
-A Public facility of the Worship Service category (church, synagogue, mosque, Buddhist temple). Optional like Culture: its absence never lowers Well-being or blocks a Tier upgrade, and different Worship places stack their Well-being. It feeds the Worship factor of the Fulfilment Need level.
+A Public facility of the Worship Service category (church, synagogue, mosque, Buddhist temple). Optional like Culture: its absence never lowers Well-being or blocks a Tier upgrade, and several Worship places count once, at half the Well-being of another Service category. It feeds the Worship factor of the Fulfilment Need level.
 _Avoid_: Religious building, temple (one of the four)
 
 **Knowledge**:
@@ -401,7 +401,7 @@ A person from outside the city drawn by its Attractions and the Gatherings of it
 _Avoid_: Visitor (a customer of a Venue), Citizen, guest
 
 **Attraction**:
-A building that Tourists come to see all day long: a Museum, the Colosseum, a Casino, a Marina and its Boats, or an amusement ride. It holds no Gathering, except the Colosseum. A Hotel is not an Attraction: it lodges Tourists. Each Attraction has its own drawing power, raised by its Tiers.
+A building that Tourists come to see all day long: a Museum, the Colosseum, a Casino, a Marina and its Boats, or an amusement ride. It holds no Gathering, except the Colosseum. A Hotel is not an Attraction: it lodges Tourists. Each Attraction has its own drawing power, raised by its Tiers. A Museum is not a Culture facility (no Service coverage), but it is a Culture destination of the Walking trips, so it also gives Well-being to the Homes that walk to it.
 _Avoid_: Landmark, sight, Minigame
 
 **Arena**:

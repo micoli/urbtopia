@@ -253,6 +253,10 @@
   color: var(--color-warning);
 }
 
+.note--danger {
+  color: var(--color-danger);
+}
+
 .utility-normal {
   color: var(--color-accent);
 }

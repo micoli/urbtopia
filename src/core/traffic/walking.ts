@@ -40,7 +40,7 @@ export function maxWalkCost(): number {
   return WALKING.cyclingFactor * Math.max(WALKING.workThreshold, ...Object.values(WALKING.thresholds));
 }
 
-const CULTURE: readonly BuildingType[] = ['theater', 'concertHall', 'communityHall'];
+const CULTURE: readonly BuildingType[] = ['theater', 'concertHall', 'communityHall', 'masMuseum', 'niteroiMuseum', 'eyeMuseum', 'ordosMuseum', 'bilbaoMuseum', 'orsayMuseum'];
 const SPORT_COURTS: readonly BuildingType[] = ['basketballCourt', 'foot5'];
 const SCHOOLS: readonly BuildingType[] = ['school', 'middleSchool', 'highSchool', 'university'];
 

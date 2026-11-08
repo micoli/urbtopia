@@ -50,7 +50,7 @@ export function requiredServices(tier: number): FacilityType[] {
   return Object.entries(REQUIRED_SERVICES).flatMap(([from, keys]) => (tier >= Number(from) ? keys : []));
 }
 
-export const SERVICES = { wellbeingBonus: 10, missingPenalty: 10, penaltyCap: 40, taxWellbeingDivisor: 500 };
+export const SERVICES = { wellbeingBonus: 10, worshipWeight: 0.5, missingPenalty: 10, penaltyCap: 40, taxWellbeingDivisor: 500 };
 
 export const REACH_CORNER_RADIUS = 3;
 

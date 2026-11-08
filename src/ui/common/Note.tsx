@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 interface NoteProps {
-    tone?: 'warn' | 'muted';
+    tone?: 'warn' | 'muted' | 'danger';
     children: ReactNode;
 }
 
