@@ -538,6 +538,7 @@ export const CATALOG = {
   'eco.filledJobs': ['Jobs filled', 'Emplois pourvus'],
   'eco.unemployedHelp': ['Citizens without a job lower the Well-being of their Home once they pass 5% of its Citizens, up to a cap, and so its Tax through Well-being. Jobs go to the Citizens who reach them fastest, on foot first, then by bicycle, then by public transport or car, whichever is quicker.', 'Les habitants sans emploi abaissent le bien-être de leur logement au-delà de 5 % de ses habitants, jusqu’à un plafond, donc ses impôts par le bien-être. Les emplois vont aux habitants qui les atteignent le plus vite : à pied d’abord, puis à vélo, puis en transports en commun ou en voiture, selon le plus rapide.'],
   'eco.jobsSection': ['Jobs', 'Emplois'],
+  'eco.unfilledJobsTotal': ['Jobs nobody fills', 'Emplois non pourvus'],
   'eco.showJobs': ['Show Jobs', 'Voir les emplois'],
   'eco.jobsByKind': ['Jobs by kind of workplace', 'Emplois par type de lieu de travail'],
   'eco.jobsKind.industry': ['Industry', 'Industrie'],
