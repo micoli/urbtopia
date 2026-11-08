@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { prefsStore } from '../../i18n/prefsStore';
+import { PICK_MODES, prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { reloadApp } from '../../pwa/reloadApp';
 import { useInstallPrompt } from '../../pwa/useInstallPrompt';
@@ -7,6 +7,7 @@ import { dialogStore } from '../../store/dialogStore';
 import { releaseNotesStore } from '../../store/releaseNotesStore';
 import { uiStore } from '../../store/uiStore';
 import { ActionButton } from '../common/ActionButton';
+import { RadioChipGroup } from '../common/RadioChipGroup';
 import { SwitchField } from '../common/SwitchField';
 import { BetaSettings } from './BetaSettings';
 import { PickOffsetSlider } from './PickOffsetSlider';
@@ -20,6 +21,7 @@ function reviewReleaseNotes() {
 
 export function AppSettings() {
   const debug = useStore(prefsStore, (store) => store.debug);
+  const pickMode = useStore(prefsStore, (store) => store.pickMode);
   const hasReleaseNotes = useStore(releaseNotesStore, (store) => store.releases.some((release) => release.note !== null));
   const { canInstall, install } = useInstallPrompt();
 
@@ -53,11 +55,16 @@ export function AppSettings() {
       </SettingsSection>
       <BetaSettings />
       <SettingsSection title={t('settings.section.advanced')} icon="repair">
-        <div>
-          <small className="setting-text__description">{t('prefs.debugOffset.hint')}</small>
-          <PickOffsetSlider axis="x" />
-          <PickOffsetSlider axis="y" />
-        </div>
+        <SettingRow stacked label={t('prefs.pickMode')} description={t('prefs.pickMode.description')}>
+          <RadioChipGroup className="prefs-group" label={t('prefs.pickMode')} options={PICK_MODES.map(mode => ({ value: mode, label: t(`prefs.pickMode.${mode}`) }))} value={pickMode} onChange={prefsStore.getState().setPickMode} />
+        </SettingRow>
+        {pickMode === 'base' ? (
+          <div className="setting-indented">
+            <small className="setting-text__description">{t('prefs.debugOffset.hint')}</small>
+            <PickOffsetSlider axis="x" />
+            <PickOffsetSlider axis="y" />
+          </div>
+        ) : null}
         <SwitchField label={t('prefs.debug')} description={t('prefs.debug.description')} checked={debug} onChange={prefsStore.getState().setDebug} />
       </SettingsSection>
     </>

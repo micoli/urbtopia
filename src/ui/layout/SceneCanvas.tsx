@@ -93,6 +93,7 @@ export function SceneCanvas() {
       scene.setPickOffset(debugOffsetX, debugOffsetY);
     };
     showPickOffset();
+    scene.setPickMode(prefsStore.getState().pickMode);
     scene.onPick((x, y) => pickDotStore.getState().show(x, y));
     void scene.setPedestrianModel(prefsStore.getState().pedestrianModel);
     scene.camera.setFineRotation(prefsStore.getState().fineRotation);
@@ -135,6 +136,7 @@ export function SceneCanvas() {
       if (prefs.serviceCoverageType !== previous.serviceCoverageType) showServiceCoverage();
       showTraffic();
       showPedestrians();
+      if (prefs.pickMode !== previous.pickMode) scene.setPickMode(prefs.pickMode);
       if (prefs.debugOffsetX !== previous.debugOffsetX || prefs.debugOffsetY !== previous.debugOffsetY) showPickOffset();
       if (prefs.alwaysDay !== previous.alwaysDay) showDayCycle();
       if (prefs.trafficDensity !== previous.trafficDensity || prefs.pedestrianDensity !== previous.pedestrianDensity) showCrowdDensity();
