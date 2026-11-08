@@ -1,6 +1,6 @@
 # 02: Jobs Data layer
 
-Status: needs-triage
+Status: done
 Blocked by: none
 
 **What to build:** A Jobs Layer in the Analytics view. It projects figures the Commute already computes and adds no simulation.

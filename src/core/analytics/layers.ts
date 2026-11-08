@@ -1,7 +1,7 @@
 import type { Level } from '../map/level';
 
 export const MOVEMENT_LAYERS = ['pedestrians', 'walkways', 'cars', 'bus', 'brt', 'rail', 'metro', 'all', 'flows'] as const;
-export const DATA_LAYERS = ['coverage', 'wellbeing', 'pollution', 'congestion', 'odor', 'landValue', 'knowledge'] as const;
+export const DATA_LAYERS = ['coverage', 'wellbeing', 'pollution', 'congestion', 'odor', 'landValue', 'knowledge', 'jobs'] as const;
 
 export type MovementLayer = typeof MOVEMENT_LAYERS[number];
 export type DataLayer = typeof DATA_LAYERS[number];

@@ -9,6 +9,7 @@ import { homeKnowledge } from '../services/knowledge';
 import { facilitiesOfCategory, type ServiceCategory } from '../services/facilities';
 import { serviceCoverage, uncoveredReason } from '../services/services';
 import { congestionStats } from '../traffic/congestion';
+import { jobsOf, workplaceTypes } from '../traffic/jobs';
 import { accessFlowAt, footbridgeFlowAt } from '../traffic/walkFlows';
 import { transitModeOf } from './transitFields';
 import { transportStats } from '../traffic/cityTransport';
@@ -42,6 +43,19 @@ export interface Probe {
 const cause = (key: string, weight: number, focus: readonly Coord[] = [], params: Cause['params'] = {}): Cause => ({ key, weight, params, focus });
 
 const round = (value: number) => Math.round(value * 10) / 10;
+
+function buildingAt(state: GameState, tile: Coord): Building | null {
+  return state.buildings.find(building => footprintTiles(building).some(t => t.x === tile.x && t.y === tile.y)) ?? null;
+}
+
+// What the Jobs Layer reads on a tapped Home (its Unemployed Citizens) or workplace (its Fill rate).
+function jobsLines(state: GameState, building: Building): ProbeLine[] {
+  const stats = congestionStats(state);
+  if (isHomeType(building.type)) return [{ key: 'analytics.jobs.unemployed', value: round(stats.homes.get(building.id)?.unemployed ?? 0) }];
+  const offered = jobsOf(building);
+  if (offered === 0 || !workplaceTypes.includes(building.type)) return [];
+  return [{ key: 'analytics.jobs.fillRate', value: Math.round(((stats.filledJobs.get(building.id) ?? 0) / offered) * 100), suffix: '%' }, { key: 'analytics.jobs.filled', value: round(stats.filledJobs.get(building.id) ?? 0) }, { key: 'analytics.jobs.offered', value: offered }];
+}
 
 function homeAt(state: GameState, tile: Coord): Building | null {
   return state.buildings.find(building => isHomeType(building.type) && footprintTiles(building).some(t => t.x === tile.x && t.y === tile.y)) ?? null;
@@ -175,6 +189,11 @@ export function probeOf(state: GameState, layer: AnalyticsLayerId, category: Ser
     return value > 0 ? [{ key, value: round(value), ...(scales[index]?.suffix ? { suffix: scales[index]!.suffix } : {}) }] : [];
   });
   const home = homeAt(state, tile);
+  if (layer === 'data.jobs') {
+    const building = buildingAt(state, tile);
+    const jobs = building ? jobsLines(state, building) : [];
+    return jobs.length > 0 ? { lines: jobs, causes: [] } : null;
+  }
   const homeTints = home ? homeTintsOf(state, layer, category).find(tint => tint.x === home.x && tint.y === home.y) : undefined;
   if (home && homeTints) {
     if (layer === 'data.knowledge') lines.splice(0, lines.length, { key: 'analytics.layer.data.knowledge', value: round(homeKnowledge(state, home)) });

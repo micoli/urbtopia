@@ -1,5 +1,8 @@
 import { footprintOf } from '../buildings/buildingSpecs';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { citizensOf } from '../buildings/city';
+import { jobsOf, workplaceTypes } from '../traffic/jobs';
+import { congestionStats } from '../traffic/congestion';
 import { homeBenefits } from '../environment/wellbeing';
 import { homeKnowledge } from '../services/knowledge';
 import { serviceCoverage, transitReachLinks } from '../services/services';
@@ -43,11 +46,24 @@ function coverageTints(state: GameState, category: ServiceCategory, homes: reado
   });
 }
 
+// The Jobs Layer reads the Homes by the share of their Citizens in work and the workplaces by their Fill rate, on the same ramp: the more filled, the better.
+export function jobsTints(state: GameState): HomeTint[] {
+  const stats = congestionStats(state);
+  const homes = state.buildings.filter(building => isHomeType(building.type)).map(home => {
+    const citizens = citizensOf(home.tier);
+    return tintOf(home, 'wellbeing', citizens === 0 ? 1 : 1 - (stats.homes.get(home.id)?.unemployed ?? 0) / citizens);
+  });
+  const workplaces = state.buildings.filter(building => workplaceTypes.includes(building.type) && jobsOf(building) > 0)
+    .map(workplace => tintOf(workplace, 'wellbeing', Math.min(1, (stats.filledJobs.get(workplace.id) ?? 0) / jobsOf(workplace))));
+  return [...homes, ...workplaces];
+}
+
 // Layers that tint each Home instead of every tile.
 export function homeTintsOf(state: GameState, layer: AnalyticsLayerId, category: ServiceCategory): HomeTint[] {
   const homes = state.buildings.filter(building => isHomeType(building.type));
   if (layer === 'data.coverage') return coverageTints(state, category, homes);
   if (layer === 'data.wellbeing') return homes.map(home => tintOf(home, 'wellbeing', Math.min(1, Math.max(0, homeBenefits(state, home).wellbeing / 100))));
+  if (layer === 'data.jobs') return jobsTints(state);
   if (layer === 'data.knowledge') return homes.map(home => tintOf(home, 'value', Math.min(1, Math.max(0, homeKnowledge(state, home) / 100))));
   return [];
 }

@@ -39,3 +39,13 @@ describe('well-being tints', () => {
     });
   });
 });
+
+describe('jobs tints', () => {
+  it('tints Homes by the share of Citizens in work and workplaces by Fill rate, on the same ramp', () => {
+    const office = { ...createBuilding(900, 'office', 60, 59, 0), tier: 1 };
+    const homeWorker = home(901, 55, 59);
+    const tints = homeTintsOf({ ...city([office, homeWorker]), tutorial: null }, 'data.jobs', 'education');
+    expect(tints).toHaveLength(2);
+    expect(tints.every(tint => tint.ramp === 'wellbeing' && tint.share >= 0 && tint.share <= 1)).toBe(true);
+  });
+});

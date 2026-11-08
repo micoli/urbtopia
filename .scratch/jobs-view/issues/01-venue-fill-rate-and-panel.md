@@ -1,6 +1,6 @@
 # 01: Venue Fill rate and Jobs display
 
-Status: needs-triage
+Status: done
 Blocked by: none
 
 **What to build:** Make a Venue's Jobs readable and meaningful. Its Jobs stay its hired Staff; the Commute fills them in aggregate.
