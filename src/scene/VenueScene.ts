@@ -53,6 +53,7 @@ export class VenueScene {
   private wearRoot = new THREE.Group();
   private shelfStock = new ShelfStockLayer(() => { this.dirty = true; });
   private raycaster = new THREE.Raycaster();
+  private pickMode: 'base' | '3d' = '3d';
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private resizeObserver: ResizeObserver;
   private frameHandle = 0;
@@ -68,11 +69,11 @@ export class VenueScene {
   private builtSize = 0;
   private disposed = false;
   readonly ready: Promise<void>;
-  // `repeat` is true when Shift is held: the player keeps placing the same item.
-  onTapCell: (cell: Coord, repeat: boolean) => void = () => {};
+  // `repeat` is true when Shift is held: the player keeps placing the same item. `fixtureId` is the piece of furniture whose 3D model the tap hit, in the 3D pick mode.
+  onTapCell: (cell: Coord, repeat: boolean, fixtureId: number | null) => void = () => {};
   onHoverCell: (cell: Coord | null) => void = () => {};
   // A press on a piece of furniture grabs it: dragging then carries the piece instead of the room.
-  onGrab: (cell: Coord) => boolean = () => false;
+  onGrab: (cell: Coord, fixtureId: number | null) => boolean = () => false;
   onGrabMove: (cell: Coord) => void = () => {};
   onDrop: (cell: Coord | null) => void = () => {};
 
@@ -249,6 +250,7 @@ export class VenueScene {
       const model = piece && piece.shape !== 'straight' ? spec.joins![piece.shape] : spec.model;
       const rotation = piece ? piece.turns * Math.PI / 2 : -fixture.rotation * Math.PI / 2;
       const object = this.place(this.fixtureRoot, model, fixture.x + width / 2, fixture.y + depth / 2, rotation);
+      object.userData.fixtureId = fixture.id;
       if (spec.tint !== undefined) this.tint(object, spec.tint);
     }
     this.dirty = true;
@@ -285,6 +287,23 @@ export class VenueScene {
     return this.raycaster.ray.intersectPlane(this.groundPlane, new THREE.Vector3());
   }
 
+  // In the 3D mode a piece of furniture is picked on its model, wherever it is drawn; in the base mode, on the cell of the floor.
+  setPickMode(mode: 'base' | '3d'): void {
+    this.pickMode = mode;
+  }
+
+  private fixtureAt(clientX: number, clientY: number): number | null {
+    if (this.pickMode === 'base') return null;
+    const rect = this.canvas.getBoundingClientRect();
+    this.raycaster.setFromCamera(new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -(((clientY - rect.top) / rect.height) * 2 - 1)), this.camera);
+    for (const hit of this.raycaster.intersectObject(this.fixtureRoot, true)) {
+      for (let node: THREE.Object3D | null = hit.object; node && node !== this.fixtureRoot; node = node.parent) {
+        if (typeof node.userData.fixtureId === 'number') return node.userData.fixtureId;
+      }
+    }
+    return null;
+  }
+
   private cellAt(clientX: number, clientY: number): Coord | null {
     const hit = this.groundAt(clientX, clientY);
     if (!hit) return null;
@@ -305,7 +324,7 @@ export class VenueScene {
     this.pointerDown = { x: event.clientX, y: event.clientY, ground: this.groundAt(event.clientX, event.clientY) };
     this.dragged = false;
     const cell = this.cellAt(event.clientX, event.clientY);
-    this.grabbed = cell !== null && this.onGrab(cell);
+    this.grabbed = cell !== null && this.onGrab(cell, this.fixtureAt(event.clientX, event.clientY));
     try {
       this.canvas.setPointerCapture(event.pointerId);
     } catch {
@@ -325,7 +344,7 @@ export class VenueScene {
     if (carried) return this.onDrop(this.cellAt(event.clientX, event.clientY));
     if (!start || this.dragged) return;
     const cell = this.cellAt(event.clientX, event.clientY);
-    if (cell) this.onTapCell(cell, event.shiftKey);
+    if (cell) this.onTapCell(cell, event.shiftKey, this.fixtureAt(event.clientX, event.clientY));
   };
 
   // Dragging with the button down moves the room under the pointer, as in the city.

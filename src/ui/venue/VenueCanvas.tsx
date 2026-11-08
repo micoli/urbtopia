@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { canPlaceFixture, entranceCell, fixtureTiles, gridSizeOf, hiredOf, isBroken, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type VenueData, type VenueType } from '../../core';
+import { prefsStore } from '../../i18n/prefsStore';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
 import { gameStore } from '../../store/gameStore';
@@ -9,6 +10,13 @@ import { venueStore } from '../../store/venueStore';
 const venueOf = (venueId: number): (Building & { venue: VenueData }) | undefined => {
   const building = gameStore.getState().state.buildings.find(candidate => candidate.id === venueId);
   return building && isVenue(building) ? building : undefined;
+};
+
+// The piece of furniture a tap picked: the one whose model it hit, else the one on the cell.
+const fixtureAt = (venueId: number, cell: Coord, fixtureId: number | null) => {
+  const fixtures = venueOf(venueId)?.venue.fixtures ?? [];
+  const modelled = fixtureId === null ? undefined : fixtures.find(candidate => candidate.id === fixtureId);
+  return modelled ?? fixtures.find(candidate => fixtureTiles(candidate).some(tile => tile.x === cell.x && tile.y === cell.y));
 };
 
 interface VenueCanvasProps {
@@ -25,6 +33,10 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
     if (!canvas || !initial) return;
     const scene = new VenueScene(canvas, gridSizeOf(venueType, initial.tier), initial.tier, venueType, venueId);
     venueSceneHandle.current = scene;
+    scene.setPickMode(prefsStore.getState().pickMode);
+    const unsubscribePrefs = prefsStore.subscribe((prefs, previous) => {
+      if (prefs.pickMode !== previous.pickMode) scene.setPickMode(prefs.pickMode);
+    });
     let hovered: Coord | null = null;
     // The piece of furniture under a press, and where inside it the press landed.
     let grab: { id: number; offset: Coord; carrying: boolean } | null = null;
@@ -82,13 +94,14 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       hovered = cell;
       showGhost();
     };
-    scene.onGrab = cell => {
+    scene.onGrab = (cell, fixtureId) => {
       grab = null;
       const { selectedFixture, movingId } = venueStore.getState();
       if (selectedFixture || movingId !== null) return false;
-      const fixture = venueOf(venueId)?.venue.fixtures.find(candidate => fixtureTiles(candidate).some(tile => tile.x === cell.x && tile.y === cell.y));
+      const fixture = fixtureAt(venueId, cell, fixtureId);
       if (!fixture) return false;
-      grab = { id: fixture.id, offset: { x: cell.x - fixture.x, y: cell.y - fixture.y }, carrying: false };
+      const onFloor = fixtureTiles(fixture).some(tile => tile.x === cell.x && tile.y === cell.y);
+      grab = { id: fixture.id, offset: onFloor ? { x: cell.x - fixture.x, y: cell.y - fixture.y } : { x: 0, y: 0 }, carrying: false };
       return true;
     };
     scene.onGrabMove = cell => {
@@ -108,7 +121,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       if (!cell) return;
       gameStore.getState().send({ type: 'MoveFixture', buildingId: venueId, fixtureId: carried.id, x: cell.x - carried.offset.x, y: cell.y - carried.offset.y });
     };
-    scene.onTapCell = (cell, repeat) => {
+    scene.onTapCell = (cell, repeat, fixtureId) => {
       const venue = venueOf(venueId);
       if (!venue) return;
       const { selectedFixture, movingId, selectPlaced, stopMove } = venueStore.getState();
@@ -124,13 +137,14 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
         send({ type: 'MoveFixture', buildingId: venueId, fixtureId: movingId, x: cell.x, y: cell.y });
         return stopMove();
       }
-      const tapped = venue.venue.fixtures.find(fixture => fixtureTiles(fixture).some(tile => tile.x === cell.x && tile.y === cell.y));
+      const tapped = fixtureAt(venueId, cell, fixtureId);
       selectPlaced(tapped?.id ?? null);
     };
     sync();
     const unsubscribeGame = gameStore.subscribe(sync);
     const unsubscribeVenue = venueStore.subscribe(sync);
     return () => {
+      unsubscribePrefs();
       unsubscribeGame();
       unsubscribeVenue();
       if (venueSceneHandle.current === scene) venueSceneHandle.current = null;
