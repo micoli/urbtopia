@@ -14,6 +14,7 @@ import { DevToolsSection } from './DevToolsSection';
 import { DevToolsWindow } from './DevToolsWindow';
 import { FeatureFlagSwitches } from './FeatureFlagSwitches';
 import { ItemButtons } from './ItemButtons';
+import { ReleaseNotesDevButton } from './ReleaseNotesDevButton';
 import { giveItem } from './giveItem';
 import { giveAllItems, MAX_DEV_ITEM_QUANTITY } from './giveAllItems';
 import './devtools.css';
@@ -82,6 +83,9 @@ export default function DevTools() {
             <AnnualEventDateButtons year={new Date().getFullYear()} forcedDay={forcedDay} />
             <small>{forcedDay === undefined ? 'Date réelle de l’appareil.' : 'Date forcée pour les fenêtres des événements annuels.'}</small>
             <ActionButton variant="danger" disabled={forcedDay === undefined} onClick={() => forceAnnualEventDay(undefined)}>Revenir à la date réelle</ActionButton>
+          </DevToolsSection>
+          <DevToolsSection id="releaseNotes" title="Notes de release" icon="info">
+            <ReleaseNotesDevButton onDone={() => setOpen(false)} />
           </DevToolsSection>
           <DevToolsSection id="items" title="Matériaux et biens" icon="market">
             <label htmlFor="devtools-filter">Filtrer les matériaux et biens</label>

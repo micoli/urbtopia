@@ -4,6 +4,7 @@ import { t } from '../../i18n/t';
 import { reloadApp } from '../../pwa/reloadApp';
 import { useInstallPrompt } from '../../pwa/useInstallPrompt';
 import { dialogStore } from '../../store/dialogStore';
+import { releaseNotesStore } from '../../store/releaseNotesStore';
 import { ActionButton } from '../common/ActionButton';
 import { SwitchField } from '../common/SwitchField';
 import { BetaSettings } from './BetaSettings';
@@ -13,6 +14,7 @@ import { SettingsSection } from './SettingsSection';
 
 export function AppSettings() {
   const debug = useStore(prefsStore, (store) => store.debug);
+  const hasReleaseNotes = useStore(releaseNotesStore, (store) => store.releases.some((release) => release.note !== null));
   const { canInstall, install } = useInstallPrompt();
 
   return (
@@ -31,6 +33,11 @@ export function AppSettings() {
         <SettingRow label={t('settings.credits')} description={t('settings.credits.description')}>
           <ActionButton size="sm" onClick={() => dialogStore.getState().setCreditsOpen(true)}>{t('settings.credits.action')}</ActionButton>
         </SettingRow>
+        {hasReleaseNotes ? (
+          <SettingRow label={t('settings.releaseNotes')} description={t('settings.releaseNotes.description')}>
+            <ActionButton size="sm" onClick={() => releaseNotesStore.getState().setReviewing(true)}>{t('settings.releaseNotes.action')}</ActionButton>
+          </SettingRow>
+        ) : null}
         <SettingRow label={t('settings.version')}>
           <code className="setting-row__value">{__BUILD_ID__}</code>
         </SettingRow>
