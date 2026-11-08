@@ -7,10 +7,15 @@
     "en": "Wall",
     "fr": "Mur"
   },
-  "model": "mini-arcade-wall",
+  "model": "mini-arcade-partition",
   "footprint": [1, 1],
   "price": 40,
   "minTier": 1,
   "partition": true,
+  "joins": {
+    "elbow": "mini-arcade-partition-elbow",
+    "tee": "mini-arcade-partition-tee",
+    "cross": "mini-arcade-partition-cross"
+  },
   "playsPerHour": 0
 }

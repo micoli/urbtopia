@@ -3,6 +3,7 @@ import { isVenue, venueRankOf, venueTypeOf, type Building } from '../../core';
 import { venueStore } from '../../store/venueStore';
 import { VenueBuildMenu } from './VenueBuildMenu';
 import { VenueEvents } from './VenueEvents';
+import { VenueMenu } from './VenueMenu';
 import { VenueStaff } from './VenueStaff';
 import { VenueTakings } from './VenueTakings';
 import {UpgradeSection} from "../common/UpgradeSection.tsx";
@@ -16,6 +17,7 @@ export function VenuePanelContent({ venue }: VenuePanelContentProps) {
   const panel = useStore(venueStore, store => store.panel);
   if (panel === 'build') return <VenueBuildMenu tier={venue.tier} rank={isVenue(venue) ? venueRankOf(venue) : 1} venueType={venueTypeOf(venue)} />;
   if (panel === 'staff') return <VenueStaff venueId={venue.id} />;
+  if (panel === 'menu') return <VenueMenu venueId={venue.id} />;
   if (panel === 'events') return <VenueEvents venueId={venue.id} />;
   if (panel === 'takings') return <>
     <VenueTakings building={venue} editable />

@@ -265,7 +265,7 @@ const venueBuilding = z.strictObject({
   shell: z.strictObject({ floor: filled, wall: filled, corner: filled, cornerX: z.number(), cornerZ: z.number(), cornerRotation: z.number() }),
   staffModels: z.array(filled).min(1),
   tiers: tiersOf(
-    { ...homeLook, gridSize: z.int().min(2), takingsCap: count, power: positive, eventBudget: count, eventMultiplier: positive, posts: z.record(z.string(), count) },
+    { ...homeLook, gridSize: z.int().min(2), takingsCap: count, power: positive, eventBudget: count, eventMultiplier: positive, posts: z.record(z.string(), count), menuSlots: z.int().min(1).optional() },
     ['model', 'footprint', 'gridSize', 'takingsCap', 'power', 'eventBudget', 'eventMultiplier', 'posts'],
   ),
 });

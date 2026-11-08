@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, type Coord, type VenueFixture, type VenueType } from '../core';
+import { FIXTURES, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, partitionPieceOf, type Coord, type VenueFixture, type VenueType } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
@@ -87,7 +87,7 @@ export class VenueScene {
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
     this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
-    this.ready = this.library.ensure([...Object.values(this.shellModels), ...new Set([...fixtureIdsOf(venueType).map(id => FIXTURES[id].model), ...venueCrowdModelsOf(venueType)])]).then(() => {
+    this.ready = this.library.ensure([...Object.values(this.shellModels), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
       this.rebuildFixtures();
@@ -235,7 +235,10 @@ export class VenueScene {
     for (const fixture of this.lastFixtures) {
       const spec = FIXTURES[fixture.type];
       const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
-      const object = this.place(this.fixtureRoot, spec.model, fixture.x + width / 2, fixture.y + depth / 2, -fixture.rotation * Math.PI / 2);
+      const piece = spec.joins ? partitionPieceOf(fixture, this.lastFixtures) : undefined;
+      const model = piece && piece.shape !== 'straight' ? spec.joins![piece.shape] : spec.model;
+      const rotation = piece ? piece.turns * Math.PI / 2 : -fixture.rotation * Math.PI / 2;
+      const object = this.place(this.fixtureRoot, model, fixture.x + width / 2, fixture.y + depth / 2, rotation);
       if (spec.tint !== undefined) this.tint(object, spec.tint);
     }
     this.dirty = true;

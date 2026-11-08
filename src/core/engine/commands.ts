@@ -35,7 +35,7 @@ import { collectAttractionTakings, setTicket } from '../tourism/takings';
 import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, signClubPlayer } from '../clubs/clubCommands';
 import { cancelShow, scheduleShow } from '../tourism/gatherings';
 import { sellsTickets } from '../tourism/tourists';
-import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
+import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
@@ -144,6 +144,7 @@ export type Command =
   | { readonly type: 'StockShelf'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId }
   | { readonly type: 'UnstockShelf'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'SetShelfGood'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId }
+  | { readonly type: 'SetMenu'; readonly buildingId: number; readonly menu: readonly ItemId[] }
   | { readonly type: 'RepairFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
@@ -196,6 +197,7 @@ export type ErrorKey =
   | 'error.nothingToRepair'
   | 'error.shelfBusy'
   | 'error.shelfFull'
+  | 'error.menuFull'
   | 'error.invalidEventStart'
   | 'error.eventBusy'
   | 'error.eventCooldown'
@@ -456,6 +458,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return unstockShelf(state, command.buildingId, command.fixtureId);
     case 'SetShelfGood':
       return setShelfGood(state, command.buildingId, command.fixtureId, command.good);
+    case 'SetMenu':
+      return setMenu(state, command.buildingId, command.menu);
     case 'RepairFixture':
       return repairFixture(state, command.buildingId, command.fixtureId);
     case 'RemoveFixture':

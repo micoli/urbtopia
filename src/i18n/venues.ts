@@ -91,6 +91,20 @@ type VenueMessageKey =
   | `venue.capacity.${VenueType}`
   | 'error.shelfBusy'
   | 'error.shelfFull'
+  | 'error.menuFull'
+  | 'venue.menu'
+  | 'venue.menuHint'
+  | 'venue.menuEmpty'
+  | 'venue.menuFamilyCount'
+  | 'venue.menuOutOfStock'
+  | 'venue.menuAdd'
+  | 'venue.menuRemove'
+  | 'venue.family.dairy'
+  | 'venue.family.bakery'
+  | 'venue.family.sea'
+  | 'venue.family.farm'
+  | 'venue.family.orchard'
+  | 'venue.family.sweet'
   | 'venue.hint.emptyShelf'
   | 'venue.hint.noBath'
   | 'venue.stock'
@@ -122,6 +136,37 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.capacity.hotel': ['Complete rooms', 'Chambres complètes'],
   'error.shelfBusy': ['Empty this shelf before it holds another Good.', 'Videz ce rayon avant d’y mettre une autre marchandise.'],
   'error.shelfFull': ['This shelf is full.', 'Ce rayon est plein.'],
+  'venue.price.restaurant': ['Markup step (10% each)', 'Marge (10 % par palier)'],
+  'venue.served.restaurant': ['Diners served per hour', 'Clients servis par heure'],
+  'venue.visitors.restaurant': ['Diners per hour', 'Clients par heure'],
+  'venue.capacity.restaurant': ['Covers per hour', 'Couverts par heure'],
+  'venue.role.cook': ['Cook', 'Cuisinier'],
+  'venue.role.kitchenAssistant': ['Kitchen assistant', 'Commis de cuisine'],
+  'venue.role.maitreD': ['Maître d’', 'Maître d’hôtel'],
+  'venue.role.waiter': ['Waiter', 'Serveur'],
+  'venue.role.bartender': ['Bartender', 'Barman'],
+  'venue.roleEffect.cook': ['Runs the cooktops: without one, the kitchen works at a third', 'Tient les plaques : sans cuisinier, la cuisine tourne au tiers'],
+  'venue.roleEffect.kitchenAssistant': ['Helps the cook: +25% of kitchen output', 'Aide le cuisinier : +25 % de production en cuisine'],
+  'venue.roleEffect.maitreD': ['Welcomes Diners: more of them come in', 'Accueille les clients : plus d’entrées'],
+  'venue.roleEffect.waiter': ['Serves 8 covers an hour; without one, only 3', 'Sert 8 couverts par heure ; sans serveur, seulement 3'],
+  'venue.roleEffect.bartender': ['Runs the bar: without one, it works at a third', 'Tient le bar : sans barman, il tourne au tiers'],
+  'venue.category.kitchen': ['Kitchen', 'Cuisine'],
+  'venue.category.dining': ['Dining room', 'Salle'],
+  'venue.category.bar': ['Bar', 'Bar'],
+  'error.menuFull': ['The Menu has no free slot at this Tier.', 'Le menu n’a plus de place à ce niveau.'],
+  'venue.menu': ['Menu', 'Menu'],
+  'venue.menuHint': ['Pick the ingredients the kitchen cooks. Each Diner eats one unit taken from the Storehouse; more families please more Diners.', 'Choisissez les ingrédients que la cuisine prépare. Chaque client mange une unité prise dans l’entrepôt ; plus de familles contentent plus de clients.'],
+  'venue.menuEmpty': ['Nothing on the Menu: no Diner is served.', 'Rien au menu : aucun client n’est servi.'],
+  'venue.menuFamilyCount': ['families on the Menu', 'familles au menu'],
+  'venue.menuOutOfStock': ['out of stock', 'en rupture'],
+  'venue.menuAdd': ['Add to the Menu', 'Ajouter au menu'],
+  'venue.menuRemove': ['Take off the Menu', 'Retirer du menu'],
+  'venue.family.dairy': ['Dairy', 'Laitages'],
+  'venue.family.bakery': ['Bakery', 'Boulangerie'],
+  'venue.family.sea': ['Sea', 'Mer'],
+  'venue.family.farm': ['Eggs', 'Œufs'],
+  'venue.family.orchard': ['Orchard', 'Verger'],
+  'venue.family.sweet': ['Sweet', 'Douceurs'],
   'venue.hint.emptyShelf': ['Empty shelf: it sells nothing.', 'Rayon vide : il ne vend rien.'],
   'venue.hint.noBath': ['No bathroom within reach: this room counts for nothing.', 'Pas de salle de bain à portée : cette chambre ne compte pas.'],
   'venue.stock': ['Shelf', 'Rayon'],
@@ -236,6 +281,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.empty.arcade': ['No game yet: nobody comes to play.', 'Aucun jeu : personne ne vient jouer.'],
   'venue.empty.supermarket': ['No checkout or nothing on the shelves: nobody buys.', 'Pas de caisse ou rien en rayon : personne n’achète.'],
   'venue.empty.hotel': ['No complete room: no guest can stay.', 'Aucune chambre complète : aucun client ne peut séjourner.'],
+  'venue.empty.restaurant': ['No cooktop, table, chair or checkout: nobody can be served.', 'Pas de plaque, de table, de chaise ou de caisse : personne ne peut être servi.'],
   'venue.chooseFixture': ['Choose a Fixture to place, or tap one to edit it.', 'Choisissez un équipement à poser, ou touchez-en un pour le modifier.'],
   'venue.placeHint': ['Tap a free cell to place it (Shift to place several).', 'Touchez une case libre pour le poser (Maj pour en poser plusieurs).'],
   'venue.moveHint': ['Tap a free cell to move it there.', 'Touchez une case libre pour le déplacer.'],

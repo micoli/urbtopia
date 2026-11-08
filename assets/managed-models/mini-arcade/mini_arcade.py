@@ -4,7 +4,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import block, checker_floor, disc, thick_corner, thick_wall, thick_window_wall, vertical_disc  # noqa: E402
+from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, thick_window_wall, vertical_disc  # noqa: E402
 
 P = lpm.Palette([
     ("wall", "#4a5068", 0.0, 0.9), ("wall_cap", "#5d6480", 0.0, 0.9), ("plinth", "#a9b0c8", 0.0, 0.8),
@@ -167,6 +167,10 @@ if __name__ == "__main__":
         "ticket-machine": ticket_machine, "vending-machine": vending_machine,
         "floor": lambda rng: checker_floor(P, "floor", "floor_dark"),
         "wall": lambda rng: thick_wall(P, "wall", "band", "plinth", "wall_cap"),
+        "partition": lambda rng: partition_wall(P, "wall", "band", "plinth", "wall_cap"),
+        "partition-elbow": lambda rng: junction_wall(P, "wall", "band", "plinth", "wall_cap", "ES"),
+        "partition-tee": lambda rng: junction_wall(P, "wall", "band", "plinth", "wall_cap", "WES"),
+        "partition-cross": lambda rng: junction_wall(P, "wall", "band", "plinth", "wall_cap", "ESWN"),
         "wall-window": lambda rng: thick_window_wall(P, "wall", "plinth", "glass", "plinth", "wall_cap"),
         "wall-corner": lambda rng: thick_corner(P, "wall", "band", "plinth", "wall_cap"),
     }, P, 800, HERE, boxes=BOXES, center=False, ground=False)

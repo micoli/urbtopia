@@ -50,7 +50,7 @@ export interface MarketPrice {
 }
 
 export type { VenueType } from '../buildings/buildingTypes.generated';
-export type { ArcadeFixtureId, FixtureId, HotelFixtureId, SupermarketFixtureId } from '../venues/fixtureTypes.generated';
+export type { ArcadeFixtureId, FixtureId, HotelFixtureId, RestaurantFixtureId, SupermarketFixtureId } from '../venues/fixtureTypes.generated';
 import type { FixtureId } from '../venues/fixtureTypes.generated';
 
 export interface VenueFixture extends Coord {
@@ -69,7 +69,7 @@ export interface VenueEvent {
   budget: number;
 }
 
-export type StaffRole = 'manager' | 'employee' | 'technician' | 'security' | 'cashier' | 'stocker' | 'receptionist' | 'housekeeper';
+export type StaffRole = 'manager' | 'employee' | 'technician' | 'security' | 'cashier' | 'stocker' | 'receptionist' | 'housekeeper' | 'cook' | 'kitchenAssistant' | 'maitreD' | 'waiter' | 'bartender';
 
 export interface VenueData {
   fixtures: VenueFixture[];
@@ -80,6 +80,10 @@ export interface VenueData {
   // Urbs collected from the Takings since the Venue opened; `earned` counts at accrual, so it cannot tell a collection.
   collected?: number;
   price?: number;
+  // Restaurant: the ingredients it serves.
+  menu?: ItemId[];
+  // Restaurant: fractions of units eaten and not yet taken from the Storehouse, which only holds whole units.
+  eaten?: Partial<Record<ItemId, number>>;
   staff?: Partial<Record<StaffRole, number>>;
   rng?: number;
   reputation?: number;

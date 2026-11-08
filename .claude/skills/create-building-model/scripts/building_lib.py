@@ -47,7 +47,7 @@ FLOOR_HEIGHT = {"house": 0.30, "apartment": 0.28, "office": 0.32}
 FLOOR_RANGE = {"house": (1, 3), "apartment": (3, 12), "office": (4, 20)}
 ROOF_STYLES = ("flat", "gable_half", "gable_third", "hip", "mansard", "shed", "gable_cross", "sawtooth")
 FEATURES = ("sign", "chimney", "antenna", "awning", "balcony", "skylight", "monumental_door",
-            "vent", "solar_panels", "bushes", "clock_tower", "flagpole", "smokestack", "roller_door", "storefront", "penthouse", "portico", "red_cross", "door_hood", "penthouse_terrace", "stair_head", "round_dormer", "round_window", "roof_lantern", "striped_awning", "stall", "material_yard", "marquee", "wall_tools", "bush_at", "industrial_door", "hazard_band", "hardware_display", "roof_reel", "curved_marquee", "pilasters", "crystals", "red_carpet", "roof_tank", "roof_pipes", "loading_dock", "crate_stacks", "side_conveyor", "bulb_row", "stone_accents", "roof_vents", "roof_coin", "poster", "roof_die", "roof_card", "door_at", "colonnade", "dome", "raised_center", "barrel_wings", "cypresses")
+            "vent", "solar_panels", "bushes", "clock_tower", "flagpole", "smokestack", "roller_door", "storefront", "penthouse", "portico", "red_cross", "door_hood", "penthouse_terrace", "stair_head", "round_dormer", "round_window", "roof_lantern", "striped_awning", "stall", "material_yard", "marquee", "wall_tools", "bush_at", "industrial_door", "hazard_band", "hardware_display", "roof_reel", "curved_marquee", "pilasters", "crystals", "red_carpet", "roof_tank", "roof_pipes", "loading_dock", "crate_stacks", "side_conveyor", "bulb_row", "stone_accents", "roof_vents", "roof_coin", "poster", "roof_die", "roof_card", "door_at", "colonnade", "dome", "raised_center", "barrel_wings", "cypresses", "pergola")
 FRONT_FEATURES = ("sign", "awning", "monumental_door", "bushes", "door_hood", "round_window")
 FACES = ("front", "back", "left", "right")
 
@@ -120,6 +120,7 @@ WORLD_ENTRIES = URBTOPIA_ENTRIES + [
 STYLES["world"] = {**STYLES["urbtopia"], "palette_extra": WORLD_ENTRIES}
 
 COLONNADE_PROJECTION = 0.22  # a colonnade stands this far out of the front wall
+PERGOLA_DEPTH = 0.4  # default reach of a pergola out of the front wall
 PORTICO_PROJECTION = 0.18  # how far a portico stands out of the front wall: the body footprint is smaller by this much
 SAWTOOTH_HEIGHT = 0.16
 SAWTOOTH_TOOTH = 0.5
@@ -1120,6 +1121,45 @@ def add_flagpole(spec, parts):
     parts.append(lpm.box("flag_cloth", (0.14, 0.008, 0.08), at=(x + 0.075, y, base + 0.4), color=accent))
 
 
+def pergola_depth(spec):
+    feature = next((f for f in spec.get("features", []) if f["type"] == "pergola"), None)
+    return 0.0 if feature is None else feature.get("depth", PERGOLA_DEPTH)
+
+
+def add_pergola(spec, parts, along=0.0, width=None, depth=PERGOLA_DEPTH, tables=1):
+    """A timber pergola in front of the entrance: four posts, a frame, slats across, a few leaves and a terrace table."""
+    floor = spec["floor_height"]
+    length, _ = wall_extent(spec, "front")
+    wood, leaf = PALETTE_NAMES.index("uwood"), PALETTE_NAMES.index("bush")
+    white = PALETTE_NAMES.index("white")
+    width = width if width else min(1.2, length * 0.8)
+    plane = wall_half(spec, "front")
+    top = floor * 0.88
+    post, beam = 0.035, 0.03
+
+    def out(name, at, c, z, size, color):
+        parts.append(wall_box(spec, name, "front", at, z, size, color, half=plane + c - size[1] / 2 + 0.01))
+
+    for side in (-1, 1):
+        out(f"pergola_post_{side}", along + side * (width / 2 - post / 2), depth - post / 2, 0.0, (post, post, top), wood)
+        out(f"pergola_side_beam_{side}", along + side * (width / 2 - post / 2), depth / 2, top, (post, depth, beam), wood)
+    out("pergola_back_beam", along, 0.02, top, (width, 0.04, beam), wood)
+    out("pergola_front_beam", along, depth - post / 2, top, (width, post, beam), wood)
+    slats = max(4, int(width / 0.1))
+    slat = 0.016
+    for index in range(slats):
+        x = along - width / 2 + (index + 0.5) * width / slats
+        out(f"pergola_slat_{index}", x, depth / 2, top + beam, (slat, depth, slat), wood)
+    for index in range(0, slats, 2):
+        x = along - width / 2 + (index + 0.5) * width / slats
+        out(f"pergola_leaf_{index}", x, depth * (0.35 + 0.3 * (index % 4 == 0)), top + beam + slat, (0.07, 0.1, 0.03), leaf)
+    for number in range(tables):
+        spot = along + (number - (tables - 1) / 2) * 0.4
+        out(f"pergola_table_{number}", spot, depth * 0.55, 0.0, (0.1, 0.1, 0.075), white)
+        for side in (-1, 1):
+            out(f"pergola_chair_{number}_{side}", spot + side * 0.12, depth * 0.55, 0.0, (0.06, 0.06, 0.05), wood)
+
+
 def add_portico(spec, parts):
     """A flat canopy on two columns over the front door, on a low step: a wide, readable entrance."""
     floor = spec["floor_height"]
@@ -1813,6 +1853,8 @@ def add_feature(spec, parts, feature):
         add_penthouse(spec, parts, feature.get("scale", 0.58), tuple(feature.get("offset", (0.0, 0.0))))
     elif kind == "portico":
         add_portico(spec, parts)
+    elif kind == "pergola":
+        add_pergola(spec, parts, feature.get("along", 0.0), feature.get("width"), feature.get("depth", PERGOLA_DEPTH), feature.get("tables", 1))
     elif kind == "colonnade":
         add_colonnade(spec, parts, feature.get("columns", 4), feature.get("text"), feature.get("width"))
     elif kind == "dome":
@@ -8892,7 +8934,7 @@ def build(spec, out_dir):
     for volume in volumes:
         parts += build_volume(specs[volume["role"]], volume, rng, bushes)
     assert_closed(parts)
-    projection = COLONNADE_PROJECTION if has_feature(spec, "colonnade") else PORTICO_PROJECTION if has_feature(spec, "portico") else 0.0
+    projection = COLONNADE_PROJECTION if has_feature(spec, "colonnade") else PORTICO_PROJECTION if has_feature(spec, "portico") else pergola_depth(spec)
     shift(parts, 0, projection / 2)
 
     extra_volumes = len(volumes) - 1

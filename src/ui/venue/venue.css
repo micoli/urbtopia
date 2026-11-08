@@ -55,6 +55,10 @@
   min-width: 0;
 }
 
+.venue-staff--chosen .venue-staff__label strong {
+  color: var(--color-accent);
+}
+
 .venue-staff__actions {
   display: flex;
   gap: var(--space-4);

@@ -3793,7 +3793,12 @@
               "cashier",
               "stocker",
               "receptionist",
-              "housekeeper"
+              "housekeeper",
+              "cook",
+              "kitchenAssistant",
+              "maitreD",
+              "waiter",
+              "bartender"
             ]
           }
         },
@@ -3807,7 +3812,12 @@
             "cashier",
             "stocker",
             "receptionist",
-            "housekeeper"
+            "housekeeper",
+            "cook",
+            "kitchenAssistant",
+            "maitreD",
+            "waiter",
+            "bartender"
           ]
         },
         "fixtureCategories": {
@@ -3826,7 +3836,10 @@
               "bathroom",
               "comfort",
               "reception",
-              "walls"
+              "walls",
+              "kitchen",
+              "dining",
+              "bar"
             ]
           }
         },
@@ -3934,6 +3947,11 @@
                   "minimum": 0,
                   "maximum": 9007199254740991
                 }
+              },
+              "menuSlots": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
               },
               "upgradeCost": {
                 "type": "object",

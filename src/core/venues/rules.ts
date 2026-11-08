@@ -1,5 +1,6 @@
 import type { Layout } from './layout';
 import type { Building, GameState, VenueData } from '../engine/state';
+import type { ItemId } from '../economy/items';
 
 export interface RuleContext {
   // The Venue as seen by the rules: its broken Fixtures are left out.
@@ -32,6 +33,8 @@ export interface Evaluation {
   satisfaction: number;
   // Supermarket: units sold per hour by shelf.
   sales: Map<number, number>;
+  // Restaurant: units of each ingredient eaten per hour.
+  consumption?: ReadonlyMap<ItemId, number>;
   // Hotel.
   rooms?: RoomReport;
   reputationTarget?: number;

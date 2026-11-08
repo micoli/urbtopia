@@ -2,6 +2,7 @@ import { FIXTURES } from './fixtures';
 import { evaluateArcade } from './arcade';
 import { evaluateHotel, stepReputation } from './hotel';
 import { evaluateSupermarket, nextStockOut, restockShelf, sellStock, stockerRestocks } from './supermarket';
+import { consumeIngredients, evaluateRestaurant, isIngredient, menuSlotsOf, nextIngredientOut } from './restaurant';
 import { isVenueType } from './profiles';
 import type { Layout } from './layout';
 import { entranceCell, gridSizeOf, takingsCapOf, VENUE as SHARED } from './shared';
@@ -14,10 +15,10 @@ import { isAdapting } from '../environment/adaptation';
 import { energyStats } from '../environment/energy';
 import { economicPower } from '../environment/ecology';
 import { energySavingOf } from '../politics/ordinanceEffects';
-import { isGood, type GoodId } from '../economy/items';
+import { isGood, type GoodId, type ItemId } from '../economy/items';
 import type { Evaluation, RuleContext } from './rules';
 import type { CommandOutcome } from '../engine/commands';
-import type { Building, FixtureId, GameState, Rotation, StaffRole, VenueData, VenueFixture, VenueType } from '../engine/state';
+import type { Building, FixtureId, GameState, Rotation, StaffRole, Storage, VenueData, VenueFixture, VenueType } from '../engine/state';
 
 export const VENUE = SHARED;
 
@@ -27,6 +28,8 @@ export { entranceCell, gridSizeOf, priceAcceptance, takingsCapOf } from './share
 export { playsCapacityPerHour } from './arcade';
 export { HOTEL, cityAttractiveness, priceMultiplier, reputationOf, roomsOf } from './hotel';
 export { SUPERMARKET, markupOf, unitPrice, stockOf, isShelf, hasStock, restockFee } from './supermarket';
+export type { IngredientFamily } from './restaurant';
+export { RESTAURANT, INGREDIENT_FAMILIES, INGREDIENTS, dishPrice, familyOf, isIngredient, menuOf, menuSlotsOf, seatingOf, servedIngredients, stockOfIngredient, varietyOf } from './restaurant';
 export type { Layout, LayoutHint } from './layout';
 export type { RoomReport } from './rules';
 export { EVENT, eventBudgetOf, eventMultiplierOf, isEventActive, isEventScheduled, inCooldown, eventBoundaries } from './events';
@@ -65,13 +68,15 @@ export interface VenuePerformance {
   earningsByFixture: ReadonlyMap<number, number>;
   usageByFixture: ReadonlyMap<number, number>;
   salesByFixture: ReadonlyMap<number, number>;
+  // Restaurant: units of each ingredient eaten per hour.
+  consumptionPerHour: ReadonlyMap<ItemId, number>;
   layout: Layout;
   satisfaction: number;
   rooms?: Evaluation['rooms'];
   reputationTarget?: number;
 }
 
-const evaluators = { arcade: evaluateArcade, supermarket: evaluateSupermarket, hotel: evaluateHotel };
+const evaluators = { arcade: evaluateArcade, supermarket: evaluateSupermarket, hotel: evaluateHotel, restaurant: evaluateRestaurant };
 
 const POWER_EPSILON = 1e-9;
 
@@ -111,6 +116,7 @@ export function venuePerformance(state: GameState, venue: Building & { venue: Ve
     earningsByFixture,
     usageByFixture,
     salesByFixture,
+    consumptionPerHour: operating ? evaluation.consumption ?? new Map() : new Map(),
     layout: evaluation.layout,
     satisfaction: evaluation.satisfaction,
     ...(evaluation.rooms ? { rooms: evaluation.rooms } : {}),
@@ -128,16 +134,16 @@ const isHourBoundary = (state: GameState, time: number): boolean => (time + (sta
 
 interface Advanced {
   building: Building;
-  goods: GameState['storage']['goods'];
+  storage: Storage;
 }
 
-function advanceVenue(state: GameState, building: Building & { venue: VenueData }, from: number, to: number, goods: GameState['storage']['goods'], supplied?: ReadonlyMap<number, number>): Advanced {
+function advanceVenue(state: GameState, building: Building & { venue: VenueData }, from: number, to: number, storage: Storage, supplied?: ReadonlyMap<number, number>): Advanced {
   const type = venueTypeOf(building);
-  const performance = venuePerformance(state, building, isVenuePowered(state, building, supplied), from);
+  const performance = venuePerformance(storage === state.storage ? state : { ...state, storage }, building, isVenuePowered(state, building, supplied), from);
   const boundary = isHourBoundary(state, to);
   if (performance.closed || !performance.powered) {
-    if (type !== 'hotel' || !boundary) return { building, goods };
-    return { building: { ...building, venue: { ...building.venue, reputation: stepReputation(building.venue, 0) } }, goods };
+    if (type !== 'hotel' || !boundary) return { building, storage };
+    return { building: { ...building, venue: { ...building.venue, reputation: stepReputation(building.venue, 0) } }, storage };
   }
   const hours = (to - from) / VENUE.hourMs;
   const technicians = hiredOf(building.venue, 'technician');
@@ -147,7 +153,7 @@ function advanceVenue(state: GameState, building: Building & { venue: VenueData 
   let fixtures = wearFixtures(building.venue.fixtures, performance.usageByFixture, hours, technicians);
   if (type === 'supermarket') fixtures = sellStock(fixtures, performance.salesByFixture, hours);
   let rng = building.venue.rng;
-  let stored = goods;
+  let stored = storage.goods;
   let reputation = building.venue.reputation;
   if (boundary) {
     const drawn = drawBreakdowns(fixtures, rng ?? hashSeed(`${state.seed}:venue:${building.id}`));
@@ -169,31 +175,37 @@ function advanceVenue(state: GameState, building: Building & { venue: VenueData 
     next.cooldownUntil = next.event.endsAt + EVENT.cooldownMs;
     delete next.event;
   }
-  return { building: { ...building, venue: next }, goods: stored };
+  const eating = consumeIngredients({ goods: stored, materials: storage.materials }, building.venue.eaten ?? {}, performance.consumptionPerHour, hours);
+  if (Object.keys(eating.eaten).length > 0) next.eaten = eating.eaten;
+  else delete next.eaten;
+  const changed = eating.storage.goods !== storage.goods || eating.storage.materials !== storage.materials;
+  return { building: { ...building, venue: next }, storage: changed ? eating.storage : storage };
 }
 
 export function advanceVenues(state: GameState, from: number, to: number, supplied?: ReadonlyMap<number, number>): GameState {
   if (to <= from || !state.buildings.some(isVenue)) return state;
   const delivered = supplied ?? energyStats(state, from).supplied;
-  let goods = state.storage.goods;
+  let storage = state.storage;
   const buildings = state.buildings.map(building => {
     if (!isVenue(building)) return building;
-    const advanced = advanceVenue(state, building, from, to, goods, delivered);
-    goods = advanced.goods;
+    const advanced = advanceVenue(state, building, from, to, storage, delivered);
+    storage = advanced.storage;
     return advanced.building;
   });
-  return { ...state, buildings, ...(goods === state.storage.goods ? {} : { storage: { ...state.storage, goods } }) };
+  return { ...state, buildings, ...(storage === state.storage ? {} : { storage }) };
 }
 
-// Times after `after` at which a Venue changes the way it works: the start and the end of an event, a shelf running out.
+// Times after `after` at which a Venue changes the way it works: the start and the end of an event, a shelf or an ingredient running out.
 export function venueBoundaries(state: GameState, after: number, supplied?: ReadonlyMap<number, number>): number[] {
   const venues = state.buildings.filter(isVenue);
   if (venues.length === 0) return [];
   const delivered = supplied ?? energyStats(state, after).supplied;
   return venues.flatMap(building => {
     const events = eventBoundaries(building.venue, after);
-    if (venueTypeOf(building) !== 'supermarket') return events;
+    const type = venueTypeOf(building);
+    if (type !== 'supermarket' && type !== 'restaurant') return events;
     const performance = venuePerformance(state, building, isVenuePowered(state, building, delivered), after);
+    if (type === 'restaurant') return [...events, ...nextIngredientOut(state.storage, building.venue.eaten ?? {}, performance.consumptionPerHour, after, VENUE.hourMs)];
     return [...events, ...nextStockOut(building.venue.fixtures, performance.salesByFixture, after, VENUE.hourMs)];
   });
 }
@@ -380,4 +392,12 @@ export function cancelEvent(state: GameState, buildingId: number): CommandOutcom
   const venue: VenueData = { ...building.venue };
   delete venue.event;
   return { state: withVenue(state, building, venue, state.urbs + Math.floor(event.budget * EVENT.cancelRefund)), events: [] };
+}
+
+export function setMenu(state: GameState, buildingId: number, menu: readonly ItemId[]): CommandOutcome {
+  const building = venueOf(state, buildingId);
+  if (!building || venueTypeOf(building) !== 'restaurant') return { key: 'error.unknownBuilding' };
+  if (new Set(menu).size !== menu.length || !menu.every(isIngredient)) return { key: 'error.unknownCommand' };
+  if (menu.length > menuSlotsOf(building.tier)) return { key: 'error.menuFull' };
+  return { state: withVenue(state, building, { ...building.venue, menu: [...menu] }), events: [] };
 }

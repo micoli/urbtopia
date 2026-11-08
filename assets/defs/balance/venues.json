@@ -10,7 +10,12 @@
       "cashier": 30,
       "stocker": 28,
       "receptionist": 32,
-      "housekeeper": 26
+      "housekeeper": 26,
+      "cook": 40,
+      "kitchenAssistant": 26,
+      "maitreD": 38,
+      "waiter": 28,
+      "bartender": 30
     },
     "hireFeeDays": 5,
     "managerYield": 1.1,

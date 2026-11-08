@@ -7,9 +7,14 @@
     "en": "Wall",
     "fr": "Mur"
   },
-  "model": "furniture-wall",
+  "model": "furniture-partition",
   "footprint": [1, 1],
   "price": 40,
   "minTier": 1,
-  "partition": true
+  "partition": true,
+  "joins": {
+    "elbow": "furniture-partitionelbow",
+    "tee": "furniture-partitiontee",
+    "cross": "furniture-partitioncross"
+  }
 }

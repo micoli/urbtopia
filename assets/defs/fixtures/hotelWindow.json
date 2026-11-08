@@ -7,7 +7,7 @@
     "en": "Wall with a window",
     "fr": "Mur à fenêtre"
   },
-  "model": "furniture-wallwindow",
+  "model": "furniture-partitionwindow",
   "footprint": [1, 1],
   "price": 60,
   "minTier": 1,
