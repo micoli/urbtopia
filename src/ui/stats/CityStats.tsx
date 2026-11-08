@@ -1,3 +1,4 @@
+import { useShallow } from 'zustand/react/shallow';
 import { energyStats, totalCitizens, utilityCapacity, utilityDemand } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame, useUi } from '../common/hooks';
@@ -12,20 +13,25 @@ function utilityStatus(demand: number, capacity: number): 'normal' | 'warning' |
 }
 
 export function CityStats() {
-  const state = useGame((store) => store.state);
+  const { citizens, powerDemand, powerCapacity, waterDemand, waterCapacity } = useGame(useShallow(({ state }) => {
+    const capacity = utilityCapacity(state);
+    return {
+      citizens: totalCitizens(state),
+      powerDemand: Number(energyStats(state).demand.toFixed(1)),
+      powerCapacity: Number(capacity.power.toFixed(1)),
+      waterDemand: utilityDemand(state).water,
+      waterCapacity: capacity.water,
+    };
+  }));
   const toggleSearch = useUi((store) => store.toggleBuildingSearch);
-  const capacity = utilityCapacity(state);
-  const demand = utilityDemand(state);
-  const powerDemand = Number(energyStats(state).demand.toFixed(1));
-  const powerCapacity = Number(capacity.power.toFixed(1));
   const powerLabel = `${t('stat.power')}: ${powerDemand}/${powerCapacity}`;
-  const waterLabel = `${t('stat.water')}: ${demand.water}/${capacity.water}`;
+  const waterLabel = `${t('stat.water')}: ${waterDemand}/${waterCapacity}`;
   return (
     <button className="city-stats" aria-label={t('eco.title')} onClick={toggleSearch}>
       <GameClock />
-      <StatChip icon="citizens" value={totalCitizens(state)} title={t('stat.citizens')} />
-      <StatChip icon="power" value={powerDemand} title={powerLabel} tone={utilityStatus(powerDemand, capacity.power)} labelled />
-      <StatChip icon="water" value={demand.water} title={waterLabel} tone={utilityStatus(demand.water, capacity.water)} labelled />
+      <StatChip icon="citizens" value={citizens} title={t('stat.citizens')} />
+      <StatChip icon="power" value={powerDemand} title={powerLabel} tone={utilityStatus(powerDemand, powerCapacity)} labelled />
+      <StatChip icon="water" value={waterDemand} title={waterLabel} tone={utilityStatus(waterDemand, waterCapacity)} labelled />
     </button>
   );
 }

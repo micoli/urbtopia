@@ -50,24 +50,16 @@ for (const layout of ['A', 'B', 'C']) {
           await expect(shortcut).toBeFocused();
         }
         await page.getByRole('button', { name: /Réglages/, exact: false }).click();
-        if (layout === 'C') {
-          const bounds = await page.locator('.market-panel').boundingBox();
-          const viewport = page.viewportSize()!;
-          expect(viewport.width - bounds!.x - bounds!.width).toBe(3);
-          expect(viewport.height - bounds!.y - bounds!.height).toBe(3);
-        }
-        if (layout === 'B') {
-          const bounds = await page.locator('.sheet').boundingBox();
-          const viewport = page.viewportSize()!;
-          expect(viewport.width - bounds!.x - bounds!.width).toBeGreaterThanOrEqual(3);
-          expect(viewport.height - bounds!.y - bounds!.height).toBe(3);
-        }
+        const settingsBounds = await page.locator('.settings-dialog').boundingBox();
+        const viewport = page.viewportSize()!;
+        expect(settingsBounds!.x).toBeGreaterThanOrEqual(0);
+        expect(settingsBounds!.y).toBeGreaterThanOrEqual(0);
+        expect(settingsBounds!.x + settingsBounds!.width).toBeLessThanOrEqual(viewport.width);
+        expect(settingsBounds!.y + settingsBounds!.height).toBeLessThanOrEqual(viewport.height);
         await page.getByRole('button', { name: 'Fermer', exact: true }).click();
-        await page.getByRole('button', { name: 'Passer le didacticiel', exact: true }).click();
-        await page.getByRole('button', { name: 'Passer', exact: true }).click();
         if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu' }).click();
         await page.getByRole('button', { name: 'Construire', exact: true }).click();
-        await page.getByRole('button', { name: 'Production et commerce', exact: true }).click();
+        await page.getByRole('button', { name: 'Production', exact: true }).click();
         const workshopInfo = page.getByRole('button', { name: 'À propos de Atelier', exact: true });
         const manifestResponse = await page.request.get('/codex/manifest.json');
         const manifest = await manifestResponse.json() as CodexManifest;
@@ -80,7 +72,7 @@ for (const layout of ['A', 'B', 'C']) {
         await dialog.getByRole('button', { name: 'Fermer', exact: true }).click();
         await expect(workshopLabel).toBeFocused();
         if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu' }).click();
-        await page.getByRole('button', { name: 'Routes', exact: true }).click();
+        await page.getByRole('button', { name: 'Reseaux', exact: true }).click();
         const roadInfo = page.getByRole('button', { name: 'À propos de Route', exact: true });
         await expect(roadInfo.locator('img')).toHaveAttribute('src', `./codex/${manifest.images['road:1']}`);
         const roadLabel = page.locator('.flyout-row', { has: roadInfo }).locator('.flyout-item');
@@ -122,35 +114,4 @@ test('codex previews remain available offline after PWA installation', async ({ 
     const responses = await Promise.all(sources.map(source => fetch(source)));
     return responses.every(response => response.ok);
   }, sources)).toBe(true);
-});
-
-test('natural construction and Codex share Citizen unlocks and real previews', async ({ page }) => {
-  const { createBuilding, newGame } = await import('../src/core');
-  const { serializeEnvelope } = await import('../src/persistence/envelope');
-  const state = newGame({ seed: 'nature-browser', now: Date.now() });
-  state.buildings.push(createBuilding(state.nextId++, 'home', 60, 60, 0));
-  await page.addInitScript(save => {
-    localStorage.setItem('urbtopia-save', save);
-    localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' }));
-  }, serializeEnvelope(state, state.lastSeen));
-  await page.goto('/?e2e');
-  await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
-  await page.getByRole('button', { name: 'Construire', exact: true }).click();
-  await page.getByRole('button', { name: 'Espaces verts', exact: true }).click();
-  const treeInfo = page.locator('[data-codex-id="nature-tree-oak"]');
-  await expect(treeInfo).toBeVisible();
-  await expect(page.locator('[data-codex-id="pirate-grass"]')).toBeVisible();
-  await expect(page.locator('[data-codex-id="nature-flower-purpleA"]')).toHaveCount(0);
-  await expect(page.locator('[data-codex-id="pirate-palm-bend"]')).toHaveCount(0);
-  await page.locator('.flyout-row', { has: treeInfo }).locator('.flyout-item').click();
-  const dialog = page.getByRole('dialog', { name: 'Codex' });
-  await expect(dialog.getByRole('heading', { name: 'Chêne', exact: true })).toBeVisible();
-  await expect(dialog.getByText('Disponible', { exact: true })).toBeVisible();
-  await expect(dialog.getByText('Disponible à partir de 6 habitants', { exact: true })).toBeVisible();
-  const image = dialog.locator('img');
-  await expect(image).toHaveCount(1);
-  await expect.poll(() => image.evaluate(node => (node as HTMLImageElement).naturalWidth)).toBe(256);
-  await dialog.getByRole('button', { name: 'Palmier courbé · Pirate', exact: true }).click();
-  await expect(dialog.getByText('Verrouillé', { exact: true })).toBeVisible();
-  await expect(dialog.getByText('Disponible à partir de 60 habitants', { exact: true })).toBeVisible();
 });

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const MOVEMENT = ['Piétons', 'Voitures', 'Tous'];
+const MOVEMENT = ['Piétons', 'Galeries', 'Voitures', 'Tous'];
 const DATA = ['Bien-être', 'Pollution', 'Congestion', 'Rayon des odeurs', 'Valeur du terrain', 'Savoir'];
 
 async function openLandMenu(page: Page) {
@@ -22,7 +22,7 @@ test.describe('analytics view', () => {
     page.on('pageerror', error => errors.push(error.message));
     await page.addInitScript(() => {
       if (localStorage.getItem('urbtopia-prefs')) return;
-      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'A' }));
+      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', taxBadgeThreshold: 1, layout: 'A' }));
     });
     await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
@@ -52,9 +52,8 @@ test.describe('analytics view', () => {
         await expect(page.locator('.analytics-flow-list').first()).toBeVisible();
         await page.locator('.analytics-flow-list button').first().click();
         await expect(page.locator('.locator-arrow')).toBeVisible();
-        await page.screenshot({ path: '/private/tmp/claude-501/-Users-omichaud-src-urbix/6c16ae93-ff53-4af6-ac83-89ad530b2d14/scratchpad/flows.png' });
         await page.getByRole('button', { name: 'Analytique suivante', exact: true }).click();
-        await expect(page.locator('.analytics-current .analytics-hud-title')).toHaveText('Voitures');
+        await expect(page.locator('.analytics-current .analytics-hud-title')).toHaveText('Galeries');
         await page.getByRole('button', { name: 'Analytique précédente', exact: true }).click();
         await expect(page.locator('.analytics-current .analytics-hud-title')).toHaveText('Piétons');
       }

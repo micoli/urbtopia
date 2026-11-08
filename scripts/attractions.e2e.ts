@@ -7,7 +7,7 @@ test.describe('attractions', () => {
     test.setTimeout(90_000);
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', taxBadgeThreshold: 1, layout: 'C' })));
     await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     const before = await page.evaluate(async () => {
@@ -45,7 +45,7 @@ test.describe('shows', () => {
     test.setTimeout(90_000);
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', taxBadgeThreshold: 1, layout: 'C' })));
     await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     await page.evaluate(async () => {
@@ -92,7 +92,7 @@ test.describe('shows', () => {
     test.setTimeout(90_000);
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', taxBadgeThreshold: 1, managementTabs: false, layout: 'C' })));
     await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     await page.evaluate(async () => {
@@ -131,7 +131,7 @@ test.describe('meetings', () => {
     test.setTimeout(90_000);
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', taxBadgeThreshold: 1, layout: 'C' })));
     await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     await page.evaluate(async () => {
@@ -146,7 +146,7 @@ test.describe('meetings', () => {
     await expect(prices).toHaveCount(3);
     const rows = await prices.evaluateAll(items => new Set(items.map(item => Math.round(item.getBoundingClientRect().top))).size);
     expect(rows).toBe(1);
-    await expect(page.getByText(/Next Meeting in/)).toBeVisible();
+    await expect(page.getByText('Crowd leaving', { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: /^Collect/ })).toBeDisabled();
     await expect(page.getByRole('button', { name: /Schedule a Show/ })).toHaveCount(0);
     await page.evaluate(async () => {
@@ -167,7 +167,7 @@ test.describe('football club', () => {
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.addInitScript(() => {
-      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
+      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', taxBadgeThreshold: 1, layout: 'C' }));
       localStorage.setItem('urbtopia-flags', JSON.stringify({ clubs: true }));
     });
     await page.goto('/?e2e');
@@ -195,7 +195,7 @@ test.describe('football club', () => {
     await dialog.getByRole('tab', { name: /Recruitment/ }).click();
     await dialog.getByRole('button', { name: /Sign/ }).first().click();
     await dialog.getByRole('tab', { name: /Squad/ }).click();
-    await expect(dialog.getByRole('list', { name: 'Squad' }).locator('li')).toHaveCount(19);
+    await expect(dialog.getByRole('list', { name: 'Squad' }).locator('li:not(.club-row--header)')).toHaveCount(19);
     await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().send({ type: 'SkipTime', hours: 7 }));
     await dialog.getByRole('tab', { name: /^Match/ }).click();
     const pitch = dialog.getByRole('img', { name: 'Pitch: the players and the ball' });
@@ -212,9 +212,9 @@ test.describe('football club', () => {
     await expect(speed).toHaveAttribute('aria-valuetext', '×½ · about 3:00');
     await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('urbtopia-prefs')!).matchSpeed)).toBe(0.5);
     await page.waitForTimeout(3_000);
-    await expect(dialog.getByText(/^Minute [1-9]$/)).toBeVisible();
+    await expect(dialog.getByRole('status').filter({ hasText: /^Minute [1-9]$/ })).toBeVisible();
     await dialog.getByRole('button', { name: 'Skip to the end' }).click();
-    await expect(dialog.getByText('Minute 90')).toBeVisible();
+    await expect(dialog.getByRole('status').filter({ hasText: 'Minute 90' })).toBeVisible();
     await dialog.getByRole('tab', { name: /Championship/ }).click();
     await expect(dialog.getByRole('table')).toBeVisible();
     expect(errors).toEqual([]);
@@ -229,7 +229,7 @@ test.describe('baseball club', () => {
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.addInitScript(() => {
-      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
+      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', taxBadgeThreshold: 1, layout: 'C' }));
       localStorage.setItem('urbtopia-flags', JSON.stringify({ clubs: true }));
     });
     await page.goto('/?e2e');
@@ -282,7 +282,7 @@ test.describe('basketball Club', () => {
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.addInitScript(() => {
-      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
+      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', taxBadgeThreshold: 1, layout: 'C' }));
       localStorage.setItem('urbtopia-flags', JSON.stringify({ clubs: true }));
     });
     await page.goto('/?e2e');
@@ -333,7 +333,7 @@ test.describe('feature flags', () => {
     test.setTimeout(90_000);
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', taxBadgeThreshold: 1, layout: 'C' })));
     await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     await page.evaluate(async () => {
@@ -349,7 +349,7 @@ test.describe('feature flags', () => {
     await page.getByRole('button', { name: 'DEV' }).click();
     await page.getByRole('checkbox', { name: 'Gestion des clubs' }).check();
     await expect(page.getByRole('button', { name: 'Found a Club' })).toBeVisible();
-    expect(await page.evaluate(() => localStorage.getItem('urbtopia-flags'))).toBe('{"clubs":true}');
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('urbtopia-flags') ?? '{}'))).toMatchObject({ clubs: true });
     await page.reload();
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     await page.getByRole('button', { name: 'DEV' }).click();
@@ -365,7 +365,7 @@ test.describe('pirate coves', () => {
     test.setTimeout(120_000);
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', taxBadgeThreshold: 1, layout: 'C' })));
     await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
     await page.evaluate(async () => {

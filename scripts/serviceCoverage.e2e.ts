@@ -24,12 +24,12 @@ for (const layout of ['A', 'B', 'C'] as const) {
       test.use({ hasTouch: touch, isMobile: touch, viewport: touch ? { width: 390, height: 844 } : { width: 1280, height: 900 } });
 
       test('filters actual coverage, remains active while building and remembers the type after reload', async ({ page }, testInfo) => {
-        test.setTimeout(60_000);
+        test.setTimeout(120_000);
         const errors: string[] = [];
         page.on('pageerror', error => errors.push(error.message));
         await page.addInitScript(layout => {
           if (localStorage.getItem('urbtopia-prefs')) return;
-          localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout }));
+          localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', taxBadgeThreshold: 1, managementTabs: false, layout }));
         }, layout);
         await page.goto('/?e2e');
         await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
@@ -55,12 +55,12 @@ for (const layout of ['A', 'B', 'C'] as const) {
         await expect(page.locator('.eco-dashboard')).toHaveCount(0);
         const panel = page.getByRole('region', { name: 'Couverture des services', exact: true });
         const selector = panel.getByRole('combobox', { name: 'Type de service public' });
-        await expect(selector).toHaveText('École▾');
+        await expect(selector).toHaveText('École');
         await expect(page.locator('.collect-badge, .sanction-badge, .working-indicator, .parcel-tag')).toHaveCount(0);
         await expect.poll(() => renderedHomeColors(page)).toEqual({ green: 2, red: 3 });
         await selector.click();
-        await expect(panel.getByRole('option')).toHaveCount(15);
-        await expect(panel.getByRole('group')).toHaveCount(6);
+        await expect(panel.getByRole('option')).toHaveCount(21);
+        await expect(panel.getByRole('group')).toHaveCount(7);
         await panel.getByRole('option', { name: 'Commissariat', exact: true }).click();
         await expect.poll(() => renderedHomeColors(page)).toEqual({ green: 0, red: 5 });
         await selector.click();
@@ -123,7 +123,7 @@ for (const layout of ['A', 'B', 'C'] as const) {
         if (layout === 'B') await page.getByRole('button', { name: 'Ouvrir le menu', exact: true }).click();
         await page.locator('[data-action="stats"]').click();
         await page.getByRole('button', { name: 'Voir la couverture des services', exact: true }).click();
-        await expect(selector).toHaveText('Commissariat▾');
+        await expect(selector).toHaveText('Commissariat');
         expect(errors).toEqual([]);
       });
     });

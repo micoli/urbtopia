@@ -4,8 +4,9 @@ import { ParcelTag } from './ParcelTag';
 
 export function ParcelTags() {
   const tool = useUi((store) => store.tool);
-  const state = useGame((store) => store.state);
-  if (tool?.kind !== 'parcel') return null;
+  const isParcelTool = tool?.kind === 'parcel';
+  const state = useGame((store) => (isParcelTool ? store.state : null));
+  if (!state) return null;
 
   const price = parcelPrice(state);
   return (
