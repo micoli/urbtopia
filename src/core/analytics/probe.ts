@@ -2,7 +2,7 @@ import { COAL_CAPACITY } from '../economy/economy';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { createBuilding, footprintTiles } from '../buildings/buildingSpecs';
 import { diagnosisOf, type Cause } from '../diagnosis/diagnosis';
-import { ECOLOGY, distance } from '../environment/ecology';
+import { ECOLOGY, distance, greenBenefits } from '../environment/ecology';
 import { energyStats } from '../environment/energy';
 import { homeBenefits } from '../environment/wellbeing';
 import { homeKnowledge } from '../services/knowledge';
@@ -196,6 +196,7 @@ export function probeOf(state: GameState, layer: AnalyticsLayerId, category: Ser
   }
   const homeTints = home ? homeTintsOf(state, layer, category).find(tint => tint.x === home.x && tint.y === home.y) : undefined;
   if (home && homeTints) {
+    if (layer === 'data.biodiversity') lines.splice(0, lines.length, { key: 'analytics.layer.data.biodiversity', value: round(greenBenefits(state, home).biodiversity) });
     if (layer === 'data.knowledge') lines.splice(0, lines.length, { key: 'analytics.layer.data.knowledge', value: round(homeKnowledge(state, home)) });
     if (layer === 'data.wellbeing') lines.splice(0, lines.length, { key: 'analytics.layer.data.wellbeing', value: round(homeBenefits(state, home).wellbeing) });
     if (layer === 'data.coverage') lines.splice(0, lines.length, { key: homeTints.share === COVERAGE_SHARE.covered ? 'analytics.legend.covered' : homeTints.share === COVERAGE_SHARE.viaTransit ? 'analytics.legend.viaTransit' : 'analytics.legend.uncovered', value: null });
@@ -213,7 +214,7 @@ export function probeOf(state: GameState, layer: AnalyticsLayerId, category: Ser
       case 'data.wellbeing': return home ? wellbeingCauses(state, home) : [];
       case 'data.coverage': return home ? coverageCauses(state, home, category) : tileCovered === false ? coverageCauses(state, createBuilding(0, 'home', tile.x, tile.y, 0), category) : [];
       case 'data.landValue': return landCauses(state, tile);
-      case 'data.knowledge': return [];
+      case 'data.knowledge': case 'data.biodiversity': return [];
     }
   })();
   return { lines, causes: diagnosisOf(causes).causes };

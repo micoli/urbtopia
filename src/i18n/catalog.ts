@@ -1474,6 +1474,7 @@ export const CATALOG = {
   'analytics.layer.movement.flows': ['Building flows', 'Flux d\'un bâtiment'],
   'analytics.layer.data.coverage': ['Service coverage', 'Couverture des services'],
   'analytics.layer.data.wellbeing': ['Well-being', 'Bien-être'],
+  'analytics.layer.data.biodiversity': ['Biodiversity', 'Biodiversité'],
   'analytics.layer.data.knowledge': ['Knowledge', 'Savoir'],
   'analytics.layer.data.jobs': ['Jobs', 'Emplois'],
   'analytics.jobs.unemployed': ['Unemployed Citizens', 'Citoyens sans emploi'],

@@ -3,6 +3,7 @@ import { isHomeType } from '../buildings/buildingDefinitions';
 import { citizensOf } from '../buildings/city';
 import { jobsOf, workplaceTypes } from '../traffic/jobs';
 import { congestionStats } from '../traffic/congestion';
+import { greenBenefits } from '../environment/ecology';
 import { homeBenefits } from '../environment/wellbeing';
 import { homeKnowledge } from '../services/knowledge';
 import { serviceCoverage, transitReachLinks } from '../services/services';
@@ -64,6 +65,7 @@ export function homeTintsOf(state: GameState, layer: AnalyticsLayerId, category:
   if (layer === 'data.coverage') return coverageTints(state, category, homes);
   if (layer === 'data.wellbeing') return homes.map(home => tintOf(home, 'wellbeing', Math.min(1, Math.max(0, homeBenefits(state, home).wellbeing / 100))));
   if (layer === 'data.jobs') return jobsTints(state);
+  if (layer === 'data.biodiversity') return homes.map(home => tintOf(home, 'biodiversity', Math.min(1, Math.max(0, greenBenefits(state, home).biodiversity / 100))));
   if (layer === 'data.knowledge') return homes.map(home => tintOf(home, 'value', Math.min(1, Math.max(0, homeKnowledge(state, home) / 100))));
   return [];
 }
