@@ -9,5 +9,6 @@
   "idlePowerShare": 0.2,
   "motorCapacity": 3,
   "varietyYield": 0.03,
-  "coolingLoopFactor": 2
+  "coolingLoopFactor": 2,
+  "tankCoolingVats": 3
 }

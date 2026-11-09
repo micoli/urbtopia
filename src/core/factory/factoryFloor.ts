@@ -7,7 +7,7 @@ import type { Building, VenueFixture } from '../engine/state';
 export type Turn = 'cw' | 'ccw';
 
 // What a Machine that is not linked lacks.
-export type MachineProblem = 'noDrive' | 'wrongTurn' | 'jammed' | 'noFlow' | 'overloaded';
+export type MachineProblem = 'noDrive' | 'wrongTurn' | 'jammed' | 'noFlow' | 'overloaded' | 'tankFull';
 
 export interface FloorLinks {
   // The Machines that receive every Drive and every Flow they need.
@@ -16,6 +16,11 @@ export interface FloorLinks {
   jammed: boolean;
   // Why each Machine that is not linked is not, by id.
   problems: ReadonlyMap<number, readonly MachineProblem[]>;
+}
+
+export interface FloorCaps {
+  speed: number;
+  yield: number;
 }
 
 export interface FloorBonus {
@@ -229,15 +234,19 @@ interface FlowReach {
   reached: Set<number>;
   // What each pushing Pump puts its Flow into: the Fixtures it reaches, and the Pumps behind which it goes on.
   outputs: Map<number, { nodes: Set<number>; pumps: number[] }>;
+  // The Cooling vats that no Tank has the strength to feed: past the three each Tank feeds, the highest ids first.
+  starved: Set<number>;
 }
 
 function flowReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, powered: ReadonlySet<number>): FlowReach {
   const reached = new Set<number>();
   const outputs = new Map<number, { nodes: Set<number>; pumps: number[] }>();
   const pushing: VenueFixture[] = [];
+  const fedByTank = new Map<number, number[]>();
   const walk = (start: VenueFixture, marksMachines: boolean): void => {
     const output = { nodes: new Set<number>(), pumps: [] as number[] };
     if (marksMachines) outputs.set(start.id, output);
+    else fedByTank.set(start.id, output.pumps);
     const seen = new Set<number>([start.id]);
     const queue = [start];
     while (queue.length > 0) {
@@ -270,7 +279,33 @@ function flowReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, Ve
     walk(tank, false);
   }
   for (let index = 0; index < pushing.length; index++) walk(pushing[index]!, true);
-  return { reached, outputs };
+  return { reached, outputs, starved: starvedVats(fixtures, fedByTank, outputs, reached) };
+}
+
+// The Cooling vats a Tank reaches through its Pumps, and the ones it cannot feed: each Tank feeds a few, the lowest ids first, and the vat no Tank feeds is cut from the Flow.
+function starvedVats(fixtures: readonly VenueFixture[], fedByTank: ReadonlyMap<number, number[]>, outputs: FlowReach['outputs'], reached: Set<number>): Set<number> {
+  const isVat = new Set(fixtures.filter(fixture => FIXTURES[fixture.type].coolant !== undefined).map(fixture => fixture.id));
+  const fed = new Set<number>();
+  const wanted = new Set<number>();
+  for (const pumps of fedByTank.values()) {
+    const vats = new Set<number>();
+    const seen = new Set<number>();
+    const queue = [...pumps];
+    while (queue.length > 0) {
+      const pump = queue.shift()!;
+      if (seen.has(pump)) continue;
+      seen.add(pump);
+      const output = outputs.get(pump);
+      for (const id of output?.nodes ?? []) if (isVat.has(id)) vats.add(id);
+      queue.push(...(output?.pumps ?? []));
+    }
+    const sorted = [...vats].sort((a, b) => a - b);
+    sorted.forEach(id => wanted.add(id));
+    sorted.slice(0, floorBalance.tankCoolingVats).forEach(id => fed.add(id));
+  }
+  const starved = new Set([...wanted].filter(id => !fed.has(id)));
+  for (const id of starved) reached.delete(id);
+  return starved;
 }
 
 // Whether the Flow a Pump pushes ends in a Machine that is linked, in the Pipes behind it or behind the Pumps that follow.
@@ -291,7 +326,7 @@ function neighbourOn(fixture: VenueFixture, side: FixtureSide, at: ReadonlyMap<s
 // The Pumps that are handed Drive, and so push their Flow on.
 const poweredPumps = (fixtures: readonly VenueFixture[], drive: DriveReceipts): Set<number> => new Set(fixtures.filter(fixture => roleOf(fixture) === 'pump' && drive.received.has(fixture.id) && !drive.jammedMachines.has(fixture.id)).map(fixture => fixture.id));
 
-function problemsOf(machine: VenueFixture, drive: DriveReceipts, flowing: ReadonlySet<number>): MachineProblem[] {
+function problemsOf(machine: VenueFixture, drive: DriveReceipts, flowing: ReadonlySet<number>, starved: ReadonlySet<number>): MachineProblem[] {
   const spec = FIXTURES[machine.type];
   const problems: MachineProblem[] = [];
   if (spec.drive) {
@@ -301,7 +336,8 @@ function problemsOf(machine: VenueFixture, drive: DriveReceipts, flowing: Readon
     else if (turns === undefined) problems.push('noDrive');
     else if (spec.turns !== undefined && !turns.has(spec.turns)) problems.push('wrongTurn');
   }
-  if (spec.flow && !flowing.has(machine.id)) problems.push('noFlow');
+  if (spec.flow && starved.has(machine.id)) problems.push('tankFull');
+  else if (spec.flow && !flowing.has(machine.id)) problems.push('noFlow');
   return problems;
 }
 
@@ -309,11 +345,12 @@ export function floorLinksOf(allFixtures: readonly VenueFixture[]): FloorLinks {
   const fixtures = allFixtures.filter(fixture => isFactoryFixture(fixture) && fixture.broken !== true);
   const at = placedOn(fixtures);
   const drive = driveReceipts(fixtures, at);
-  const flowing = flowReach(fixtures, at, poweredPumps(fixtures, drive)).reached;
+  const flow = flowReach(fixtures, at, poweredPumps(fixtures, drive));
+  const flowing = flow.reached;
   const linked = new Set<number>();
   const problems = new Map<number, readonly MachineProblem[]>();
   for (const machine of fixtures.filter(isMachine)) {
-    const lacking = problemsOf(machine, drive, flowing);
+    const lacking = problemsOf(machine, drive, flowing, flow.starved);
     if (lacking.length === 0) linked.add(machine.id);
     else problems.set(machine.id, lacking);
   }
@@ -355,6 +392,9 @@ export function floorUsageOf(allFixtures: readonly VenueFixture[]): Set<number> 
 export const tierValue = (values: readonly number[], tier: number): number => values[Math.min(tier, values.length) - 1]!;
 
 const capOf = (caps: readonly number[], tier: number): number => caps[Math.min(tier, caps.length) - 1]!;
+
+// The highest speed and yield bonus a floor can approach at a Tier.
+export const floorCapsOf = (tier: number): FloorCaps => ({ speed: capOf(floorBalance.speedCaps, tier), yield: capOf(floorBalance.yieldCaps, tier) });
 
 export const floorGridSizeOf = (tier: number): number => capOf(floorBalance.gridSizes, tier);
 

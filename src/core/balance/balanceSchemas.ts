@@ -62,6 +62,8 @@ export const factoryFloorBalanceSchema = z
     // The yield a Machine of one more kind adds to the floor, and what a cooling loop makes of the yield a coolant gives.
     varietyYield: positive,
     coolingLoopFactor: positive,
+    // How many Cooling vats one Tank can feed.
+    tankCoolingVats: z.int().min(1),
   })
   .meta({ title: 'Factory floor balance', description: 'assets/defs/balance/factoryFloor.json: the size of the Factory floor and the cap of the bonus its linked Machines add, by Factory Tier.' });
 

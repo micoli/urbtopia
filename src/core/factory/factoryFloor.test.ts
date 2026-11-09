@@ -296,6 +296,24 @@ describe('Flow from a Tank', () => {
   });
 });
 
+describe('a Tank and its Cooling vats', () => {
+  const circuit = () => [...pumped(3, 6), put('factoryPipeTee', 3, 7, 2), put('factoryPipeTee', 2, 7, 3), put('factoryPipeTee', 2, 8, 2),
+    put('factoryMixingVat', 2, 6, 0), put('factoryMixingVat', 1, 8, 3), put('factoryMixingVat', 3, 8, 1), put('factoryMixingVat', 4, 7, 1)];
+
+  it('feeds three of them and leaves the one with the highest id without Flow', () => {
+    const fixtures = circuit();
+    const vats = fixtures.filter(fixture => fixture.type === 'factoryMixingVat');
+    const { linked, problems } = floorLinksOf(fixtures);
+    expect(vats.filter(vat => linked.has(vat.id))).toHaveLength(3);
+    expect(problems.get(vats[3]!.id)).toEqual(['tankFull']);
+  });
+
+  it('feeds them all with a second Tank', () => {
+    const fixtures = [...circuit(), ...pumped(8, 6)];
+    expect(floorLinksOf(fixtures).linked.size).toBe(3);
+  });
+});
+
 describe('floorMotionOf', () => {
   it('gives each cone of a bevel gear the turn of its own side', () => {
     const elbow = put('factoryBevel', 3, 4, 3);
