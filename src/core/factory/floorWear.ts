@@ -29,9 +29,10 @@ export function advanceFloors(state: GameState, from: number, to: number, suppli
     const { floor } = building;
     const usage = new Map([...floorUsageOf(floor.fixtures)].map(id => [id, floorBalance.usagePerHour]));
     const hired = floor.technicians ?? 0;
-    const wage = Math.min(urbs, hired * technicianWagePerHour() * hours);
+    const due = hired * technicianWagePerHour() * hours;
+    const wage = Math.min(urbs, due);
     urbs -= wage;
-    const technicians = wage > 0 ? hired : 0;
+    const technicians = hired > 0 && wage >= due ? hired : 0;
     let fixtures = wearFixtures(floor.fixtures, usage, hours, technicians);
     let rng = floor.rng;
     if (boundary) {

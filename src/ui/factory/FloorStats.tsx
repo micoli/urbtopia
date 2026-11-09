@@ -1,12 +1,11 @@
 import { FIXTURES, floorBonusOfBuilding, floorLinksOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
+import { formatPercent } from './formatPercent';
 import { UrbsStat } from '../common/UrbsStat';
 
 interface FloorStatsProps {
   factory: Building;
 }
-
-const percent = (share: number): string => `+${Math.round(share * 100)} %`;
 
 // What sits at the top of the main menu of a Factory floor: the Urbs, the Machines that are linked and the bonus they bring.
 export function FloorStats({ factory }: FloorStatsProps) {
@@ -22,11 +21,11 @@ export function FloorStats({ factory }: FloorStatsProps) {
         <span className="dock-stat-label">{t('factory.floor.linked')}</span>
       </div>
       <div className="dock-stat" title={t('factory.floor.speed')}>
-        <span className="dock-stat-value">{percent(bonus.speed)}</span>
+        <span className="dock-stat-value">{formatPercent(bonus.speed)}</span>
         <span className="dock-stat-label">{t('factory.floor.speed')}</span>
       </div>
       <div className="dock-stat" title={t('factory.floor.yield')}>
-        <span className="dock-stat-value">{percent(bonus.yield)}</span>
+        <span className="dock-stat-value">{formatPercent(bonus.yield)}</span>
         <span className="dock-stat-label">{t('factory.floor.yield')}</span>
       </div>
       <div className="dock-stat" title={t('factory.floor.power')}>

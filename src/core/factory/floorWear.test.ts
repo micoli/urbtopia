@@ -77,6 +77,22 @@ describe('wear of a Factory floor', () => {
     expect(floorOf(first)).toEqual(floorOf(again));
   });
 
+  it('does not wear a Machine that the Flow reaches but that is not linked', () => {
+    const idleBoiler = put('factoryBoiler', 4, 4, 1);
+    const fixtures = [...pumped(3, 3), put('factoryPipeTee', 3, 4, 2), put('factoryMixingVat', 2, 4, 3), idleBoiler];
+    const used = floorUsageOf(fixtures);
+    expect(used.has(fixtures.find(fixture => fixture.type === 'factoryMixingVat')!.id)).toBe(true);
+    expect(used.has(idleBoiler.id)).toBe(false);
+  });
+
+  it('does not pay a Technician in full for a part wage', () => {
+    const hired = { technicians: 1 };
+    const worn = running().map(fixture => ({ ...fixture, condition: 10 }));
+    const poor = { ...city(worn, hired), urbs: 0.01 };
+    const state = advance(poor, 2 * H).state;
+    expect(floorOf(state).fixtures.every(fixture => conditionOf(fixture) < 100)).toBe(true);
+  });
+
   it('stops a broken Fixture from linking what lies downstream', () => {
     const fixtures = running().map(fixture => (fixture.type === 'factoryShaft' ? { ...fixture, condition: 0, broken: true as const } : fixture));
     expect(floorUsageOf(fixtures).has(fixtures[2]!.id)).toBe(false);

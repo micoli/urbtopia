@@ -242,6 +242,7 @@ function flowReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, Ve
   const reached = new Set<number>();
   const outputs = new Map<number, { nodes: Set<number>; pumps: number[] }>();
   const pushing: VenueFixture[] = [];
+  const queued = new Set<number>();
   const fedByTank = new Map<number, number[]>();
   const walk = (start: VenueFixture, marksMachines: boolean): void => {
     const output = { nodes: new Set<number>(), pumps: [] as number[] };
@@ -251,8 +252,9 @@ function flowReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, Ve
     const queue = [start];
     while (queue.length > 0) {
       const current = queue.shift()!;
-      const front = current === start && roleOf(start) === 'pump' ? neighbourOn(start, 'front', at) : undefined;
-      for (const next of current === start && roleOf(start) === 'pump' ? (front ? [front] : []) : connectionsOf(current, 'flow', at)) {
+      const pumpOutlet = current === start && roleOf(start) === 'pump' ? neighbourOn(start, 'front', at) : undefined;
+      const neighbours = current === start && roleOf(start) === 'pump' ? (pumpOutlet ? [pumpOutlet] : []) : connectionsOf(current, 'flow', at);
+      for (const next of neighbours) {
         if (seen.has(next.id)) continue;
         seen.add(next.id);
         if (roleOf(next) === 'tank') continue;
@@ -260,7 +262,10 @@ function flowReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, Ve
           reached.add(next.id);
           if (sideToward(next, current) !== 'back' || !powered.has(next.id)) continue;
           output.pumps.push(next.id);
-          if (!pushing.includes(next)) pushing.push(next);
+          if (!queued.has(next.id)) {
+            queued.add(next.id);
+            pushing.push(next);
+          }
           continue;
         }
         if (isMachine(next)) {
@@ -379,11 +384,12 @@ export function floorUsageOf(allFixtures: readonly VenueFixture[]): Set<number> 
   const fixtures = allFixtures.filter(fixture => isFactoryFixture(fixture) && fixture.broken !== true);
   const at = placedOn(fixtures);
   const { linked } = floorLinksOf(allFixtures);
+  const byId = new Map(fixtures.map(fixture => [fixture.id, fixture]));
   const used = new Set<number>(floorMotionOf(allFixtures).keys());
   const flow = flowReach(fixtures, at, poweredPumps(fixtures, driveReceipts(fixtures, at)));
   for (const [pump, output] of flow.outputs) {
     if (!pushesToLinked(pump, flow, linked)) continue;
-    for (const id of output.nodes) used.add(id);
+    for (const id of output.nodes) if (linked.has(id) || !isMachine(byId.get(id)!)) used.add(id);
     for (const tank of fixtures.filter(fixture => roleOf(fixture) === 'tank')) if (flow.reached.has(tank.id)) used.add(tank.id);
   }
   return used;
