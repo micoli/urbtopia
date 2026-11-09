@@ -21124,6 +21124,196 @@
     ],
     "rotationOffset": 180
   },
+  "factory-floor-boiler": {
+    "file": "factory-floor/boiler",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-floor": {
+    "file": "factory-floor/floor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-gear": {
+    "file": "factory-floor/gear",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-lathe-ccw": {
+    "file": "factory-floor/lathe-ccw",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-lathe-cw": {
+    "file": "factory-floor/lathe-cw",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-mixing-vat": {
+    "file": "factory-floor/mixing-vat",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-motor": {
+    "file": "factory-floor/motor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-partition": {
+    "file": "factory-floor/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-partition-cross": {
+    "file": "factory-floor/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-partition-elbow": {
+    "file": "factory-floor/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-partition-tee": {
+    "file": "factory-floor/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-pipe-elbow": {
+    "file": "factory-floor/pipe-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-pipe-straight": {
+    "file": "factory-floor/pipe-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-pipe-tee": {
+    "file": "factory-floor/pipe-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-press": {
+    "file": "factory-floor/press",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-pump": {
+    "file": "factory-floor/pump",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-shaft": {
+    "file": "factory-floor/shaft",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-wall": {
+    "file": "factory-floor/wall",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-wall-corner": {
+    "file": "factory-floor/wall-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "furniture-bathtub": {
     "file": "furniture/bathtub",
     "source": "managed",

@@ -45,6 +45,16 @@ export const venuesBalanceSchema = z
   })
   .meta({ title: 'Venues balance', description: 'assets/defs/balance/venues.json: Staff wages and yields, shared Venue constants, events.' });
 
+// How big the interior of a Factory is by Tier, and the most speed and yield its Machines can add.
+export const factoryFloorBalanceSchema = z
+  .strictObject({
+    ...schemaField,
+    gridSizes: z.array(z.int().min(1)).min(1),
+    speedCaps: z.array(positive).min(1),
+    yieldCaps: z.array(positive).min(1),
+  })
+  .meta({ title: 'Factory floor balance', description: 'assets/defs/balance/factoryFloor.json: the size of the Factory floor and the cap of the bonus its linked Machines add, by Factory Tier.' });
+
 // What building a road costs per tile, and how fast a car drives on it, by road Tier.
 export const trafficBalanceSchema = z
   .strictObject({

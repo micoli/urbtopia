@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "factory",
+  "category": "machines",
+  "name": {
+    "en": "Lathe (clockwise)",
+    "fr": "Tour (sens horaire)"
+  },
+  "model": "factory-floor-lathe-cw",
+  "footprint": [1, 1],
+  "price": 1200,
+  "minTier": 3,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["front"],
+  "turns": "cw",
+  "speed": 0.15,
+  "yield": 0.05
+}

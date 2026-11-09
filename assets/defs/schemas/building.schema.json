@@ -3839,7 +3839,10 @@
               "walls",
               "kitchen",
               "dining",
-              "bar"
+              "bar",
+              "power",
+              "plumbing",
+              "machines"
             ]
           }
         },

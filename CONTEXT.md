@@ -405,7 +405,7 @@ A Fixture of a Factory floor that needs Drive, Flow or both, and a given turning
 _Avoid_: Equipment, Workshop
 
 **Drive**:
-The turning force a Motor sends through Gears and Shafts to the Machines. Two meshed Gears turn in opposite directions, so the length of the chain decides the direction a Machine receives; a closed chain of odd length jams.
+The turning force a Motor sends through Gears and Shafts to the Machines. Two meshed Gears turn in opposite directions, so the length of the chain decides the direction a Machine receives; a group of Gears fed in two opposite directions (by two Motors, or by a Shaft that skips a mesh) jams, and no Machine in it turns.
 _Avoid_: Power (electricity), torque
 
 **Flow**:

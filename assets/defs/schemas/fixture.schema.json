@@ -49,7 +49,10 @@
             "walls",
             "kitchen",
             "dining",
-            "bar"
+            "bar",
+            "power",
+            "plumbing",
+            "machines"
           ]
         },
         "model": {
@@ -199,7 +202,10 @@
             "walls",
             "kitchen",
             "dining",
-            "bar"
+            "bar",
+            "power",
+            "plumbing",
+            "machines"
           ]
         },
         "model": {
@@ -353,7 +359,10 @@
             "walls",
             "kitchen",
             "dining",
-            "bar"
+            "bar",
+            "power",
+            "plumbing",
+            "machines"
           ]
         },
         "model": {
@@ -515,7 +524,10 @@
             "walls",
             "kitchen",
             "dining",
-            "bar"
+            "bar",
+            "power",
+            "plumbing",
+            "machines"
           ]
         },
         "model": {
@@ -638,6 +650,205 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "venue",
+        "kind",
+        "name",
+        "category",
+        "model",
+        "footprint",
+        "price",
+        "minTier"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "venue": {
+          "type": "string",
+          "const": "factory"
+        },
+        "$schema": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "const": "fixture"
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "fr": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "en",
+            "fr"
+          ],
+          "additionalProperties": false
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "games",
+            "service",
+            "furniture",
+            "shelves",
+            "checkouts",
+            "decor",
+            "beds",
+            "bathroom",
+            "comfort",
+            "reception",
+            "walls",
+            "kitchen",
+            "dining",
+            "bar",
+            "power",
+            "plumbing",
+            "machines"
+          ]
+        },
+        "model": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "footprint": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "price": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "minTier": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "minRank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "wear": {
+          "type": "number",
+          "minimum": 0
+        },
+        "tint": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "loud": {
+          "type": "boolean",
+          "const": true
+        },
+        "partition": {
+          "type": "boolean",
+          "const": true
+        },
+        "joins": {
+          "type": "object",
+          "properties": {
+            "elbow": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "tee": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "cross": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "elbow",
+            "tee",
+            "cross"
+          ],
+          "additionalProperties": false
+        },
+        "attract": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "motor",
+            "gear",
+            "shaft",
+            "pump",
+            "pipe",
+            "machine"
+          ]
+        },
+        "drive": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "front",
+              "right",
+              "back",
+              "left"
+            ]
+          }
+        },
+        "flow": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "front",
+              "right",
+              "back",
+              "left"
+            ]
+          }
+        },
+        "turns": {
+          "type": "string",
+          "enum": [
+            "cw",
+            "ccw"
+          ]
+        },
+        "speed": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "yield": {
+          "type": "number",
+          "exclusiveMinimum": 0
         }
       },
       "required": [
