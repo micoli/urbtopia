@@ -62,6 +62,8 @@ export const factoryFloorBalanceSchema = z
     // The yield a Machine of one more kind adds to the floor, and what a cooling loop makes of the yield a coolant gives.
     varietyYield: positive,
     coolingLoopFactor: positive,
+    // The share of its cap at which a bonus stops counting in full and starts to flatten.
+    bonusKnee: z.number().gt(0).lt(1),
     // How many Cooling vats one Tank can feed.
     tankCoolingVats: z.int().min(1),
     // The share of the Motors' power that each Boiler that runs saves, and the most a floor can save.

@@ -11,6 +11,7 @@
   "varietyYield": 0.03,
   "coolingLoopFactor": 2,
   "tankCoolingVats": 3,
+  "bonusKnee": 0.5,
   "boilerPowerSaving": 0.25,
   "maxPowerSaving": 0.5
 }

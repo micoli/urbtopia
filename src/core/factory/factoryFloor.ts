@@ -414,10 +414,10 @@ function circuitOf(start: VenueFixture, at: ReadonlyMap<string, VenueFixture>): 
   return machines;
 }
 
-// A bonus counts in full up to half the cap of the Factory's Tier, then grows with every Machine but less and less, and never reaches the cap.
+// A bonus counts in full up to a share of the cap of the Factory's Tier, then grows with every Machine but less and less, and never reaches the cap.
 function saturate(total: number, cap: number): number {
-  const knee = cap / 2;
-  return total <= knee ? total : cap - knee * Math.exp(-(total - knee) / knee);
+  const knee = cap * floorBalance.bonusKnee;
+  return total <= knee ? total : cap - (cap - knee) * Math.exp(-(total - knee) / (cap - knee));
 }
 
 // How the Cooling vats of a floor act on its Machines: a vat that is linked cools the Motors beside it, and a Boiler that runs on its circuit of Flow doubles that.

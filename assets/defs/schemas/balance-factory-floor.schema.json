@@ -63,6 +63,11 @@
       "type": "number",
       "exclusiveMinimum": 0
     },
+    "bonusKnee": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 1
+    },
     "tankCoolingVats": {
       "type": "integer",
       "minimum": 1,
@@ -88,6 +93,7 @@
     "motorCapacity",
     "varietyYield",
     "coolingLoopFactor",
+    "bonusKnee",
     "tankCoolingVats",
     "boilerPowerSaving",
     "maxPowerSaving"
