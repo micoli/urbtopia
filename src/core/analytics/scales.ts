@@ -3,7 +3,7 @@ import { CONGESTION } from '../traffic/roadTier';
 import { WASTE_FACILITIES } from '../waste/wasteBalance';
 import type { AnalyticsLayerId } from './layers';
 
-export type RampId = 'value' | 'heat' | 'odor' | 'road' | 'sidewalk' | 'saturation' | 'coverage' | 'wellbeing' | 'bus' | 'brt' | 'rail' | 'metro' | 'walkway';
+export type RampId = 'value' | 'heat' | 'odor' | 'road' | 'sidewalk' | 'saturation' | 'coverage' | 'wellbeing' | 'biodiversity' | 'bus' | 'brt' | 'rail' | 'metro' | 'walkway';
 export type ScaleLabel = 'roads' | 'sidewalks' | 'crossings' | 'bus' | 'brt' | 'rail' | 'metro' | 'walkways';
 
 export interface LayerScale {
@@ -22,6 +22,7 @@ export const LAYER_SCALES: Partial<Record<AnalyticsLayerId, readonly LayerScale[
   'data.knowledge': [{ ramp: 'value', max: 100 }],
   'data.jobs': [{ ramp: 'wellbeing', max: 100, suffix: '%' }],
   'data.pollution': [{ ramp: 'heat', max: ECOLOGY.coalWellbeingCap }],
+  'data.biodiversity': [{ ramp: 'biodiversity', max: 100 }],
   'data.odor': [{ ramp: 'odor', max: WASTE_FACILITIES.mound.odor?.malus ?? 1 }],
   'data.congestion': [{ ramp: 'saturation', max: CONGESTION.maxRatio * 100, suffix: '%' }],
   'movement.cars': [{ ramp: 'road', max: 'relative' }],
