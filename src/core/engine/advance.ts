@@ -16,6 +16,7 @@ import type { GameEvent } from './events';
 import { advanceProduction, shiftRunningTimers } from '../economy/production';
 import type { Building, GameState } from './state';
 import { advanceVenues, venueBoundaries } from '../venues/venues';
+import { advanceFloors } from '../factory/floorWear';
 import { advanceAttractions } from '../tourism/takings';
 import { advanceClubs } from '../clubs/clubCommands';
 import { advanceChampionships, championshipBoundaries } from '../clubs/championship';
@@ -117,11 +118,11 @@ function replay(state: GameState, until: number): AdvanceResult {
     const homeRatios = new Map(current.buildings.filter(b => isHomeType(b.type)).map(b => [b.id, homeTaxMultiplier(current, b, { energy, coverage, poweredCasinos, congestion })]));
     const produced = advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios, idleShops, congestion.filledJobs, industrySpeed);
     events.push(...produced.events);
-    const gathered = advanceGatherings(advanceAttractions(advanceVenues(produced.state, now, end, energy.supplied), now, end), now, end);
+    const gathered = advanceGatherings(advanceAttractions(advanceFloors(advanceVenues(produced.state, now, end, energy.supplied), now, end, energy.supplied), now, end), now, end);
     events.push(...gathered.events);
     const withVenues = { ...gathered.state, buildings: advanceClubs(advanceChampionships(gathered.state, end), now, end).buildings };
     current = {
-      ...produced.state, storage: transport.coalPerHour > 0 ? { ...withVenues.storage, materials: { ...withVenues.storage.materials, coal: end === coalEnd ? 0 : remainingCoal(current, transport.coalPerHour, elapsed) } } : withVenues.storage, lastSeen: end, urbs: end === budgetEnd ? 0 : Math.max(0, current.urbs - cost * elapsed / ECOLOGY.hourMs),
+      ...produced.state, storage: transport.coalPerHour > 0 ? { ...withVenues.storage, materials: { ...withVenues.storage.materials, coal: end === coalEnd ? 0 : remainingCoal(current, transport.coalPerHour, elapsed) } } : withVenues.storage, lastSeen: end, urbs: end === budgetEnd ? 0 : Math.max(0, current.urbs + (gathered.state.urbs - produced.state.urbs) - cost * elapsed / ECOLOGY.hourMs),
       ...(current.solidarityMs === undefined ? {} : { solidarityMs: Math.max(0, current.solidarityMs - elapsed) }),
       buildings: withVenues.buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), end, elapsed))
     };

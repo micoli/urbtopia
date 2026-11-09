@@ -148,7 +148,7 @@ const isSavedFixture = (nextFixtureId: number) => (fixture: unknown): boolean =>
   isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, nextFixtureId - 1) && FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean') && (fixture.good === undefined || (typeof fixture.good === 'string' && Object.hasOwn(GOODS, fixture.good))) && (fixture.stock === undefined || isNonNegative(fixture.stock));
 
 function isFloorData(value: unknown): boolean {
-  return isRecord(value) && isInt(value.nextFixtureId, 1) && isArrayOf(value.fixtures, fixture => isSavedFixture(value.nextFixtureId as number)(fixture) && FIXTURES[(fixture as { type: keyof typeof FIXTURES }).type].venue === 'factory');
+  return isRecord(value) && isInt(value.nextFixtureId, 1) && (value.rng === undefined || isNumber(value.rng)) && (value.technicians === undefined || isInt(value.technicians, 0, 5)) && (value.carry === undefined || (isNumber(value.carry) && value.carry >= 0 && value.carry < 1)) && isArrayOf(value.fixtures, fixture => isSavedFixture(value.nextFixtureId as number)(fixture) && FIXTURES[(fixture as { type: keyof typeof FIXTURES }).type].venue === 'factory');
 }
 
 function isVenueData(value: unknown): boolean {

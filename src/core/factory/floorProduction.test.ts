@@ -5,6 +5,11 @@ import { newQueueEntry, productionDurationOf } from '../economy/production';
 
 let nextId = 1;
 const put = (type: FixtureId, x: number, y: number, rotation: Rotation = 0): VenueFixture => ({ id: nextId++, type, x, y, rotation });
+
+// A Tank, a Pump behind it and a Motor beside it, which hands the Pump its Drive: the Flow leaves the Pump through its front.
+const pumped = (x: number, y: number, rotation: 0 | 2 = 0): VenueFixture[] => (rotation === 0
+  ? [put('factoryTank', x, y - 1), put('factoryPump', x, y), put('factoryMotor', x + 1, y, 1)]
+  : [put('factoryTank', x, y + 1, 2), put('factoryPump', x, y, 2), put('factoryMotor', x - 1, y, 3)]);
 const factory = (tier: number, fixtures: VenueFixture[] = []): Building => ({
   ...createBuilding(1, 'factory', 55, 50, 0),
   tier,
@@ -12,7 +17,7 @@ const factory = (tier: number, fixtures: VenueFixture[] = []): Building => ({
 });
 const ITEM = 'planks';
 const pressLine = () => [put('factoryMotor', 2, 2), put('factoryShaft', 2, 3), put('factoryPress', 2, 4, 2)];
-const vatLine = () => [put('factoryPump', 2, 2), put('factoryPipe', 2, 3), put('factoryMixingVat', 2, 4, 2)];
+const vatLine = () => [...pumped(2, 2), put('factoryPipe', 2, 3), put('factoryMixingVat', 2, 4, 2)];
 
 describe('a Factory with a floor', () => {
   it('produces as before with no floor, an empty floor or no linked Machine', () => {
@@ -23,12 +28,12 @@ describe('a Factory with a floor', () => {
     expect(newQueueEntry(factory(5), ITEM, 0).entry.quantity).toBe(productionTierOf(factory(5)).yield);
   });
 
-  it('works faster with a linked Machine, up to the cap of its Tier', () => {
+  it('works faster with a linked Machine, less and less towards the cap of its Tier', () => {
     const tier = factory(5, pressLine());
     const base = durationOf(ITEM) * productionTierOf(tier).durationFactor;
     expect(productionDurationOf(tier, ITEM)).toBe(Math.round(base / 1.2));
     const low = factory(1, pressLine());
-    expect(productionDurationOf(low, ITEM)).toBe(Math.round(durationOf(ITEM) * productionTierOf(low).durationFactor / 1.1));
+    expect(productionDurationOf(low, ITEM)).toBe(Math.round(durationOf(ITEM) * productionTierOf(low).durationFactor / (1 + 0.1 - 0.05 * Math.exp(-3))));
   });
 
   it('adds a fraction of the yield to every cycle, whole units at a time, with the rest carried over', () => {

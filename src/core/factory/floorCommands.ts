@@ -1,9 +1,12 @@
 import { FIXTURES } from '../venues/fixtures';
 import { entranceCell } from '../venues/shared';
 import { fixtureRefund, fixtureTiles } from '../venues/venues';
+import { hireFeeOf } from '../venues/staff';
+import { repairCost, restored } from '../venues/wear';
 import type { CommandOutcome } from '../engine/commands';
 import type { Building, FixtureId, FloorData, GameState, Rotation, VenueFixture } from '../engine/state';
 import { floorGridSizeOf } from './factoryFloor';
+import { technicianPostsOf } from './floorWear';
 
 export type Factory = Building & { type: 'factory' };
 
@@ -63,4 +66,38 @@ export function removeFloorFixture(state: GameState, buildingId: number, fixture
   const fixture = floor.fixtures.find(candidate => candidate.id === fixtureId);
   if (!fixture) return { key: 'error.unknownFixture' };
   return { state: withFloor(state, factory, { ...floor, fixtures: floor.fixtures.filter(candidate => candidate !== fixture) }, state.urbs + fixtureRefund(fixture.type)), events: [] };
+}
+
+export function repairFloorFixture(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {
+  const factory = factoryOf(state, buildingId);
+  if (!factory) return { key: 'error.unknownBuilding' };
+  const floor = floorOf(factory);
+  const fixture = floor.fixtures.find(candidate => candidate.id === fixtureId);
+  if (!fixture) return { key: 'error.unknownFixture' };
+  const cost = repairCost(fixture);
+  if (cost === 0) return { key: 'error.nothingToRepair' };
+  if (state.urbs < cost) return { key: 'error.notEnoughUrbs' };
+  return { state: withFloor(state, factory, { ...floor, fixtures: floor.fixtures.map(candidate => (candidate === fixture ? restored(fixture) : candidate)) }, state.urbs - cost), events: [] };
+}
+
+export function hireFloorTechnician(state: GameState, buildingId: number): CommandOutcome {
+  const factory = factoryOf(state, buildingId);
+  if (!factory) return { key: 'error.unknownBuilding' };
+  const floor = floorOf(factory);
+  const hired = floor.technicians ?? 0;
+  const posts = technicianPostsOf(factory.tier);
+  if (posts === 0) return { key: 'error.tierTooLow' };
+  if (hired >= posts) return { key: 'error.noStaffPost' };
+  const fee = hireFeeOf('technician');
+  if (state.urbs < fee) return { key: 'error.notEnoughUrbs' };
+  return { state: withFloor(state, factory, { ...floor, technicians: hired + 1 }, state.urbs - fee), events: [] };
+}
+
+export function releaseFloorTechnician(state: GameState, buildingId: number): CommandOutcome {
+  const factory = factoryOf(state, buildingId);
+  if (!factory) return { key: 'error.unknownBuilding' };
+  const floor = floorOf(factory);
+  const hired = floor.technicians ?? 0;
+  if (hired === 0) return { key: 'error.noStaffToRelease' };
+  return { state: withFloor(state, factory, { ...floor, technicians: hired - 1 }), events: [] };
 }

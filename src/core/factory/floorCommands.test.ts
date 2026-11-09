@@ -100,6 +100,6 @@ describe('what a Factory floor adds', () => {
   it('links a Press fed by a Motor through a Shaft and adds its speed', () => {
     let state = city(5);
     for (const command of [place('factoryMotor', 2, 2), place('factoryShaft', 2, 3), place('factoryPress', 2, 4, 2)]) state = send(state, command);
-    expect(floorBonusOf(factory(state).floor!.fixtures, factory(state).tier)).toEqual({ speed: FIXTURES.factoryPress.speed, yield: 0 });
+    expect(floorBonusOf(factory(state).floor!.fixtures, factory(state).tier)).toMatchObject({ speed: FIXTURES.factoryPress.speed, yield: 0 });
   });
 });

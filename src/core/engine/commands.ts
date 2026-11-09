@@ -36,7 +36,7 @@ import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, sign
 import { cancelShow, scheduleShow } from '../tourism/gatherings';
 import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
-import { moveFloorFixture, placeFloorFixture, removeFloorFixture } from '../factory/floorCommands';
+import { hireFloorTechnician, moveFloorFixture, placeFloorFixture, releaseFloorTechnician, removeFloorFixture, repairFloorFixture } from '../factory/floorCommands';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
@@ -150,6 +150,9 @@ export type Command =
   | { readonly type: 'PlaceFloorFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'MoveFloorFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'RemoveFloorFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'RepairFloorFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'HireFloorTechnician'; readonly buildingId: number }
+  | { readonly type: 'ReleaseFloorTechnician'; readonly buildingId: number }
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
@@ -474,6 +477,12 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return moveFloorFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
     case 'RemoveFloorFixture':
       return removeFloorFixture(state, command.buildingId, command.fixtureId);
+    case 'RepairFloorFixture':
+      return repairFloorFixture(state, command.buildingId, command.fixtureId);
+    case 'HireFloorTechnician':
+      return hireFloorTechnician(state, command.buildingId);
+    case 'ReleaseFloorTechnician':
+      return releaseFloorTechnician(state, command.buildingId);
     case 'PlaceFixture':
       return placeFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
     case 'StockShop':
