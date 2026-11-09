@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { FIXTURES, floorBenefitsOf, type VenueFixture } from '../../core';
 import { t } from '../../i18n/t';
 import { formatPercent } from './formatPercent';
@@ -12,7 +13,7 @@ const fill = (text: string, values: Record<string, string | number>): string => 
 // What a selected Fixture of a Factory floor brings to it: its own bonus, the cooling it gives or gets, and what the variety of Machines adds.
 export function FloorBenefits({ fixtures, fixture }: FloorBenefitsProps) {
   const spec = FIXTURES[fixture.type];
-  const benefits = floorBenefitsOf(fixtures, fixture);
+  const benefits = useMemo(() => floorBenefitsOf(fixtures, fixture), [fixtures, fixture]);
   const lines: string[] = [];
   if (spec.role === 'motor') lines.push(benefits.cooling > 0 ? fill(t('factory.floor.benefit.motorCooled'), { share: formatPercent(benefits.cooling), machines: benefits.coolsMachines }) : t('factory.floor.benefit.motorIdle'));
   const own = [benefits.speed > 0 && `${t('factory.floor.speed')} ${formatPercent(benefits.speed)}`, benefits.yield > 0 && `${t('factory.floor.yield')} ${formatPercent(benefits.yield)}`].filter(Boolean);

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, floorBonusOfBuilding, floorGridSizeOf, floorMotionOf, floorOverloadedOf, gridSizeOf, hiredOf, isBroken, isFactory, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type VenueFixture, type VenueType } from '../../core';
+import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, floorBonusOfBuilding, floorFixturesOf, floorGridSizeOf, floorMotionOf, floorOverloadedOf, gridSizeOf, hiredOf, isBroken, isFactory, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type VenueFixture, type VenueType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
@@ -17,7 +17,7 @@ interface Interior {
 const interiorOf = (venueId: number): Interior | undefined => {
   const building = gameStore.getState().state.buildings.find(candidate => candidate.id === venueId);
   if (!building) return undefined;
-  if (isFactory(building)) return { building, fixtures: building.floor?.fixtures ?? [], floor: true };
+  if (isFactory(building)) return { building, fixtures: floorFixturesOf(building), floor: true };
   return isVenue(building) ? { building, fixtures: building.venue.fixtures, floor: false } : undefined;
 };
 

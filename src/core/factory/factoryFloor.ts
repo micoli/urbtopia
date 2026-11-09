@@ -346,54 +346,70 @@ function problemsOf(machine: VenueFixture, drive: DriveReceipts, flowing: Readon
   return problems;
 }
 
-export function floorLinksOf(allFixtures: readonly VenueFixture[]): FloorLinks {
+// What is worked out once for a list of Fixtures: Drive, Flow and Links. A floor's list is replaced, never changed, when the player edits it,
+// so each list is read once however many panels, bonuses and scenes ask.
+interface FloorReport {
+  fixtures: readonly VenueFixture[];
+  at: ReadonlyMap<string, VenueFixture>;
+  drive: DriveReceipts;
+  powered: ReadonlySet<number>;
+  flow: FlowReach;
+  links: FloorLinks;
+}
+
+const memoized = <Result>(compute: (fixtures: readonly VenueFixture[]) => Result): ((fixtures: readonly VenueFixture[]) => Result) => {
+  const cache = new WeakMap<readonly VenueFixture[], Result>();
+  return fixtures => {
+    const cached = cache.get(fixtures);
+    if (cached !== undefined) return cached;
+    const result = compute(fixtures);
+    cache.set(fixtures, result);
+    return result;
+  };
+};
+
+const reportOf = memoized((allFixtures): FloorReport => {
   const fixtures = allFixtures.filter(fixture => isFactoryFixture(fixture) && fixture.broken !== true);
   const at = placedOn(fixtures);
   const drive = driveReceipts(fixtures, at);
-  const flow = flowReach(fixtures, at, poweredPumps(fixtures, drive));
-  const flowing = flow.reached;
+  const powered = poweredPumps(fixtures, drive);
+  const flow = flowReach(fixtures, at, powered);
   const linked = new Set<number>();
   const problems = new Map<number, readonly MachineProblem[]>();
   for (const machine of fixtures.filter(isMachine)) {
-    const lacking = problemsOf(machine, drive, flowing, flow.starved);
+    const lacking = problemsOf(machine, drive, flow.reached, flow.starved);
     if (lacking.length === 0) linked.add(machine.id);
     else problems.set(machine.id, lacking);
   }
-  return { linked, jammed: drive.jammed, problems };
-}
+  return { fixtures, at, drive, powered, flow, links: { linked, jammed: drive.jammed, problems } };
+});
+
+export const floorLinksOf = (allFixtures: readonly VenueFixture[]): FloorLinks => reportOf(allFixtures).links;
 
 // The Fixtures that turn, and the way they turn: whatever passes Drive in a group that is not jammed, and the Machines that are linked.
-export function floorMotionOf(allFixtures: readonly VenueFixture[]): ReadonlyMap<number, FloorMotion> {
-  const fixtures = allFixtures.filter(fixture => isFactoryFixture(fixture) && fixture.broken !== true);
-  const at = placedOn(fixtures);
-  const drive = driveReceipts(fixtures, at);
-  const { linked } = floorLinksOf(allFixtures);
+export const floorMotionOf = memoized((allFixtures): ReadonlyMap<number, FloorMotion> => {
+  const { fixtures, drive, powered, flow, links } = reportOf(allFixtures);
   const motion = new Map<number, FloorMotion>(drive.carried);
-  const powered = poweredPumps(fixtures, drive);
-  const flow = flowReach(fixtures, at, powered);
-  for (const id of powered) if (pushesToLinked(id, flow, linked)) motion.set(id, 'cw');
-  for (const machine of fixtures.filter(fixture => linked.has(fixture.id))) {
+  for (const id of powered) if (pushesToLinked(id, flow, links.linked)) motion.set(id, 'cw');
+  for (const machine of fixtures.filter(fixture => links.linked.has(fixture.id))) {
     const turns = drive.received.get(machine.id);
     motion.set(machine.id, turns ? [...turns][0]! : 'cw');
   }
   return motion;
-}
+});
 
 // The Fixtures that run: what carries Drive, the linked Machines, and the Pumps and Pipes whose Flow reaches a linked Machine. Only they wear.
-export function floorUsageOf(allFixtures: readonly VenueFixture[]): Set<number> {
-  const fixtures = allFixtures.filter(fixture => isFactoryFixture(fixture) && fixture.broken !== true);
-  const at = placedOn(fixtures);
-  const { linked } = floorLinksOf(allFixtures);
+export const floorUsageOf = memoized((allFixtures): ReadonlySet<number> => {
+  const { fixtures, flow, links } = reportOf(allFixtures);
   const byId = new Map(fixtures.map(fixture => [fixture.id, fixture]));
   const used = new Set<number>(floorMotionOf(allFixtures).keys());
-  const flow = flowReach(fixtures, at, poweredPumps(fixtures, driveReceipts(fixtures, at)));
   for (const [pump, output] of flow.outputs) {
-    if (!pushesToLinked(pump, flow, linked)) continue;
-    for (const id of output.nodes) if (linked.has(id) || !isMachine(byId.get(id)!)) used.add(id);
+    if (!pushesToLinked(pump, flow, links.linked)) continue;
+    for (const id of output.nodes) if (links.linked.has(id) || !isMachine(byId.get(id)!)) used.add(id);
     for (const tank of fixtures.filter(fixture => roleOf(fixture) === 'tank')) if (flow.reached.has(tank.id)) used.add(tank.id);
   }
   return used;
-}
+});
 
 export const tierValue = (values: readonly number[], tier: number): number => values[Math.min(tier, values.length) - 1]!;
 
@@ -427,11 +443,9 @@ function saturate(total: number, cap: number): number {
 }
 
 // How the Cooling vats of a floor act on its Machines: a vat that is linked cools the Motors beside it, and a Boiler that runs on its circuit of Flow doubles that.
-function coolingOf(allFixtures: readonly VenueFixture[]) {
-  const fixtures = allFixtures.filter(fixture => isFactoryFixture(fixture) && fixture.broken !== true);
-  const at = placedOn(fixtures);
-  const { linked } = floorLinksOf(allFixtures);
-  const drive = driveReceipts(fixtures, at);
+const coolingOf = memoized(allFixtures => {
+  const { fixtures, at, drive, links } = reportOf(allFixtures);
+  const { linked } = links;
   const machines = fixtures.filter(fixture => linked.has(fixture.id));
   const motors = fixtures.filter(fixture => roleOf(fixture) === 'motor');
   const coolants = machines.filter(fixture => FIXTURES[fixture.type].coolant !== undefined);
@@ -441,11 +455,23 @@ function coolingOf(allFixtures: readonly VenueFixture[]) {
   const coolingOfMotor = (motor: VenueFixture): number => Math.max(0, ...coolants.filter(coolant => distanceBetween(coolant, motor) === 1).map(cooled));
   const coolantOf = (machine: VenueFixture): number => Math.max(0, ...motors.filter(motor => drive.served.get(motor.id)?.handed.has(machine.id)).map(coolingOfMotor));
   return { fixtures, at, linked, drive, machines, motors, coolants, heated, cooled, besideMotor, coolingOfMotor, coolantOf };
-}
+});
 
 // What the linked Machines add to the speed and to the yield of the Factory's Slots, each rising towards the cap of the Factory's Tier, and what the Motors draw, less what the Boilers that run save.
 // A Motor drives only so many Machines and Pumps, and the others stop; the kinds of Machine that run add to the yield, and a Cooling vat beside a Motor adds to the Machines that Motor drives.
+const bonuses = new WeakMap<readonly VenueFixture[], Map<number, FloorBonus>>();
+
 export function floorBonusOf(allFixtures: readonly VenueFixture[], tier: number): FloorBonus {
+  const perTier = bonuses.get(allFixtures) ?? new Map<number, FloorBonus>();
+  bonuses.set(allFixtures, perTier);
+  const cached = perTier.get(tier);
+  if (cached) return cached;
+  const bonus = bonusOf(allFixtures, tier);
+  perTier.set(tier, bonus);
+  return bonus;
+}
+
+function bonusOf(allFixtures: readonly VenueFixture[], tier: number): FloorBonus {
   const { machines, motors, drive, coolantOf } = coolingOf(allFixtures);
   const saving = Math.min(floorBalance.maxPowerSaving, floorBalance.boilerPowerSaving * machines.filter(fixture => FIXTURES[fixture.type].heat).length);
   const busy = motors.length === 0 ? 0 : Math.min(1, drive.received.size / (motors.length * floorBalance.motorCapacity));
@@ -505,17 +531,18 @@ export function floorBenefitsOf(allFixtures: readonly VenueFixture[], fixture: V
 
 // How many Machines and Pumps the Motor's group drives, how many its Motors can drive, and how many are left stopped past that.
 export function floorMotorLoadOf(allFixtures: readonly VenueFixture[], motor: VenueFixture): { driven: number; capacity: number; overloaded: number } {
-  const fixtures = allFixtures.filter(fixture => isFactoryFixture(fixture) && fixture.broken !== true);
-  const share = driveReceipts(fixtures, placedOn(fixtures)).served.get(motor.id);
+  const share = reportOf(allFixtures).drive.served.get(motor.id);
   return { driven: share?.handed.size ?? 0, capacity: (share?.motors ?? 1) * floorBalance.motorCapacity, overloaded: share?.overloaded ?? 0 };
 }
 
 // The Machines and Pumps that no Motor has the strength to drive.
-export function floorOverloadedOf(allFixtures: readonly VenueFixture[]): ReadonlySet<number> {
-  const fixtures = allFixtures.filter(fixture => isFactoryFixture(fixture) && fixture.broken !== true);
-  return driveReceipts(fixtures, placedOn(fixtures)).overloaded;
-}
+export const floorOverloadedOf = (allFixtures: readonly VenueFixture[]): ReadonlySet<number> => reportOf(allFixtures).drive.overloaded;
 
 const NO_BONUS: FloorBonus = { speed: 0, yield: 0, power: 0 };
+
+const NO_FIXTURES: readonly VenueFixture[] = [];
+
+// The Fixtures of a Factory's floor, the same empty list each time when it has none, so what is cached on a list stays cached.
+export const floorFixturesOf = (building: Pick<Building, 'floor'>): readonly VenueFixture[] => building.floor?.fixtures ?? NO_FIXTURES;
 
 export const floorBonusOfBuilding = (building: Pick<Building, 'tier' | 'floor'>): FloorBonus => (building.floor ? floorBonusOf(building.floor.fixtures, building.tier) : NO_BONUS);

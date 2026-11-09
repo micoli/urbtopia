@@ -1,4 +1,5 @@
-import { FIXTURES, floorBonusOfBuilding, floorLinksOf, type Building } from '../../core';
+import { useMemo } from 'react';
+import { FIXTURES, floorBonusOfBuilding, floorFixturesOf, floorLinksOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { formatPercent } from './formatPercent';
 import { UrbsStat } from '../common/UrbsStat';
@@ -9,10 +10,12 @@ interface FloorStatsProps {
 
 // What sits at the top of the main menu of a Factory floor: the Urbs, the Machines that are linked and the bonus they bring.
 export function FloorStats({ factory }: FloorStatsProps) {
-  const fixtures = factory.floor?.fixtures ?? [];
-  const machines = fixtures.filter(fixture => FIXTURES[fixture.type].role === 'machine').length;
-  const linked = floorLinksOf(fixtures).linked.size;
-  const bonus = floorBonusOfBuilding(factory);
+  const fixtures = floorFixturesOf(factory);
+  const { machines, linked, bonus } = useMemo(() => ({
+    machines: fixtures.filter(fixture => FIXTURES[fixture.type].role === 'machine').length,
+    linked: floorLinksOf(fixtures).linked.size,
+    bonus: floorBonusOfBuilding({ tier: factory.tier, floor: factory.floor }),
+  }), [fixtures, factory.tier, factory.floor]);
   return (
     <>
       <UrbsStat />

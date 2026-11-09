@@ -65,6 +65,25 @@ describe('Drive', () => {
   });
 });
 
+describe('what is read once for a list of Fixtures', () => {
+  const fixtures = () => [put('factoryMotor', 3, 3), put('factoryShaft', 3, 4), put('factoryPress', 3, 5, 2)];
+
+  it('is shared by every question asked of the same list, and worked out again for a new list', () => {
+    const list = fixtures();
+    expect(floorLinksOf(list)).toBe(floorLinksOf(list));
+    expect(floorMotionOf(list)).toBe(floorMotionOf(list));
+    expect(floorBonusOf(list, 5)).toBe(floorBonusOf(list, 5));
+    expect(floorBonusOf(list, 5)).not.toBe(floorBonusOf(list, 1));
+    expect(floorLinksOf([...list])).not.toBe(floorLinksOf(list));
+  });
+
+  it('follows an edit: a new list without the Shaft has no linked Machine', () => {
+    const list = fixtures();
+    expect(floorLinksOf(list).linked.size).toBe(1);
+    expect(floorLinksOf(list.filter(fixture => fixture.type !== 'factoryShaft')).linked.size).toBe(0);
+  });
+});
+
 describe('floorMotorLoadOf', () => {
   it('counts the linked Machines a Motor drives out of the ones it can', () => {
     const motor = put('factoryMotor', 3, 3);
