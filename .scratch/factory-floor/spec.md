@@ -8,11 +8,13 @@ Decisions from the grilling session. Vocabulary in `CONTEXT.md` (Factory floor, 
 - Only the `factory` building gets a Factory floor (not the Bakery, Dairy, Knitwear factory, nor the Workshops). Extensible by data later.
 - It is not a Venue: no Takings, Visitors, Rank, events, Minigames. Same Management view, grid by Tier, Fixtures, Condition, Repair.
 - Optional: an empty floor leaves the Factory exactly as it is. The bonus (speed and yield of the Slots) is capped by the Factory's Tier (`assets/defs/balance/factoryFloor.json`).
-- Fixtures: Motor, Gear, Shaft (Drive); Pump, Pipe, Elbow, Tee (Flow); Press, Mixing vat, Lathe (clockwise or counter-clockwise), Boiler (Machines); Wall. Defs in `assets/defs/fixtures/factory*.json`, models in `assets/managed-models/factory-floor/`.
+- Fixtures: Motor, Gear, Shaft (Drive); Pump, Pipe, Elbow, Tee (Flow); Press, Cooling vat, Lathe (clockwise or counter-clockwise), Boiler (Machines); Wall. Defs in `assets/defs/fixtures/factory*.json`, models in `assets/managed-models/factory-floor/`.
 - A Machine is Linked when it receives every Drive (in its direction, for a Lathe) and every Flow it needs. A broken Fixture cuts what is downstream. Meshed Gears reverse the turn; a group fed both ways jams.
 - Staff: the Factory keeps its Jobs; one role added, the Technician (hire fee, daily wage, Fill rate of ADR-0061).
 - Saved: Fixtures (type, position, rotation, Condition), Technician, Seed stream. Links and bonus rebuilt on load. Old saves load with an empty floor.
 - Wear and breakdowns at game-hour boundaries, from the floor's own Seed stream.
+- Bevel gears (elbow and tee) route the Drive without changing its turn, so one Motor can serve several Machines.
+- Linked Machines are animated in the scene (turning parts, the press ram and the lathe carriage sliding, the Boiler's smoke), at a pace that follows the speed bonus; a picture only, off under reduced motion.
 - Walls stand at half height; the scene turns odd-parity Gears by half a tooth so neighbours mesh.
 
 ## Delivery order
