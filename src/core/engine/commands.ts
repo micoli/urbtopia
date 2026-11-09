@@ -127,6 +127,7 @@ export type Command =
   | { readonly type: 'SellSeeds'; readonly crop: CropId; readonly quantity: number }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
+  | { readonly type: 'CollectMany'; readonly buildingIds: readonly number[] }
   | { readonly type: 'RushProduction'; readonly buildingId: number }
   | { readonly type: 'MoveFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'HireStaff'; readonly buildingId: number; readonly role: StaffRole }
@@ -431,6 +432,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return rushProduction(state, command.buildingId, now);
     case 'Collect':
       return collect(state, command.buildingId);
+    case 'CollectMany':
+      return collectMany(state, command.buildingIds);
     case 'MoveFixture':
       return moveFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
     case 'HireStaff':
@@ -893,6 +896,18 @@ function rushProduction(state: GameState, buildingId: number, now: number): Comm
     },
     events: [{ type: 'ProductionCompleted', buildingId, item: running.item, at: now }],
   };
+}
+
+function collectMany(state: GameState, buildingIds: readonly number[]): CommandOutcome {
+  let current = state;
+  const events: GameEvent[] = [];
+  for (const buildingId of buildingIds) {
+    const outcome = collect(current, buildingId);
+    if (isError(outcome)) continue;
+    current = outcome.state;
+    events.push(...outcome.events);
+  }
+  return current === state ? fail('error.nothingToCollect') : { state: current, events };
 }
 
 function collect(state: GameState, buildingId: number): CommandOutcome {

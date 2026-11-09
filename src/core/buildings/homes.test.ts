@@ -92,6 +92,13 @@ describe('Tax', () => {
     expect(collected.urbs - withHome.urbs).toBe(6);
   });
 
+  it('collects several buildings in one command and skips those with nothing due', () => {
+    const later = advance(withHome, T0 + HOUR).state;
+    const collected = succeed(later, { type: 'CollectMany', buildingIds: [HOME_ID, 999_999] }, T0 + HOUR);
+    expect(collected.urbs - withHome.urbs).toBe(6);
+    expect(failureKey(withHome, { type: 'CollectMany', buildingIds: [HOME_ID] })).toBe('error.nothingToCollect');
+  });
+
   it('keeps the part of an Urb that is not due yet', () => {
     const later = succeed(advance(withHome, T0 + HOUR / 4).state, { type: 'Collect', buildingId: HOME_ID }, T0 + HOUR / 4);
     expect(later.urbs - withHome.urbs).toBe(1);
