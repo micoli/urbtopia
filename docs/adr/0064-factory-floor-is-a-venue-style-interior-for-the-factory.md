@@ -13,7 +13,7 @@ Extends [ADR 0020](0020-venue-interior-scene-and-aggregate-simulation.md) to one
 - **The layout is the puzzle.** There is no separate puzzle screen. Gears and Pipes form networks on the grid; a Machine is Linked when it receives the Drive and the Flow it needs, in the direction it needs. Two meshed Gears turn opposite ways, so the parity of the chain is the difficulty. Links are a graph computed from grid adjacency, never a pathfinding of people.
 - **A bonus, not a requirement.** An empty floor leaves the Factory exactly as it is today, so existing saves and balance do not move. The bonus (speed and yield) is capped, and the cap grows with the Factory's Tier, so upgrading the Factory stays worth it. Figures live in `assets/defs/balance/`.
 - **Wear and breakdown.** Gears and Pipes wear; a broken one unlinks what lies downstream. Breakdowns are drawn from the floor's own stream of the game's Seed, at game-hour boundaries, so Catch-up and reloading give the same result.
-- **Staff.** The Factory keeps its Jobs by Tier. One role is added, the Technician, hired with a one-off fee and a daily wage, which repairs on its own. The Fill rate of [ADR 0061](0061-venue-staff-counts-in-proportion-to-its-fill-rate.md) applies to it.
+- **Staff.** The Factory keeps its Jobs by Tier. One role is added, the Technician, hired with a one-off fee and a daily wage, which repairs on its own. The Fill rate of [ADR 0061](0061-venue-staff-counts-in-proportion-to-its-fill-rate.md) does not apply to it ([ADR 0065](0065-factory-floor-technician-always-works.md)).
 - **Saved state.** The list of Fixtures (type, position, rotation, Condition), the Technician and the Seed stream. Links, bonus and silhouettes are rebuilt on load. An older save loads with an empty floor.
 
 ## Why

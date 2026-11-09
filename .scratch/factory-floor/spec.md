@@ -10,7 +10,7 @@ Decisions from the grilling session. Vocabulary in `CONTEXT.md` (Factory floor, 
 - Optional: an empty floor leaves the Factory exactly as it is. The bonus (speed and yield of the Slots) is capped by the Factory's Tier (`assets/defs/balance/factoryFloor.json`).
 - Fixtures: Motor, Gear, Shaft (Drive); Pump, Pipe, Elbow, Tee (Flow); Press, Cooling vat, Lathe (clockwise or counter-clockwise), Boiler (Machines); Wall. Defs in `assets/defs/fixtures/factory*.json`, models in `assets/managed-models/factory-floor/`.
 - A Machine is Linked when it receives every Drive (in its direction, for a Lathe) and every Flow it needs. A broken Fixture cuts what is downstream. Meshed Gears reverse the turn; a group fed both ways jams.
-- Staff: the Factory keeps its Jobs; one role added, the Technician (hire fee, daily wage, Fill rate of ADR-0061).
+- Staff: the Factory keeps its Jobs; one role added, the Technician (hire fee, daily wage, always works: ADR-0065).
 - Saved: Fixtures (type, position, rotation, Condition), Technician, Seed stream. Links and bonus rebuilt on load. Old saves load with an empty floor.
 - Wear and breakdowns at game-hour boundaries, from the floor's own Seed stream.
 - Bevel gears (elbow and tee) route the Drive without changing its turn, so one Motor can serve several Machines.
