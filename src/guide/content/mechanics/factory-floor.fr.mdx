@@ -1,0 +1,34 @@
+export const meta = {
+  title: 'L’atelier de l’usine',
+  summary: 'Disposez moteurs, engrenages, tuyaux et machines dans la salle d’une usine pour produire plus vite et mieux, au prix de l’électricité et de l’entretien.',
+  order: 35,
+};
+
+## De quoi s’agit-il
+
+Ouvrez votre <EntryLink id="factory">usine</EntryLink>, puis **Ouvrir l’atelier de l’usine**. C’est une salle où vous posez des équipements. Elle ne rapporte pas de recette et n’a pas de visiteurs : elle ajoute seulement un **bonus** à la vitesse et au rendement des emplacements de l’usine. Un atelier vide ne change rien, l’usine produit comme avant.
+
+## La force : du moteur aux machines
+
+Un **moteur** envoie une force qui tourne, la **force d’entraînement**. Les **arbres** la portent en ligne droite, les **engrenages** la transmettent, et un **renvoi d’angle conique** (coude ou T) lui fait faire un quart de tour ou la répartit en trois, pour qu’un seul moteur serve plusieurs machines. Une machine ne prend la force que si son entrée fait face à la ligne.
+
+- Deux engrenages engrenés par la jante tournent en sens opposés. Deux engrenages joints bout d’axe à bout d’axe tournent dans le même sens.
+- Certaines machines veulent un sens précis (un tour tourne dans le sens horaire ou antihoraire) : ajoutez ou retirez un engrenage pour le changer.
+- Des engrenages alimentés dans deux sens opposés se bloquent : plus rien ne tourne dans le groupe.
+- Un moteur entraîne au plus **trois** machines et pompes. Les suivantes sont en surcharge : elles s’arrêtent et s’affichent en rouge tant que vous n’ajoutez pas de moteur.
+
+## Le fluide : réservoir, pompe et tuyaux
+
+Certaines machines ont besoin d’un fluide. Un **réservoir** le contient, des **tuyaux** le portent, et une **pompe** le pousse : le fluide entre par l’arrière de la pompe et sort par l’avant. Une pompe ne marche que si un moteur l’entraîne, et un réservoir sans pompe ne donne rien. Une machine qui a besoin des deux (la chaudière) prend la force et le fluide. Un réservoir alimente au plus **trois** cuves réfrigérantes : les autres n’ont pas de fluide tant que vous n’ajoutez pas de réservoir.
+
+## Ce que coûte et rapporte un atelier
+
+- Chaque moteur tire de l’électricité sur la demande de la ville, un cinquième seulement quand il n’entraîne rien.
+- Chaque machine **reliée** ajoute sa vitesse et son rendement. Les premières comptent en entier, puis chacune ajoute moins, jusqu’à un plafond qui monte avec le niveau de l’usine.
+- Chaque **type** de machine différent qui tourne ajoute un peu de rendement : la variété paie.
+- Une **cuve réfrigérante** reliée et posée à côté d’un moteur augmente la vitesse et le rendement de toutes les machines que ce moteur entraîne. Une **chaudière** sur le même circuit de fluide double cet effet.
+- Chaque **chaudière** qui tourne économise aussi un quart de l’électricité des moteurs, jusqu’à la moitié.
+
+## Usure et réparation
+
+Les équipements qui tournent perdent de l’état d’heure en heure, et un équipement usé finit par casser : tout ce qui est derrière s’arrête jusqu’à ce que vous le **répariez**. Des barres au-dessus des équipements montrent l’usure à partir de 90 %. Embauchez des **techniciens** dans le personnel pour réparer à votre place.

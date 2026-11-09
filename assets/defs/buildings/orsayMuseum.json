@@ -1,12 +1,11 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "facility",
   "section": "build.leisure",
-  "model": "buildings-orsay-museum-5x3",
-  "footprint": [5, 3],
   "cost": 20000,
   "unlockCitizens": 900,
   "requiresRoad": true,
+  "accessModes": ["road", "brt"],
   "name": {
     "en": "Orsay Museum",
     "fr": "Musée d’Orsay"
@@ -15,5 +14,17 @@
     "en": "A former railway station on the riverbank, with a glass barrel vault between two clock pavilions.",
     "fr": "Une ancienne gare au bord du fleuve, avec une verrière voûtée entre deux pavillons à horloge."
   },
-  "attraction": 70
+  "radius": 12,
+  "attraction": 70,
+  "tiers": [
+    {
+      "model": "buildings-orsay-museum-5x3",
+      "footprint": [5, 3],
+      "capacity": 800
+    }
+  ],
+  "category": "culture",
+  "drawnToScale": true,
+  "power": 2,
+  "water": 0
 }

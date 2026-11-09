@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "factory",
+  "category": "machines",
+  "name": {
+    "en": "Press",
+    "fr": "Presse"
+  },
+  "model": "factory-floor-press",
+  "footprint": [1, 1],
+  "price": 600,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["front"],
+  "speed": 0.2,
+  "family": "press"
+}

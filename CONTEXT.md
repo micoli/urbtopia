@@ -345,7 +345,7 @@ The page that opens from a Venue's side panel and shows its interior, where the 
 _Avoid_: Interior, editor, back office
 
 **Fixture**:
-An item the player places inside a Venue's interior: a counter, a table, a chair, a game machine, a billiard table, an air hockey table. Its position relative to the other Fixtures affects the Venue's performance.
+An item the player places inside a Venue's interior or a Factory floor: a counter, a table, a chair, a game machine, a billiard table, an air hockey table; on a Factory floor, a Motor, Gear, Shaft, Pump, Pipe or Machine. Its position relative to the other Fixtures affects the Venue's performance.
 _Avoid_: Furniture, equipment, decoration
 
 **Staff**:
@@ -396,12 +396,44 @@ _Avoid_: Revenue, income, till
 A simulated customer of a Venue, modelled in aggregate. Arcade, Supermarket and Restaurant draw them from the surrounding Citizens; a Hotel draws them from outside the city, by the city's attractiveness and its Reputation. In a Supermarket they are called Shoppers, in a Hotel guests, in a Restaurant Diners. Only a visual silhouette is shown, never saved.
 _Avoid_: Customer, guest, Citizen
 
+**Factory floor**:
+The interior of a Factory, opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Factory's Tier, where the player places Fixtures. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. A Factory with an empty floor produces as it always did; the floor only adds a bonus to speed and yield, capped by the Factory's Tier.
+_Avoid_: Venue (earns Urbs from Visitors), workshop floor, plant
+
+**Machine**:
+A Fixture of a Factory floor that needs Drive, Flow or both, and a given turning direction for its Drive. Linked, it contributes to the bonus of the Factory; unlinked, it contributes nothing.
+_Avoid_: Equipment, Workshop
+
+**Drive**:
+The turning force a Motor sends through Gears and Shafts to the Machines. A Gear stands across the line, its axle running sideways: a Motor, a Shaft or a Machine feeds it on any side, the rim meshes with the rim of the next Gear along the line, and the axle ends join the axle of a Gear beside it. Two Gears meshed rim to rim turn in opposite directions, so the number of meshes decides the direction a Machine receives; a group of Gears fed in two opposite directions (by two Motors, or by a Shaft that skips a mesh) jams, and no Machine in it turns.
+_Avoid_: Power (electricity), torque
+
+**Bevel gear**:
+A Fixture of a Factory floor that turns the Drive a quarter turn (the elbow) or splits it three ways (the tee), so that one Motor can serve several Machines. Its cones mesh like Gears at a right angle: a turn is told about the +x or +z axis of the floor, whichever way a Fixture faces, so the Drive reverses between the stem and a side cone only when the two cones point toward the same sign of axis. In a tee the two side cones both mesh the stem, so they turn opposite ways.
+_Avoid_: Gearbox, junction
+
+**Flow**:
+The fluid a Tank holds and a Pump sends through Pipes to the Machines. A Pump takes the fluid in at its back and pushes it out of its front, and only does so when it is handed Drive like a Machine; without a Pump, a Tank gives nothing. A Tank feeds at most three Cooling vats; the ones past that, the highest ids first, get no Flow.
+_Avoid_: Water (the city's water network), pressure
+
+**Floor economy**:
+What a Factory floor costs and brings. Each Motor draws power from the city's electricity Demand, a fifth of it with nothing to drive. A Motor drives three Machines or Pumps, linked or not; the ones beyond that, the highest ids first, are overloaded: they stop and show red until a Motor is added or one is taken off. An active Machine (a linked one) adds its own speed and yield, and each kind of Machine that runs beyond the first adds a little yield. The bonuses count in full up to half the cap of the Factory's Tier, then every Machine adds less than the one before, and they never reach the cap.
+_Avoid_: Upkeep, running cost
+
+**Cooling vat**:
+A Machine that needs Flow and, once linked, cools the Motors that stand next to it: every Machine such a Motor drives gets a share more of its speed and of its yield. When its circuit of Flow also holds a Boiler that runs, it cools twice as well: the Boiler heats the circuit and the Cooling vat takes the heat away. A Boiler that runs also saves a quarter of the Motors' power, and two of them half at most.
+_Avoid_: Mixing vat, refrigerant, radiator
+
+**Link**:
+The state of a Machine that receives the Drive and the Flow it needs, in the direction it needs. A broken Gear or Pipe unlinks every Machine downstream of it until it is repaired.
+_Avoid_: Connection, wiring, Road access
+
 **Tourist**:
 A person from outside the city drawn by its Attractions and the Gatherings of its Arenas. Unlike a Citizen it has no Home; unlike a Visitor it is not tied to one Venue. Besides the Ticket, a Tourist spends on site, so a visit earns about three Tickets. A Tourist who sleeps in a Hotel stays longer and spends more; without a Hotel, Tourists only come for the day. Modelled in aggregate, never saved; the figures around an Attraction on the map are only a picture of them.
 _Avoid_: Visitor (a customer of a Venue), Citizen, guest
 
 **Attraction**:
-A building that Tourists come to see all day long: a Museum, the Colosseum, a Casino, a Marina and its Boats, or an amusement ride. It holds no Gathering, except the Colosseum. A Hotel is not an Attraction: it lodges Tourists. Each Attraction has its own drawing power, raised by its Tiers. A Museum is not a Culture facility (no Service coverage), but it is a Culture destination of the Walking trips, so it also gives Well-being to the Homes that walk to it.
+A building that Tourists come to see all day long: a Museum, the Colosseum, a Casino, a Marina and its Boats, or an amusement ride. It holds no Gathering, except the Colosseum. A Hotel is not an Attraction: it lodges Tourists. Each Attraction has its own drawing power, raised by its Tiers. A Museum is also a Culture facility: it covers the Homes within its reach like a Theater, shows on the Culture coverage Layer and stacks its Well-being with the other Culture facilities, and it is a Culture destination of the Walking trips.
 _Avoid_: Landmark, sight, Minigame
 
 **Arena**:
@@ -1086,6 +1118,10 @@ _Avoid_: Docs, documentation, manual, wiki
 - A Venue is distinct from a Casino and a Shop: Minigames and Stakes belong to the Casino only.
 - A breakdown of a Fixture is drawn from the Venue's own stream of the game's Seed, so reloading never dodges it.
 - A Venue is simulated in aggregate per game tick, collected by hand like Tax, and replayed by Catch-up.
+- A Factory floor is a Factory's interior, not a Venue: Minigames, Stakes, Takings, Visitors, Rank and events do not apply to it.
+- A Factory floor is optional: a Factory with no Fixtures produces as before, and the bonus never lowers the production a Factory has by Tier.
+- A Factory floor is simulated in aggregate, saved as its list of Fixtures and replayed by Catch-up like a Venue. Its Links are rebuilt from the grid, never saved.
+- A breakdown of a Gear or Pipe unlinks the Machines downstream of it; the Repair is paid in Urbs, by the player or by a Technician.
 - A Pleasure boat is a Leisure building and a Casino boat is a Casino, both hosted by a Boat on a Water tile.
 - Removing a Water tile that carries a Bridge, a Desert island or a Sea fort, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina or Pirate cove is refused. A Water tile that carries a Boat can be removed: the Boat moves to the nearest free tile of the water of its Marina or Pirate cove and stays attached to it; with no free tile left, the removal is refused.
 - Removing a Water tile, or laying a Desert island or a Sea fort, that would cut Stands off their Pirate cove or leave too few navigable Water tiles for the Pirate ships on them is refused.

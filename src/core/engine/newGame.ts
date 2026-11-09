@@ -37,7 +37,7 @@ export function newGame(options: NewGameOptions): GameState {
     roads: [],
     roundabouts: [],
     tutorial: null,
-    ...(options.venueTutorials === false ? { venueTutorials: { arcade: null, supermarket: null } } : {}),
+    ...(options.venueTutorials === false ? { venueTutorials: { arcade: null, supermarket: null, factory: null } } : {}),
     tradeLedger: [],
     ...(options.difficulty && options.difficulty !== DEFAULT_DIFFICULTY ? { difficulty: options.difficulty } : {}),
   };

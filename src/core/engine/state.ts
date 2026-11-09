@@ -71,6 +71,18 @@ export interface VenueEvent {
 
 export type StaffRole = 'manager' | 'employee' | 'technician' | 'security' | 'cashier' | 'stocker' | 'receptionist' | 'housekeeper' | 'cook' | 'kitchenAssistant' | 'maitreD' | 'waiter' | 'bartender';
 
+// The interior of a Factory: the Fixtures the player placed, like a Venue's, without Takings or Visitors.
+export interface FloorData {
+  fixtures: VenueFixture[];
+  nextFixtureId: number;
+  // The part of a unit of yield that the Machines added and no cycle has paid out yet, from 0 to 1 excluded.
+  carry?: number;
+  // Technicians hired for the floor; they repair worn Fixtures by the hour and slow their wear.
+  technicians?: number;
+  // The floor's own stream of the game's Seed, for its breakdowns.
+  rng?: number;
+}
+
 export interface VenueData {
   fixtures: VenueFixture[];
   nextFixtureId: number;
@@ -150,6 +162,7 @@ export interface Building extends Coord {
   coalEnabled?: boolean;
   name?: string;
   venue?: VenueData;
+  floor?: FloorData;
   attraction?: AttractionData;
   club?: ClubData;
   // Stands only: the Pirate cove they belong to.

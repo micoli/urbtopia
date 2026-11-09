@@ -78,5 +78,13 @@
     "cost": 500,
     "unlockCitizens": 0,
     "output": 1.5
+  },
+  "floorShell": {
+    "floor": "factory-floor-floor",
+    "wall": "factory-floor-wall",
+    "corner": "factory-floor-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
   }
 }

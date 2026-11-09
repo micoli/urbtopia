@@ -90,6 +90,8 @@ const productionBuilding = z.strictObject({
   ...repeatable,
   counter: counterSchema.optional(),
   pens: pensSchema.optional(),
+  // The interior of a Factory: the models of its floor, its walls and its corner post.
+  floorShell: z.strictObject({ floor: filled, wall: filled, corner: filled, cornerX: z.number(), cornerZ: z.number(), cornerRotation: z.number() }).optional(),
   tiers: tiersOf({ ...homeLook, durationFactor: z.number().positive(), maxSlots: z.int().min(1), yield: z.int().min(1), penCount: count }, ['model', 'footprint', 'durationFactor', 'maxSlots', 'yield']),
 });
 

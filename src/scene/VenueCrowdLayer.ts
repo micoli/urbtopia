@@ -41,7 +41,7 @@ export class VenueCrowdLayer {
   private enabled = false;
   private started = false;
 
-  constructor(private library: ModelLibrary, private size: number, private entrance: Coord, seed: number, private venueType: VenueType) {
+  constructor(private library: ModelLibrary, private size: number, private entrance: Coord, seed: number, private venueType: VenueType | 'factory') {
     this.dice = { rng: seed >>> 0 };
     this.world = makeWorld(size, entrance, [], []);
   }
@@ -113,7 +113,7 @@ export class VenueCrowdLayer {
   private visualOf(agent: Agent): Visual {
     const known = this.visuals.get(agent.id);
     if (known) return known;
-    const models = agent.kind === 'employee' ? VENUE_STAFF_MODELS[this.venueType] : VENUE_CUSTOMER_MODELS;
+    const models = agent.kind === 'employee' ? VENUE_STAFF_MODELS[this.venueType as VenueType] : VENUE_CUSTOMER_MODELS;
     const model = models[agent.id % models.length]!;
     const holder = new THREE.Group();
     const body = cloneModel(this.library.get(model));

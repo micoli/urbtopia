@@ -36,6 +36,7 @@ import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, sign
 import { cancelShow, scheduleShow } from '../tourism/gatherings';
 import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
+import { hireFloorTechnician, moveFloorFixture, placeFloorFixture, releaseFloorTechnician, removeFloorFixture, repairFloorFixture } from '../factory/floorCommands';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
@@ -126,6 +127,7 @@ export type Command =
   | { readonly type: 'SellSeeds'; readonly crop: CropId; readonly quantity: number }
   | { readonly type: 'QueueProduction'; readonly buildingId: number; readonly item: string }
   | { readonly type: 'Collect'; readonly buildingId: number }
+  | { readonly type: 'CollectMany'; readonly buildingIds: readonly number[] }
   | { readonly type: 'RushProduction'; readonly buildingId: number }
   | { readonly type: 'MoveFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'HireStaff'; readonly buildingId: number; readonly role: StaffRole }
@@ -146,6 +148,12 @@ export type Command =
   | { readonly type: 'SetShelfGood'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId }
   | { readonly type: 'SetMenu'; readonly buildingId: number; readonly menu: readonly ItemId[] }
   | { readonly type: 'RepairFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'PlaceFloorFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'MoveFloorFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'RemoveFloorFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'RepairFloorFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'HireFloorTechnician'; readonly buildingId: number }
+  | { readonly type: 'ReleaseFloorTechnician'; readonly buildingId: number }
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
@@ -424,6 +432,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return rushProduction(state, command.buildingId, now);
     case 'Collect':
       return collect(state, command.buildingId);
+    case 'CollectMany':
+      return collectMany(state, command.buildingIds);
     case 'MoveFixture':
       return moveFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
     case 'HireStaff':
@@ -464,6 +474,18 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return repairFixture(state, command.buildingId, command.fixtureId);
     case 'RemoveFixture':
       return removeFixture(state, command.buildingId, command.fixtureId);
+    case 'PlaceFloorFixture':
+      return placeFloorFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
+    case 'MoveFloorFixture':
+      return moveFloorFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
+    case 'RemoveFloorFixture':
+      return removeFloorFixture(state, command.buildingId, command.fixtureId);
+    case 'RepairFloorFixture':
+      return repairFloorFixture(state, command.buildingId, command.fixtureId);
+    case 'HireFloorTechnician':
+      return hireFloorTechnician(state, command.buildingId);
+    case 'ReleaseFloorTechnician':
+      return releaseFloorTechnician(state, command.buildingId);
     case 'PlaceFixture':
       return placeFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
     case 'StockShop':
@@ -848,12 +870,12 @@ function queueProduction(state: GameState, buildingId: number, item: string, now
     if (available < required) return fail('error.missingMaterials');
     materials[material as keyof typeof materials] = available - required;
   }
-  const entry = newQueueEntry(building, item, now);
+  const queued = newQueueEntry(building, item, now);
   return {
     state: {
       ...state,
       storage: { ...state.storage, materials },
-      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, queue: [...building.queue, entry] } : candidate)),
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...queued.building, queue: [...building.queue, queued.entry] } : candidate)),
     },
     events: [],
   };
@@ -874,6 +896,18 @@ function rushProduction(state: GameState, buildingId: number, now: number): Comm
     },
     events: [{ type: 'ProductionCompleted', buildingId, item: running.item, at: now }],
   };
+}
+
+function collectMany(state: GameState, buildingIds: readonly number[]): CommandOutcome {
+  let current = state;
+  const events: GameEvent[] = [];
+  for (const buildingId of buildingIds) {
+    const outcome = collect(current, buildingId);
+    if (isError(outcome)) continue;
+    current = outcome.state;
+    events.push(...outcome.events);
+  }
+  return current === state ? fail('error.nothingToCollect') : { state: current, events };
 }
 
 function collect(state: GameState, buildingId: number): CommandOutcome {

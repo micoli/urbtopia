@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "factory",
+  "category": "machines",
+  "name": {
+    "en": "Boiler",
+    "fr": "Chaudière"
+  },
+  "model": "factory-floor-boiler",
+  "footprint": [1, 1],
+  "price": 2000,
+  "minTier": 4,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["back"],
+  "flow": ["front"],
+  "speed": 0.2,
+  "smoke": [0.2, 1.08, 0],
+  "yield": 0.1,
+  "family": "boiler",
+  "heat": true
+}

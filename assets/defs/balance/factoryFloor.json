@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/balance-factory-floor.schema.json",
+  "gridSizes": [6, 7, 8, 9, 10],
+  "speedCaps": [0.1, 0.2, 0.3, 0.4, 0.5],
+  "yieldCaps": [0.05, 0.1, 0.15, 0.2, 0.25],
+  "usagePerHour": 60,
+  "technicianPosts": [0, 0, 1, 1, 2],
+  "motorPower": 1,
+  "idlePowerShare": 0.2,
+  "motorCapacity": 3,
+  "varietyYield": 0.03,
+  "coolingLoopFactor": 2,
+  "tankCoolingVats": 3,
+  "bonusKnee": 0.5,
+  "boilerPowerSaving": 0.25,
+  "maxPowerSaving": 0.5
+}

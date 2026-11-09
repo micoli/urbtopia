@@ -41,7 +41,7 @@ describe('Venue tutorial start', () => {
 
   it('creates no guided entry for a game started with the bypass', () => {
     const state = newGame({ seed: 'bypass', now: 0, venueTutorials: false });
-    expect(state.venueTutorials).toEqual({ arcade: null, supermarket: null });
+    expect(state.venueTutorials).toEqual({ arcade: null, supermarket: null, factory: null });
   });
 });
 
@@ -99,5 +99,21 @@ describe('Skip and replay', () => {
     const done = city([venueBuilding(1, 'arcade', { fixtures: [{ id: 1, type: 'barrelClimber', x: 2, y: 3, rotation: 0 }], nextFixtureId: 2, staff: { employee: 1 }, collected: 3 })], { venueTutorials: { arcade: null } });
     expect(canReplayVenueTutorial(done, 'arcade')).toBe(false);
     expect(send(done, { type: 'ReplayVenueTutorial', venueType: 'arcade' }).venueTutorials?.arcade).toBeNull();
+  });
+});
+
+describe('Factory floor tutorial', () => {
+  const factory = (fixtures: NonNullable<Building['floor']>['fixtures'] = []): Building => ({ ...createBuilding(1, 'factory', 55, 50, 0), floor: { fixtures, nextFixtureId: 100 } });
+  const fixture = (id: number, type: 'factoryMotor' | 'factoryShaft' | 'factoryPress', x: number, y: number, rotation: 0 | 2 = 0) => ({ id, type, x, y, rotation });
+  const started = (building: Building) => send(city([building]), { type: 'SkipTutorial' }).venueTutorials?.factory;
+
+  it('starts at the Motor once the floor of a Factory is in use, and not before', () => {
+    expect(started(factory())).toBe('motor');
+    expect(started({ ...createBuilding(1, 'factory', 55, 50, 0) })).toBeUndefined();
+  });
+
+  it('goes on to the Drive once a Motor is placed, and to the Flow once a Machine is linked', () => {
+    expect(started(factory([fixture(1, 'factoryMotor', 3, 3)]))).toBe('drive');
+    expect(started(factory([fixture(1, 'factoryMotor', 3, 3), fixture(2, 'factoryShaft', 3, 4), fixture(3, 'factoryPress', 3, 5, 2)]))).toBe('flow');
   });
 });

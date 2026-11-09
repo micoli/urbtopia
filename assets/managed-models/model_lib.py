@@ -5,6 +5,8 @@ import sys
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(REPO, "tools", "blender"))
 import bmesh  # noqa: E402
+import bpy  # noqa: E402
+from mathutils import Matrix  # noqa: E402
 import lpm  # noqa: E402
 
 
@@ -43,12 +45,45 @@ def fit_box(ob, low, high):
     me.update()
 
 
+def pivoted(ob, pivot):
+    """Moves the origin of a part onto its axis, so that the game turns it where it stands."""
+    x, y, z = pivot
+    ob.data.transform(Matrix.Translation((-x, -y, -z)))
+    ob.location = (x, y, z)
+    return ob
+
+
+def export_with_spinners(ob, spinners, palette, budget, out_stem, finish):
+    """A model whose turning parts are children named `spin-x`, `spin-y` or `spin-up`, after the axis they turn on, each with its origin on that axis.
+    spinners: {name: (parts, pivot)}."""
+    children = []
+    for name, (parts, pivot) in spinners.items():
+        child = lpm.finish(name, parts, palette, budget=budget, **finish)
+        pivoted(child, pivot)
+        child.parent = ob
+        children.append(child)
+    out_stem = os.path.abspath(out_stem)
+    os.makedirs(os.path.dirname(out_stem), exist_ok=True)
+    bpy.ops.object.select_all(action="DESELECT")
+    for part in [ob, *children]:
+        part.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.export_scene.gltf(filepath=out_stem + ".glb", use_selection=True, export_format="GLB")
+    lpm.save(out_stem + ".blend")
+
+
 def export_all(models, palette, budget, out_dir, boxes=None, **finish):
     """models: {model_id: builder(rng) -> parts}. Each model gets its own seeded rng, so a rebuild is identical.
     boxes: {model_id: ((x, y, z), (x, y, z))} in Blender axes, to stretch the model onto a given bounding box."""
     for model_id in requested(models):
         lpm.reset()
-        ob = lpm.finish(model_id, models[model_id](random.Random(model_id)), palette, budget=budget, **finish)
+        built = models[model_id](random.Random(model_id))
+        parts, spinners = built if isinstance(built, tuple) else (built, {})
+        ob = lpm.finish(model_id, parts, palette, budget=budget, **finish)
         if boxes and model_id in boxes:
             fit_box(ob, *boxes[model_id])
-        lpm.export_glb(ob, os.path.join(out_dir, model_id, model_id))
+        out_stem = os.path.join(out_dir, model_id, model_id)
+        if spinners:
+            export_with_spinners(ob, spinners, palette, budget, out_stem, finish)
+        else:
+            lpm.export_glb(ob, out_stem)

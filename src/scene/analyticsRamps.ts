@@ -14,6 +14,7 @@ export const RAMPS: Record<RampId, readonly string[]> = {
   metro: ['#c5f6fa', '#22b8cf', '#0b7285'],
   walkway: ['#ffec99', '#fcc419', '#e67700'],
   wellbeing: ['#e5484d', '#ffe066', '#35d07f'],
+  biodiversity: ['#f1f0d0', '#b8e08a', '#4fb26a', '#1b6e3f'],
 };
 
 

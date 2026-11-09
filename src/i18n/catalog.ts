@@ -3,6 +3,8 @@ import type { Language } from './prefsStore';
 type Entry = readonly [english: string, french: string];
 
 export const CATALOG = {
+  'social.newMessage': ['New message from {name}', 'Nouveau message de {name}'],
+  'social.newGroupMessage': ['New message in {name}', 'Nouveau message dans {name}'],
   'collect.all': ['Everything collected: +{amount} {U}', 'Tout est collecté : +{amount} {U}'],
   'collect.nothing': ['Nothing to collect', 'Rien à collecter'],
   'stat.uncollected': ['Uncollected taxes', 'Taxes non collectées'],
@@ -758,6 +760,11 @@ export const CATALOG = {
   'venueTutorial.supermarket.stock': ['Pick a Good for the shelf and stock it from the {storehouse}. Produce some Goods first if it has none.', "Choisissez un Bien pour le rayon et approvisionnez-le depuis l'{storehouse}. Produisez d'abord des Biens s'il n'en a pas."],
   'venueTutorial.supermarket.cashier': ['Open Staff and hire a cashier to run the checkout.', 'Ouvrez Personnel et embauchez un caissier pour tenir la caisse.'],
   'venueTutorial.supermarket.collect': ['Wait for the first sales, then collect the Takings from the {supermarket} panel.', 'Attendez les premières ventes, puis collectez la recette depuis le panneau du {supermarket}.'],
+  'venueTutorial.title.factory': ['Factory floor tutorial', "Didacticiel de l'atelier de l'usine"],
+  'venueTutorial.factory.motor': ['Open the Factory floor from the Factory panel, then Build a Motor. Everything that turns starts from a Motor.', "Ouvrez l'atelier depuis le panneau de l'usine, puis Construisez un moteur. Tout ce qui tourne part d'un moteur."],
+  'venueTutorial.factory.drive': ['Join a Machine to the Motor with Shafts and Gears, its input facing the line. A linked Machine speeds the Factory up.', "Reliez une machine au moteur par des arbres et des engrenages, son entrée face à la ligne. Une machine reliée accélère l'usine."],
+  'venueTutorial.factory.flow': ['Some Machines also need Flow: put a Tank, a Pump that a Motor drives, Pipes, and a Cooling vat at the end.', "Certaines machines ont aussi besoin de fluide : posez un réservoir, une pompe entraînée par un moteur, des tuyaux, et une cuve réfrigérante au bout."],
+  'venueTutorial.factory.cooling': ['Put the linked Cooling vat right beside a Motor: it raises the bonus of every Machine that Motor drives.', "Placez la cuve réfrigérante reliée juste à côté d'un moteur : elle augmente le bonus de toutes les machines que ce moteur entraîne."],
   'error.noGrants': ['There is no Grant to claim yet.', "Aucune subvention à percevoir pour l'instant."],
   'error.unknownOrdinance': ['That Ordinance does not exist or is not adopted.', "Cette ordonnance n'existe pas ou n'est pas adoptée."],
   'error.politicsInactive': ['The city has no politics yet: build a Town hall on Easy or above.', "La ville n'a pas encore de politique : construisez une mairie en difficulté Facile ou plus."],
@@ -1474,6 +1481,7 @@ export const CATALOG = {
   'analytics.layer.movement.flows': ['Building flows', 'Flux d\'un bâtiment'],
   'analytics.layer.data.coverage': ['Service coverage', 'Couverture des services'],
   'analytics.layer.data.wellbeing': ['Well-being', 'Bien-être'],
+  'analytics.layer.data.biodiversity': ['Biodiversity', 'Biodiversité'],
   'analytics.layer.data.knowledge': ['Knowledge', 'Savoir'],
   'analytics.layer.data.jobs': ['Jobs', 'Emplois'],
   'analytics.jobs.unemployed': ['Unemployed Citizens', 'Citoyens sans emploi'],

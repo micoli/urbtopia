@@ -7,7 +7,9 @@ import { liveCommandGateway } from '../store/liveCommandGateway';
 import { readOnlyStore } from '../store/readOnlyStore';
 import { cloudStore } from '../store/cloudStore';
 import { socialStore } from '../store/socialStore';
+import { toastStore } from '../store/toastStore';
 import { uiStore } from '../store/uiStore';
+import { newMessageToasts } from './newMessageToasts';
 import { requestedLocalAuthEmail } from '../persistence/cloud/localAuth';
 import { claimLocalHandle } from './localHandle';
 import { loadSocialClient } from './loadSocialClient';
@@ -76,12 +78,17 @@ export function installSocial(): () => void {
     const update = () => poller.update();
     const stopAccount = cloudStore.subscribe((store) => follow(store.account?.email ?? null));
     const stopSocial = socialStore.subscribe(update);
+    const stopMessageToasts = socialStore.subscribe((store, previous) => {
+      if (uiStore.getState().socialOpen) return;
+      for (const text of newMessageToasts(previous, store)) toastStore.getState().showText(text);
+    });
     const stopUi = uiStore.subscribe(update);
     document.addEventListener('visibilitychange', update);
     update();
     stopWatching = () => {
       stopAccount();
       stopSocial();
+      stopMessageToasts();
       stopUi();
       document.removeEventListener('visibilitychange', update);
       poller.dispose();

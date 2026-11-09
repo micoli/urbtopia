@@ -15,7 +15,7 @@ export function useVenueFixtureSelected(venueId: number): boolean {
   const movingId = useStore(venueStore, store => store.movingId);
   return useGame(store => {
     const building = store.state.buildings.find(candidate => candidate.id === venueId);
-    return Boolean(building?.venue?.fixtures.some(fixture => fixture.id === (movingId ?? placedId)));
+    return Boolean((building?.venue?.fixtures ?? building?.floor?.fixtures)?.some(fixture => fixture.id === (movingId ?? placedId)));
   });
 }
 

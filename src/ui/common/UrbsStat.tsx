@@ -14,10 +14,8 @@ function collectPendingUrbs() {
   const officeYield = officeYieldMultiplierOf(state);
   const collected = uncollectedUrbsOf(state);
   if (collected === 0) return toastStore.getState().show('collect.nothing');
-  for (const building of state.buildings) {
-    if (typeof collectBadgeLabel(building, officeYield) !== 'number') continue;
-    send({ type: 'Collect', buildingId: building.id });
-  }
+  const buildingIds = state.buildings.filter((building) => typeof collectBadgeLabel(building, officeYield) === 'number').map((building) => building.id);
+  send({ type: 'CollectMany', buildingIds });
   toastStore.getState().showText(t('collect.all').replace('{amount}', formatCompactAmount(collected)));
 }
 

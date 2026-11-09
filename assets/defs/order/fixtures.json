@@ -53,5 +53,21 @@
   "restaurantCheckout",
   "waitingArmchair",
   "restaurantWall",
-  "restaurantWindow"
+  "restaurantWindow",
+  "factoryMotor",
+  "factoryGear",
+  "factoryShaft",
+  "factoryBevel",
+  "factoryBevelTee",
+  "factoryTank",
+  "factoryPump",
+  "factoryPipe",
+  "factoryPipeElbow",
+  "factoryPipeTee",
+  "factoryPress",
+  "factoryMixingVat",
+  "factoryLatheCw",
+  "factoryLatheCcw",
+  "factoryBoiler",
+  "factoryWall"
 ]

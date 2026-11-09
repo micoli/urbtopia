@@ -85,7 +85,7 @@ export function tutorialAllows(state: GameState, command: Command): boolean {
     return production !== undefined && building?.type === production.building && command.item === production.item;
   }
   if (command.type === 'StockShop') return step === 'stock';
-  if (command.type === 'Collect') return step === 'wood' || step === 'planks' || step === 'sell' || step === 'tax';
+  if (command.type === 'Collect' || command.type === 'CollectMany') return step === 'wood' || step === 'planks' || step === 'sell' || step === 'tax';
   return false;
 }
 
