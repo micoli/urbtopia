@@ -24,6 +24,12 @@ describe('coverage field', () => {
     expect(owned.every(value => value === 0)).toBe(true);
   });
 
+  it('counts a Museum as a Culture facility', () => {
+    const state = city(createBuilding(1, 'masMuseum', 60, 60, 0));
+    expect(fieldValueAt(coverageField(state, 'culture'), 62, 60)).toBe(1);
+    expect(fieldValueAt(coverageField(state, 'education'), 62, 60)).toBe(0);
+  });
+
   it('keeps the categories apart', () => {
     const state = city(createBuilding(1, 'school', 60, 60, 0));
     expect(fieldValueAt(coverageField(state, 'health'), 62, 60)).toBe(0);

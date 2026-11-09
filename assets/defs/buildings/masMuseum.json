@@ -1,12 +1,11 @@
 {
   "$schema": "../schemas/building.schema.json",
-  "kind": "standard",
+  "kind": "facility",
   "section": "build.leisure",
-  "model": "buildings-mas-museum-3x3",
-  "footprint": [3, 3],
   "cost": 8000,
   "unlockCitizens": 500,
   "requiresRoad": true,
+  "accessModes": ["road", "brt"],
   "name": {
     "en": "Harbour museum",
     "fr": "Musée du port"
@@ -15,5 +14,17 @@
     "en": "A tower of shifted terracotta slabs and glass floors rising over the quay.",
     "fr": "Une tour de dalles de terre cuite décalées et d’étages vitrés au-dessus du quai."
   },
-  "attraction": 30
+  "radius": 12,
+  "attraction": 30,
+  "tiers": [
+    {
+      "model": "buildings-mas-museum-3x3",
+      "footprint": [3, 3],
+      "capacity": 800
+    }
+  ],
+  "category": "culture",
+  "drawnToScale": true,
+  "power": 2,
+  "water": 0
 }
