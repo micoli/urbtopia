@@ -21124,6 +21124,26 @@
     ],
     "rotationOffset": 180
   },
+  "factory-floor-bevel": {
+    "file": "factory-floor/bevel",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-bevel-tee": {
+    "file": "factory-floor/bevel-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "factory-floor-boiler": {
     "file": "factory-floor/boiler",
     "source": "managed",
@@ -21286,6 +21306,16 @@
   },
   "factory-floor-shaft": {
     "file": "factory-floor/shaft",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-tank": {
+    "file": "factory-floor/tank",
     "source": "managed",
     "license": "Own work",
     "footprint": [
