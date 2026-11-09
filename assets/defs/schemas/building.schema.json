@@ -967,6 +967,41 @@
             "additionalProperties": false
           }
         },
+        "floorShell": {
+          "type": "object",
+          "properties": {
+            "floor": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "wall": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "corner": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "cornerX": {
+              "type": "number"
+            },
+            "cornerZ": {
+              "type": "number"
+            },
+            "cornerRotation": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "floor",
+            "wall",
+            "corner",
+            "cornerX",
+            "cornerZ",
+            "cornerRotation"
+          ],
+          "additionalProperties": false
+        },
         "tiers": {
           "minItems": 1,
           "type": "array",

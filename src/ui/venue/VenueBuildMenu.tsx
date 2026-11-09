@@ -9,7 +9,7 @@ import { VenueFixtureItem } from './VenueFixtureItem';
 interface VenueBuildMenuProps {
   tier: number;
   rank: number;
-  venueType: VenueType;
+  venueType: VenueType | 'factory';
 }
 
 // The same menu as the city: at most one section open at a time, with the items of the section as rows with a picture and a cost.

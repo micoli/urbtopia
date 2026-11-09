@@ -1,7 +1,7 @@
 import floorBalance from '../../../assets/defs/balance/factoryFloor.json' with { type: 'json' };
 import { FIXTURES } from '../venues/fixtures';
 import type { FixtureSide } from '../venues/venueVocabulary';
-import type { VenueFixture } from '../engine/state';
+import type { Building, VenueFixture } from '../engine/state';
 
 export type Turn = 'cw' | 'ccw';
 
@@ -161,3 +161,7 @@ export function floorBonusOf(fixtures: readonly VenueFixture[], tier: number): F
   const sum = (key: 'speed' | 'yield') => machines.reduce((total, fixture) => total + (FIXTURES[fixture.type][key] ?? 0), 0);
   return { speed: Math.min(sum('speed'), capOf(floorBalance.speedCaps, tier)), yield: Math.min(sum('yield'), capOf(floorBalance.yieldCaps, tier)) };
 }
+
+const NO_BONUS: FloorBonus = { speed: 0, yield: 0 };
+
+export const floorBonusOfBuilding = (building: Pick<Building, 'tier' | 'floor'>): FloorBonus => (building.floor ? floorBonusOf(building.floor.fixtures, building.tier) : NO_BONUS);

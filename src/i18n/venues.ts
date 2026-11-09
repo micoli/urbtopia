@@ -65,6 +65,12 @@ type VenueMessageKey =
   | 'venue.hint.noHost'
   | 'venue.fixtureEarnings'
   | 'venue.manage'
+  | 'factory.floor.open'
+  | 'factory.floor.linked'
+  | 'factory.floor.speed'
+  | 'factory.floor.yield'
+  | 'factory.floor.hint'
+  | 'factory.floor.optional'
   | 'venue.cancel'
   | 'venue.menu.back'
   | 'venue.fixture.panel'
@@ -276,6 +282,12 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.fixture.panel': ['Fixture', 'Équipement'],
   'venue.cancel': ['Cancel', 'Annuler'],
   'venue.manage': ['Manage', 'Gérer'],
+  'factory.floor.open': ['Open the Factory floor', "Ouvrir l'atelier de l'usine"],
+  'factory.floor.linked': ['Machines linked', 'Machines reliées'],
+  'factory.floor.speed': ['Speed', 'Vitesse'],
+  'factory.floor.yield': ['Yield', 'Rendement'],
+  'factory.floor.hint': ['Link each Machine to a Motor through Shafts and Gears, or to a Pump through Pipes. Linked Machines speed the Factory up and raise its yield.', 'Reliez chaque machine à un moteur par des arbres et des engrenages, ou à une pompe par des tuyaux. Les machines reliées accélèrent l’usine et augmentent son rendement.'],
+  'factory.floor.optional': ['The Factory works without a floor; the Machines only add a bonus, capped by its Tier.', "L'usine fonctionne sans atelier ; les machines ajoutent seulement un bonus, plafonné par son niveau."],
   'venue.back': ['Back to the city', 'Retour à la ville'],
   'venue.build': ['Build', 'Construire'],
   'venue.takings': ['Takings', 'Recettes'],

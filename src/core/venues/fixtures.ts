@@ -5,12 +5,15 @@ import type { FixtureId, VenueType } from '../engine/state';
 import { modelFileOf } from '../models/modelFiles';
 import type { FixtureDefinition } from './fixtureSchema';
 import { VENUE_TYPES } from './profiles';
-import type { FactoryFixtureRole, FixtureCategory, FixtureSide } from './venueVocabulary';
+import { FACTORY_FIXTURE_CATEGORIES, type FactoryFixtureRole, type FixtureCategory, type FixtureSide } from './venueVocabulary';
 
 export type { FixtureCategory };
 
 // The sections of the build menu of each kind of Venue, in order.
-export const FIXTURE_CATEGORIES = Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).fixtureCategories!])) as unknown as Record<VenueType, readonly FixtureCategory[]>;
+export const FIXTURE_CATEGORIES = {
+  ...(Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).fixtureCategories!])) as unknown as Record<VenueType, readonly FixtureCategory[]>),
+  factory: FACTORY_FIXTURE_CATEGORIES,
+} as Record<VenueType | 'factory', readonly FixtureCategory[]>;
 
 export interface FixtureSpec {
   venue: VenueType | 'factory';
@@ -79,6 +82,6 @@ export const FIXTURE_IDS = Object.keys(FIXTURES) as FixtureId[];
 
 export const fixtureIdsOf = (venue: VenueType | 'factory'): FixtureId[] => FIXTURE_IDS.filter(id => FIXTURES[id].venue === venue);
 
-export const fixtureIdsInCategory = (venue: VenueType, category: FixtureCategory): FixtureId[] => fixtureIdsOf(venue).filter(id => FIXTURES[id].category === category);
+export const fixtureIdsInCategory = (venue: VenueType | 'factory', category: FixtureCategory): FixtureId[] => fixtureIdsOf(venue).filter(id => FIXTURES[id].category === category);
 
 export const FIXTURE_MODELS: readonly string[] = [...new Set(Object.values(FIXTURES).flatMap(spec => [spec.model, ...(spec.joins ? Object.values(spec.joins) : [])]))];

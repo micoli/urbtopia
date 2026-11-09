@@ -87,14 +87,25 @@ const RAIL_MODELS = [RAIL_STRAIGHT_MODEL, RAIL_CORNER_MODEL];
 
 const shellOf = (type: VenueType) => definitionOf(type).shell!;
 
-// Where the corner piece stands, by kind of Venue: the models of each kit are cut around different origins.
-export const VENUE_CORNER_PLACEMENT = Object.fromEntries(
-  VENUE_TYPES.map(type => [type, { x: shellOf(type).cornerX, z: shellOf(type).cornerZ, rotation: (shellOf(type).cornerRotation * Math.PI) / 180 }]),
-) as Record<VenueType, { x: number; z: number; rotation: number }>;
+// The interior of a Factory has the same pieces as the interior of a Venue.
+const floorShellOf = () => definitionOf('factory').floorShell!;
 
-export const VENUE_SHELL_MODELS = Object.fromEntries(
-  VENUE_TYPES.map(type => [type, { floor: modelFileOf(shellOf(type).floor), wall: modelFileOf(shellOf(type).wall), corner: modelFileOf(shellOf(type).corner) }]),
-) as Record<VenueType, { floor: string; wall: string; corner: string }>;
+const floorCornerOf = () => ({ x: floorShellOf().cornerX, z: floorShellOf().cornerZ, rotation: (floorShellOf().cornerRotation * Math.PI) / 180 });
+
+// Where the corner piece stands, by kind of Venue: the models of each kit are cut around different origins.
+export const VENUE_CORNER_PLACEMENT = {
+  ...(Object.fromEntries(
+    VENUE_TYPES.map(type => [type, { x: shellOf(type).cornerX, z: shellOf(type).cornerZ, rotation: (shellOf(type).cornerRotation * Math.PI) / 180 }]),
+  ) as Record<VenueType, { x: number; z: number; rotation: number }>),
+  factory: floorCornerOf(),
+} as Record<VenueType | 'factory', { x: number; z: number; rotation: number }>;
+
+export const VENUE_SHELL_MODELS = {
+  ...(Object.fromEntries(
+    VENUE_TYPES.map(type => [type, { floor: modelFileOf(shellOf(type).floor), wall: modelFileOf(shellOf(type).wall), corner: modelFileOf(shellOf(type).corner) }]),
+  ) as Record<VenueType, { floor: string; wall: string; corner: string }>),
+  factory: { floor: modelFileOf(floorShellOf().floor), wall: modelFileOf(floorShellOf().wall), corner: modelFileOf(floorShellOf().corner) },
+} as Record<VenueType | 'factory', { floor: string; wall: string; corner: string }>;
 
 const ROAD_MODELS = Object.values(ROAD_PIECE_MODELS);
 

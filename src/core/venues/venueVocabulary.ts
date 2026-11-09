@@ -6,6 +6,9 @@ export const FIXTURE_CATEGORIES_ALL = ['games', 'service', 'furniture', 'shelves
 
 export type FixtureCategory = (typeof FIXTURE_CATEGORIES_ALL)[number];
 
+// The sections of the build menu of a Factory floor, in order.
+export const FACTORY_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'plumbing', 'machines', 'walls'];
+
 // The sides of a Factory floor Fixture, seen from the Fixture itself: its front is the side its model faces.
 export const FIXTURE_SIDES = ['front', 'right', 'back', 'left'] as const;
 
