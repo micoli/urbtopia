@@ -3,6 +3,8 @@ import type { Language } from './prefsStore';
 type Entry = readonly [english: string, french: string];
 
 export const CATALOG = {
+  'social.newMessage': ['New message from {name}', 'Nouveau message de {name}'],
+  'social.newGroupMessage': ['New message in {name}', 'Nouveau message dans {name}'],
   'collect.all': ['Everything collected: +{amount} {U}', 'Tout est collecté : +{amount} {U}'],
   'collect.nothing': ['Nothing to collect', 'Rien à collecter'],
   'stat.uncollected': ['Uncollected taxes', 'Taxes non collectées'],
