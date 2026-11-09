@@ -413,7 +413,7 @@ A Fixture of a Factory floor that turns the Drive a quarter turn (the elbow) or 
 _Avoid_: Gearbox, junction
 
 **Flow**:
-The fluid a Tank holds and a Pump sends through Pipes to the Machines. A Pump takes the fluid in at its back and pushes it out of its front, and only does so when it is handed Drive like a Machine; without a Pump, a Tank gives nothing.
+The fluid a Tank holds and a Pump sends through Pipes to the Machines. A Pump takes the fluid in at its back and pushes it out of its front, and only does so when it is handed Drive like a Machine; without a Pump, a Tank gives nothing. A Tank feeds at most three Cooling vats; the ones past that, the highest ids first, get no Flow.
 _Avoid_: Water (the city's water network), pressure
 
 **Floor economy**:

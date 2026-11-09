@@ -32,6 +32,10 @@ type VenueMessageKey =
   | 'codex.fact.posts'
   | 'codex.fact.takingsCap'
   | 'codex.fact.fixtures'
+  | 'codex.fact.floorGrid'
+  | 'codex.fact.floorSpeedCap'
+  | 'codex.fact.floorYieldCap'
+  | 'codex.fact.technicianPosts'
   | 'error.invalidEventStart'
   | 'error.eventBusy'
   | 'error.eventCooldown'
@@ -89,6 +93,7 @@ type VenueMessageKey =
   | 'factory.floor.problem.jammed'
   | 'factory.floor.problem.noFlow'
   | 'factory.floor.problem.overloaded'
+  | 'factory.floor.problem.tankFull'
   | 'factory.floor.motorOverloaded'
   | 'venue.cancel'
   | 'venue.menu.back'
@@ -247,6 +252,10 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'codex.fact.grid': ['Interior', 'Intérieur'],
   'codex.fact.posts': ['Staff posts', 'Postes de personnel'],
   'codex.fact.takingsCap': ['Takings cap', 'Plafond des recettes'],
+  'codex.fact.floorGrid': ['Factory floor', 'Atelier'],
+  'codex.fact.floorSpeedCap': ['Floor speed bonus, up to', 'Bonus de vitesse de l’atelier, jusqu’à'],
+  'codex.fact.floorYieldCap': ['Floor yield bonus, up to', 'Bonus de rendement de l’atelier, jusqu’à'],
+  'codex.fact.technicianPosts': ['Technician posts', 'Postes de technicien'],
   'codex.fact.fixtures': ['Fixtures available', 'Équipements disponibles'],
   'error.invalidEventStart': ['This start time is not allowed.', 'Cette heure de début n’est pas autorisée.'],
   'error.eventBusy': ['An event is already planned.', 'Un événement est déjà prévu.'],
@@ -305,6 +314,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'factory.floor.linked': ['Machines linked', 'Machines reliées'],
   'factory.floor.speed': ['Speed', 'Vitesse'],
   'factory.floor.yield': ['Yield', 'Rendement'],
+  'factory.floor.problem.tankFull': ['Its Tank already feeds three Cooling vats: add a Tank, or take a vat off this one.', 'Son réservoir alimente déjà trois cuves réfrigérantes : ajoutez un réservoir, ou retirez une cuve de celui-ci.'],
   'factory.floor.problem.overloaded': ['Its Motor drives too many Machines and Pumps, so it is stopped: add a Motor or take one off.', 'Son moteur entraîne trop de machines et de pompes, elle est donc arrêtée : ajoutez un moteur ou retirez-en une.'],
   'factory.floor.motorOverloaded': ['{count} stopped: the Motor cannot drive them.', '{count} à l’arrêt : le moteur ne peut pas les entraîner.'],
   'factory.floor.benefit.own': ['Brings to the Factory: {bonus}.', 'Apporte à l’usine : {bonus}.'],
