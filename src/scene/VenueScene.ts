@@ -4,6 +4,7 @@ import { FIXTURES, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, pa
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
+import { FloorMotionLayer, type FixtureMotion } from './FloorMotionLayer';
 import { VenueCrowdLayer } from './VenueCrowdLayer';
 import { ShelfStockLayer } from './ShelfStockLayer';
 import type { Figure } from './venueCrowd';
@@ -17,8 +18,9 @@ const BROKEN_COLOR = 0xe5484d;
 const ENTRANCE_COLOR = 0xe8d9a8;
 const VALID_COLOR = 0x35d07f;
 const INVALID_COLOR = 0xe5484d;
-const WEAR_BAR_FROM_CONDITION = 50;
+const WEAR_BAR_FROM_CONDITION = 90;
 const WEAR_BAR_ORANGE_HUE = 30 / 360;
+const WEAR_BAR_GREEN_HUE = 120 / 360;
 const WEAR_BAR_BACK = 0x1b1f2b;
 const WEAR_BAR_WIDTH = 0.8;
 const WEAR_BAR_THICKNESS = 0.1;
@@ -40,6 +42,7 @@ export class VenueScene {
   private selectionRoot = new THREE.Group();
   private warningRoot = new THREE.Group();
   private crowd: VenueCrowdLayer;
+  private motion = new FloorMotionLayer();
   private lastFrame = performance.now();
   private fixturesSignature = '';
   private zoom = 1;
@@ -130,6 +133,13 @@ export class VenueScene {
     this.rebuildFixtures();
   }
 
+  // The Fixtures of a Factory floor that run, and the way they turn.
+  setMotion(motion: ReadonlyMap<number, FixtureMotion>, speed = 1): void {
+    this.motion.setMotion(motion);
+    this.motion.setSpeed(speed);
+    this.dirty = true;
+  }
+
   setCrowd(plan: readonly Figure[], mood: number): void {
     this.crowd.setPlan(plan, mood);
   }
@@ -158,18 +168,20 @@ export class VenueScene {
     this.markTiles(this.warningRoot, tiles, WARNING_COLOR);
   }
 
-  setWear(fixtures: readonly VenueFixture[]): void {
+  // A bar shows once a Fixture is worn: its Condition has fallen to 90 %. A Factory floor reads it as what is left, a Venue as what is lost.
+  setWear(fixtures: readonly VenueFixture[], remaining = false): void {
     this.clear(this.wearRoot, true);
     for (const fixture of fixtures) {
       const condition = conditionOf(fixture);
-      if (condition > WEAR_BAR_FROM_CONDITION) continue;
+      if (condition > WEAR_BAR_FROM_CONDITION || (remaining && !FIXTURES[fixture.type].wear)) continue;
       const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
       const bar = new THREE.Group();
       bar.position.set(fixture.x + width / 2, WEAR_BAR_HEIGHT, fixture.y + depth / 2);
       bar.quaternion.copy(this.camera.quaternion);
       const back = new THREE.Mesh(new THREE.PlaneGeometry(WEAR_BAR_WIDTH, WEAR_BAR_THICKNESS), new THREE.MeshBasicMaterial({ color: WEAR_BAR_BACK, depthTest: false }));
-      const wear = (100 - condition) / 100;
-      const fill = new THREE.Mesh(new THREE.PlaneGeometry(WEAR_BAR_WIDTH * wear, WEAR_BAR_THICKNESS), new THREE.MeshBasicMaterial({ color: new THREE.Color().setHSL(WEAR_BAR_ORANGE_HUE * condition / WEAR_BAR_FROM_CONDITION, 0.9, 0.5), depthTest: false }));
+      const wear = remaining ? Math.max(condition, 1) / 100 : (100 - condition) / 100;
+      const hue = remaining ? WEAR_BAR_GREEN_HUE * condition / WEAR_BAR_FROM_CONDITION : WEAR_BAR_ORANGE_HUE * condition / WEAR_BAR_FROM_CONDITION;
+      const fill = new THREE.Mesh(new THREE.PlaneGeometry(WEAR_BAR_WIDTH * wear, WEAR_BAR_THICKNESS), new THREE.MeshBasicMaterial({ color: new THREE.Color().setHSL(hue, 0.9, 0.5), depthTest: false }));
       fill.position.set(-WEAR_BAR_WIDTH * (1 - wear) / 2, 0, 0.001);
       back.renderOrder = 11;
       fill.renderOrder = 12;
@@ -243,14 +255,16 @@ export class VenueScene {
   private rebuildFixtures(): void {
     if (!this.library.has(this.shellModels.floor)) return;
     this.clear(this.fixtureRoot);
+    this.motion.clear();
     for (const fixture of this.lastFixtures) {
       const spec = FIXTURES[fixture.type];
       const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
       const piece = spec.joins ? partitionPieceOf(fixture, this.lastFixtures) : undefined;
       const model = piece && piece.shape !== 'straight' ? spec.joins![piece.shape] : spec.model;
-      const rotation = piece ? piece.turns * Math.PI / 2 : -fixture.rotation * Math.PI / 2;
+      const rotation = (piece ? piece.turns * Math.PI / 2 : -fixture.rotation * Math.PI / 2);
       const object = this.place(this.fixtureRoot, model, fixture.x + width / 2, fixture.y + depth / 2, rotation);
       object.userData.fixtureId = fixture.id;
+      this.motion.bind(fixture.id, object, spec.smoke);
       if (spec.tint !== undefined) this.tint(object, spec.tint);
     }
     this.dirty = true;
@@ -481,7 +495,8 @@ export class VenueScene {
     this.lastFrame = now;
     this.turnTowardTarget(delta);
     this.crowd.update(delta, this.camera);
-    if (this.crowd.active) this.dirty = true;
+    this.motion.update(delta);
+    if (this.crowd.active || this.motion.active) this.dirty = true;
     if (this.dirty) {
       this.dirty = false;
       this.renderer.render(this.scene, this.camera);

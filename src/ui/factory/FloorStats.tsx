@@ -29,6 +29,10 @@ export function FloorStats({ factory }: FloorStatsProps) {
         <span className="dock-stat-value">{percent(bonus.yield)}</span>
         <span className="dock-stat-label">{t('factory.floor.yield')}</span>
       </div>
+      <div className="dock-stat" title={t('factory.floor.power')}>
+        <span className="dock-stat-value">{bonus.power.toFixed(1)}</span>
+        <span className="dock-stat-label">{t('factory.floor.power')}</span>
+      </div>
     </>
   );
 }

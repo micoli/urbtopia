@@ -10,6 +10,7 @@ import { UrbsAmount } from '../common/UrbsAmount';
 import { VenueShelfStock } from './VenueShelfStock';
 import { useVenuePerformance } from './useVenuePerformance';
 import { Icon } from '../common/Icon';
+import { FloorMachineStatus } from '../factory/FloorMachineStatus';
 
 interface VenueFixtureActionsProps {
   venueId: number;
@@ -22,7 +23,8 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
     const building = store.state.buildings.find(candidate => candidate.id === venueId);
     return (building?.venue?.fixtures ?? building?.floor?.fixtures)?.find(candidate => candidate.id === (movingId ?? placedId));
   });
-  const onFloor = useGame(store => store.state.buildings.find(candidate => candidate.id === venueId)?.type === 'factory');
+  const floorOwner = useGame(store => store.state.buildings.find(candidate => candidate.id === venueId && candidate.type === 'factory'));
+  const onFloor = floorOwner !== undefined;
   const performance = useVenuePerformance(venueId);
   const earnings = fixture ? performance?.earningsByFixture.get(fixture.id) : undefined;
   const hints = fixture ? performance?.layout.hints.get(fixture.id) ?? [] : [];
@@ -35,6 +37,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
       <h3>{t(`venue.fixture.${fixture.type}`)}</h3>
       {partition ? null : <p><strong>{t('venue.condition')}</strong>: {Math.round(conditionOf(fixture))} %</p>}
       {partition ? null : isBroken(fixture) ? <p className="note note--danger">{t('venue.broken')}</p> : conditionOf(fixture) < WEAR.breakdownBelow ? <p className="note note--warn">{t('venue.worn')}</p> : null}
+      {floorOwner ? <FloorMachineStatus factory={floorOwner} fixture={fixture} /> : null}
       {hints.map(hint => <p key={hint} className="note note--warn">{t(`venue.hint.${hint}`)}</p>)}
       {movingId === null ? <VenueShelfStock venueId={venueId} fixture={fixture} /> : null}
       {earnings !== undefined ? <p><strong>{t('venue.fixtureEarnings')}</strong>: <UrbsAmount value={earnings} /></p> : null}
@@ -45,8 +48,8 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
         </>
       ) : (
         <ButtonRow align="stretch" spaced>
-          {!onFloor && Math.round(100-conditionOf(fixture)) > 2
-              ? <ActionButton variant="primary" onClick={() => send({ type: 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>
+          {Math.round(100-conditionOf(fixture)) > 2
+              ? <ActionButton variant="primary" onClick={() => send({ type: onFloor ? 'RepairFloorFixture' : 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>
                 <Icon name="repair" /> {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} />
                 </ActionButton>
               : null

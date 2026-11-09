@@ -69,8 +69,27 @@ type VenueMessageKey =
   | 'factory.floor.linked'
   | 'factory.floor.speed'
   | 'factory.floor.yield'
+  | 'factory.floor.power'
+  | 'factory.floor.motorLoad'
+  | 'factory.floor.benefit.own'
+  | 'factory.floor.benefit.cooled'
+  | 'factory.floor.benefit.vat'
+  | 'factory.floor.benefit.vatIdle'
+  | 'factory.floor.benefit.doubled'
+  | 'factory.floor.benefit.boiler'
+  | 'factory.floor.benefit.boilerIdle'
+  | 'factory.floor.benefit.motorCooled'
+  | 'factory.floor.benefit.motorIdle'
+  | 'factory.floor.benefit.variety'
   | 'factory.floor.hint'
   | 'factory.floor.optional'
+  | 'factory.floor.linkedMachine'
+  | 'factory.floor.problem.noDrive'
+  | 'factory.floor.problem.wrongTurn'
+  | 'factory.floor.problem.jammed'
+  | 'factory.floor.problem.noFlow'
+  | 'factory.floor.problem.overloaded'
+  | 'factory.floor.motorOverloaded'
   | 'venue.cancel'
   | 'venue.menu.back'
   | 'venue.fixture.panel'
@@ -286,7 +305,26 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'factory.floor.linked': ['Machines linked', 'Machines reliées'],
   'factory.floor.speed': ['Speed', 'Vitesse'],
   'factory.floor.yield': ['Yield', 'Rendement'],
-  'factory.floor.hint': ['Link each Machine to a Motor through Shafts and Gears, or to a Pump through Pipes. Linked Machines speed the Factory up and raise its yield.', 'Reliez chaque machine à un moteur par des arbres et des engrenages, ou à une pompe par des tuyaux. Les machines reliées accélèrent l’usine et augmentent son rendement.'],
+  'factory.floor.problem.overloaded': ['Its Motor drives too many Machines and Pumps, so it is stopped: add a Motor or take one off.', 'Son moteur entraîne trop de machines et de pompes, elle est donc arrêtée : ajoutez un moteur ou retirez-en une.'],
+  'factory.floor.motorOverloaded': ['{count} stopped: the Motor cannot drive them.', '{count} à l’arrêt : le moteur ne peut pas les entraîner.'],
+  'factory.floor.benefit.own': ['Brings to the Factory: {bonus}.', 'Apporte à l’usine : {bonus}.'],
+  'factory.floor.benefit.cooled': ['Cooled: its Motor stands beside a Cooling vat, which adds {share} to its bonus.', 'Refroidie : son moteur est à côté d’une cuve réfrigérante, qui ajoute {share} à son bonus.'],
+  'factory.floor.benefit.vat': ['Cools {motors} Motor(s) beside it: {share} more speed and yield on the {machines} Machine(s) they drive.', 'Refroidit {motors} moteur(s) voisin(s) : {share} de vitesse et de rendement en plus sur les {machines} machine(s) qu’ils entraînent.'],
+  'factory.floor.benefit.vatIdle': ['No Motor beside it: put it next to a Motor to cool the Machines it drives.', 'Aucun moteur à côté : placez-la contre un moteur pour refroidir les machines qu’il entraîne.'],
+  'factory.floor.benefit.doubled': ['Doubled by the Boiler on its circuit of Flow.', 'Doublée par la chaudière de son circuit de fluide.'],
+  'factory.floor.benefit.boiler': ['Doubles the cooling of {count} Cooling vat(s) on its circuit of Flow.', 'Double le refroidissement de {count} cuve(s) réfrigérante(s) de son circuit de fluide.'],
+  'factory.floor.benefit.boilerIdle': ['Put a Cooling vat on its circuit of Flow to double its cooling.', 'Placez une cuve réfrigérante sur son circuit de fluide pour doubler son refroidissement.'],
+  'factory.floor.benefit.motorCooled': ['Cooled by the Cooling vat beside it: {share} more speed and yield on the {machines} Machine(s) it drives.', 'Refroidi par la cuve réfrigérante voisine : {share} de vitesse et de rendement en plus sur les {machines} machine(s) qu’il entraîne.'],
+  'factory.floor.benefit.motorIdle': ['A Cooling vat beside it would add to the speed and the yield of the Machines it drives.', 'Une cuve réfrigérante à côté ajouterait de la vitesse et du rendement aux machines qu’il entraîne.'],
+  'factory.floor.benefit.variety': ['The kinds of Machine that run add {share} yield to the Factory.', 'La variété des machines qui tournent ajoute {share} de rendement à l’usine.'],
+  'factory.floor.motorLoad': ['Machines driven: {driven} / {capacity}', 'Machines entraînées : {driven} / {capacity}'],
+  'factory.floor.power': ['Power drawn by the Motors', 'Électricité des moteurs'],
+  'factory.floor.hint': ['Link each Machine to a Motor through Shafts and Gears, or to a Tank through Pipes and a Pump that a Motor drives. Linked Machines speed the Factory up and raise its yield.', 'Reliez chaque machine à un moteur par des arbres et des engrenages, ou à un réservoir par des tuyaux et une pompe entraînée par un moteur. Les machines reliées accélèrent l’usine et augmentent son rendement.'],
+  'factory.floor.linkedMachine': ['Linked: it adds its bonus.', 'Reliée : elle apporte son bonus.'],
+  'factory.floor.problem.noDrive': ['No Drive reaches it: feed it from a Motor through Shafts and Gears, the input facing the line.', 'Aucune force ne l’atteint : alimentez-la depuis un moteur par des arbres et des engrenages, son entrée face à la ligne.'],
+  'factory.floor.problem.wrongTurn': ['Its Drive turns the wrong way: add or remove a Gear meshed on the rim.', 'Sa force tourne dans le mauvais sens : ajoutez ou retirez un engrenage engrené par la jante.'],
+  'factory.floor.problem.jammed': ['Its Gears are jammed: they are fed in two opposite directions.', 'Ses engrenages sont bloqués : ils sont alimentés dans deux sens opposés.'],
+  'factory.floor.problem.noFlow': ['No Flow reaches it: a Tank gives Flow only through a Pump that is handed Drive, then Pipes joined end to end, its inlet facing the line.', 'Aucun fluide ne l’atteint : un réservoir n’en donne que par une pompe alimentée en force, puis des tuyaux bout à bout, son entrée face à la ligne.'],
   'factory.floor.optional': ['The Factory works without a floor; the Machines only add a bonus, capped by its Tier.', "L'usine fonctionne sans atelier ; les machines ajoutent seulement un bonus, plafonné par son niveau."],
   'venue.back': ['Back to the city', 'Retour à la ville'],
   'venue.build': ['Build', 'Construire'],

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, floorGridSizeOf, gridSizeOf, hiredOf, isBroken, isFactory, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type VenueFixture, type VenueType } from '../../core';
+import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, floorBonusOfBuilding, floorGridSizeOf, floorMotionOf, floorOverloadedOf, gridSizeOf, hiredOf, isBroken, isFactory, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type VenueFixture, type VenueType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
@@ -75,8 +75,9 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       if (!interior) return;
       const hints = isVenue(interior.building) ? venuePerformance(gameStore.getState().state, interior.building).layout.hints : new Map<number, readonly string[]>();
       scene.setWarnings(interior.fixtures.filter(fixture => hints.has(fixture.id) && !isBroken(fixture)).flatMap(fixtureTiles));
-      scene.setBroken(interior.fixtures.filter(isBroken).flatMap(fixtureTiles));
-      scene.setWear([...interior.fixtures]);
+      const overloaded = interior.floor ? floorOverloadedOf(interior.fixtures) : new Set<number>();
+      scene.setBroken(interior.fixtures.filter(fixture => isBroken(fixture) || overloaded.has(fixture.id)).flatMap(fixtureTiles));
+      scene.setWear([...interior.fixtures], interior.floor);
     };
     const showCrowd = () => {
       const venue = interiorOf(venueId)?.building;
@@ -98,6 +99,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       if (interior) {
         scene.setSize(sizeOf(interior, venueType));
         scene.setFixtures([...interior.fixtures]);
+        scene.setMotion(interior.floor ? floorMotionOf(interior.fixtures) : new Map(), 1 + floorBonusOfBuilding(interior.building).speed);
       }
       showCrowd();
       showSelection();
