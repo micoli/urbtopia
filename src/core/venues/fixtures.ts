@@ -54,9 +54,14 @@ export interface FixtureSpec {
   role?: FactoryFixtureRole;
   drive?: readonly FixtureSide[];
   flow?: readonly FixtureSide[];
+  rim?: readonly FixtureSide[];
   turns?: 'cw' | 'ccw';
   speed?: number;
+  smoke?: readonly [number, number, number];
   yield?: number;
+  family?: string;
+  coolant?: number;
+  heat?: true;
   // A wall: it only divides the room, and earns, serves and wears nothing.
   partition?: true;
   joins?: { elbow: string; tee: string; cross: string };

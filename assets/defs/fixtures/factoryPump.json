@@ -13,5 +13,6 @@
   "minTier": 1,
   "wear": 0.08,
   "role": "pump",
-  "flow": ["front"]
+  "drive": ["right"],
+  "flow": ["front", "back"]
 }

@@ -52,6 +52,16 @@ export const factoryFloorBalanceSchema = z
     gridSizes: z.array(z.int().min(1)).min(1),
     speedCaps: z.array(positive).min(1),
     yieldCaps: z.array(positive).min(1),
+    // Uses per hour of a Fixture that runs, which the wear is counted on, and the Technician posts by Tier.
+    usagePerHour: positive,
+    technicianPosts: z.array(count).min(1),
+    // The power of a Motor, the share of it a Motor draws with nothing to drive, and how many active Machines a Motor can drive at full speed.
+    motorPower: positive,
+    idlePowerShare: positive,
+    motorCapacity: positive,
+    // The yield a Machine of one more kind adds to the floor, and what a cooling loop makes of the yield a coolant gives.
+    varietyYield: positive,
+    coolingLoopFactor: positive,
   })
   .meta({ title: 'Factory floor balance', description: 'assets/defs/balance/factoryFloor.json: the size of the Factory floor and the cap of the bonus its linked Machines add, by Factory Tier.' });
 

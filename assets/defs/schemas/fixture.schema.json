@@ -804,7 +804,9 @@
             "motor",
             "gear",
             "shaft",
+            "bevel",
             "pump",
+            "tank",
             "pipe",
             "machine"
           ]
@@ -835,6 +837,19 @@
             ]
           }
         },
+        "rim": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "front",
+              "right",
+              "back",
+              "left"
+            ]
+          }
+        },
         "turns": {
           "type": "string",
           "enum": [
@@ -846,9 +861,38 @@
           "type": "number",
           "exclusiveMinimum": 0
         },
+        "smoke": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
         "yield": {
           "type": "number",
           "exclusiveMinimum": 0
+        },
+        "family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "coolant": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "heat": {
+          "type": "boolean",
+          "const": true
         }
       },
       "required": [

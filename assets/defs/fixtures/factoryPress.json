@@ -14,5 +14,6 @@
   "wear": 0.1,
   "role": "machine",
   "drive": ["front"],
-  "speed": 0.2
+  "speed": 0.2,
+  "family": "press"
 }

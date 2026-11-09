@@ -20,6 +20,8 @@ export type FixtureId =
   | 'displayBread'
   | 'displayFruit'
   | 'doubleBed'
+  | 'factoryBevel'
+  | 'factoryBevelTee'
   | 'factoryBoiler'
   | 'factoryGear'
   | 'factoryLatheCcw'
@@ -32,6 +34,7 @@ export type FixtureId =
   | 'factoryPress'
   | 'factoryPump'
   | 'factoryShaft'
+  | 'factoryTank'
   | 'factoryWall'
   | 'floorLamp'
   | 'freezer'
@@ -133,6 +136,8 @@ export type RestaurantFixtureId =
   | 'waitingArmchair';
 
 export type FactoryFixtureId =
+  | 'factoryBevel'
+  | 'factoryBevelTee'
   | 'factoryBoiler'
   | 'factoryGear'
   | 'factoryLatheCcw'
@@ -145,4 +150,5 @@ export type FactoryFixtureId =
   | 'factoryPress'
   | 'factoryPump'
   | 'factoryShaft'
+  | 'factoryTank'
   | 'factoryWall';

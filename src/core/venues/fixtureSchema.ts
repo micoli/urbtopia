@@ -66,11 +66,21 @@ export const fixtureSchema = z
       // The sides through which Drive passes or enters, and those through which Flow does.
       drive: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
       flow: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
+      // The sides of a Gear that are its rim: they mesh with the rim of the next Gear, while its other sides are its axle ends, which meet the axle of the next Gear in line. A Motor, a Shaft or a Machine can feed a Gear on any side.
+      rim: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
       // The direction a Machine needs its Drive to turn; it takes either way when left out.
       turns: z.enum(['cw', 'ccw']).optional(),
       // What a linked Machine adds to the speed and to the yield of the Factory's Slots.
       speed: z.number().positive().optional(),
+      // Where smoke rises while the Machine runs, in the model's own space (x, up, z).
+      smoke: z.tuple([z.number(), z.number(), z.number()]).optional(),
       yield: z.number().positive().optional(),
+      // The kind of a Machine: the Factory floor pays for the variety of kinds that run, not for their number.
+      family: z.string().min(1).optional(),
+      // A Machine that cools the Motors beside it: the share it adds to the speed and the yield of each Machine they drive.
+      coolant: z.number().positive().optional(),
+      // A Machine that heats its circuit of Flow, which a coolant on the same circuit then cools twice as well.
+      heat: z.literal(true).optional(),
     }),
   ])
   .meta({ title: 'Fixture', description: 'An item placed inside a Venue, one file per Fixture id in assets/defs/fixtures.' });

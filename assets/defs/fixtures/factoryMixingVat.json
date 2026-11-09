@@ -4,8 +4,8 @@
   "venue": "factory",
   "category": "machines",
   "name": {
-    "en": "Mixing vat",
-    "fr": "Cuve de mélange"
+    "en": "Cooling vat",
+    "fr": "Cuve réfrigérante"
   },
   "model": "factory-floor-mixing-vat",
   "footprint": [1, 1],
@@ -14,5 +14,7 @@
   "wear": 0.1,
   "role": "machine",
   "flow": ["front"],
-  "yield": 0.1
+  "yield": 0.1,
+  "family": "vat",
+  "coolant": 0.25
 }

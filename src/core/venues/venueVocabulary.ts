@@ -14,6 +14,6 @@ export const FIXTURE_SIDES = ['front', 'right', 'back', 'left'] as const;
 
 export type FixtureSide = (typeof FIXTURE_SIDES)[number];
 
-export const FACTORY_FIXTURE_ROLES = ['motor', 'gear', 'shaft', 'pump', 'pipe', 'machine'] as const;
+export const FACTORY_FIXTURE_ROLES = ['motor', 'gear', 'shaft', 'bevel', 'pump', 'tank', 'pipe', 'machine'] as const;
 
 export type FactoryFixtureRole = (typeof FACTORY_FIXTURE_ROLES)[number];

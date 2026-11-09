@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "factory",
+  "category": "plumbing",
+  "name": {
+    "en": "Tank",
+    "fr": "Réservoir"
+  },
+  "model": "factory-floor-tank",
+  "footprint": [1, 1],
+  "price": 150,
+  "minTier": 1,
+  "wear": 0.02,
+  "role": "tank",
+  "flow": ["front"]
+}

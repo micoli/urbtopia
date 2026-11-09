@@ -16,5 +16,6 @@
   "drive": ["front"],
   "turns": "ccw",
   "speed": 0.15,
-  "yield": 0.05
+  "yield": 0.05,
+  "family": "lathe"
 }

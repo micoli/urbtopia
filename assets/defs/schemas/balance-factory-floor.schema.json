@@ -29,12 +29,52 @@
         "type": "number",
         "exclusiveMinimum": 0
       }
+    },
+    "usagePerHour": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "technicianPosts": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "motorPower": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "idlePowerShare": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "motorCapacity": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "varietyYield": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "coolingLoopFactor": {
+      "type": "number",
+      "exclusiveMinimum": 0
     }
   },
   "required": [
     "gridSizes",
     "speedCaps",
-    "yieldCaps"
+    "yieldCaps",
+    "usagePerHour",
+    "technicianPosts",
+    "motorPower",
+    "idlePowerShare",
+    "motorCapacity",
+    "varietyYield",
+    "coolingLoopFactor"
   ],
   "additionalProperties": false,
   "title": "Factory floor balance",
