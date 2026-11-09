@@ -345,7 +345,7 @@ The page that opens from a Venue's side panel and shows its interior, where the 
 _Avoid_: Interior, editor, back office
 
 **Fixture**:
-An item the player places inside a Venue's interior: a counter, a table, a chair, a game machine, a billiard table, an air hockey table. Its position relative to the other Fixtures affects the Venue's performance.
+An item the player places inside a Venue's interior or a Factory floor: a counter, a table, a chair, a game machine, a billiard table, an air hockey table; on a Factory floor, a Motor, Gear, Shaft, Pump, Pipe or Machine. Its position relative to the other Fixtures affects the Venue's performance.
 _Avoid_: Furniture, equipment, decoration
 
 **Staff**:
@@ -395,6 +395,26 @@ _Avoid_: Revenue, income, till
 **Visitor**:
 A simulated customer of a Venue, modelled in aggregate. Arcade, Supermarket and Restaurant draw them from the surrounding Citizens; a Hotel draws them from outside the city, by the city's attractiveness and its Reputation. In a Supermarket they are called Shoppers, in a Hotel guests, in a Restaurant Diners. Only a visual silhouette is shown, never saved.
 _Avoid_: Customer, guest, Citizen
+
+**Factory floor**:
+The interior of a Factory, opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Factory's Tier, where the player places Fixtures. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. A Factory with an empty floor produces as it always did; the floor only adds a bonus to speed and yield, capped by the Factory's Tier.
+_Avoid_: Venue (earns Urbs from Visitors), workshop floor, plant
+
+**Machine**:
+A Fixture of a Factory floor that needs Drive, Flow or both, and a given turning direction for its Drive. Linked, it contributes to the bonus of the Factory; unlinked, it contributes nothing.
+_Avoid_: Equipment, Workshop
+
+**Drive**:
+The turning force a Motor sends through Gears and Shafts to the Machines. Two meshed Gears turn in opposite directions, so the length of the chain decides the direction a Machine receives; a closed chain of odd length jams.
+_Avoid_: Power (electricity), torque
+
+**Flow**:
+The fluid a Pump sends through Pipes to the Machines.
+_Avoid_: Water (the city's water network), pressure
+
+**Link**:
+The state of a Machine that receives the Drive and the Flow it needs, in the direction it needs. A broken Gear or Pipe unlinks every Machine downstream of it until it is repaired.
+_Avoid_: Connection, wiring, Road access
 
 **Tourist**:
 A person from outside the city drawn by its Attractions and the Gatherings of its Arenas. Unlike a Citizen it has no Home; unlike a Visitor it is not tied to one Venue. Besides the Ticket, a Tourist spends on site, so a visit earns about three Tickets. A Tourist who sleeps in a Hotel stays longer and spends more; without a Hotel, Tourists only come for the day. Modelled in aggregate, never saved; the figures around an Attraction on the map are only a picture of them.
@@ -1086,6 +1106,10 @@ _Avoid_: Docs, documentation, manual, wiki
 - A Venue is distinct from a Casino and a Shop: Minigames and Stakes belong to the Casino only.
 - A breakdown of a Fixture is drawn from the Venue's own stream of the game's Seed, so reloading never dodges it.
 - A Venue is simulated in aggregate per game tick, collected by hand like Tax, and replayed by Catch-up.
+- A Factory floor is a Factory's interior, not a Venue: Minigames, Stakes, Takings, Visitors, Rank and events do not apply to it.
+- A Factory floor is optional: a Factory with no Fixtures produces as before, and the bonus never lowers the production a Factory has by Tier.
+- A Factory floor is simulated in aggregate, saved as its list of Fixtures and replayed by Catch-up like a Venue. Its Links are rebuilt from the grid, never saved.
+- A breakdown of a Gear or Pipe unlinks the Machines downstream of it; the Repair is paid in Urbs, by the player or by a Technician.
 - A Pleasure boat is a Leisure building and a Casino boat is a Casino, both hosted by a Boat on a Water tile.
 - Removing a Water tile that carries a Bridge, a Desert island or a Sea fort, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina or Pirate cove is refused. A Water tile that carries a Boat can be removed: the Boat moves to the nearest free tile of the water of its Marina or Pirate cove and stays attached to it; with no free tile left, the removal is refused.
 - Removing a Water tile, or laying a Desert island or a Sea fort, that would cut Stands off their Pirate cove or leave too few navigable Water tiles for the Pirate ships on them is refused.
