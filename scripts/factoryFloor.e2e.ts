@@ -10,8 +10,9 @@ test('the Factory floor opens from the Factory panel and shows what the layout b
     const { gameStore } = await import('../src/store/gameStore.ts');
     const { uiStore } = await import('../src/store/uiStore.ts');
     const { newGame, createBuilding } = await import('../src/core/index.ts');
+    type Fixture = import('../src/core/index.ts').VenueFixture;
     const state = newGame({ seed: 'factory-floor', now: Date.now() });
-    const fixtures = [
+    const fixtures: Fixture[] = [
       { id: 1, type: 'factoryMotor', x: 3, y: 3, rotation: 0 },
       { id: 2, type: 'factoryShaft', x: 3, y: 4, rotation: 0 },
       { id: 3, type: 'factoryPress', x: 3, y: 5, rotation: 2 },

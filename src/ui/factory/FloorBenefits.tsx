@@ -24,6 +24,7 @@ export function FloorBenefits({ fixtures, fixture }: FloorBenefitsProps) {
     else if (benefits.cooling > 0) lines.push(t('factory.floor.benefit.vatIdle'));
     if (benefits.doubled) lines.push(t('factory.floor.benefit.doubled'));
   }
+  if (benefits.powerSaving > 0) lines.push(fill(t('factory.floor.benefit.boilerPower'), { share: `${Math.round(benefits.powerSaving * 100)} %` }));
   if (spec.heat) lines.push(benefits.heatsVats > 0 ? fill(t('factory.floor.benefit.boiler'), { count: benefits.heatsVats }) : t('factory.floor.benefit.boilerIdle'));
   if (spec.role === 'machine' && benefits.variety > 0) lines.push(fill(t('factory.floor.benefit.variety'), { share: percent(benefits.variety) }));
   return <>{lines.map(line => <p key={line} className="note">{line}</p>)}</>;

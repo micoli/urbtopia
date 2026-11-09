@@ -82,6 +82,7 @@ type VenueMessageKey =
   | 'factory.floor.benefit.doubled'
   | 'factory.floor.benefit.boiler'
   | 'factory.floor.benefit.boilerIdle'
+  | 'factory.floor.benefit.boilerPower'
   | 'factory.floor.benefit.motorCooled'
   | 'factory.floor.benefit.motorIdle'
   | 'factory.floor.benefit.variety'
@@ -323,6 +324,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'factory.floor.benefit.vatIdle': ['No Motor beside it: put it next to a Motor to cool the Machines it drives.', 'Aucun moteur à côté : placez-la contre un moteur pour refroidir les machines qu’il entraîne.'],
   'factory.floor.benefit.doubled': ['Doubled by the Boiler on its circuit of Flow.', 'Doublée par la chaudière de son circuit de fluide.'],
   'factory.floor.benefit.boiler': ['Doubles the cooling of {count} Cooling vat(s) on its circuit of Flow.', 'Double le refroidissement de {count} cuve(s) réfrigérante(s) de son circuit de fluide.'],
+  'factory.floor.benefit.boilerPower': ['Its steam saves {share} of the Motors’ electricity.', 'Sa vapeur économise {share} de l’électricité des moteurs.'],
   'factory.floor.benefit.boilerIdle': ['Put a Cooling vat on its circuit of Flow to double its cooling.', 'Placez une cuve réfrigérante sur son circuit de fluide pour doubler son refroidissement.'],
   'factory.floor.benefit.motorCooled': ['Cooled by the Cooling vat beside it: {share} more speed and yield on the {machines} Machine(s) it drives.', 'Refroidi par la cuve réfrigérante voisine : {share} de vitesse et de rendement en plus sur les {machines} machine(s) qu’il entraîne.'],
   'factory.floor.benefit.motorIdle': ['A Cooling vat beside it would add to the speed and the yield of the Machines it drives.', 'Une cuve réfrigérante à côté ajouterait de la vitesse et du rendement aux machines qu’il entraîne.'],

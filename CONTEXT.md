@@ -421,7 +421,7 @@ What a Factory floor costs and brings. Each Motor draws power from the city's el
 _Avoid_: Upkeep, running cost
 
 **Cooling vat**:
-A Machine that needs Flow and, once linked, cools the Motors that stand next to it: every Machine such a Motor drives gets a share more of its speed and of its yield. When its circuit of Flow also holds a Boiler that runs, it cools twice as well: the Boiler heats the circuit and the Cooling vat takes the heat away.
+A Machine that needs Flow and, once linked, cools the Motors that stand next to it: every Machine such a Motor drives gets a share more of its speed and of its yield. When its circuit of Flow also holds a Boiler that runs, it cools twice as well: the Boiler heats the circuit and the Cooling vat takes the heat away. A Boiler that runs also saves a quarter of the Motors' power, and two of them half at most.
 _Avoid_: Mixing vat, refrigerant, radiator
 
 **Link**:

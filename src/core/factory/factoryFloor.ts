@@ -437,17 +437,18 @@ function coolingOf(allFixtures: readonly VenueFixture[]) {
   return { fixtures, at, linked, drive, machines, motors, coolants, heated, cooled, besideMotor, coolingOfMotor, coolantOf };
 }
 
-// What the linked Machines add to the speed and to the yield of the Factory's Slots, each rising towards the cap of the Factory's Tier, and what the Motors draw.
+// What the linked Machines add to the speed and to the yield of the Factory's Slots, each rising towards the cap of the Factory's Tier, and what the Motors draw, less what the Boilers that run save.
 // A Motor drives only so many Machines and Pumps, and the others stop; the kinds of Machine that run add to the yield, and a Cooling vat beside a Motor adds to the Machines that Motor drives.
 export function floorBonusOf(allFixtures: readonly VenueFixture[], tier: number): FloorBonus {
   const { machines, motors, drive, coolantOf } = coolingOf(allFixtures);
+  const saving = Math.min(floorBalance.maxPowerSaving, floorBalance.boilerPowerSaving * machines.filter(fixture => FIXTURES[fixture.type].heat).length);
   const busy = motors.length === 0 ? 0 : Math.min(1, drive.received.size / (motors.length * floorBalance.motorCapacity));
   const sum = (key: 'speed' | 'yield') => machines.reduce((total, fixture) => total + (FIXTURES[fixture.type][key] ?? 0) * (1 + coolantOf(fixture)), 0);
   const variety = floorBalance.varietyYield * Math.max(0, kindsOf(machines) - 1);
   return {
     speed: saturate(sum('speed'), capOf(floorBalance.speedCaps, tier)),
     yield: saturate(sum('yield') + variety, capOf(floorBalance.yieldCaps, tier)),
-    power: motors.length * floorBalance.motorPower * (floorBalance.idlePowerShare + (1 - floorBalance.idlePowerShare) * busy),
+    power: motors.length * floorBalance.motorPower * (floorBalance.idlePowerShare + (1 - floorBalance.idlePowerShare) * busy) * (1 - saving),
   };
 }
 
@@ -468,6 +469,8 @@ export interface FloorBenefits {
   heatsVats: number;
   // The yield that the kinds of Machine that run add to the floor.
   variety: number;
+  // A Boiler: the share of the Motors' power it saves.
+  powerSaving: number;
 }
 
 // What a Fixture of a Factory floor brings to the floor, beyond the Drive and the Flow it passes on.
@@ -475,7 +478,7 @@ export function floorBenefitsOf(allFixtures: readonly VenueFixture[], fixture: V
   const context = coolingOf(allFixtures);
   const spec = FIXTURES[fixture.type];
   const isLinked = context.linked.has(fixture.id);
-  const none: FloorBenefits = { speed: 0, yield: 0, cooling: 0, coolsMotors: 0, coolsMachines: 0, doubled: false, heatsVats: 0, variety: 0 };
+  const none: FloorBenefits = { speed: 0, yield: 0, cooling: 0, coolsMotors: 0, coolsMachines: 0, doubled: false, heatsVats: 0, variety: 0, powerSaving: 0 };
   if (roleOf(fixture) === 'motor') return { ...none, cooling: context.coolingOfMotor(fixture), coolsMachines: [...(context.drive.served.get(fixture.id)?.handed ?? [])].filter(id => context.linked.has(id)).length };
   if (!isLinked) return none;
   const cooling = context.coolantOf(fixture);
@@ -490,6 +493,7 @@ export function floorBenefitsOf(allFixtures: readonly VenueFixture[], fixture: V
     doubled: spec.coolant !== undefined && context.heated(fixture),
     heatsVats: circuit.length,
     variety: floorBalance.varietyYield * Math.max(0, kindsOf(context.machines) - 1),
+    powerSaving: spec.heat ? floorBalance.boilerPowerSaving : 0,
   };
 }
 

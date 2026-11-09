@@ -67,6 +67,14 @@
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "boilerPowerSaving": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "maxPowerSaving": {
+      "type": "number",
+      "exclusiveMinimum": 0
     }
   },
   "required": [
@@ -80,7 +88,9 @@
     "motorCapacity",
     "varietyYield",
     "coolingLoopFactor",
-    "tankCoolingVats"
+    "tankCoolingVats",
+    "boilerPowerSaving",
+    "maxPowerSaving"
   ],
   "additionalProperties": false,
   "title": "Factory floor balance",

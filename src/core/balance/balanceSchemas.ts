@@ -64,6 +64,9 @@ export const factoryFloorBalanceSchema = z
     coolingLoopFactor: positive,
     // How many Cooling vats one Tank can feed.
     tankCoolingVats: z.int().min(1),
+    // The share of the Motors' power that each Boiler that runs saves, and the most a floor can save.
+    boilerPowerSaving: positive,
+    maxPowerSaving: positive,
   })
   .meta({ title: 'Factory floor balance', description: 'assets/defs/balance/factoryFloor.json: the size of the Factory floor and the cap of the bonus its linked Machines add, by Factory Tier.' });
 

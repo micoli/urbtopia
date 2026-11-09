@@ -271,6 +271,16 @@ describe('what a floor costs and brings', () => {
     expect(press(false)).toBeCloseTo(0.2 * 1.25);
     expect(press(true)).toBeCloseTo(0.2 * 1.5);
   });
+
+  it('saves a share of the Motors\' electricity for every Boiler that runs', () => {
+    const fixtures = [...pumped(3, 3), put('factoryPipeTee', 3, 4, 2), put('factoryMixingVat', 2, 4, 3), put('factoryBoiler', 4, 4, 1), put('factoryMotor', 5, 4, 1)];
+    const boiler = fixtures.find(fixture => fixture.type === 'factoryBoiler')!;
+    expect(floorLinksOf(fixtures).linked.has(boiler.id)).toBe(true);
+    const motors = 2;
+    const busy = 2 / (motors * 3);
+    expect(floorBonusOf(fixtures, 5).power).toBeCloseTo(motors * (0.2 + 0.8 * busy) * 0.75);
+    expect(floorBenefitsOf(fixtures, boiler).powerSaving).toBe(0.25);
+  });
 });
 
 describe('Flow from a Tank', () => {
