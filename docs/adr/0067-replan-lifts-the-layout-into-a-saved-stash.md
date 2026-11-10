@@ -16,9 +16,11 @@ A player unhappy with their City can **Replan** it: everything they placed (Buil
 
 **The Stash is part of the save.** A Replan survives closing the tab and is carried by the Cloud save, so two devices of one Player account meet it as they meet any City. At entry the game keeps the layout it started from, and Cancel restores it exactly. The Replan ends only when the Stash is empty; it checks no connectivity, and lists the Buildings left with no access (power is a pool for the whole City, not a link to a place) and the Transit lines to draw again. Auto-cancel on close was rejected: it would erase minutes of work.
 
-**The game stands still and the Replan is free.** The economy, Citizens, production and the Day cycle pause at entry and resume at exit with no Catch-up for the time spent, so a City without Roads is never judged. It costs no Urbs and earns none, and Build limits and Escalating prices do not move, since nothing is built or destroyed. A Replan is refused during a Challenge (as a Time skip is), during the Tutorial and while a Save conflict is open.
+**The game stands still and the Replan is free.** The economy, Citizens, production and the Day cycle pause at entry and resume at exit with no Catch-up for the time spent, so a City without Roads is never judged. It costs no Urbs, and Build limits and Escalating prices do not move, since nothing is built or destroyed. A Replan is refused during a Challenge (as a Time skip is), during the Tutorial and while a Save conflict is open.
 
 **The Showcase is replaced at the end only.** Visitors keep the last complete City; the half-laid one stays private in the Cloud save.
+
+**Dropping is the one way to earn.** A long press on a group of the Stash offers to drop it for its initial price, with its Tiers, solar panels, insulation and Slots; it differs from a sale, which pays a share of the base price. The Urbs taken are noted in the Replan, and Cancel takes them back with the items. A group can also be put off to a Later section at the bottom of the list. A Storehouse, Water tower, Marina or Pirate cove that the rest of the City still needs cannot be dropped.
 
 ## Consequences
 

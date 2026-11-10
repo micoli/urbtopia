@@ -286,6 +286,10 @@ export interface ReplanState {
   stash: Stash;
   // The layout the Replan started from, which Cancel restores.
   start?: Layout;
+  // Urbs the player took by dropping items of the Stash; Cancel gives them back with the items.
+  refunded?: number;
+  // The groups of the Stash the player put off to the bottom of the list.
+  later?: string[];
 }
 
 export interface GameState {

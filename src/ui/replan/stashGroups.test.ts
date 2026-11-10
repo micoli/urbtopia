@@ -42,4 +42,13 @@ describe('the groups of the Stash', () => {
     expect(sections[0]?.groups.every((group) => group.codexId !== undefined || group.icon !== undefined)).toBe(true);
     expect(sections[1]?.groups.map((group) => group.id)).toEqual(['building-home']);
   });
+
+  it('puts the groups set off at the very bottom, in a Later section', () => {
+    const state = replanning();
+    const later = { ...state, replan: { ...state.replan!, later: ['building-home', 'roads-1'] } };
+    const sections = stashSections(later);
+    expect(sections.at(-1)?.id).toBe('replan.section.later');
+    expect(sections.at(-1)?.groups.map((group) => group.id).sort()).toEqual(['building-home', 'roads-1']);
+    expect(sections.some((section) => section.id === 'build.housing')).toBe(false);
+  });
 });

@@ -98,3 +98,48 @@ test('a City is replanned from its Cities row: lifted into the Stash, cancelled,
   expect(await stateSummary(page)).toEqual({ ...before, replanning: false });
   expect(errors).toEqual([]);
 });
+
+test('a long press on a Stash item drops it for its price or puts it off to the Later section', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.addInitScript(() => {
+    localStorage.setItem('urbtopia-flags', JSON.stringify({ replan: true }));
+    localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
+  });
+  await page.goto('/?e2e');
+  await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+  await page.evaluate(async () => {
+    const { gameStore } = await import('../src/store/gameStore.ts');
+    const { newGame, createBuilding } = await import('../src/core/index.ts');
+    const base = newGame({ seed: 'replan-drop', now: Date.now() });
+    gameStore.getState().replaceState({
+      ...base, tutorial: null, adaptationUntil: 0, urbs: 5000, nextId: 600,
+      roads: [{ x: 60, y: 60, kind: 'road' }],
+      buildings: [{ ...createBuilding(500, 'home', 56, 57, 0), tier: 2 }, createBuilding(501, 'workshop', 66, 57, 0)],
+    });
+    await gameStore.getState().send({ type: 'StartReplan' });
+  });
+  const panel = page.getByRole('complementary', { name: 'Replan' });
+  await openHousing(panel);
+  const home = panel.getByRole('button', { name: /Home/ }).first();
+  const box = (await home.boundingBox())!;
+  await page.mouse.move(box.x + 20, box.y + 10);
+  await page.mouse.down();
+  await page.waitForTimeout(700);
+  await page.mouse.up();
+  const menu = panel.getByRole('menu');
+  await expect(menu).toBeVisible();
+  await menu.getByRole('menuitem', { name: 'Later' }).click();
+  await expect(panel.getByRole('button', { name: 'Later', exact: true })).toBeVisible();
+
+  const before = await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().state.urbs);
+  await panel.getByRole('button', { name: 'Later', exact: true }).click();
+  const laterHome = panel.getByRole('button', { name: /Home/ }).first();
+  await laterHome.click({ button: 'right' });
+  await panel.getByRole('menuitem', { name: /Drop and get/ }).click();
+  const after = await page.evaluate(async () => {
+    const state = (await import('../src/store/gameStore.ts')).gameStore.getState().state;
+    return { urbs: state.urbs, homes: state.replan!.stash.buildings.filter((building) => building.type === 'home').length };
+  });
+  expect(after.homes).toBe(0);
+  expect(after.urbs).toBeGreaterThan(before);
+});

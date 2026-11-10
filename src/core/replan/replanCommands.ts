@@ -1,3 +1,7 @@
+import { utilityCapacity, utilityDemand } from '../buildings/city';
+import { canRemoveStorage, isStorageType } from '../economy/storage';
+import { isProductionType } from '../economy/productionTypes';
+import { isPirateCoveInUse } from '../water/pirateCove';
 import { bridgesOf } from '../water/bridges';
 import type { Coord } from '../map/coord';
 import type { CommandOutcome, ErrorKey } from '../engine/commands';
@@ -8,6 +12,7 @@ import { liftNetwork, placeStashedNetwork } from './stashNetworks';
 import { liftTiles, placeStashedTiles, type TileLayer } from './stashTiles';
 import { liftBoat, liftBridge, placeStashedBoat, placeStashedBridge } from './stashWater';
 import { withoutTransitLines } from './transitLines';
+import { takeGroup, type DropGroup } from './value';
 
 export type ReplanAction =
   | { readonly kind: 'liftBuilding'; readonly id: number }
@@ -19,7 +24,9 @@ export type ReplanAction =
   | { readonly kind: 'liftBridge'; readonly at: Coord }
   | { readonly kind: 'placeBridge'; readonly index: number; readonly x: number; readonly y: number; readonly axis: 'x' | 'y'; readonly side?: 1 | -1 }
   | { readonly kind: 'liftBoat'; readonly id: number }
-  | { readonly kind: 'placeBoat'; readonly id: number; readonly x: number; readonly y: number };
+  | { readonly kind: 'placeBoat'; readonly id: number; readonly x: number; readonly y: number }
+  | { readonly kind: 'drop'; readonly group: DropGroup }
+  | { readonly kind: 'setLater'; readonly id: string; readonly later: boolean };
 
 const fail = (key: ErrorKey): CommandOutcome => ({ key });
 const done = (state: GameState): CommandOutcome => ({ state, events: [] });
@@ -73,7 +80,7 @@ function withoutReplan(state: GameState): GameState {
 export function cancelReplan(state: GameState): CommandOutcome {
   const start = state.replan?.start;
   if (!start) return fail('error.notInReplan');
-  return done({ ...withoutReplan(state), ...start });
+  return done({ ...withoutReplan(state), ...start, urbs: state.urbs - (state.replan?.refunded ?? 0) });
 }
 
 const isEmpty = (stash: Stash): boolean => Object.values(stash).every((list) => list === undefined || list.length === 0);
@@ -82,6 +89,37 @@ export function finishReplan(state: GameState): CommandOutcome {
   if (!state.replan) return fail('error.notInReplan');
   if (!isEmpty(state.replan.stash)) return fail('error.replanStashNotEmpty');
   return done(withoutReplan(state));
+}
+
+// Dropping a Building must leave the City what its stock, its water and its harbours need, counting what is still in the Stash.
+function dropRefusal(state: GameState, group: DropGroup): ErrorKey | null {
+  if (group.kind !== 'buildings' || !state.replan) return null;
+  const dropped = state.replan.stash.buildings.filter((building) => building.type === group.type);
+  let virtual: GameState = { ...state, buildings: [...state.buildings, ...state.replan.stash.buildings] };
+  for (const building of dropped) {
+    if ((isStorageType(building.type) || isProductionType(building.type)) && !canRemoveStorage(virtual, building.id)) return 'error.storageInUse';
+    virtual = { ...virtual, buildings: virtual.buildings.filter((candidate) => candidate !== building) };
+    if (building.type === 'waterTower' && utilityCapacity(virtual).water < utilityDemand(virtual).water) return 'error.utilityInUse';
+    const boats = [...(state.boats ?? []), ...(state.replan.stash.boats ?? [])];
+    if (building.type === 'marina' && boats.some((boat) => boat.marinaId === building.id)) return 'error.marinaInUse';
+    if (building.type === 'pirateCove' && (isPirateCoveInUse({ ...virtual, buildings: [...virtual.buildings, building] }, building) || boats.some((boat) => boat.marinaId === building.id))) return 'error.pirateCoveInUse';
+  }
+  return null;
+}
+
+function dropGroup(state: GameState, group: DropGroup): CommandOutcome {
+  const replan = state.replan!;
+  const refusal = dropRefusal(state, group);
+  if (refusal) return fail(refusal);
+  const { rest, count, value } = takeGroup(replan.stash, group);
+  if (count === 0) return fail('error.unknownCommand');
+  return done({ ...state, urbs: state.urbs + value, replan: { ...replan, stash: { ...replan.stash, ...rest }, refunded: (replan.refunded ?? 0) + value } });
+}
+
+function setLater(state: GameState, id: string, later: boolean): CommandOutcome {
+  const replan = state.replan!;
+  const others = (replan.later ?? []).filter((known) => known !== id);
+  return done({ ...state, replan: { ...replan, later: later ? [...others, id] : others } });
 }
 
 export function replanAction(state: GameState, action: ReplanAction): CommandOutcome {
@@ -107,5 +145,9 @@ export function replanAction(state: GameState, action: ReplanAction): CommandOut
       return outcomeOf(liftBoat(state, action.id));
     case 'placeBoat':
       return outcomeOf(placeStashedBoat(state, action.id, { x: action.x, y: action.y }));
+    case 'drop':
+      return dropGroup(state, action.group);
+    case 'setLater':
+      return setLater(state, action.id, action.later);
   }
 }

@@ -393,6 +393,8 @@ function replanFailure(replan: unknown): string | null {
   if (replan === undefined) return null;
   if (!isRecord(replan) || !isRecord(replan.stash) || !isRecord(replan.start)) return 'replan: expected a stash and a starting layout';
   return firstFailure([
+    field('replan.refunded', () => replan.refunded === undefined || isNonNegative(replan.refunded)),
+    field('replan.later', () => replan.later === undefined || isArrayOf(replan.later, (id) => typeof id === 'string')),
     ...layoutRules('replan.stash', replan.stash, STASH_KEYS, ['buildings']),
     ...layoutRules('replan.start', replan.start, Object.keys(LAYOUT_ENTRIES), ['buildings', 'roads', 'roundabouts', 'fields']),
   ]);

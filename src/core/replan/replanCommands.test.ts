@@ -7,7 +7,10 @@ import { tileKey } from '../map/geometry';
 import type { Command } from '../engine/commands';
 import type { Coord } from '../map/coord';
 import type { GameState } from '../engine/state';
+import { placementCost } from '../buildings/buildingSpecs';
+import { WATER } from '../water/waterTiles';
 import { stashOf } from './stash';
+import { buildingValue } from './value';
 
 const T0 = 1_700_000_000_000;
 
@@ -119,5 +122,50 @@ describe('finishing a Replan', () => {
     expect(finished.boats).toEqual([{ id: 200, family: 'pleasure', marinaId: 100, x: 61, y: 62 }]);
     expect(finished.bridges).toEqual([{ ...(state.bridges ?? [])[0], x: 62, y: 72 }]);
     expect(finished.urbs).toBe(state.urbs);
+  });
+});
+
+describe('dropping items of the Stash', () => {
+  it('pays back the price of a Building with its Tiers, options and Slots, and takes it out of the Stash', () => {
+    const state = city();
+    const replanning = succeed(state, { type: 'StartReplan' });
+    const home = state.buildings.find((building) => building.id === 1)!;
+    const plain = { ...home, tier: 1, solar: undefined };
+    expect(buildingValue(home)).toBeGreaterThan(buildingValue(plain));
+    expect(buildingValue({ ...plain, insulated: true })).toBeGreaterThan(buildingValue(plain));
+    expect(buildingValue(plain)).toBe(placementCost('home'));
+    const dropped = succeed(replanning, lift({ kind: 'drop', group: { kind: 'buildings', type: 'home' } }));
+    expect(dropped.urbs).toBe(state.urbs + buildingValue(home));
+    expect(stashOf(dropped).buildings.some((building) => building.type === 'home')).toBe(false);
+  });
+
+  it('pays back every tile of a layer at its price', () => {
+    const state = city();
+    const replanning = succeed(state, { type: 'StartReplan' });
+    const dropped = succeed(replanning, lift({ kind: 'drop', group: { kind: 'tiles', layer: 'waterTiles' } }));
+    expect(dropped.urbs).toBe(state.urbs + (state.waterTiles ?? []).length * WATER.tileCost);
+    expect(stashOf(dropped).waterTiles).toEqual([]);
+  });
+
+  it('refuses a Marina while a Boat of the City still needs it', () => {
+    const replanning = succeed(city(), { type: 'StartReplan' });
+    expect(failureKey(replanning, lift({ kind: 'drop', group: { kind: 'buildings', type: 'marina' } }))).toBe('error.marinaInUse');
+    const withoutBoats = succeed(replanning, lift({ kind: 'drop', group: { kind: 'boats', family: 'pleasure' } }));
+    expect(failureKey(withoutBoats, lift({ kind: 'drop', group: { kind: 'buildings', type: 'marina' } }))).toBeNull();
+  });
+
+  it('gives the Urbs back when the Replan is cancelled, with the items', () => {
+    const state = city();
+    let current = succeed(state, { type: 'StartReplan' });
+    current = succeed(current, lift({ kind: 'drop', group: { kind: 'buildings', type: 'home' } }));
+    current = succeed(current, lift({ kind: 'drop', group: { kind: 'tiles', layer: 'waterTiles' } }));
+    expect(succeed(current, { type: 'CancelReplan' })).toEqual(state);
+  });
+
+  it('puts a group off to later and brings it back', () => {
+    const replanning = succeed(city(), { type: 'StartReplan' });
+    const off = succeed(replanning, lift({ kind: 'setLater', id: 'building-home', later: true }));
+    expect(off.replan?.later).toEqual(['building-home']);
+    expect(succeed(off, lift({ kind: 'setLater', id: 'building-home', later: false })).replan?.later).toEqual([]);
   });
 });
