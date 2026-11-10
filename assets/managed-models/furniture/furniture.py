@@ -3,7 +3,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
-from model_lib import export_all, lpm  # noqa: E402
+from model_lib import export_all, fillet, lpm  # noqa: E402
 from venue_lib import along, block, checker_floor, disc  # noqa: E402
 
 P = lpm.Palette([
@@ -13,6 +13,12 @@ P = lpm.Palette([
     ("glass", "#cfeefa", 0.0, 0.2), ("black", "#2a2d3a", 0.0, 0.5), ("screen", "#3a4a6a", 0.0, 0.2), ("lamp", "#ffe2a0", 0.0, 0.5, 1.5),
     ("leaf", "#5aa646", 0.0, 0.8), ("pot", "#cf6a40", 0.0, 0.8), ("rug", "#7a9bd0", 0.0, 1.0), ("rug_border", "#e3c46a", 0.0, 1.0),
     ("metal", "#9aa1ab", 0.5, 0.4),
+    ("cabinet", "#c9a77c", 0.0, 0.8), ("cabinet_dark", "#a07f55", 0.0, 0.8), ("counter", "#e9e4d8", 0.0, 0.5),
+    ("crt_shell", "#b9a98c", 0.0, 0.7), ("crt_screen", "#6f8f86", 0.0, 0.2), ("crt_glare", "#a9c7bc", 0.0, 0.2), ("knob", "#3b3d46", 0.0, 0.5),
+    ("book_red", "#b8453a", 0.0, 0.9), ("book_blue", "#3f6fb0", 0.0, 0.9), ("book_green", "#4f8f5a", 0.0, 0.9), ("book_yellow", "#e0b84a", 0.0, 0.9),
+    ("book_cream", "#eadfc6", 0.0, 0.9), ("frame_gold", "#d9a93a", 0.6, 0.4), ("canvas", "#f4efe2", 0.0, 0.9),
+    ("sky", "#8fc4e8", 0.0, 0.9), ("hill", "#6fae5a", 0.0, 0.9), ("hill_dark", "#4e8a45", 0.0, 0.9), ("sun", "#f6d34a", 0.0, 0.9),
+    ("sea", "#3f78b8", 0.0, 0.9), ("coral", "#e2705a", 0.0, 0.9), ("plum", "#7a4f8f", 0.0, 0.9),
 ])
 
 # Bounding boxes of the Kenney models these replace, in Blender axes (front on -y).
@@ -202,6 +208,97 @@ def thin_corner(rng):
     return [block("armx", 0, 0.55, 0, 0.05, 0, 1.29, P["wall"]), block("army", 0.5, 0.55, 0, 0.55, 0, 1.29, P["wall"])]
 
 
+def sink_cabinet(rng):
+    """A kitchen base cabinet with a sink on its top, the tap against the wall on +y."""
+    return [block("body", -0.3, 0.3, -0.16, 0.16, 0.03, 0.34, P["cabinet"]), block("plinth", -0.28, 0.28, -0.14, 0.14, 0, 0.03, P["cabinet_dark"]),
+            block("door_l", -0.28, -0.01, -0.17, -0.16, 0.06, 0.32, P["cabinet_dark"]), block("door_r", 0.01, 0.28, -0.17, -0.16, 0.06, 0.32, P["cabinet_dark"]),
+            block("handle_l", -0.06, -0.04, -0.19, -0.17, 0.16, 0.24, P["chrome"]), block("handle_r", 0.04, 0.06, -0.19, -0.17, 0.16, 0.24, P["chrome"]),
+            block("top", -0.32, 0.32, -0.18, 0.18, 0.34, 0.38, P["counter"]), block("basin", -0.2, 0.2, -0.12, 0.08, 0.375, 0.385, P["chrome"]),
+            block("splash", -0.32, 0.32, 0.16, 0.18, 0.38, 0.5, P["counter"]),
+            block("tap_post", -0.015, 0.015, 0.1, 0.13, 0.385, 0.5, P["chrome"]), block("tap_spout", -0.012, 0.012, 0.0, 0.13, 0.48, 0.5, P["chrome"])]
+
+
+def television_crt(rng):
+    """A 1960s cathodic television: rounded cream shell with a bulging screen on a low cabinet with splayed legs, rabbit-ear antenna."""
+    def rounded(name, x0, x1, y0, y1, z0, z1, color, width, segments=2):
+        return fillet(block(name, x0, x1, y0, y1, z0, z1, P[color]), width, segments)
+
+    parts = [rounded("cabinet", -0.3, 0.3, -0.16, 0.16, 0.1, 0.27, "cabinet", 0.03, 1),
+             block("door_inset", -0.25, 0.0, -0.172, -0.158, 0.13, 0.24, P["cabinet_dark"]), block("speaker", 0.05, 0.26, -0.172, -0.158, 0.13, 0.24, P["black"]),
+             rounded("shell", -0.25, 0.25, -0.14, 0.12, 0.27, 0.6, "crt_shell", 0.07),
+             rounded("tube", -0.17, 0.17, 0.1, 0.24, 0.33, 0.54, "crt_shell", 0.05, 1),
+             rounded("bezel", -0.21, 0.09, -0.152, -0.12, 0.31, 0.57, "black", 0.05, 1),
+             rounded("screen", -0.19, 0.07, -0.158, -0.14, 0.33, 0.55, "crt_screen", 0.045),
+             block("glare", -0.16, -0.09, -0.16, -0.158, 0.47, 0.52, P["crt_glare"]),
+             block("knob_a", 0.13, 0.19, -0.16, -0.14, 0.46, 0.5, P["knob"]), block("knob_b", 0.13, 0.19, -0.16, -0.14, 0.38, 0.42, P["knob"]),
+             disc("antenna_base", 0.04, 0.02, (0, 0.0, 0.6), P["black"], 8),
+             lpm.move(lpm.rotate(lpm.box("ear_l", (0.012, 0.012, 0.3), at=(0, 0, 0.0), color=P["metal"]), 28, "Y"), 0, 0, 0.62),
+             lpm.move(lpm.rotate(lpm.box("ear_r", (0.012, 0.012, 0.3), at=(0, 0, 0.0), color=P["metal"]), -28, "Y"), 0, 0, 0.62)]
+    for k, (x, y, dx, dy) in enumerate(((-0.25, -0.12, -0.04, -0.03), (0.25, -0.12, 0.04, -0.03), (0.25, 0.12, 0.04, 0.03), (-0.25, 0.12, -0.04, 0.03))):
+        leg = lpm.box(f"leg{k}", (0.035, 0.035, 0.12), at=(0, 0, 0), color=P["wood_dark"])
+        lpm.rotate(leg, 12 * (1 if dx > 0 else -1), "Y")
+        lpm.rotate(leg, 12 * (1 if dy > 0 else -1), "X")
+        parts.append(lpm.move(leg, x + dx / 2, y + dy / 2, 0))
+    return parts
+
+
+def bookcase(rng):
+    """A bookcase, open on -y, with three shelves of books."""
+    parts = [block("side_l", -0.25, -0.23, -0.1, 0.1, 0, 0.9, P["wood"]), block("side_r", 0.23, 0.25, -0.1, 0.1, 0, 0.9, P["wood"]),
+             block("back", -0.23, 0.23, 0.08, 0.1, 0.02, 0.9, P["wood_dark"]), block("top", -0.26, 0.26, -0.11, 0.11, 0.9, 0.93, P["wood"]),
+             block("base", -0.23, 0.23, -0.1, 0.1, 0, 0.04, P["wood_dark"])]
+    colors = ["book_red", "book_blue", "book_green", "book_yellow", "book_cream"]
+    for level, plank in enumerate((0.04, 0.28, 0.56)):
+        floor = plank if level == 0 else plank + 0.025
+        if level:
+            parts.append(block(f"shelf{level}", -0.23, 0.23, -0.1, 0.08, plank, plank + 0.025, P["wood"]))
+        x = -0.2
+        for k in range(5):
+            width = 0.025 + 0.012 * ((k + level) % 3)
+            height = 0.17 + 0.03 * ((k * 2 + level) % 3)
+            parts.append(block(f"book{level}{k}", x, x + width, -0.07, 0.06, floor, floor + height, P[colors[(k + level) % 5]]))
+            x += width + 0.004
+    parts.append(block("shelf3", -0.23, 0.23, -0.1, 0.08, 0.84, 0.865, P["wood"]))
+    return parts
+
+
+def coffee_table(rng):
+    return legs(0.5, 0.3, 0.16, "wood_dark", inset=0.03, size=0.035) + [block("top", -0.25, 0.25, -0.15, 0.15, 0.16, 0.19, P["wood"]),
+                                                                       block("under", -0.22, 0.22, -0.12, 0.12, 0.06, 0.08, P["wood_dark"])]
+
+
+def _framed(width, height, canvas_parts):
+    """A painting that hangs on the wall on y 0: its back on the wall, its face toward -y, centred on x, its centre 0.7 high."""
+    def build(rng):
+        cx, z0 = 0.0, 0.7 - height / 2
+        t = 0.025
+        parts = [block("frame_b", -width / 2, width / 2, -0.03, 0, z0, z0 + t, P["frame_gold"]), block("frame_t", -width / 2, width / 2, -0.03, 0, z0 + height - t, z0 + height, P["frame_gold"]),
+                 block("frame_l", -width / 2, -width / 2 + t, -0.03, 0, z0 + t, z0 + height - t, P["frame_gold"]),
+                 block("frame_r", width / 2 - t, width / 2, -0.03, 0, z0 + t, z0 + height - t, P["frame_gold"]),
+                 block("canvas", -width / 2 + t, width / 2 - t, -0.02, 0, z0 + t, z0 + height - t, P["canvas"])]
+        return parts + canvas_parts(cx, z0 + t, width - 2 * t, height - 2 * t)
+    return build
+
+
+def _paint(name, x0, x1, z0, z1, color):
+    return block(name, x0, x1, -0.026, -0.02, z0, z1, P[color])
+
+
+def landscape(cx, z, w, h):
+    return [_paint("sky", -w / 2, w / 2, z + h * 0.4, z + h, "sky"), _paint("hill_far", -w / 2, w / 2, z, z + h * 0.45, "hill_dark"),
+            _paint("hill_near", -w / 2, w * 0.15, z, z + h * 0.3, "hill"), _paint("sun", w * 0.12, w * 0.3, z + h * 0.65, z + h * 0.85, "sun")]
+
+
+def seascape(cx, z, w, h):
+    return [_paint("sky", -w / 2, w / 2, z + h * 0.45, z + h, "sky"), _paint("sea", -w / 2, w / 2, z, z + h * 0.5, "sea"),
+            _paint("boat", -w * 0.2, w * 0.1, z + h * 0.45, z + h * 0.6, "coral"), _paint("sail", -w * 0.1, -w * 0.02, z + h * 0.6, z + h * 0.85, "canvas")]
+
+
+def abstract(cx, z, w, h):
+    return [_paint("a", -w / 2, -w * 0.05, z, z + h * 0.6, "coral"), _paint("b", -w * 0.05, w / 2, z + h * 0.4, z + h, "plum"),
+            _paint("c", w * 0.1, w / 2, z, z + h * 0.35, "book_yellow"), _paint("d", -w / 2, -w * 0.25, z + h * 0.65, z + h, "sea")]
+
+
 if __name__ == "__main__":
     export_all({
         "bathtub": bathtub, "bedBunk": bed(0.57, bunk=True), "bedDouble": bed(0.96), "bedSingle": bed(0.58), "chair": chair, "desk": desk,
@@ -209,6 +306,8 @@ if __name__ == "__main__":
         "kitchenCoffeeMachine": coffee_machine, "kitchenFridgeSmall": fridge, "lampRoundFloor": floor_lamp, "loungeSofa": sofa,
         "pottedPlant": potted_plant, "rugRectangle": rug, "shower": shower, "stoolBar": stool, "table": table,
         "televisionModern": television, "toilet": toilet,
+        "kitchenSinkCabinet": sink_cabinet, "televisionCrt": television_crt, "bookcase": bookcase, "coffeeTable": coffee_table,
+        "paintingLandscape": _framed(0.36, 0.26, landscape), "paintingSeascape": _framed(0.26, 0.36, seascape), "paintingAbstract": _framed(0.3, 0.3, abstract),
         "wall": thin_wall, "wallCorner": thin_corner,
         "partition": partition, "partitionWindow": partition_window, "partitionElbow": partition_junction("ES"), "partitionTee": partition_junction("WES"), "partitionCross": partition_junction("ESWN"),
     }, P, 600, HERE, boxes=BOXES, center=False, ground=False)

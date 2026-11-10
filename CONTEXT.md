@@ -400,6 +400,14 @@ _Avoid_: Customer, guest, Citizen
 The interior of a Factory, opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Factory's Tier, where the player places Fixtures. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. A Factory with an empty floor produces as it always did; the floor only adds a bonus to speed and yield, capped by the Factory's Tier.
 _Avoid_: Venue (earns Urbs from Visitors), workshop floor, plant
 
+**Home interior**:
+The interior of one sample dwelling of a Home (its Comfort applies to the whole Home whatever its number of Citizens), opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Home's Tier, where the player places Fixtures of everyday life (bed, table, chair, stove, sink, bathroom, television, bookcase, wall paintings…) and chooses the floor. It is not a Venue: it has no Staff, Jobs, Takings, Visitors, Rank or events, and its Fixtures have no Condition. An empty interior leaves the Home exactly as it was; the only effect of a furnished one is its Comfort.
+_Avoid_: Venue, room (a Hotel's Room is a bed with a bathroom), apartment
+
+**Comfort**:
+A note from 0 to 100 of a Home interior, built from how many of the Citizens' daily needs it covers (sleeping, eating, cooking, washing, leisure) and, with diminishing returns, from its decor. It only adds a small bonus to the Well-being of the Home, capped by the Home's Tier; an empty interior is never penalized.
+_Avoid_: Standing (a Hotel Room's class), Reputation, Happiness
+
 **Machine**:
 A Fixture of a Factory floor that needs Drive, Flow or both, and a given turning direction for its Drive. Linked, it contributes to the bonus of the Factory; unlinked, it contributes nothing.
 _Avoid_: Equipment, Workshop
