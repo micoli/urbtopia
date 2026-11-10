@@ -245,7 +245,56 @@ export interface FieldTile extends Coord {
 
 export type SeedStock = Partial<Record<string, number>>;
 
+// What a Replan has lifted off the map and the player has not placed again; each object is kept whole.
+export interface Stash {
+  buildings: Building[];
+  roads?: RoadTile[];
+  pedestrianWays?: PedestrianWayTile[];
+  walkways?: Coord[];
+  pedestrianAccesses?: PedestrianAccess[];
+  waterTiles?: Coord[];
+  fields?: FieldTile[];
+  roundabouts?: Coord[];
+  brtRoads?: TransitTile[];
+  rails?: TransitTile[];
+  tunnels?: TransitTile[];
+  bridges?: Bridge[];
+  boats?: Boat[];
+}
+
+// Everything a Replan lifts off the map or leaves on it: the layout the player can change.
+export interface Layout {
+  buildings: Building[];
+  roads: RoadTile[];
+  pedestrianWays?: PedestrianWayTile[];
+  walkways?: Coord[];
+  pedestrianAccesses?: PedestrianAccess[];
+  tunnels?: TransitTile[];
+  roundabouts: Coord[];
+  waterTiles?: Coord[];
+  boats?: Boat[];
+  bridges?: Bridge[];
+  brtRoads?: TransitTile[];
+  rails?: TransitTile[];
+  fields: FieldTile[];
+  busLines?: BusLine[];
+  transitLines?: TransitLine[];
+  transitFleet?: TransitVehicle[];
+}
+
+export interface ReplanState {
+  stash: Stash;
+  // The layout the Replan started from, which Cancel restores.
+  start?: Layout;
+  // Urbs the player took by dropping items of the Stash; Cancel gives them back with the items.
+  refunded?: number;
+  // The groups of the Stash the player put off to the bottom of the list.
+  later?: string[];
+}
+
 export interface GameState {
+  // Present only while a Replan lasts.
+  replan?: ReplanState;
   solidarityMs?: number;
   donations?: DonationRecord[];
   seedStock: SeedStock;

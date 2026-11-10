@@ -7,6 +7,8 @@ const texts = {
   'beta.flag.advisor': ['Advisor', 'Conseiller'],
   'beta.flag.advisor.description': ['A local assistant that explains your city. Then turn it on in the Game tab.', 'Un assistant local qui explique votre ville. Activez-le ensuite dans l\'onglet Partie.'],
   'beta.flag.homeInterior': ['Home furnishing', 'Aménagement des logements'],
+  'beta.flag.replan': ['City replanning', 'Réaménagement de la ville'],
+  'beta.flag.replan.description': ['Lift everything you placed into a Stash to lay out roads, water and buildings again; the game stands still meanwhile.', 'Décrochez tout ce qui est posé dans une réserve pour replacer routes, eau et bâtiments ; le jeu se fige pendant ce temps.'],
   'beta.flag.homeInterior.description': ['Open the interior of a Home: furniture, paintings, parquet and comfort.', 'Ouvrez l\'intérieur d\'un logement : meubles, tableaux, parquet et confort.'],
 };
 

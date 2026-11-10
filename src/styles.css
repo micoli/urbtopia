@@ -11,6 +11,7 @@
 @import './ui/tourism/tourism.css' layer(legacy);
 @import './ui/buildings/buildings.css' layer(legacy);
 @import './ui/system/system.css' layer(legacy);
+@import './ui/replan/replan.css' layer(legacy);
 @import './ui/collect/collect.css' layer(legacy);
 @import './ui/sanction/sanction.css' layer(legacy);
 @import './ui/market/market.css' layer(legacy);

@@ -1,0 +1,38 @@
+export const meta = {
+  title: 'Réaménager une zone de sa ville',
+  summary: 'Dessinez un rectangle, décrochez ce qu’il contient dans la réserve et replacez-le sur la même terre, gratuitement, sans perdre vos bâtiments.',
+  order: 55,
+  flag: 'replan',
+};
+
+## De quoi s’agit-il
+
+Si la disposition de votre ville ne vous plaît plus, **réaménagez**-la. Ouvrez la gestion de la ville, puis **Villes**, et appuyez sur **Réaménager** sur la ligne de la ville ouverte. La fenêtre se ferme : **dessinez un rectangle** sur la carte avec deux coins opposés. Tout ce que vous avez posé dedans, à tous les niveaux (bâtiments, routes de tous types, eau, champs, arbres fruitiers, ruches, souterrains), va dans la **réserve**, et vous le replacez où vous voulez. Le reste de la ville ne bouge pas. Un bâtiment que le rectangle ne fait qu’effleurer sort en entier.
+
+Votre terrain ne change pas, ni vos Urbs, vos habitants, vos objectifs ou votre politique. Un bâtiment revient avec son niveau et son intérieur : un lieu garde ses équipements, une usine son atelier, un logement son mobilier.
+
+## Pendant le réaménagement
+
+- Le jeu **se fige** : rien n’est produit, gagné ni jugé, et le cycle jour/nuit s’arrête. À la fin, le temps passé n’est pas rattrapé.
+- C’est **gratuit** : aucun Urbs n’est dépensé ni gagné, et les limites de construction et les prix ne bougent pas.
+- Seule la disposition peut changer. Tout le reste attend, sauf les offres d’échange et les dons.
+- Vous pouvez fermer le jeu et revenir : le réaménagement est sauvegardé, y compris dans votre sauvegarde en ligne.
+
+## Replacer
+
+La réserve liste ce qui reste, groupé par type. Choisissez un groupe, puis posez-le sur la carte. Les bâtiments, ponts et bateaux restent en main pour poser le suivant ; les routes, voies piétonnes et galeries se tracent d’un départ à une arrivée comme des neuves, et l’eau et les champs se peignent.
+
+La pose ne vérifie que ce dont l’objet a besoin seul : des cases libres et votre terrain. Vous pouvez poser une maison avant sa route. Un pont a quand même besoin de son eau, et un bateau de l’eau autour de son port.
+
+## Lignes de transport
+
+Les **lignes de bus et de transport restent**. Seuls les arrêts partis dans la réserve en sont retirés, et un arrêt replacé n’est pas remis dans sa ligne : ajoutez-le vous-même. Une ligne qui n’a plus que moins de deux arrêts disparaît, et ses véhicules attendent sans affectation.
+
+## Terminer ou annuler
+
+- **Terminer** s’ouvre quand la réserve est vide. Un récapitulatif liste les bâtiments sans route, couloir BRT ni voie piétonne devant eux, et liste les lignes de transport qui ont perdu un arrêt. Il ne vous bloque pas.
+- **Annuler le réaménagement** remet votre ville exactement comme avant le début, lignes comprises.
+
+Vous pouvez aussi **jeter** un groupe de la réserve par un appui long : il rembourse son prix initial, niveaux et options compris, et Annuler le reprend.
+
+Un réaménagement ne peut pas commencer pendant un défi, pendant le tutoriel, ni tant qu’un conflit de sauvegarde est ouvert.

@@ -32,7 +32,10 @@ import {
   roadPath,
   solarInstallCostOf,
   roundaboutTiles,
+  stashOf,
   type BoatFamily,
+  type ReplanAction,
+  type TileLayer,
   type Building,
   type BuildingType,
   casinoRadius,
@@ -77,22 +80,34 @@ export type Tool =
   | { kind: 'bridge'; length: number; carrier?: 'road' | 'brt' | 'pedestrian' }
   | { kind: 'removeBridge' }
   | { kind: 'moveBridge'; bridge: Bridge | null }
-  | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] };
+  | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] }
+  | { kind: 'replanBuilding'; buildingType: BuildingType }
+  | { kind: 'replanPath'; layer: ReplanPathLayer; tier?: number; start: Coord | null; horizontalFirst: boolean }
+  | { kind: 'replanTile'; layer: 'pedestrianAccesses' | 'roundabouts' | 'roads'; crossing?: boolean }
+  | { kind: 'replanBridge'; length: number; carrier?: 'road' | 'brt' | 'pedestrian' }
+  | { kind: 'replanBoat'; family: BoatFamily }
+  | { kind: 'replanArea'; start: Coord | null; horizontalFirst: boolean };
+
+// The layers a Replan draws by path: a Road, a Pedestrian way, an Underground walkway, and the three networks that have their own tiles.
+export type ReplanPathLayer = 'roads' | 'pedestrianWays' | 'walkways' | 'brtRoads' | 'rails' | 'tunnels';
+
+const NETWORK_OF_LAYER: Partial<Record<ReplanPathLayer, NetworkMode>> = { brtRoads: 'brt', rails: 'rail', tunnels: 'metro' };
 
 // The Level a tool builds on: a walkway is laid on Level -1, a Tunnel on Level -2, everything else on the Surface (a stair and a Metro station are Surface objects).
 export function toolLevel(tool: Tool): Level {
   if (tool.kind === 'walkway' || tool.kind === 'demolishWalkway') return -1;
+  if (tool.kind === 'replanPath') return tool.layer === 'walkways' ? -1 : tool.layer === 'tunnels' ? -2 : SURFACE;
   if ((tool.kind === 'road' || tool.kind === 'demolishRoad') && tool.mode === 'metro') return -2;
   return SURFACE;
 }
 
-export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' | 'pedestrianWay' | 'demolishPedestrianWay' | 'upgradePedestrianWay' | 'walkway' | 'demolishWalkway' }>;
+export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' | 'pedestrianWay' | 'demolishPedestrianWay' | 'upgradePedestrianWay' | 'walkway' | 'demolishWalkway' | 'replanPath' | 'replanArea' }>;
 
 export function isPathTool(tool: Tool | null): tool is PathTool {
-  return tool?.kind === 'road' || tool?.kind === 'demolishRoad' || tool?.kind === 'upgradeRoad' || tool?.kind === 'pedestrianWay' || tool?.kind === 'demolishPedestrianWay' || tool?.kind === 'upgradePedestrianWay' || tool?.kind === 'walkway' || tool?.kind === 'demolishWalkway';
+  return tool?.kind === 'road' || tool?.kind === 'demolishRoad' || tool?.kind === 'upgradeRoad' || tool?.kind === 'pedestrianWay' || tool?.kind === 'demolishPedestrianWay' || tool?.kind === 'upgradePedestrianWay' || tool?.kind === 'walkway' || tool?.kind === 'demolishWalkway' || tool?.kind === 'replanPath' || tool?.kind === 'replanArea';
 }
 
-export type BrushAction = 'layField' | 'removeField' | 'plant' | 'layWater' | 'removeWater';
+export type BrushAction = 'layField' | 'removeField' | 'plant' | 'layWater' | 'removeWater' | 'replanField' | 'replanWater';
 
 export interface ToolContext {
   state: GameState;
@@ -239,7 +254,69 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
       return evaluation([tile], { type: 'BuyBoat', family: tool.family, marinaId: tool.marinaId, x: tile.x, y: tile.y }, state, { cost: BOATS[tool.family].cost });
     case 'brush':
       return evaluateBrush(state, tool, tile);
+    case 'replanBuilding':
+      return evaluateReplanBuilding(state, tool.buildingType, tile, rotation);
+    case 'replanPath':
+      return evaluateReplanPath(state, tool, tile);
+    case 'replanTile':
+      return evaluateReplanTile(state, tool, tile);
+    case 'replanBridge':
+      return evaluateReplanBridge(state, tool.length, tool.carrier, tile, rotation);
+    case 'replanArea':
+      return evaluateReplanArea(state, tool, tile);
+    case 'replanBoat': {
+      const boat = stashOf(state).boats?.find((candidate) => candidate.family === tool.family);
+      return evaluation([tile], boat ? replan({ kind: 'placeBoat', id: boat.id, x: tile.x, y: tile.y }) : null, state);
+    }
   }
+}
+
+// The zone to replan: a rectangle from the first corner to the tile under the pointer.
+function evaluateReplanArea(state: GameState, tool: Extract<Tool, { kind: 'replanArea' }>, hovered: Coord): Evaluation {
+  const from = tool.start ?? hovered;
+  const [x0, y0] = [Math.min(from.x, hovered.x), Math.min(from.y, hovered.y)];
+  const rect: GhostRect = { x: x0, y: y0, width: Math.abs(from.x - hovered.x) + 1, depth: Math.abs(from.y - hovered.y) + 1, tone: 'target' };
+  const result = evaluation([], tool.start ? { type: 'StartReplan', area: { from, to: hovered } } : null, state);
+  return { ...result, ghost: { ...result.ghost, rects: [rect] } };
+}
+
+const replan = (action: ReplanAction): Command => ({ type: 'Replan', action });
+
+function evaluateReplanBuilding(state: GameState, type: BuildingType, tile: Coord, requestedRotation: Rotation | null): Evaluation {
+  const building = stashOf(state).buildings.find((candidate) => candidate.type === type);
+  const rotation = requestedRotation ?? 0;
+  const tiles = footprintTiles({ type, x: tile.x, y: tile.y, rotation, tier: building?.tier ?? 1 });
+  const command = building ? replan({ kind: 'placeBuilding', id: building.id, x: tile.x, y: tile.y, rotation }) : null;
+  return evaluation(tiles, command, state, { rotation });
+}
+
+function evaluateReplanPath(state: GameState, tool: Extract<Tool, { kind: 'replanPath' }>, hovered: Coord): Evaluation {
+  if (!tool.start) return evaluation([hovered], null, state);
+  const path = roadPath(tool.start, hovered, tool.horizontalFirst);
+  const mode = NETWORK_OF_LAYER[tool.layer];
+  const tileLayer = tool.layer as TileLayer;
+  const command = mode
+    ? replan({ kind: 'placeNetwork', mode, from: tool.start, to: hovered, horizontalFirst: tool.horizontalFirst })
+    : replan({ kind: 'placeTiles', layer: tileLayer, tiles: path, ...(tool.tier ? { tier: tool.tier } : {}) });
+  return evaluation(path, command, state);
+}
+
+function evaluateReplanTile(state: GameState, tool: Extract<Tool, { kind: 'replanTile' }>, tile: Coord): Evaluation {
+  const tiles = tool.layer === 'roundabouts' ? roundaboutTiles(tile) : [tile];
+  return evaluation(tiles, replan({ kind: 'placeTiles', layer: tool.layer, tiles: [tile], ...(tool.crossing ? { crossing: true } : {}) }), state);
+}
+
+function evaluateReplanBridge(state: GameState, length: number, carrier: 'road' | 'brt' | 'pedestrian' | undefined, tile: Coord, rotation: Rotation | null): Evaluation {
+  const index = stashOf(state).bridges?.findIndex((bridge) => bridge.length === length && bridge.carrier === carrier) ?? -1;
+  const attempt = (turn: Rotation) => {
+    const { axis, side } = carrier === 'pedestrian' ? FOOTBRIDGE_TURNS[turn]! : { axis: turn % 2 === 0 ? 'x' as const : 'y' as const, side: undefined };
+    const bridge = { x: tile.x, y: tile.y, length, axis, ...(carrier ? { carrier } : {}), ...(side ? { side } : {}) };
+    const command = index === -1 ? null : replan({ kind: 'placeBridge', index, x: tile.x, y: tile.y, axis, ...(side ? { side } : {}) });
+    return evaluation(bridgeFootprint(bridge), command, state, { rotation: turn });
+  };
+  if (rotation !== null) return attempt(rotation);
+  const attempts = ((carrier === 'pedestrian' ? [0, 1, 2, 3] : [0, 1]) as Rotation[]).map(attempt);
+  return attempts.find((candidate) => candidate.valid) ?? attempts[0]!;
 }
 
 function evaluateBuilding(
@@ -348,6 +425,10 @@ function brushCommand(tool: Extract<Tool, { kind: 'brush' }>, tiles: Coord[]): C
       return { type: 'RemoveWater', tiles };
     case 'plant':
       return tool.crop ? { type: 'Plant', crop: tool.crop, tiles } : null;
+    case 'replanField':
+      return replan({ kind: 'placeTiles', layer: 'fields', tiles });
+    case 'replanWater':
+      return replan({ kind: 'placeTiles', layer: 'waterTiles', tiles });
   }
 }
 
@@ -497,9 +578,11 @@ export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTo
   const pathTool = isPathTool(tool);
   if (pathTool && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
   if (!current.valid) return { command: null, nextTool: tool };
+  if (tool.kind === 'replanArea') return { command: current.command, nextTool: null };
   if (pathTool) return { command: current.command, nextTool: { ...tool, start: null } };
   if (tool.kind === 'building') return { command: current.command, nextTool: keepTool || tool.repeat ? tool : null };
   if (tool.kind === 'boat') return { command: current.command, nextTool: keepTool ? tool : null };
+  if (tool.kind === 'replanBuilding' || tool.kind === 'replanBridge' || tool.kind === 'replanBoat') return { command: current.command, nextTool: tool };
   if (tool.kind === 'move' || tool.kind === 'moveBridge' || tool.kind === 'movePedestrianAccess') return { command: current.command, nextTool: null };
   return { command: current.command, nextTool: tool };
 }

@@ -28,7 +28,9 @@ export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = Object.fro
 );
 
 export function citizenCount(state: GameState): number {
-  return state.buildings.reduce((sum, b) => sum + (isHomeType(b.type) ? HOME_TIERS[b.tier - 1]?.citizens ?? 0 : 0), 0);
+  // The Homes lifted by a Replan still count: it must not close the Levels and the items the City has unlocked.
+  const buildings = state.replan ? [...state.buildings, ...state.replan.stash.buildings] : state.buildings;
+  return buildings.reduce((sum, b) => sum + (isHomeType(b.type) ? HOME_TIERS[b.tier - 1]?.citizens ?? 0 : 0), 0);
 }
 
 const centers = new WeakMap<Building, { readonly x: number; readonly y: number }>();

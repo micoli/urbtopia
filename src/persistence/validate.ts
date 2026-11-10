@@ -361,6 +361,45 @@ function isVenueTutorials(value: unknown): boolean {
   return isRecord(value) && Object.entries(value).every(([type, step]) => (VENUE_TUTORIAL_TYPES as string[]).includes(type) && (step === null || isVenueTutorialStep(type, step)));
 }
 
+const LAYOUT_ENTRIES: Record<string, (item: unknown) => boolean> = {
+  buildings: isBuilding,
+  roads: (road) => isCoord(road) && ROAD_KINDS.includes((road as Json).kind as string) && ((road as Json).tier === undefined || isInt((road as Json).tier, 1, MAX_ROAD_TIER)),
+  pedestrianWays: (tile) => isRecord(tile) && isCoord(tile) && (tile.tier === undefined || isInt(tile.tier, 1, MAX_ROAD_TIER)),
+  walkways: (tile) => isRecord(tile) && isCoord(tile),
+  pedestrianAccesses: (tile) => isRecord(tile) && isCoord(tile) && (tile.rotation === undefined || isInt(tile.rotation, 0, 3)),
+  tunnels: isTransitTile('rails'),
+  roundabouts: (center) => isCoord(center),
+  waterTiles: (tile) => isRecord(tile) && isCoord(tile),
+  boats: isBoat,
+  bridges: isBridge,
+  brtRoads: isTransitTile('brtRoads'),
+  rails: isTransitTile('rails'),
+  fields: isFieldTile,
+  busLines: isBusLine,
+  transitLines: isTransitLine,
+  transitFleet: isTransitVehicle,
+};
+
+const STASH_KEYS = ['buildings', 'roads', 'pedestrianWays', 'walkways', 'pedestrianAccesses', 'waterTiles', 'fields', 'roundabouts', 'brtRoads', 'rails', 'tunnels', 'bridges', 'boats'];
+
+function layoutRules(label: string, layout: Json, keys: readonly string[], required: readonly string[]): Rule[] {
+  return [
+    field(`${label}: unknown list`, () => Object.keys(layout).every((key) => keys.includes(key))),
+    ...keys.map((key) => entries(`${label}.${key}`, () => layout[key], LAYOUT_ENTRIES[key]!, !required.includes(key))),
+  ];
+}
+
+function replanFailure(replan: unknown): string | null {
+  if (replan === undefined) return null;
+  if (!isRecord(replan) || !isRecord(replan.stash) || !isRecord(replan.start)) return 'replan: expected a stash and a starting layout';
+  return firstFailure([
+    field('replan.refunded', () => replan.refunded === undefined || isNonNegative(replan.refunded)),
+    field('replan.later', () => replan.later === undefined || isArrayOf(replan.later, (id) => typeof id === 'string')),
+    ...layoutRules('replan.stash', replan.stash, STASH_KEYS, ['buildings']),
+    ...layoutRules('replan.start', replan.start, Object.keys(LAYOUT_ENTRIES), ['buildings', 'roads', 'roundabouts', 'fields']),
+  ]);
+}
+
 function structureFailure(value: Json): string | null {
   const parcelMax = GAME_CONFIG.mapSizeInParcels - 1;
   return firstFailure([
@@ -390,7 +429,7 @@ function structureFailure(value: Json): string | null {
     field('solidarityMs', () => value.solidarityMs === undefined || (isNonNegative(value.solidarityMs) && value.solidarityMs <= SOLIDARITY_MAX_MS)),
     entries('donations', () => value.donations, isDonation, true),
     field('donations: duplicate id', () => !Array.isArray(value.donations) || !hasDuplicates((value.donations as { id: string }[]).map((donation) => donation.id))),
-    field('timeOffset', () => value.timeOffset === undefined || (isNonNegative(value.timeOffset) && value.timeOffset <= Number.MAX_SAFE_INTEGER)),
+    field('timeOffset', () => value.timeOffset === undefined || (isNumber(value.timeOffset) && Math.abs(value.timeOffset) <= Number.MAX_SAFE_INTEGER)),
     field('dayCycleOffset', () => value.dayCycleOffset === undefined || (isNonNegative(value.dayCycleOffset) && value.dayCycleOffset < 2 * 3_600_000)),
     field('adaptationUntil', () => value.adaptationUntil === undefined || isNumber(value.adaptationUntil)),
     entries('waterTiles', () => value.waterTiles, (tile) => isRecord(tile) && isCoord(tile), true),
@@ -410,6 +449,7 @@ function structureFailure(value: Json): string | null {
     ]),
     entries('transitLines', () => value.transitLines, isTransitLine, true),
     entries('transitFleet', () => value.transitFleet, isTransitVehicle, true),
+    () => replanFailure(value.replan),
   ]);
 }
 
@@ -423,7 +463,10 @@ function carrierKeys(state: GameState, bridge: { carrier?: 'road' | 'brt' | 'ped
 }
 
 function invariantFailure(state: GameState): string | null {
-  const ids = [...state.buildings.map((b) => b.id), ...(state.boats ?? []).map((b) => b.id), ...(state.busLines ?? []).map((l) => l.id), ...(state.transitLines ?? []).map((l) => l.id), ...(state.transitFleet ?? []).map((v) => v.id)];
+  // While a Replan lasts, objects are placed before what they need (a Bridge before its Water, a Boat before its Marina): only the ids and tiles are checked.
+  const replanning = state.replan !== undefined;
+  const stash = state.replan?.stash;
+  const ids = [...state.buildings.map((b) => b.id), ...(stash?.buildings ?? []).map((b) => b.id), ...(stash?.boats ?? []).map((b) => b.id), ...(state.boats ?? []).map((b) => b.id), ...(state.busLines ?? []).map((l) => l.id), ...(state.transitLines ?? []).map((l) => l.id), ...(state.transitFleet ?? []).map((v) => v.id)];
   const roadKeys = new Set(state.roads.map(tileKey));
   const pedestrianWays = (state.pedestrianWays ?? []).map(tileKey);
   const waterKeys = new Set((state.waterTiles ?? []).map(tileKey));
@@ -436,8 +479,8 @@ function invariantFailure(state: GameState): string | null {
     field('walkways: duplicate tile', () => !hasDuplicates((state.walkways ?? []).map(tileKey))),
     field('tunnels: duplicate tile', () => !hasDuplicates((state.tunnels ?? []).map(tileKey))),
     field('pedestrianAccesses: duplicate tile', () => !hasDuplicates((state.pedestrianAccesses ?? []).map(tileKey))),
-    field('pedestrianAccesses: overlaps something on the Surface', () => (state.pedestrianAccesses ?? []).every((tile) => !roadKeys.has(tileKey(tile)) && !pedestrianWays.includes(tileKey(tile)) && !waterKeys.has(tileKey(tile)))),
-    ...(state.bridges ?? []).flatMap((bridge, index) => {
+    field('pedestrianAccesses: overlaps something on the Surface', () => replanning || (state.pedestrianAccesses ?? []).every((tile) => !roadKeys.has(tileKey(tile)) && !pedestrianWays.includes(tileKey(tile)) && !waterKeys.has(tileKey(tile)))),
+    ...(replanning ? [] : state.bridges ?? []).flatMap((bridge, index) => {
       const keys = bridgeFootprint(bridge).map(tileKey);
       const overlapping = keys.some((key) => bridged.has(key));
       keys.forEach((key) => bridged.add(key));
@@ -454,9 +497,9 @@ function invariantFailure(state: GameState): string | null {
         field(`bridges[${index}]: crosses a tile that is not water`, () => keys.every((key) => waterKeys.has(key))),
       ];
     }),
-    ...state.buildings.filter((building) => isStandsType(building.type)).map((stands) => field(`buildings[${stands.id}]: Stands without a Pirate cove`, () => state.buildings.some((b) => b.id === stands.coveId && b.type === 'pirateCove'))),
-    ...state.buildings.filter((building) => isSeaSceneryType(building.type)).map((scenery) => field(`buildings[${scenery.id}]: scenery off the water`, () => footprintTiles(scenery).every((tile) => waterKeys.has(tileKey(tile))))),
-    ...(state.boats ?? []).flatMap((boat, index) => [
+    ...state.buildings.filter((building) => !replanning && isStandsType(building.type)).map((stands) => field(`buildings[${stands.id}]: Stands without a Pirate cove`, () => state.buildings.some((b) => b.id === stands.coveId && b.type === 'pirateCove'))),
+    ...state.buildings.filter((building) => !replanning && isSeaSceneryType(building.type)).map((scenery) => field(`buildings[${scenery.id}]: scenery off the water`, () => footprintTiles(scenery).every((tile) => waterKeys.has(tileKey(tile))))),
+    ...(replanning ? [] : state.boats ?? []).flatMap((boat, index) => [
       field(`boats[${index}]: not on a water tile`, () => waterKeys.has(tileKey(boat))),
       field(`boats[${index}]: its marina or Pirate cove does not exist`, () => state.buildings.some((b) => b.id === boat.marinaId && b.type === (isCoveBoatFamily(boat.family) ? 'pirateCove' : 'marina'))),
     ]),

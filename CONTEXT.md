@@ -953,6 +953,14 @@ _Avoid_: Game, save, slot, world, town
 The name of a City, at most 32 characters, unique among the Cities of its Player account regardless of case, and visible to other players. It defaults to the words of the City's Seed without its digits ("Gently Amber Fox"), followed by a number if another City of the account already bears it, can be changed at any time, and an Admin can reset it.
 _Avoid_: Title, label
 
+**Replan**:
+The mode in which the player draws a rectangle on the map and lifts everything they have placed inside it (Buildings, Roads of every Carrier and Level, Water tiles, Fields, Orchard trees, Hives) into the Stash, then lays it out again on the same terrain. The rest of the City stays where it is. It changes only the layout: Urbs, Citizens, Tiers, Venue and Home interiors, Objectives and politics are untouched, and a Building comes back with its interior as it was. It costs nothing and earns nothing, and the game stands still while it lasts.
+_Avoid_: Reset, rebuild, new city
+
+**Stash**:
+The temporary holding area of the objects lifted by a Replan, from which the player places them again. A Replan can only be finished once the Stash is empty.
+_Avoid_: Reserve (already the Solidarity reserve), inventory
+
 **Cloud save**:
 The copy of a City kept online for its Player account: the current one plus the 9 previous versions, for each City. The local save stays the source of truth; the Cloud save mirrors it.
 _Avoid_: Remote save, sync, server save
@@ -1153,6 +1161,11 @@ _Avoid_: Docs, documentation, manual, wiki
 
 - The "Annual events" build section is shown only while at least one Annual event window is open, and groups its Annual event items by Annual event. The player can dismiss the notice of an Annual event once per year.
 - An Annual event item has no Citizens threshold, no Build limit and no Escalating price, and it is never Retired when its window closes.
+
+- A Replan starts from City management, Cities, on the row of the open City, and is refused during a Challenge, the Tutorial or a Save conflict. The window closes and the player draws a rectangle (two opposite corners); what it touches on every Level goes into the Stash, each object whole (id, Tier, interior, Boat, Club), a Building or Bridge that the rectangle only touches included, and the Boats of a lifted Marina or Pirate cove and the Stands of a lifted Pirate cove with it. A rectangle that holds nothing is refused. The Parcels never change. Transit lines stay: only the references to the stops that went into the Stash are taken out, and a line left with fewer than two stops goes, its vehicles unassigned. Cancel brings back everything, lines included.
+- The game stands still during a Replan, with no Catch-up for its duration. It costs no Urbs and leaves Build limits and Escalating prices as they were. The only way to earn Urbs is to drop a group of the Stash, which pays back its initial price with its Tiers and options; Cancel takes those Urbs back.
+- A Replan survives closing the game, can be cancelled to restore the layout it started from, and ends only when the Stash is empty. It then lists the Buildings with no Road, BRT corridor or Pedestrian way in front of them, and the Transit lines that lost a stop, without blocking.
+- The Showcase of a City in Replan stays the last complete layout until the Replan ends.
 
 ## Naming rules
 
