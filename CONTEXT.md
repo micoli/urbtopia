@@ -1164,7 +1164,7 @@ _Avoid_: Docs, documentation, manual, wiki
 
 - A Replan starts from City management, Cities, on the row of the open City, and is refused during a Challenge, the Tutorial or a Save conflict. It lifts everything the player placed into the Stash, each object whole (id, Tier, interior, Boat, Club); the Parcels never change. Transit lines are not kept: their stops and stations are lifted as plain objects and the player draws the lines again, while the purchased vehicles stay with the City. Cancel brings the lines back with the rest of the starting layout.
 - The game stands still during a Replan, with no Catch-up for its duration. It costs no Urbs, earns none and leaves Build limits and Escalating prices as they were.
-- A Replan survives closing the game, can be cancelled to restore the layout it started from, and ends only when the Stash is empty. It then lists the Buildings with no Road or power without blocking.
+- A Replan survives closing the game, can be cancelled to restore the layout it started from, and ends only when the Stash is empty. It then lists the Buildings with no Road, BRT corridor or Pedestrian way in front of them, and reminds the player to draw their Transit lines again, without blocking.
 - The Showcase of a City in Replan stays the last complete layout until the Replan ends.
 
 ## Naming rules

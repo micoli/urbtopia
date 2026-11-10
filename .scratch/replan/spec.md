@@ -18,7 +18,7 @@ A player unhappy with their City cannot redo its layout: the `move` tool lifts o
 - While lifting, the "refused" rules that tie objects together are suspended (last access of a Building, Water under a Bridge, Marina with Boats...). While placing, only each object's own placement rules apply (free tile, owned Parcel, rotation).
 - The game stands still: economy, Citizens, production and Day cycle pause at entry and resume at exit, with no Catch-up for the time spent. Free, earns nothing, Build limits and Escalating prices unchanged.
 - The Stash and the starting layout are saved (Cloud save included) and the Replan resumes after a reload. Old saves have no Replan.
-- Cancel restores the starting layout exactly. Finish only when the Stash is empty, then a summary lists Buildings with no Road or power (no blocking).
+- Cancel restores the starting layout exactly. Finish only when the Stash is empty, then a summary lists Buildings with no access (Road, BRT corridor or Pedestrian way) and the lines to draw again (no blocking). Power is a pool for the whole City, so it is not part of the summary.
 - The Showcase keeps the last complete layout until the Replan ends.
 - Out of scope: automatic layout suggestions, a ghost of the starting layout, a "put back in place" action. The Advisor stays a text writer.
 

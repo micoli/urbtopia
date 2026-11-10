@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
+import { replanSummaryStore } from '../../store/replanSummaryStore';
 import { uiStore } from '../../store/uiStore';
 import { ActionButton } from '../common/ActionButton';
+import { isReplanSummaryEmpty, replanSummary } from '../../core';
 import { useGame } from '../common/hooks';
 import { ReplanConfirmDialog } from './ReplanConfirmDialog';
 import { StashGroupButton } from './StashGroupButton';
@@ -16,7 +18,9 @@ export function ReplanPanel() {
 
   const finish = () => {
     uiStore.getState().cancelTool();
+    const summary = replanSummary(state);
     gameStore.getState().send({ type: 'FinishReplan' });
+    if (!gameStore.getState().state.replan && !isReplanSummaryEmpty(summary)) replanSummaryStore.getState().show(summary);
   };
   const cancel = () => {
     setCancelling(false);

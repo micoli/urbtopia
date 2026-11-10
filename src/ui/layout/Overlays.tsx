@@ -14,6 +14,7 @@ import { StaticButtons } from './StaticButtons.tsx';
 import { FloatingBadges } from './FloatingBadges';
 import { LocatorArrow } from '../buildings/LocatorArrow';
 import { ConfirmPad } from '../build/ConfirmPad';
+import { FinishSummaryDialog } from '../replan/FinishSummaryDialog';
 import { ReplanPanel } from '../replan/ReplanPanel';
 import { ConfirmSaleDialog } from '../build/ConfirmSaleDialog';
 import { AnnualEventNotice } from '../system/AnnualEventNotice';
@@ -88,6 +89,7 @@ export function Overlays() {
       {streetView || analytics || underground ? null : <FloatingBadges />}
       {analytics ? <LocatorArrow /> : null}
       <ReplanPanel />
+      <FinishSummaryDialog />
       <ConfirmPad />
       <ReadOnlyBanner />
       <VisitBanner />

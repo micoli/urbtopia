@@ -66,6 +66,11 @@ test('a City is replanned from its Cities row: lifted into the Stash, cancelled,
   await expect(panel.getByRole('button', { name: 'Finish', exact: true })).toBeEnabled();
   await panel.getByRole('button', { name: 'Finish', exact: true }).click();
   await expect(panel).toHaveCount(0);
+  const summary = page.getByRole('dialog');
+  await expect(summary).toContainText('Replan finished');
+  await expect(summary).toContainText('no road');
+  await summary.getByRole('button', { name: 'OK' }).click();
+  await expect(summary).toHaveCount(0);
   expect(await stateSummary(page)).toEqual({ ...before, replanning: false });
   expect(errors).toEqual([]);
 });
