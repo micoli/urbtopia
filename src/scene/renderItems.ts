@@ -1,4 +1,4 @@
-import { BUILDING_ENTRIES, definitionOf, tiersOf, variantTiersOf } from '../core/buildings/buildingDefinitions';
+import { BUILDING_ENTRIES, definitionOf, kindOf, tiersOf, variantTiersOf } from '../core/buildings/buildingDefinitions';
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_RAMP_MODEL, BRIDGE_ROAD_MODEL, BRIDGE_SPAN_MODEL, FOOTBRIDGE_MODELS, GROUND_PANEL_MODEL, PARK_TREE_MODEL, BICYCLE_MODEL, PEDESTRIAN_ACCESS_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL, TUNNEL_MODELS, WALKWAY_MODELS } from '../core/infrastructure/infrastructure';
@@ -35,6 +35,8 @@ export interface RenderItem {
   tint?: number;
   // The building an item belongs to, so the scene can darken the windows of one that has no power.
   buildingId?: number;
+  // Scenery rather than a building: a tree, a rock, a hedge, a roof panel, an animal. Its shadow is a Performance setting.
+  object?: boolean;
 }
 
 export const MODEL_BY_BUILDING = Object.fromEntries(BUILDING_ENTRIES.map(({ id, model }) => [id, modelFileOf(model)])) as Record<BuildingType, string>;
@@ -365,7 +367,7 @@ function penAnimalItems(building: Building, rotation: number, x: number, z: numb
 function buildingItems(state: GameState): RenderItem[] {
   const hedgeKeys = new Set(state.buildings.filter(({ type }) => type === 'hedge').map(tileKey));
   return state.buildings.flatMap((building) => {
-    if (building.type === 'hedge') return [{ ...hedgePiece(building, key => hedgeKeys.has(key)), x: building.x + 0.5, z: building.y + 0.5, buildingId: building.id }];
+    if (building.type === 'hedge') return [{ ...hedgePiece(building, key => hedgeKeys.has(key)), x: building.x + 0.5, z: building.y + 0.5, buildingId: building.id, object: true }];
     const { width, depth } = footprintOf(building.type, building.rotation, building.tier);
     const x = building.x + width / 2;
     const z = building.y + depth / 2;
@@ -382,12 +384,13 @@ function buildingItems(state: GameState): RenderItem[] {
       if (detail) items.push({ model: detail, x, z, rotation, footprint, fitModel: model });
     }
     if (building.type === 'park') {
-      items.push({ model: PARK_TREE_MODEL, x: x - width / 4, z: z - depth / 4, rotation, ...(scale ? { scale } : {}) });
-      items.push({ model: PARK_TREE_MODEL, x: x + width / 4, z: z + depth / 4, rotation, ...(scale ? { scale } : {}) });
+      items.push({ model: PARK_TREE_MODEL, x: x - width / 4, z: z - depth / 4, rotation, ...(scale ? { scale } : {}), object: true });
+      items.push({ model: PARK_TREE_MODEL, x: x + width / 4, z: z + depth / 4, rotation, ...(scale ? { scale } : {}), object: true });
     }
-    items.push(...solarPanelItems(building, model, rotation, x, z));
-    items.push(...penAnimalItems(building, rotation, x, z));
-    return items.map(item => ({ ...item, buildingId: building.id }));
+    items.push(...solarPanelItems(building, model, rotation, x, z).map(item => ({ ...item, object: true })));
+    items.push(...penAnimalItems(building, rotation, x, z).map(item => ({ ...item, object: true })));
+    const scenery = kindOf(building.type) === 'nature' || kindOf(building.type) === 'green';
+    return items.map(item => ({ ...item, buildingId: building.id, ...(scenery ? { object: true } : {}) }));
   });
 }
 

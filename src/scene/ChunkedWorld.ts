@@ -180,7 +180,7 @@ export class ChunkedWorld {
         instanced.computeBoundingSphere();
         instanced.userData.buildingIds = modelItems.map((item) => item.buildingId);
         instanced.matrixAutoUpdate = false;
-        instanced.castShadow = this.display === 'full' && (this.objectShadows || modelItems.some((item) => item.buildingId !== undefined));
+        instanced.castShadow = this.display === 'full' && (this.objectShadows || modelItems.some((item) => item.buildingId !== undefined && !item.object));
         instanced.receiveShadow = this.display === 'full';
         group.add(instanced);
       });
