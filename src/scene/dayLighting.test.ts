@@ -11,10 +11,10 @@ describe('day lighting', () => {
   it('keeps the original Daytime look', () => {
     const day = lightingOf(1);
     expect(day.sunColor).toBe(0xfff2d6);
-    expect(day.sunIntensity).toBe(1.7);
+    expect(day.sunIntensity).toBe(2.1);
     expect(day.background).toBe(0x9ec5e8);
-    expect(day.hemisphereIntensity).toBe(0.5);
-    expect(day.environmentIntensity).toBe(0.25);
+    expect(day.hemisphereIntensity).toBe(0.25);
+    expect(day.environmentIntensity).toBe(0.12);
   });
 
   it('never goes dark at Night: the sun keeps about 40% of the day intensity', () => {

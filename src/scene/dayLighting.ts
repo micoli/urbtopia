@@ -9,14 +9,14 @@ export interface DayLighting {
 }
 
 const DAY: DayLighting = {
-  sunColor: 0xfff2d6, sunIntensity: 1.7,
-  skyColor: 0xbcd8f5, groundColor: 0x8a7a64, hemisphereIntensity: 0.5,
-  background: 0x9ec5e8, environmentIntensity: 0.25,
+  sunColor: 0xfff2d6, sunIntensity: 2.1,
+  skyColor: 0xbcd8f5, groundColor: 0x8a7a64, hemisphereIntensity: 0.25,
+  background: 0x9ec5e8, environmentIntensity: 0.12,
 };
 
 // A bluish dusk, never black: about 40% of the day light, so the grid and the colours stay readable.
 const NIGHT: DayLighting = {
-  sunColor: 0x5a7bd6, sunIntensity: 0.7,
+  sunColor: 0x5a7bd6, sunIntensity: 0.85,
   skyColor: 0x4a63b8, groundColor: 0x2a3050, hemisphereIntensity: 0.3,
   background: 0x1f2c4d, environmentIntensity: 0.1,
 };

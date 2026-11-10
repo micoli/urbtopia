@@ -15,6 +15,7 @@ export class ModelLibrary {
   private models = new Map<string, THREE.Object3D>();
   private clips = new Map<string, THREE.AnimationClip[]>();
   private pending = new Map<string, Promise<void>>();
+  private shiny = true;
   private requested = 0;
   private finished = 0;
   private progressListeners = new Set<(finished: number, requested: number) => void>();
@@ -69,6 +70,13 @@ export class ModelLibrary {
     }));
   }
 
+  // Loaded models are changed in place; the clones made later copy the current values, so callers rebuild what holds clones.
+  setShiny(enabled: boolean): void {
+    if (enabled === this.shiny) return;
+    this.shiny = enabled;
+    for (const model of this.models.values()) applySurface(model, enabled);
+  }
+
   has(key: string): boolean {
     return this.models.has(key);
   }
@@ -114,6 +122,7 @@ export class ModelLibrary {
     const inFlight = this.pending.get(key);
     if (inFlight) return inFlight;
     const promise = this.track(this.loader.loadAsync(`${this.modelsUrl}${key}.glb`).then((gltf) => {
+      applySurface(gltf.scene, this.shiny);
       fitNatureModel(gltf.scene, key);
       if (key === RAIL_CORNER_MODEL) fitRailCorner(gltf.scene);
       gltf.scene.updateMatrixWorld(true);
@@ -123,6 +132,27 @@ export class ModelLibrary {
     this.pending.set(key, promise);
     return promise;
   }
+}
+
+const SHINY_ROUGHNESS = 0.2;
+
+interface BaseSurface {
+  roughness: number;
+  metalness: number;
+}
+
+function applySurface(root: THREE.Object3D, shiny: boolean): void {
+  root.traverse((object) => {
+    const mesh = object as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      const standard = material as THREE.MeshStandardMaterial;
+      if (!standard.isMeshStandardMaterial) continue;
+      const base = (standard.userData.baseSurface ??= { roughness: standard.roughness, metalness: standard.metalness }) as BaseSurface;
+      standard.roughness = shiny ? Math.min(base.roughness, SHINY_ROUGHNESS) : base.roughness;
+      standard.metalness = base.metalness;
+    }
+  });
 }
 
 function variantTexturePath(variant: TextureVariant): string {

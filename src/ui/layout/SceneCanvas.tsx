@@ -97,6 +97,9 @@ export function SceneCanvas() {
     scene.onPick((x, y) => pickDotStore.getState().show(x, y));
     void scene.setPedestrianModel(prefsStore.getState().pedestrianModel);
     scene.camera.setFineRotation(prefsStore.getState().fineRotation);
+    scene.setSunShadows(prefsStore.getState().sunShadows);
+    scene.setShinyModels(prefsStore.getState().shinyModels);
+    scene.setObjectShadows(prefsStore.getState().objectShadows);
     const showCrowdDensity = () => scene.setCrowdDensity(crowdFactor(prefsStore.getState().trafficDensity), crowdFactor(prefsStore.getState().pedestrianDensity));
     showCrowdDensity();
     scene.setLevel(uiStore.getState().level);
@@ -140,6 +143,9 @@ export function SceneCanvas() {
       if (prefs.debugOffsetX !== previous.debugOffsetX || prefs.debugOffsetY !== previous.debugOffsetY) showPickOffset();
       if (prefs.alwaysDay !== previous.alwaysDay) showDayCycle();
       if (prefs.trafficDensity !== previous.trafficDensity || prefs.pedestrianDensity !== previous.pedestrianDensity) showCrowdDensity();
+      if (prefs.sunShadows !== previous.sunShadows) scene.setSunShadows(prefs.sunShadows);
+      if (prefs.shinyModels !== previous.shinyModels) scene.setShinyModels(prefs.shinyModels);
+      if (prefs.objectShadows !== previous.objectShadows) scene.setObjectShadows(prefs.objectShadows);
       if (prefs.fineRotation !== previous.fineRotation) scene.camera.setFineRotation(prefs.fineRotation);
       if (prefs.pedestrianModel !== previous.pedestrianModel) void scene.setPedestrianModel(prefs.pedestrianModel);
       if (prefs.showReach !== previous.showReach) showSelection();
