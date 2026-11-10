@@ -71,7 +71,7 @@ export { PEDESTRIAN_ACCESS_COST, WALKWAY_COST_FACTOR, activeAccesses, disconnect
 export type { Layout, LayoutHint, RoomReport, VenuePerformance, FixtureSpec, FixtureCategory } from './venues/venues';
 export type { IngredientFamily } from './venues/restaurant';
 export type { VenueEvent } from './engine/state';
-export type { StaffRole, FixtureId, VenueType, ArcadeFixtureId, SupermarketFixtureId, HotelFixtureId, VenueData, VenueFixture, Boat, BoatFamily, Bridge, Building, BuildingType, GameState, ColorVariant, ParcelCoord, MarketPrice, QueueEntry, RoadTile, PedestrianWayTile, Rotation, FieldTile, PlantedCrop, SeedStock, ShopStack, Storage } from './engine/state';
+export type { Stash, ReplanState, StaffRole, FixtureId, VenueType, ArcadeFixtureId, SupermarketFixtureId, HotelFixtureId, VenueData, VenueFixture, Boat, BoatFamily, Bridge, Building, BuildingType, GameState, ColorVariant, ParcelCoord, MarketPrice, QueueEntry, RoadTile, PedestrianWayTile, Rotation, FieldTile, PlantedCrop, SeedStock, ShopStack, Storage } from './engine/state';
 export { DIRECTIONS, DIRECTION_VECTORS, frontDirection, neighbour, tileKey } from './map/geometry';
 export type { Direction } from './map/geometry';
 export { roadPath, roadPiece, roundaboutPiece } from './map/roads';
@@ -282,3 +282,7 @@ export { isFormation } from './clubs/football/football';
 export { BASKETBALL, BASKETBALL_RULES, BASKETBALL_FORMATIONS, BASKETBALL_FORMATION_IDS, BASKETBALL_TACTICS, isBasketballFormation } from './clubs/basketball/basketball';
 export type { BasketballEvent, BasketballFormation, BasketballState, BasketballTactic } from './clubs/basketball/basketball';
 export { playUntil as playBasketball, startMatch as startBasketball, autoStarters as basketballAutoStarters, lineupIssue as basketballLineupIssue, effectiveLineup as basketballLineup } from './clubs/basketball/basketball';
+
+export { layoutOf, stashOf, stashedBuildings } from './replan';
+export type { ReplanAction } from './replan/replanCommands';
+export type { TileLayer } from './replan';

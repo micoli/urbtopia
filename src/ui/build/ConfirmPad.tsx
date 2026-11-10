@@ -8,7 +8,7 @@ import { useConfirmKeys } from './useConfirmKeys';
 import { IconButton } from '../common/IconButton';
 import { Icon } from '../common/Icon';
 
-const PATH_START_HINT: Record<PathTool['kind'], MessageKey> = { road: 'pad.roadStart', pedestrianWay: 'pad.roadStart', walkway: 'pad.walkwayStart', demolishWalkway: 'pad.demolishStart', demolishRoad: 'pad.demolishStart', demolishPedestrianWay: 'pad.demolishStart', upgradeRoad: 'pad.upgradeStart', upgradePedestrianWay: 'pad.upgradeStart' };
+const PATH_START_HINT: Record<PathTool['kind'], MessageKey> = { road: 'pad.roadStart', pedestrianWay: 'pad.roadStart', walkway: 'pad.walkwayStart', demolishWalkway: 'pad.demolishStart', demolishRoad: 'pad.demolishStart', demolishPedestrianWay: 'pad.demolishStart', upgradeRoad: 'pad.upgradeStart', upgradePedestrianWay: 'pad.upgradeStart', replanPath: 'pad.roadStart' };
 
 export function ConfirmPad() {
   const tool = useUi((store) => store.tool);
