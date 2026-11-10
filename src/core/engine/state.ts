@@ -248,6 +248,18 @@ export type SeedStock = Partial<Record<string, number>>;
 // What a Replan has lifted off the map and the player has not placed again; each object is kept whole.
 export interface Stash {
   buildings: Building[];
+  roads?: RoadTile[];
+  pedestrianWays?: PedestrianWayTile[];
+  walkways?: Coord[];
+  pedestrianAccesses?: PedestrianAccess[];
+  waterTiles?: Coord[];
+  fields?: FieldTile[];
+  roundabouts?: Coord[];
+  brtRoads?: TransitTile[];
+  rails?: TransitTile[];
+  tunnels?: TransitTile[];
+  bridges?: Bridge[];
+  boats?: Boat[];
 }
 
 export interface ReplanState {
