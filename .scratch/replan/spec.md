@@ -1,6 +1,6 @@
 # Replan
 
-Status: ready-for-agent
+Status: implemented, release note and deploy pending
 
 Decisions from the grilling session. Vocabulary in `CONTEXT.md` (Replan, Stash). Rationale in ADR-0067.
 
