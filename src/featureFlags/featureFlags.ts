@@ -13,6 +13,11 @@ export const FLAGS = {
     description: 'Assistant local (WebLLM) qui explique les Causes de la ville ; téléchargement du modèle sur demande.',
     commands: [] as readonly Command['type'][],
   },
+  homeInterior: {
+    label: 'Aménagement des logements',
+    description: "Ouvre l'intérieur d'un logement : meubles, tableaux, parquet et confort.",
+    commands: ['SetHomeParquet'] as readonly Command['type'][],
+  },
 } as const;
 
 export type FlagId = keyof typeof FLAGS;
