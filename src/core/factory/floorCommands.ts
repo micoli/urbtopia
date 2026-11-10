@@ -7,7 +7,7 @@ import type { CommandOutcome } from '../engine/commands';
 import type { Building, FixtureId, FloorData, GameState, Rotation, VenueFixture, VenueType } from '../engine/state';
 import type { FixtureVenue } from '../venues/fixtures';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { canHangOnWall, hangsOnWall, homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
+import { PARQUETS, canHangOnWall, hangsOnWall, homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
 import { floorGridSizeOf } from './factoryFloor';
 import { technicianPostsOf } from './floorWear';
 
@@ -95,6 +95,15 @@ export function removeFloorFixture(state: GameState, buildingId: number, fixture
   const fixture = floor.fixtures.find(candidate => candidate.id === fixtureId);
   if (!fixture) return { key: 'error.unknownFixture' };
   return { state: withFloor(state, factory, { ...floor, fixtures: floor.fixtures.filter(candidate => candidate !== fixture) }, state.urbs + refundOf(factory, fixture.type)), events: [] };
+}
+
+// The floor of a Home interior is a free choice among the parquets.
+export function setHomeParquet(state: GameState, buildingId: number, parquet: number): CommandOutcome {
+  const home = hostOf(state, buildingId);
+  if (!home || home.type === 'factory') return { key: 'error.unknownBuilding' };
+  if (!isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
+  if (!Number.isInteger(parquet) || parquet < 0 || parquet >= PARQUETS.length) return { key: 'error.unknownCommand' };
+  return { state: withFloor(state, home, { ...floorOf(home), parquet }), events: [] };
 }
 
 export function repairFloorFixture(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {

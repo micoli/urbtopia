@@ -60,6 +60,14 @@
       ],
       "additionalProperties": false
     },
+    "parquets": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "unlockCitizens": {
       "type": "integer",
       "minimum": 0,
@@ -84,6 +92,7 @@
     "gridSizes",
     "wellbeingCaps",
     "weights",
+    "parquets",
     "unlockCitizens",
     "chairReach",
     "decorHalf",

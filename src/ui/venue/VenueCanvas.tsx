@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, wallPlacementOf, floorBonusOfBuilding, floorFixturesOf, floorMotionOf, floorOverloadedOf, floorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isFactory, isFloorBuilding, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type VenueFixture, type VenueType } from '../../core';
+import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, floorBonusOfBuilding, floorFixturesOf, floorMotionOf, floorOverloadedOf, floorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isFactory, isFloorBuilding, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type VenueFixture, type VenueType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
@@ -102,6 +102,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       const interior = interiorOf(venueId);
       if (interior) {
         scene.setSize(sizeOf(interior, venueType));
+        if (venueType === 'home') scene.setFloorModel(parquetModelOf(interior.building.floor?.parquet));
         scene.setFixtures([...interior.fixtures]);
         scene.setMotion(isFactory(interior.building) ? floorMotionOf(interior.fixtures) : new Map(), 1 + floorBonusOfBuilding(interior.building).speed);
       }

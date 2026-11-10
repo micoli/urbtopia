@@ -19,6 +19,8 @@ P = lpm.Palette([
     ("book_cream", "#eadfc6", 0.0, 0.9), ("frame_gold", "#d9a93a", 0.6, 0.4), ("canvas", "#f4efe2", 0.0, 0.9),
     ("sky", "#8fc4e8", 0.0, 0.9), ("hill", "#6fae5a", 0.0, 0.9), ("hill_dark", "#4e8a45", 0.0, 0.9), ("sun", "#f6d34a", 0.0, 0.9),
     ("sea", "#3f78b8", 0.0, 0.9), ("coral", "#e2705a", 0.0, 0.9), ("plum", "#7a4f8f", 0.0, 0.9),
+    ("light_a", "#e6c79a", 0.0, 0.8), ("light_b", "#d8b685", 0.0, 0.8), ("honey_a", "#c98f4e", 0.0, 0.8), ("honey_b", "#b8803f", 0.0, 0.8),
+    ("walnut_a", "#7a4a2b", 0.0, 0.8), ("walnut_b", "#6a3e24", 0.0, 0.8), ("ebony_a", "#38332f", 0.0, 0.8), ("ebony_b", "#2a2624", 0.0, 0.8),
 ])
 
 # Bounding boxes of the Kenney models these replace, in Blender axes (front on -y).
@@ -30,6 +32,8 @@ BOXES = {
     "chair": ((0.0, 0.0, 0.0), (0.2, 0.2, 0.47)),
     "desk": ((-0.01, -0.01, 0.0), (0.72, 0.38, 0.38)),
     "floorFull": ((0.0, 0.0, 0.0), (1.0, 1.0, 0.05)),
+    "floorParquetLight": ((0.0, 0.0, 0.0), (1.0, 1.0, 0.05)), "floorParquetHoney": ((0.0, 0.0, 0.0), (1.0, 1.0, 0.05)),
+    "floorParquetWalnut": ((0.0, 0.0, 0.0), (1.0, 1.0, 0.05)), "floorParquetEbony": ((0.0, 0.0, 0.0), (1.0, 1.0, 0.05)),
     "kitchenCoffeeMachine": ((0.0, 0.0, 0.0), (0.19, 0.24, 0.18)),
     "kitchenFridgeSmall": ((0.0, -0.01, 0.0), (0.43, 0.28, 0.6)),
     "lampRoundFloor": ((-0.02, -0.03, 0.0), (0.14, 0.15, 0.86)),
@@ -299,9 +303,22 @@ def abstract(cx, z, w, h):
             _paint("c", w * 0.1, w / 2, z, z + h * 0.35, "book_yellow"), _paint("d", -w / 2, -w * 0.25, z + h * 0.65, z + h, "sea")]
 
 
+def parquet(tone):
+    """A floor tile of four rows of planks, the joints of a row half a plank away from those of the next."""
+    def build(rng):
+        parts = []
+        for row in range(4):
+            cuts = [0.0, 0.5, 1.0] if row % 2 == 0 else [0.0, 0.25, 0.75, 1.0]
+            for k in range(len(cuts) - 1):
+                parts.append(block(f"p{row}{k}", cuts[k], cuts[k + 1] - 0.004, row * 0.25, (row + 1) * 0.25 - 0.004, 0, 0.05, P[f"{tone}_{'a' if (row + k) % 2 == 0 else 'b'}"]))
+        return parts
+    return build
+
+
 if __name__ == "__main__":
     export_all({
         "bathtub": bathtub, "bedBunk": bed(0.57, bunk=True), "bedDouble": bed(0.96), "bedSingle": bed(0.58), "chair": chair, "desk": desk,
+        "floorParquetLight": parquet("light"), "floorParquetHoney": parquet("honey"), "floorParquetWalnut": parquet("walnut"), "floorParquetEbony": parquet("ebony"),
         "floorFull": lambda rng: checker_floor(P, "floor", "floor_dark", height=0.05, cells=4, centered=False),
         "kitchenCoffeeMachine": coffee_machine, "kitchenFridgeSmall": fridge, "lampRoundFloor": floor_lamp, "loungeSofa": sofa,
         "pottedPlant": potted_plant, "rugRectangle": rug, "shower": shower, "stoolBar": stool, "table": table,

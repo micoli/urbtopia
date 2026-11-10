@@ -401,7 +401,7 @@ The interior of a Factory, opened from its side panel in the same Management vie
 _Avoid_: Venue (earns Urbs from Visitors), workshop floor, plant
 
 **Home interior**:
-The interior of one sample dwelling of a Home (its Comfort applies to the whole Home whatever its number of Citizens), opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Home's Tier, where the player places Fixtures of everyday life (bed, table, chair, stove, sink, bathroom, television, bookcase, wall paintings…) and chooses the floor. It is not a Venue: it has no Staff, Jobs, Takings, Visitors, Rank or events, and its Fixtures have no Condition. An empty interior leaves the Home exactly as it was; the only effect of a furnished one is its Comfort.
+The interior of one sample dwelling of a Home (its Comfort applies to the whole Home whatever its number of Citizens), opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Home's Tier, where the player places Fixtures of everyday life (bed, table, chair, stove, sink, bathroom, television, bookcase, wall paintings…) and chooses the floor. It is not a Venue: it has no Staff, Jobs, Takings, Visitors, Rank or events, and its Fixtures have no Condition. An empty interior leaves the Home exactly as it was; the only effect of a furnished one is its Comfort. It opens once the city has 700 Citizens. The floor is one of four parquets, a free choice; paintings hang on the back walls instead of standing on a tile.
 _Avoid_: Venue, room (a Hotel's Room is a bed with a bathroom), apartment
 
 **Comfort**:

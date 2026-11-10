@@ -15,7 +15,8 @@ Extends [ADR 0020](0020-venue-interior-scene-and-aggregate-simulation.md) and [A
 - **Bonus only, capped by Tier.** Comfort adds at most +5 Well-being points at Tier 1, up to +12 at Tier 8, and never subtracts: an empty interior is not penalized. Figures are data, formulas are code (ADR 0023).
 - **Floor and walls are settings of the Home, not Fixtures.** Walls are full height and always there. The floor is one of four parquets, free, without effect on Comfort. A painting is a wall-mounted Fixture placed on a wall segment, one per segment, on the two back walls.
 - **A composed piece is one Fixture.** A sink on a cabinet and a cathodic television on a cabinet are single Fixtures of 1×1. Fixtures are never stacked.
-- **Cost and saved state.** A one-off price in Urbs, no upkeep, a 50 % refund when a Fixture is removed. The save keeps, per Home, the Fixtures (type, position, rotation, wall face) and the parquet; an older save loads with an empty interior; a Tier upgrade keeps the Fixtures; demolishing the Home drops its interior.
+- **Unlocked by the city.** Furnishing opens at 700 Citizens in the city (`unlockCitizens` in `assets/defs/balance/homeInterior.json`); a Home furnished before keeps its Comfort.
+- **Cost and saved state.** A one-off price in Urbs, no upkeep, a 50 % refund when a Fixture is removed. The save keeps, per Home, the Fixtures (type, position, rotation, wall face) and the parquet; an older save loads with an empty interior; the optional `floor` of a Home carries them, so no save version bump is needed; a Tier upgrade keeps the Fixtures; demolishing the Home drops its interior.
 
 ## Why
 

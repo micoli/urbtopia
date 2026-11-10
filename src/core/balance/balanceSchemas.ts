@@ -79,6 +79,8 @@ export const homeInteriorBalanceSchema = z
     gridSizes: z.array(z.int().min(1)).min(1),
     wellbeingCaps: z.array(positive).min(1),
     weights: z.strictObject({ sleeping: positive, washing: positive, eating: positive, cooking: positive, leisure: positive, decor: positive }),
+    // The floors a Home interior can have, the first being the one it starts with; each is the model furniture-floorparquet<name>.
+    parquets: z.array(z.string().min(1)).min(1),
     // The Citizens a city needs before its Homes can be furnished.
     unlockCitizens: count,
     // The largest distance, in tiles, between a table and the chair that serves it.

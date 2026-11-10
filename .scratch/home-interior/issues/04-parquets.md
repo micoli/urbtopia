@@ -1,6 +1,6 @@
 # Floor choice
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01
 
 - Four parquets (light, honey, walnut, black), free, no Comfort effect; first by default.

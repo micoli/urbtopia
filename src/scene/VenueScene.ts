@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, partitionPieceOf, type Coord, type FixtureVenue, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, partitionPieceOf, type Coord, type FixtureVenue, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
@@ -99,7 +99,7 @@ export class VenueScene {
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
     this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
-    this.ready = this.library.ensure([...Object.values(this.shellModels), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
+    this.ready = this.library.ensure([...Object.values(this.shellModels), ...(venueType === 'home' ? PARQUET_MODELS : []), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
       this.rebuildFixtures();
@@ -124,6 +124,14 @@ export class VenueScene {
       this.frameHandle = requestAnimationFrame(this.frame);
     });
     this.frameHandle = requestAnimationFrame(this.frame);
+  }
+
+  // Swaps the floor of the room, for a Home interior whose parquet is chosen by the player.
+  setFloorModel(model: string): void {
+    if (model === this.shellModels.floor) return;
+    this.shellModels = { ...this.shellModels, floor: model };
+    this.builtSize = -1;
+    this.buildShell();
   }
 
   setFixtures(fixtures: readonly VenueFixture[]): void {

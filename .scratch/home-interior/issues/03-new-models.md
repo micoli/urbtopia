@@ -1,6 +1,6 @@
 # New Home Fixture models
 
-Status: ready-for-human
+Status: resolved
 Blocked by: 01, 02
 
 - Draw one by one in Blender (live scene, English texts): sink on cabinet, old cathodic television on cabinet, bookcase, coffee table, several wall paintings.

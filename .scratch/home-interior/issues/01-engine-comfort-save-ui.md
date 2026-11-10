@@ -1,6 +1,6 @@
 # Home interior engine, Comfort, save and UI with existing models
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: none
 
 - Fixture schema gains the `home` venue; Home Fixture files reusing existing models (chair, table, stove, beds, bathroom pieces, television, sofa, armchair, plants, lamp, rug).

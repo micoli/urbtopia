@@ -1,6 +1,6 @@
 # Home interior
 
-Status: ready
+Status: done
 
 Decisions from the grilling session. Vocabulary in `CONTEXT.md` (Home interior, Comfort, Fixture, Management view). Rationale in ADR-0066.
 
@@ -16,6 +16,7 @@ Decisions from the grilling session. Vocabulary in `CONTEXT.md` (Home interior, 
 - Well-being: Comfort adds +5 points at Tier 1 up to +12 at Tier 8 (data), never a malus. Detail line "Comfort +X".
 - Price one-off in Urbs, no upkeep, 50 % refund on removal.
 - Saved: per Home Fixtures (type, position, rotation, wall face) and parquet. Old saves load with an empty interior; Tier upgrade keeps Fixtures; demolition drops the interior. Save version bump and migration.
+- Furnishing opens at 700 Citizens in the city.
 - UI: "Furnish" button, Comfort bar in the side panel and in the Management view. No forced objective, tutorial or notification.
 
 ## Delivery order

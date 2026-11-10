@@ -1,3 +1,4 @@
+import { modelFileOf } from '../models/modelFiles';
 import homeBalance from '../../../assets/defs/balance/homeInterior.json' with { type: 'json' };
 import { citizenCount } from '../environment/ecology';
 import type { Building, FixtureId, GameState, VenueFixture } from '../engine/state';
@@ -40,6 +41,12 @@ export function canHangOnWall(fixtures: readonly VenueFixture[], fixture: Pick<V
   if (along < 0 || along >= size || (north && along === doorX)) return false;
   return !fixtures.some(other => other.id !== ignoreId && hangsOnWall(other.type) && other.rotation === fixture.rotation && other.x === fixture.x && other.y === fixture.y);
 }
+
+export const PARQUETS: readonly string[] = homeBalance.parquets;
+
+export const parquetModelOf = (parquet = 0): string => modelFileOf(`furniture-floorparquet${PARQUETS[parquet] ?? PARQUETS[0]}`);
+
+export const PARQUET_MODELS: readonly string[] = PARQUETS.map((_, index) => parquetModelOf(index));
 
 export const homeFixtureRefund = (type: FixtureId): number => Math.floor(FIXTURES[type].price * homeBalance.refundRatio);
 

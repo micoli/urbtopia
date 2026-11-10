@@ -21470,6 +21470,62 @@
     },
     "flush": true
   },
+  "furniture-floorparquetebony": {
+    "file": "furniture/floorParquetEbony",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 1,
+      "height": 1
+    },
+    "flush": true
+  },
+  "furniture-floorparquethoney": {
+    "file": "furniture/floorParquetHoney",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 1,
+      "height": 1
+    },
+    "flush": true
+  },
+  "furniture-floorparquetlight": {
+    "file": "furniture/floorParquetLight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 1,
+      "height": 1
+    },
+    "flush": true
+  },
+  "furniture-floorparquetwalnut": {
+    "file": "furniture/floorParquetWalnut",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "fit": {
+      "width": 1,
+      "height": 1
+    },
+    "flush": true
+  },
   "furniture-kitchencoffeemachine": {
     "file": "furniture/kitchenCoffeeMachine",
     "source": "managed",

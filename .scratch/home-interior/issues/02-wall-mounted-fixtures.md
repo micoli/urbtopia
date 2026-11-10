@@ -1,6 +1,6 @@
 # Wall-mounted Fixtures
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01
 
 - Placement on a wall segment of the two back walls, one Fixture per segment, no floor tile; saved with the wall face.

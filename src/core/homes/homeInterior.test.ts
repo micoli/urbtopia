@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type Rotation, type VenueFixture } from '../index';
 import { homeBenefits } from '../environment/wellbeing';
-import { comfortBonusOf, comfortCoverageOf, comfortOf, homeFixtureRefund, homeGridSizeOf, homeWellbeingCapOf, wallPlacementOf } from './homeInterior';
+import { comfortBonusOf, comfortCoverageOf, comfortOf, homeFixtureRefund, homeGridSizeOf, homeWellbeingCapOf, PARQUETS, wallPlacementOf } from './homeInterior';
 import { FIXTURES } from '../venues/fixtures';
 
 const city = (tier = 1, urbs = 100_000, big = true): GameState => ({
@@ -181,5 +181,25 @@ describe('hanging a painting on a wall', () => {
 
   it('counts in the decor of the Comfort', () => {
     expect(comfortCoverageOf([{ id: 1, type: 'homePaintingLandscape', x: 1, y: 0, rotation: 0 }]).decor).toBeGreaterThan(0);
+  });
+});
+
+describe('the floor of a Home interior', () => {
+  it('is a free choice among the parquets, the first by default', () => {
+    expect(home(city()).floor?.parquet).toBeUndefined();
+    const state = send(city(), { type: 'SetHomeParquet', buildingId: 1, parquet: 2 });
+    expect(home(state).floor?.parquet).toBe(2);
+    expect(state.urbs).toBe(city().urbs);
+  });
+
+  it('keeps the Fixtures when the parquet changes', () => {
+    const state = send(send(city(), place('homeBed', 0, 1)), { type: 'SetHomeParquet', buildingId: 1, parquet: 1 });
+    expect(home(state).floor?.fixtures).toHaveLength(1);
+  });
+
+  it('refuses a parquet that does not exist, a building that is not a Home and a city too small', () => {
+    expect(failure(city(), { type: 'SetHomeParquet', buildingId: 1, parquet: PARQUETS.length })).toBe('error.unknownCommand');
+    expect(failure(city(), { type: 'SetHomeParquet', buildingId: 2, parquet: 1 })).toBe('error.unknownBuilding');
+    expect(failure(city(1, 100_000, false), { type: 'SetHomeParquet', buildingId: 1, parquet: 1 })).toBe('error.itemLocked');
   });
 });

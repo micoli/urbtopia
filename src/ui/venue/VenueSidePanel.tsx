@@ -4,6 +4,7 @@ import { venueStore } from '../../store/venueStore';
 import { PanelHeader } from '../common/PanelHeader';
 import { useVenueFixtureSelected, VenueFixturePanel } from './VenueFixturePanel';
 import { FloorStaff } from '../factory/FloorStaff';
+import { HomeParquet } from '../home/HomeParquet';
 import { VenuePanelContent } from './VenuePanelContent';
 import { venuePanelTitle } from './venuePanelTitle';
 
@@ -29,7 +30,7 @@ export function VenueSidePanel({ venue }: VenueSidePanelProps) {
   return (
     <aside className="side-panel">
       <PanelHeader title={title} onClose={closePanel} />
-      {venue.type === 'factory' ? <FloorStaff factory={venue} /> : <VenuePanelContent venue={venue} />}
+      {panel === 'parquet' ? <HomeParquet home={venue} /> : venue.type === 'factory' ? <FloorStaff factory={venue} /> : <VenuePanelContent venue={venue} />}
     </aside>
   );
 }

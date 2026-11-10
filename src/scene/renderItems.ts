@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, kindOf, tiersOf, variantTiersOf } from 
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_RAMP_MODEL, BRIDGE_ROAD_MODEL, BRIDGE_SPAN_MODEL, FOOTBRIDGE_MODELS, GROUND_PANEL_MODEL, PARK_TREE_MODEL, BICYCLE_MODEL, PEDESTRIAN_ACCESS_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL, TUNNEL_MODELS, WALKWAY_MODELS } from '../core/infrastructure/infrastructure';
-import { ANIMAL_MODEL_FILES, ITEM_MODEL_FILES, penAnimalsOf, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, footbridgeOpenSides, footbridgeParts, isInfrastructureBridge, isPedestrianBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, DIRECTION_VECTORS, roundaboutPiece, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
+import { PARQUET_MODELS, parquetModelOf, ANIMAL_MODEL_FILES, ITEM_MODEL_FILES, penAnimalsOf, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, footbridgeOpenSides, footbridgeParts, isInfrastructureBridge, isPedestrianBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, DIRECTION_VECTORS, roundaboutPiece, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
 import type { FixtureVenue, VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -111,7 +111,7 @@ export const VENUE_SHELL_MODELS = {
     VENUE_TYPES.map(type => [type, { floor: modelFileOf(shellOf(type).floor), wall: modelFileOf(shellOf(type).wall), corner: modelFileOf(shellOf(type).corner) }]),
   ) as Record<VenueType, { floor: string; wall: string; corner: string }>),
   factory: { floor: modelFileOf(floorShellOf().floor), wall: modelFileOf(floorShellOf().wall), corner: modelFileOf(floorShellOf().corner) },
-  home: { floor: modelFileOf(shellOf('hotel').floor), wall: modelFileOf(shellOf('hotel').wall), corner: modelFileOf(shellOf('hotel').corner) },
+  home: { floor: parquetModelOf(), wall: modelFileOf(shellOf('hotel').wall), corner: modelFileOf(shellOf('hotel').corner) },
 } as Record<FixtureVenue, { floor: string; wall: string; corner: string }>;
 
 const ROAD_MODELS = Object.values(ROAD_PIECE_MODELS);
@@ -139,6 +139,7 @@ export const MODEL_KEYS: readonly string[] = [
     ...VENUE_CUSTOMER_MODELS,
     ...Object.values(VENUE_STAFF_MODELS).flat(),
     ...FIXTURE_MODELS,
+    ...PARQUET_MODELS,
     ...RAIL_MODELS,
     ...Object.values(HEDGE_MODELS),
     ...TRAIN_MODELS,

@@ -10,6 +10,7 @@
     "leisure": 15,
     "decor": 10
   },
+  "parquets": ["light", "honey", "walnut", "ebony"],
   "unlockCitizens": 700,
   "chairReach": 2,
   "decorHalf": 2,

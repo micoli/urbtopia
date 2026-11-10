@@ -31,6 +31,12 @@ test('a Home is furnished from its panel and its Comfort follows the layout', as
   await expect(stats.filter({ hasText: 'Confort' })).toContainText('%');
   await page.waitForTimeout(1500);
   await page.screenshot({ path: 'test-results/home-interior.png' });
+  await page.getByRole('button', { name: 'Parquet' }).click();
+  await page.getByRole('button', { name: 'Noyer' }).click();
+  await expect(page.getByRole('button', { name: 'Noyer' })).toHaveAttribute('aria-pressed', 'true');
+  await page.waitForTimeout(800);
+  await page.screenshot({ path: 'test-results/home-interior-walnut.png' });
+  await page.getByRole('button', { name: 'Parquet' }).click();
   const before = await stats.filter({ hasText: 'Confort' }).textContent();
   await page.evaluate(async () => {
     const { gameStore } = await import('../src/store/gameStore.ts');
