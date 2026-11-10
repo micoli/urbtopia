@@ -29,7 +29,6 @@ BOXES = {
     "bedBunk": ((0.0, 0.0, 0.0), (0.57, 1.1, 0.85)),
     "bedDouble": ((0.0, 0.0, 0.0), (0.96, 1.12, 0.38)),
     "bedSingle": ((0.38, 0.0, 0.0), (0.96, 1.12, 0.38)),
-    "chair": ((0.0, 0.0, 0.0), (0.2, 0.2, 0.47)),
     "desk": ((-0.01, -0.01, 0.0), (0.72, 0.38, 0.38)),
     "floorFull": ((0.0, 0.0, 0.0), (1.0, 1.0, 0.05)),
     "floorParquetLight": ((0.0, 0.0, 0.0), (1.0, 1.0, 0.05)), "floorParquetHoney": ((0.0, 0.0, 0.0), (1.0, 1.0, 0.05)),
@@ -39,10 +38,8 @@ BOXES = {
     "lampRoundFloor": ((-0.02, -0.03, 0.0), (0.14, 0.15, 0.86)),
     "loungeSofa": ((0.0, 0.0, 0.0), (0.98, 0.41, 0.46)),
     "pottedPlant": ((-0.11, -0.12, 0.0), (0.11, 0.12, 0.65)),
-    "rugRectangle": ((0.0, 0.0, 0.0), (1.57, 0.92, 0.01)),
     "shower": ((-0.56, -0.02, 0.0), (0.0, 0.56, 1.09)),
     "stoolBar": ((0.0, 0.0, 0.0), (0.27, 0.23, 0.44)),
-    "table": ((0.0, 0.0, 0.0), (0.84, 0.45, 0.33)),
     "televisionModern": ((-0.34, -0.06, 0.0), (0.34, 0.06, 0.45)),
     "toilet": ((0.0, -0.48, 0.0), (0.31, 0.0, 0.45)),
     "wall": ((0.0, 0.0, 0.0), (1.0, 0.05, 1.29)),
@@ -80,14 +77,21 @@ def bed(width, bunk=False):
 
 
 def bathtub(rng):
-    return [block("outer", -0.6, 0.6, -0.28, 0.28, 0.05, 0.42, P["porcelain"]), block("water", -0.52, 0.52, -0.2, 0.2, 0.38, 0.39, P["glass"]),
-            block("rim_in", -0.55, 0.55, -0.23, 0.23, 0.39, 0.41, P["porcelain"]), block("tap", 0.48, 0.56, -0.02, 0.02, 0.42, 0.5, P["chrome"])] + \
+    """A hollow tub: a floor, four walls around a basin, the water below the rim, the tap on +x."""
+    wall = 0.07
+    return [block("bottom", -0.6, 0.6, -0.28, 0.28, 0.05, 0.12, P["porcelain"]),
+            block("side_back", -0.6, 0.6, 0.28 - wall, 0.28, 0.12, 0.42, P["porcelain"]), block("side_front", -0.6, 0.6, -0.28, -0.28 + wall, 0.12, 0.42, P["porcelain"]),
+            block("end_l", -0.6, -0.6 + wall, -0.28 + wall, 0.28 - wall, 0.12, 0.42, P["porcelain"]), block("end_r", 0.6 - wall, 0.6, -0.28 + wall, 0.28 - wall, 0.12, 0.42, P["porcelain"]),
+            block("water", -0.6 + wall, 0.6 - wall, -0.28 + wall, 0.28 - wall, 0.12, 0.3, P["glass"]),
+            block("tap", 0.48, 0.56, -0.02, 0.02, 0.42, 0.5, P["chrome"])] + \
         [disc(f"foot{k}", 0.03, 0.05, (x, y, 0), P["chrome"], 6) for k, (x, y) in enumerate(((-0.5, -0.2), (0.5, -0.2), (0.5, 0.2), (-0.5, 0.2)))]
 
 
 def chair(rng):
-    return legs(0.4, 0.4, 0.45, "wood_dark") + [block("seat", -0.2, 0.2, -0.2, 0.2, 0.45, 0.5, P["wood"]),
+    """Faces -y, drawn forward in its tile, the front legs on the front edge of the 1x1 footprint, so that it sits against the table in front of it."""
+    parts = legs(0.4, 0.4, 0.45, "wood_dark") + [block("seat", -0.2, 0.2, -0.2, 0.2, 0.45, 0.5, P["wood"]),
                                                 block("back", -0.2, 0.2, 0.16, 0.2, 0.5, 0.94, P["wood"]), block("rail", -0.18, 0.18, 0.165, 0.195, 0.75, 0.85, P["wood_dark"])]
+    return [lpm.move(part, 0, -0.31, 0) for part in parts]
 
 
 def desk(rng):
@@ -118,6 +122,17 @@ def sofa(rng):
         legs(0.9, 0.36, 0.04, "wood_dark")
 
 
+def sofa_wide(rng):
+    """A two-seat sofa of 2 tiles by 1, as high as the armchair: back on +y, arms and cushions on a seat of 0.28."""
+    parts = [block("seat", -0.95, 0.95, -0.38, 0.4, 0.12, 0.28, P["fabric_dark"]), block("back", -0.95, 0.95, 0.24, 0.4, 0.12, 0.64, P["fabric_dark"]),
+             block("arm_l", -0.95, -0.82, -0.38, 0.4, 0.12, 0.42, P["fabric_dark"]), block("arm_r", 0.82, 0.95, -0.38, 0.4, 0.12, 0.42, P["fabric_dark"]),
+             block("cushion_l", -0.8, -0.01, -0.36, 0.22, 0.28, 0.34, P["fabric"]), block("cushion_r", 0.01, 0.8, -0.36, 0.22, 0.28, 0.34, P["fabric"]),
+             block("pillow_l", -0.78, -0.5, 0.1, 0.22, 0.34, 0.54, P["fabric"]), block("pillow_r", 0.5, 0.78, 0.1, 0.22, 0.34, 0.54, P["fabric"])]
+    for k, (x, y) in enumerate(((-0.9, -0.33), (0.9, -0.33), (0.9, 0.35), (-0.9, 0.35))):
+        parts.append(block(f"leg{k}", x - 0.025, x + 0.025, y - 0.025, y + 0.025, 0.0, 0.12, P["wood_dark"]))
+    return parts
+
+
 def potted_plant(rng):
     parts = [lpm.prism("pot", 8, 0.09, 0.2, color=P["pot"], radius_top=0.11), disc("soil", 0.1, 0.01, (0, 0, 0.19), P["wood_dark"], 8)]
     for k in range(6):
@@ -129,7 +144,8 @@ def potted_plant(rng):
 
 
 def rug(rng):
-    return [block("border", -0.78, 0.78, -0.46, 0.46, 0, 0.01, P["rug_border"]), block("field", -0.72, 0.72, -0.4, 0.4, 0.001, 0.011, P["rug"])]
+    """A rug of 2 tiles by 1 that lies on the floor, whose top is at 0.05."""
+    return [block("border", -0.95, 0.95, -0.5, 0.5, 0.05, 0.06, P["rug_border"]), block("field", -0.89, 0.89, -0.44, 0.44, 0.051, 0.061, P["rug"])]
 
 
 def shower(rng):
@@ -146,7 +162,8 @@ def stool(rng):
 
 
 def table(rng):
-    return legs(0.84, 0.45, 0.29, "wood_dark") + [block("top", -0.42, 0.42, -0.225, 0.225, 0.29, 0.33, P["wood"])]
+    """A table whose top, at 0.72, is above the seat of the chair, 0.9 by 0.6, centred on its tile."""
+    return legs(0.9, 0.6, 0.68, "wood_dark", inset=0.05, size=0.06) + [block("top", -0.45, 0.45, -0.3, 0.3, 0.68, 0.72, P["wood"])]
 
 
 def television(rng):
@@ -171,11 +188,14 @@ WALL_H = 1.29
 HALF = 0.025
 
 
-def _trim_strips(arms):
+LOW_WALL_H = 0.64
+
+
+def _trim_strips(arms, top=WALL_H):
     """Skirting and cornice on both faces of every arm and around the centre square on the sides without an arm."""
     t = 0.01
     parts = []
-    for z0, z1 in ((0.0, 0.08), (1.22, WALL_H)):
+    for z0, z1 in ((0.0, 0.08), (top - 0.07, top)):
         for side in "ESWN":
             if side in arms:
                 parts += [along(side, HALF, 0.5, o0, o1, z0, z1, P["trim"], f"trim{side}{z0}{k}") for k, (o0, o1) in enumerate(((HALF, HALF + t), (-HALF - t, -HALF)))]
@@ -184,18 +204,23 @@ def _trim_strips(arms):
     return parts
 
 
-def partition_junction(arms):
+def partition_junction(arms, height=WALL_H):
     """The centre of thin walls that meet, with arms to the given sides (E, S, W, N), as an elbow, a T or a cross."""
     def build(rng):
-        parts = [block("centre", -HALF, HALF, -HALF, HALF, 0, WALL_H, P["wall"])]
-        parts += [along(side, HALF, 0.5, -HALF, HALF, 0, WALL_H, P["wall"], f"arm{side}") for side in arms]
-        return parts + _trim_strips(arms)
+        parts = [block("centre", -HALF, HALF, -HALF, HALF, 0, height, P["wall"])]
+        parts += [along(side, HALF, 0.5, -HALF, HALF, 0, height, P["wall"], f"arm{side}") for side in arms]
+        return parts + _trim_strips(arms, height)
     return build
 
 
 def partition(rng):
     """A thin wall centred on its tile, so that neighbours join into corners, Ts and crosses."""
     return [block("wall", -0.5, 0.5, -HALF, HALF, 0, WALL_H, P["wall"])] + _trim_strips("EW")
+
+
+def partition_low(rng):
+    """A half-height wall: the same thin wall, as high as a counter, so that a room is divided without being closed."""
+    return [block("wall", -0.5, 0.5, -HALF, HALF, 0, LOW_WALL_H, P["wall"])] + _trim_strips("EW", LOW_WALL_H)
 
 
 def partition_window(rng):
@@ -207,19 +232,28 @@ def partition_window(rng):
             block("frame_t", -0.27, 0.27, -0.035, 0.035, 1.04, 1.07, P["trim"]), block("mullion", -0.01, 0.01, -0.01, 0.01, 0.45, 1.05, P["trim"])] + _trim_strips("EW")
 
 
+def partition_door(rng):
+    """A full-height thin wall with an open doorway, framed, a lintel above it."""
+    h = HALF
+    return [block("left", -0.5, -0.2, -h, h, 0, WALL_H, P["wall"]), block("right", 0.2, 0.5, -h, h, 0, WALL_H, P["wall"]),
+            block("lintel", -0.2, 0.2, -h, h, 1.0, WALL_H, P["wall"]),
+            block("frame_l", -0.23, -0.2, -0.035, 0.035, 0, 1.0, P["trim"]), block("frame_r", 0.2, 0.23, -0.035, 0.035, 0, 1.0, P["trim"]),
+            block("frame_t", -0.23, 0.23, -0.035, 0.035, 0.97, 1.03, P["trim"])] + _trim_strips("EW")
+
+
 def thin_corner(rng):
     """An L of two thin wall arms: along x from the origin, and along y at x 0.55."""
     return [block("armx", 0, 0.55, 0, 0.05, 0, 1.29, P["wall"]), block("army", 0.5, 0.55, 0, 0.55, 0, 1.29, P["wall"])]
 
 
 def sink_cabinet(rng):
-    """A kitchen base cabinet with a sink on its top, the tap against the wall on +y."""
-    return [block("body", -0.3, 0.3, -0.16, 0.16, 0.03, 0.34, P["cabinet"]), block("plinth", -0.28, 0.28, -0.14, 0.14, 0, 0.03, P["cabinet_dark"]),
-            block("door_l", -0.28, -0.01, -0.17, -0.16, 0.06, 0.32, P["cabinet_dark"]), block("door_r", 0.01, 0.28, -0.17, -0.16, 0.06, 0.32, P["cabinet_dark"]),
-            block("handle_l", -0.06, -0.04, -0.19, -0.17, 0.16, 0.24, P["chrome"]), block("handle_r", 0.04, 0.06, -0.19, -0.17, 0.16, 0.24, P["chrome"]),
-            block("top", -0.32, 0.32, -0.18, 0.18, 0.34, 0.38, P["counter"]), block("basin", -0.2, 0.2, -0.12, 0.08, 0.375, 0.385, P["chrome"]),
-            block("splash", -0.32, 0.32, 0.16, 0.18, 0.38, 0.5, P["counter"]),
-            block("tap_post", -0.015, 0.015, 0.1, 0.13, 0.385, 0.5, P["chrome"]), block("tap_spout", -0.012, 0.012, 0.0, 0.13, 0.48, 0.5, P["chrome"])]
+    """A kitchen base cabinet with a sink on its top, as big as the restaurant cooktop: the splashback and the tap against the wall on +y."""
+    return [block("plinth", -0.41, 0.41, -0.38, 0.32, 0, 0.06, P["cabinet_dark"]), block("body", -0.43, 0.43, -0.4, 0.34, 0.06, 0.5, P["cabinet"]),
+            block("door_l", -0.41, -0.01, -0.41, -0.4, 0.1, 0.46, P["cabinet_dark"]), block("door_r", 0.01, 0.41, -0.41, -0.4, 0.1, 0.46, P["cabinet_dark"]),
+            block("handle_l", -0.1, -0.06, -0.44, -0.41, 0.26, 0.38, P["chrome"]), block("handle_r", 0.06, 0.1, -0.44, -0.41, 0.26, 0.38, P["chrome"]),
+            block("top", -0.43, 0.43, -0.4, 0.34, 0.5, 0.54, P["counter"]), block("basin", -0.27, 0.27, -0.3, 0.2, 0.54, 0.55, P["chrome"]),
+            block("backsplash", -0.43, 0.43, 0.34, 0.4, 0.0, 0.85, P["counter"]),
+            block("tap_post", -0.02, 0.02, 0.2, 0.26, 0.54, 0.7, P["chrome"]), block("tap_spout", -0.015, 0.015, 0.05, 0.26, 0.66, 0.7, P["chrome"])]
 
 
 def television_crt(rng):
@@ -247,7 +281,7 @@ def television_crt(rng):
 
 
 def bookcase(rng):
-    """A bookcase, open on -y, with three shelves of books."""
+    """A bookcase, open on -y, with three shelves of books, its back on the edge of the tile on +y so that it stands flush against a wall."""
     parts = [block("side_l", -0.25, -0.23, -0.1, 0.1, 0, 0.9, P["wood"]), block("side_r", 0.23, 0.25, -0.1, 0.1, 0, 0.9, P["wood"]),
              block("back", -0.23, 0.23, 0.08, 0.1, 0.02, 0.9, P["wood_dark"]), block("top", -0.26, 0.26, -0.11, 0.11, 0.9, 0.93, P["wood"]),
              block("base", -0.23, 0.23, -0.1, 0.1, 0, 0.04, P["wood_dark"])]
@@ -263,7 +297,7 @@ def bookcase(rng):
             parts.append(block(f"book{level}{k}", x, x + width, -0.07, 0.06, floor, floor + height, P[colors[(k + level) % 5]]))
             x += width + 0.004
     parts.append(block("shelf3", -0.23, 0.23, -0.1, 0.08, 0.84, 0.865, P["wood"]))
-    return parts
+    return [lpm.move(part, 0, 0.35, 0) for part in parts]
 
 
 def coffee_table(rng):
@@ -272,9 +306,9 @@ def coffee_table(rng):
 
 
 def _framed(width, height, canvas_parts):
-    """A painting that hangs on the wall on y 0: its back on the wall, its face toward -y, centred on x, its centre 0.7 high."""
+    """A painting that hangs on the wall on y 0: its back on the wall, its face toward -y, centred on x, its centre at two thirds of the wall height."""
     def build(rng):
-        cx, z0 = 0.0, 0.7 - height / 2
+        cx, z0 = 0.0, WALL_H * 2 / 3 - height / 2
         t = 0.025
         parts = [block("frame_b", -width / 2, width / 2, -0.03, 0, z0, z0 + t, P["frame_gold"]), block("frame_t", -width / 2, width / 2, -0.03, 0, z0 + height - t, z0 + height, P["frame_gold"]),
                  block("frame_l", -width / 2, -width / 2 + t, -0.03, 0, z0 + t, z0 + height - t, P["frame_gold"]),
@@ -326,5 +360,7 @@ if __name__ == "__main__":
         "kitchenSinkCabinet": sink_cabinet, "televisionCrt": television_crt, "bookcase": bookcase, "coffeeTable": coffee_table,
         "paintingLandscape": _framed(0.36, 0.26, landscape), "paintingSeascape": _framed(0.26, 0.36, seascape), "paintingAbstract": _framed(0.3, 0.3, abstract),
         "wall": thin_wall, "wallCorner": thin_corner,
-        "partition": partition, "partitionWindow": partition_window, "partitionElbow": partition_junction("ES"), "partitionTee": partition_junction("WES"), "partitionCross": partition_junction("ESWN"),
+        "partition": partition, "partitionDoor": partition_door, "partitionWindow": partition_window, "partitionElbow": partition_junction("ES"), "partitionTee": partition_junction("WES"), "partitionCross": partition_junction("ESWN"),
+        "partitionLow": partition_low, "partitionLowElbow": partition_junction("ES", LOW_WALL_H), "partitionLowTee": partition_junction("WES", LOW_WALL_H), "partitionLowCross": partition_junction("ESWN", LOW_WALL_H),
+        "loungeSofaWide": sofa_wide,
     }, P, 600, HERE, boxes=BOXES, center=False, ground=False)

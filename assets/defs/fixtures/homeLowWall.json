@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "home",
+  "category": "walls",
+  "name": {
+    "en": "Low wall",
+    "fr": "Demi-mur"
+  },
+  "model": "furniture-partitionlow",
+  "footprint": [1, 1],
+  "price": 25,
+  "minTier": 1,
+  "partition": true,
+  "joins": {
+    "elbow": "furniture-partitionlowelbow",
+    "tee": "furniture-partitionlowtee",
+    "cross": "furniture-partitionlowcross"
+  },
+  "role": "decor"
+}

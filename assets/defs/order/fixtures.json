@@ -43,6 +43,7 @@
   "coffeeCorner",
   "hotelWall",
   "hotelWindow",
+  "hotelDoor",
   "miniFridge",
   "cooktop",
   "prepTable",
@@ -89,5 +90,8 @@
   "homeRug",
   "homePaintingLandscape",
   "homePaintingSeascape",
-  "homePaintingAbstract"
+  "homePaintingAbstract",
+  "homeWall",
+  "homeLowWall",
+  "homeDoorWall"
 ]

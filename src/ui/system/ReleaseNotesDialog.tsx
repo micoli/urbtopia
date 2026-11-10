@@ -1,5 +1,6 @@
 import { t } from '../../i18n/t';
 import type { Language } from '../../i18n/prefsStore';
+import { reloadApp } from '../../pwa/reloadApp';
 import { formatReleaseDate } from '../../releaseNotes/formatReleaseDate';
 import type { ReleaseNote } from '../../releaseNotes/releaseNote';
 import { ActionButton } from '../common/ActionButton';
@@ -41,6 +42,7 @@ export function ReleaseNotesDialog({ notes, index, language, onSelect, onClose }
       <Dialog.Actions>
         <ActionButton size="sm" disabled={index >= notes.length - 1} onClick={() => onSelect(index + 1)}><Icon name="arrowLeft" /> {t('releaseNotes.older')}</ActionButton>
         <ActionButton size="sm" disabled={index === 0} onClick={() => onSelect(index - 1)}>{t('releaseNotes.newer')} <Icon name="arrowRight" /></ActionButton>
+        <ActionButton size="sm" onClick={() => void reloadApp()}><Icon name="rotateRight" /> {t('settings.reload')}</ActionButton>
         <ActionButton variant="primary" onClick={onClose}>{t('panel.close')}</ActionButton>
       </Dialog.Actions>
     </Dialog>

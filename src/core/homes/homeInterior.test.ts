@@ -182,6 +182,43 @@ describe('hanging a painting on a wall', () => {
   it('counts in the decor of the Comfort', () => {
     expect(comfortCoverageOf([{ id: 1, type: 'homePaintingLandscape', x: 1, y: 0, rotation: 0 }]).decor).toBeGreaterThan(0);
   });
+
+  describe('on a wall of the room', () => {
+    const walled = (): GameState => [1, 2].reduce((state, x) => send(state, place('homeWall', x, 2)), city(4));
+
+    it('stands for the free faces of a straight wall, then for none', () => {
+      const fixtures = [fixture('homeWall', 1, 2, 1), fixture('homeWall', 2, 2, 2)];
+      expect(wallPlacementOf({ x: 1, y: 2 }, fixtures)).toEqual({ x: 1, y: 2, rotation: 0 });
+      const south = [...fixtures, { id: 3, type: 'homePaintingLandscape' as const, x: 1, y: 2, rotation: 0 as const }];
+      expect(wallPlacementOf({ x: 1, y: 2 }, south)).toEqual({ x: 1, y: 2, rotation: 2 });
+      const both = [...south, { id: 4, type: 'homePaintingSeascape' as const, x: 1, y: 2, rotation: 2 as const }];
+      expect(wallPlacementOf({ x: 1, y: 2 }, both)).toBeNull();
+    });
+
+    it('hangs on a face of the wall and is taken down, and refunded, with it', () => {
+      let state = send(walled(), place('homePaintingLandscape', 1, 2, 2));
+      expect(home(state).floor?.fixtures).toHaveLength(3);
+      const before = state.urbs;
+      state = send(state, { type: 'RemoveFloorFixture', buildingId: 1, fixtureId: 1 });
+      expect(home(state).floor?.fixtures.map(item => item.type)).toEqual(['homeWall']);
+      expect(state.urbs).toBe(before + homeFixtureRefund('homeWall') + homeFixtureRefund('homePaintingLandscape'));
+    });
+
+    it('follows the wall when it moves, and is taken down when no face is left', () => {
+      let state = send(walled(), place('homePaintingLandscape', 1, 2, 2));
+      state = send(state, { type: 'MoveFloorFixture', buildingId: 1, fixtureId: 1, x: 1, y: 4 });
+      const items = home(state).floor!.fixtures;
+      expect(items.find(item => item.type === 'homePaintingLandscape')).toMatchObject({ x: 1, y: 4, rotation: 2 });
+      state = send(state, { type: 'MoveFloorFixture', buildingId: 1, fixtureId: 1, x: 2, y: 3 });
+      expect(home(state).floor!.fixtures.map(item => item.type)).not.toContain('homePaintingLandscape');
+    });
+
+    it('refuses a face the wall does not show, a low wall and a bare floor tile', () => {
+      expect(failure(walled(), place('homePaintingLandscape', 1, 2, 1))).toBe('error.tilesOccupied');
+      expect(failure(send(city(4), place('homeLowWall', 1, 2)), place('homePaintingLandscape', 1, 2, 0))).toBe('error.tilesOccupied');
+      expect(failure(city(4), place('homePaintingLandscape', 1, 2, 0))).toBe('error.tilesOccupied');
+    });
+  });
 });
 
 describe('the floor of a Home interior', () => {
