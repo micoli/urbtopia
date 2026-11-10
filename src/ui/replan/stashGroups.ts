@@ -10,6 +10,8 @@ export type StashSectionId = 'replan.section.network' | 'replan.section.later' |
 export interface StashGroup {
   id: string;
   section: StashSectionId;
+  // The section the group belongs to when it is not put off to Later.
+  origin?: StashSectionId;
   // The picture of the item: the codex one when it has one, the icon otherwise.
   codexId?: CodexId;
   icon?: string;
@@ -60,7 +62,7 @@ const positionIn = (group: StashGroup): number => {
 
 export function stashSections(state: GameState): { id: StashSectionId; groups: StashGroup[] }[] {
   const later = new Set(state.replan?.later ?? []);
-  const groups = stashGroups(state).map((group) => (later.has(group.id) ? { ...group, section: 'replan.section.later' as const } : group));
+  const groups = stashGroups(state).map((group) => (later.has(group.id) ? { ...group, origin: group.section, section: 'replan.section.later' as const } : group));
   return SECTION_ORDER.map((id) => ({ id, groups: groups.filter((group) => group.section === id).sort((a, b) => positionIn(a) - positionIn(b)) })).filter((section) => section.groups.length > 0);
 }
 

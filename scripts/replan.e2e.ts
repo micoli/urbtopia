@@ -131,6 +131,13 @@ test('a long press on a Stash item drops it for its price or puts it off to the 
   await menu.getByRole('menuitem', { name: 'Later' }).click();
   await expect(panel.getByRole('button', { name: 'Later', exact: true })).toBeVisible();
 
+  await panel.getByRole('button', { name: 'Later', exact: true }).click();
+  await panel.getByRole('button', { name: /Home/ }).first().click({ button: 'right' });
+  await panel.getByRole('menuitem', { name: 'Back to Housing' }).click();
+  await expect(panel.getByRole('button', { name: 'Later', exact: true })).toHaveCount(0);
+  await openHousing(panel);
+  await panel.getByRole('button', { name: /Home/ }).first().click({ button: 'right' });
+  await panel.getByRole('menuitem', { name: 'Later' }).click();
   const before = await page.evaluate(async () => (await import('../src/store/gameStore.ts')).gameStore.getState().state.urbs);
   await panel.getByRole('button', { name: 'Later', exact: true }).click();
   const laterHome = panel.getByRole('button', { name: /Home/ }).first();

@@ -48,6 +48,7 @@ describe('the groups of the Stash', () => {
     const later = { ...state, replan: { ...state.replan!, later: ['building-home', 'roads-1'] } };
     const sections = stashSections(later);
     expect(sections.at(-1)?.id).toBe('replan.section.later');
+    expect(sections.at(-1)?.groups.find((group) => group.id === 'building-home')?.origin).toBe('build.housing');
     expect(sections.at(-1)?.groups.map((group) => group.id).sort()).toEqual(['building-home', 'roads-1']);
     expect(sections.some((section) => section.id === 'build.housing')).toBe(false);
   });

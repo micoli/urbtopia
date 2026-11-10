@@ -822,7 +822,7 @@ export const CATALOG = {
   'replan.section.later': ['Later', 'Plus tard'],
   'replan.menu.drop': ['Drop and get', 'Jeter et récupérer'],
   'replan.menu.later': ['Later', 'Plus tard'],
-  'replan.menu.back': ['Back to the list', 'Remettre dans la liste'],
+  'replan.menu.back': ['Back to', 'Retour à'],
   'replan.menu.label': ['Actions on this item', 'Actions sur cet élément'],
   'replan.section.network': ['Network', 'Réseau'],
   'replan.group.road': ['Road, tier', 'Route, niveau'],

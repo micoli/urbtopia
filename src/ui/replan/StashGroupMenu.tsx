@@ -44,7 +44,7 @@ export function StashGroupMenu({ group, onClose }: StashGroupMenuProps) {
   return (
     <div ref={ref} className="stash-menu" role="menu" aria-label={t('replan.menu.label')}>
       <ActionButton size="sm" role="menuitem" onClick={drop}>{t('replan.menu.drop')} <UrbsAmount value={value} /></ActionButton>
-      <ActionButton size="sm" role="menuitem" onClick={putOff}>{isLater ? t('replan.menu.back') : t('replan.menu.later')}</ActionButton>
+      <ActionButton size="sm" role="menuitem" onClick={putOff}>{isLater && group.origin ? `${t('replan.menu.back')} ${t(group.origin)}` : t('replan.menu.later')}</ActionButton>
     </div>
   );
 }
