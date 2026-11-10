@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, partitionPieceOf, type Coord, type FixtureVenue, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, hostWallOf, partitionPieceOf, type Coord, type FixtureVenue, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
@@ -33,6 +33,10 @@ export interface VenueGhost {
 
 // How far a wall Fixture stands from the axis of a wall, so that it hangs on the face turned to the room.
 const WALL_FACE = 0.06;
+
+// The same, from the axis of a wall of the room, and the direction each face looks toward (south, east, north, west).
+const PARTITION_FACE = 0.03;
+const HUNG_FACES: readonly (readonly [number, number])[] = [[0, 1], [1, 0], [0, -1], [-1, 0]];
 
 export class VenueScene {
   private renderer: THREE.WebGLRenderer;
@@ -274,13 +278,23 @@ export class VenueScene {
       const model = piece && piece.shape !== 'straight' ? spec.joins![piece.shape] : spec.model;
       const rotation = (piece ? piece.turns * Math.PI / 2 : -fixture.rotation * Math.PI / 2);
       const object = spec.wall
-        ? this.place(this.fixtureRoot, model, fixture.rotation === 0 ? fixture.x + 0.5 : WALL_FACE, fixture.rotation === 0 ? WALL_FACE : fixture.y + 0.5, fixture.rotation === 0 ? 0 : Math.PI / 2)
+        ? this.placeHung(model, fixture)
         : this.place(this.fixtureRoot, model, fixture.x + width / 2, fixture.y + depth / 2, rotation);
       object.userData.fixtureId = fixture.id;
       this.motion.bind(fixture.id, object, spec.smoke);
       if (spec.tint !== undefined) this.tint(object, spec.tint);
     }
     this.dirty = true;
+  }
+
+  // A wall Fixture hangs on a back wall, or on the face of a wall of the room when it stands on the tile of one.
+  private placeHung(model: string, fixture: VenueFixture): THREE.Object3D {
+    if (!hostWallOf(this.lastFixtures, fixture)) {
+      const north = fixture.rotation === 0;
+      return this.place(this.fixtureRoot, model, north ? fixture.x + 0.5 : WALL_FACE, north ? WALL_FACE : fixture.y + 0.5, north ? 0 : Math.PI / 2);
+    }
+    const [dx, dz] = HUNG_FACES[fixture.rotation]!;
+    return this.place(this.fixtureRoot, model, fixture.x + 0.5 + dx * PARTITION_FACE, fixture.y + 0.5 + dz * PARTITION_FACE, Math.atan2(dx, dz));
   }
 
   private tint(object: THREE.Object3D, color: number): void {
@@ -338,6 +352,14 @@ export class VenueScene {
     return cell.x >= 0 && cell.y >= 0 && cell.x < this.size && cell.y < this.size ? cell : null;
   }
 
+  // The cell a press stands for: the one under the pointer, or the cell of a hung painting whose model was hit above the walls, where the ground behind it lies out of the room.
+  private pickedCell(clientX: number, clientY: number, fixtureId: number | null): Coord | null {
+    const cell = this.cellAt(clientX, clientY);
+    if (cell || fixtureId === null) return cell;
+    const hit = this.lastFixtures.find(fixture => fixture.id === fixtureId);
+    return hit ? { x: hit.x, y: hit.y } : null;
+  }
+
   private handlePointerDown = (event: PointerEvent): void => {
     this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     if (this.pointers.size >= 2) {
@@ -350,8 +372,9 @@ export class VenueScene {
     }
     this.pointerDown = { x: event.clientX, y: event.clientY, ground: this.groundAt(event.clientX, event.clientY) };
     this.dragged = false;
-    const cell = this.cellAt(event.clientX, event.clientY);
-    this.grabbed = cell !== null && this.onGrab(cell, this.fixtureAt(event.clientX, event.clientY));
+    const fixtureId = this.fixtureAt(event.clientX, event.clientY);
+    const cell = this.pickedCell(event.clientX, event.clientY, fixtureId);
+    this.grabbed = cell !== null && this.onGrab(cell, fixtureId);
     try {
       this.canvas.setPointerCapture(event.pointerId);
     } catch {
@@ -370,8 +393,9 @@ export class VenueScene {
     if (this.canvas.hasPointerCapture(event.pointerId)) this.canvas.releasePointerCapture(event.pointerId);
     if (carried) return this.onDrop(this.cellAt(event.clientX, event.clientY));
     if (!start || this.dragged) return;
-    const cell = this.cellAt(event.clientX, event.clientY);
-    if (cell) this.onTapCell(cell, event.shiftKey, this.fixtureAt(event.clientX, event.clientY));
+    const fixtureId = this.fixtureAt(event.clientX, event.clientY);
+    const cell = this.pickedCell(event.clientX, event.clientY, fixtureId);
+    if (cell) this.onTapCell(cell, event.shiftKey, fixtureId);
   };
 
   // Dragging with the button down moves the room under the pointer, as in the city.

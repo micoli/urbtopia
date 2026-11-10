@@ -77,6 +77,27 @@ export function placeFloorFixture(state: GameState, buildingId: number, type: Fi
   return { state: withFloor(state, factory, { ...floor, fixtures: [...floor.fixtures, placed], nextFixtureId: floor.nextFixtureId + 1 }, state.urbs - price), events: [] };
 }
 
+const hungOn = (fixtures: readonly VenueFixture[], wall: VenueFixture): VenueFixture[] => (wall.type === 'homeWall' ? fixtures.filter(other => hangsOnWall(other.type) && other.x === wall.x && other.y === wall.y) : []);
+
+// What hangs on a wall of the room goes with it: those paintings are taken down and refunded.
+const withoutHungOn = (host: FloorHost, fixtures: readonly VenueFixture[], wall: VenueFixture): { fixtures: VenueFixture[]; refund: number } => {
+  const hung = hungOn(fixtures, wall);
+  return { fixtures: fixtures.filter(other => !hung.includes(other)), refund: hung.reduce((sum, other) => sum + refundOf(host, other.type), 0) };
+};
+
+// A moved wall carries its paintings, turned as it is; those that no longer find a face to hang on are taken down and refunded.
+const carryingHung = (host: FloorHost, fixtures: readonly VenueFixture[], wall: VenueFixture, moved: VenueFixture): { fixtures: VenueFixture[]; refund: number } => {
+  const hung = hungOn(fixtures, wall);
+  if (hung.length === 0) return { fixtures: [...fixtures], refund: 0 };
+  const turn = (moved.rotation - wall.rotation + 4) % 4;
+  const carried = new Map(hung.map(painting => [painting, { ...painting, x: moved.x, y: moved.y, rotation: ((painting.rotation + turn) % 4) as Rotation }]));
+  const relocated = fixtures.map(candidate => carried.get(candidate) ?? candidate);
+  const entrance = entranceCell(host.tier);
+  const kept = [...carried.values()].filter(painting => canHangOnWall(relocated, painting, gridSizeOf(host), entrance.x, painting.id));
+  const dropped = [...carried.values()].filter(painting => !kept.includes(painting));
+  return { fixtures: relocated.filter(candidate => !dropped.includes(candidate)), refund: dropped.reduce((sum, painting) => sum + refundOf(host, painting.type), 0) };
+};
+
 export function moveFloorFixture(state: GameState, buildingId: number, fixtureId: number, x: number, y: number, rotation?: Rotation): CommandOutcome {
   const factory = hostOf(state, buildingId);
   if (!factory) return { key: 'error.unknownBuilding' };
@@ -85,7 +106,9 @@ export function moveFloorFixture(state: GameState, buildingId: number, fixtureId
   if (!fixture) return { key: 'error.unknownFixture' };
   const moved: VenueFixture = { ...fixture, x, y, rotation: rotation ?? fixture.rotation };
   if (!canStandOnFloor(factory, moved, fixtureId)) return { key: 'error.tilesOccupied' };
-  return { state: withFloor(state, factory, { ...floor, fixtures: floor.fixtures.map(candidate => (candidate === fixture ? moved : candidate)) }), events: [] };
+  const relocated = floor.fixtures.map(candidate => (candidate === fixture ? moved : candidate));
+  const taken = carryingHung(factory, relocated, fixture, moved);
+  return { state: withFloor(state, factory, { ...floor, fixtures: taken.fixtures }, state.urbs + taken.refund), events: [] };
 }
 
 export function removeFloorFixture(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {
@@ -94,7 +117,8 @@ export function removeFloorFixture(state: GameState, buildingId: number, fixture
   const floor = floorOf(factory);
   const fixture = floor.fixtures.find(candidate => candidate.id === fixtureId);
   if (!fixture) return { key: 'error.unknownFixture' };
-  return { state: withFloor(state, factory, { ...floor, fixtures: floor.fixtures.filter(candidate => candidate !== fixture) }, state.urbs + refundOf(factory, fixture.type)), events: [] };
+  const taken = withoutHungOn(factory, floor.fixtures.filter(candidate => candidate !== fixture), fixture);
+  return { state: withFloor(state, factory, { ...floor, fixtures: taken.fixtures }, state.urbs + refundOf(factory, fixture.type) + taken.refund), events: [] };
 }
 
 // The floor of a Home interior is a free choice among the parquets.

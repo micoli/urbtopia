@@ -21381,7 +21381,7 @@
       2
     ],
     "fit": {
-      "width": 1.9,
+      "width": 1.7,
       "height": 0.8
     },
     "flush": true
@@ -21395,8 +21395,8 @@
       2
     ],
     "fit": {
-      "width": 1.15,
-      "height": 0.6
+      "width": 1.5,
+      "height": 0.8
     },
     "flush": true
   },
@@ -21408,10 +21408,6 @@
       1,
       1
     ],
-    "fit": {
-      "width": 0.5,
-      "height": 0.93
-    },
     "flush": true
   },
   "furniture-chair": {
@@ -21422,10 +21418,6 @@
       1,
       1
     ],
-    "fit": {
-      "width": 0.5,
-      "height": 0.9
-    },
     "flush": true
   },
   "furniture-coffeetable": {
@@ -21437,8 +21429,8 @@
       1
     ],
     "fit": {
-      "width": 0.5,
-      "height": 0.19
+      "width": 0.75,
+      "height": 0.285
     },
     "flush": true
   },
@@ -21562,10 +21554,6 @@
       1,
       1
     ],
-    "fit": {
-      "width": 0.64,
-      "height": 0.5
-    },
     "flush": true
   },
   "furniture-lamproundfloor": {
@@ -21596,6 +21584,16 @@
     },
     "flush": true
   },
+  "furniture-loungesofawide": {
+    "file": "furniture/loungeSofaWide",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      1
+    ],
+    "flush": true
+  },
   "furniture-paintingabstract": {
     "file": "furniture/paintingAbstract",
     "source": "managed",
@@ -21604,10 +21602,6 @@
       1,
       1
     ],
-    "fit": {
-      "width": 0.3,
-      "height": 0.3
-    },
     "flush": true
   },
   "furniture-paintinglandscape": {
@@ -21618,10 +21612,6 @@
       1,
       1
     ],
-    "fit": {
-      "width": 0.36,
-      "height": 0.26
-    },
     "flush": true
   },
   "furniture-paintingseascape": {
@@ -21632,10 +21622,6 @@
       1,
       1
     ],
-    "fit": {
-      "width": 0.26,
-      "height": 0.36
-    },
     "flush": true
   },
   "furniture-partition": {
@@ -21658,8 +21644,58 @@
     ],
     "flush": true
   },
+  "furniture-partitiondoor": {
+    "file": "furniture/partitionDoor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "furniture-partitionelbow": {
     "file": "furniture/partitionElbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "furniture-partitionlow": {
+    "file": "furniture/partitionLow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "furniture-partitionlowcross": {
+    "file": "furniture/partitionLowCross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "furniture-partitionlowelbow": {
+    "file": "furniture/partitionLowElbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "furniture-partitionlowtee": {
+    "file": "furniture/partitionLowTee",
     "source": "managed",
     "license": "Own work",
     "footprint": [
@@ -21710,10 +21746,6 @@
       2,
       1
     ],
-    "fit": {
-      "width": 1.9,
-      "height": 0.1
-    },
     "flush": true
   },
   "furniture-shower": {
@@ -21752,10 +21784,6 @@
       1,
       1
     ],
-    "fit": {
-      "width": 0.9,
-      "height": 0.6
-    },
     "flush": true
   },
   "furniture-televisioncrt": {
@@ -21767,8 +21795,8 @@
       1
     ],
     "fit": {
-      "width": 0.6,
-      "height": 0.8
+      "width": 0.9,
+      "height": 1.2
     },
     "flush": true
   },
