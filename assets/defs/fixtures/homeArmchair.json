@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "home",
+  "category": "comfort",
+  "name": {
+    "en": "Armchair",
+    "fr": "Fauteuil crapaud"
+  },
+  "model": "restaurant-waiting-armchair",
+  "footprint": [1, 1],
+  "price": 90,
+  "minTier": 1,
+  "comfort": 0.5,
+  "role": "leisure"
+}

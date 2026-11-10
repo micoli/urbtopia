@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "home",
+  "category": "decor",
+  "name": {
+    "en": "Floor lamp",
+    "fr": "Lampadaire"
+  },
+  "model": "furniture-lamproundfloor",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "comfort": 0.5,
+  "role": "decor"
+}

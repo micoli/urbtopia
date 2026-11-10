@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "home",
+  "category": "beds",
+  "name": {
+    "en": "Bed",
+    "fr": "Lit"
+  },
+  "model": "furniture-bedsingle",
+  "footprint": [1, 2],
+  "price": 200,
+  "minTier": 1,
+  "role": "bed"
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "home",
+  "category": "decor",
+  "name": {
+    "en": "Coffee table",
+    "fr": "Table basse"
+  },
+  "model": "furniture-coffeetable",
+  "footprint": [1, 1],
+  "price": 45,
+  "minTier": 1,
+  "comfort": 0.5,
+  "role": "decor"
+}

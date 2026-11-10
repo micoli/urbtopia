@@ -6,6 +6,8 @@ const texts = {
   'beta.flag.clubs.description': ['Football, baseball and basketball clubs: squad, line-up, championship, matches.', 'Clubs de football, de baseball et de basket : effectif, composition, championnat, matchs.'],
   'beta.flag.advisor': ['Advisor', 'Conseiller'],
   'beta.flag.advisor.description': ['A local assistant that explains your city. Then turn it on in the Game tab.', 'Un assistant local qui explique votre ville. Activez-le ensuite dans l\'onglet Partie.'],
+  'beta.flag.homeInterior': ['Home furnishing', 'Aménagement des logements'],
+  'beta.flag.homeInterior.description': ['Open the interior of a Home: furniture, paintings, parquet and comfort.', 'Ouvrez l\'intérieur d\'un logement : meubles, tableaux, parquet et confort.'],
 };
 
 export type BetaMessageKey = keyof typeof texts;

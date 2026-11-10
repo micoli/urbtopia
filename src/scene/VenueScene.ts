@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, partitionPieceOf, type Coord, type VenueFixture, type VenueType } from '../core';
+import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, partitionPieceOf, type Coord, type FixtureVenue, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
@@ -30,6 +30,9 @@ export interface VenueGhost {
   tiles: readonly Coord[];
   valid: boolean;
 }
+
+// How far a wall Fixture stands from the axis of a wall, so that it hangs on the face turned to the room.
+const WALL_FACE = 0.06;
 
 export class VenueScene {
   private renderer: THREE.WebGLRenderer;
@@ -83,7 +86,7 @@ export class VenueScene {
   private shellModels: { floor: string; wall: string; corner: string };
   private cornerPlacement: { x: number; z: number; rotation: number };
 
-  constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1, venueType: VenueType | 'factory' = 'arcade', seed = 1) {
+  constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1, venueType: FixtureVenue = 'arcade', seed = 1) {
     this.shellModels = VENUE_SHELL_MODELS[venueType];
     this.cornerPlacement = VENUE_CORNER_PLACEMENT[venueType];
     this.crowd = new VenueCrowdLayer(this.library, size, entranceCell(tier), seed, venueType);
@@ -96,7 +99,7 @@ export class VenueScene {
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
     this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
-    this.ready = this.library.ensure([...Object.values(this.shellModels), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
+    this.ready = this.library.ensure([...Object.values(this.shellModels), ...(venueType === 'home' ? PARQUET_MODELS : []), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
       this.rebuildFixtures();
@@ -121,6 +124,14 @@ export class VenueScene {
       this.frameHandle = requestAnimationFrame(this.frame);
     });
     this.frameHandle = requestAnimationFrame(this.frame);
+  }
+
+  // Swaps the floor of the room, for a Home interior whose parquet is chosen by the player.
+  setFloorModel(model: string): void {
+    if (model === this.shellModels.floor) return;
+    this.shellModels = { ...this.shellModels, floor: model };
+    this.builtSize = -1;
+    this.buildShell();
   }
 
   setFixtures(fixtures: readonly VenueFixture[]): void {
@@ -262,7 +273,9 @@ export class VenueScene {
       const piece = spec.joins ? partitionPieceOf(fixture, this.lastFixtures) : undefined;
       const model = piece && piece.shape !== 'straight' ? spec.joins![piece.shape] : spec.model;
       const rotation = (piece ? piece.turns * Math.PI / 2 : -fixture.rotation * Math.PI / 2);
-      const object = this.place(this.fixtureRoot, model, fixture.x + width / 2, fixture.y + depth / 2, rotation);
+      const object = spec.wall
+        ? this.place(this.fixtureRoot, model, fixture.rotation === 0 ? fixture.x + 0.5 : WALL_FACE, fixture.rotation === 0 ? WALL_FACE : fixture.y + 0.5, fixture.rotation === 0 ? 0 : Math.PI / 2)
+        : this.place(this.fixtureRoot, model, fixture.x + width / 2, fixture.y + depth / 2, rotation);
       object.userData.fixtureId = fixture.id;
       this.motion.bind(fixture.id, object, spec.smoke);
       if (spec.tint !== undefined) this.tint(object, spec.tint);

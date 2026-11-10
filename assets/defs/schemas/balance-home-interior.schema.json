@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "gridSizes": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9007199254740991
+      }
+    },
+    "wellbeingCaps": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      }
+    },
+    "weights": {
+      "type": "object",
+      "properties": {
+        "sleeping": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "washing": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "eating": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "cooking": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "leisure": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "decor": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "sleeping",
+        "washing",
+        "eating",
+        "cooking",
+        "leisure",
+        "decor"
+      ],
+      "additionalProperties": false
+    },
+    "parquets": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "unlockCitizens": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "chairReach": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "decorHalf": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "refundRatio": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  },
+  "required": [
+    "gridSizes",
+    "wellbeingCaps",
+    "weights",
+    "parquets",
+    "unlockCitizens",
+    "chairReach",
+    "decorHalf",
+    "refundRatio"
+  ],
+  "additionalProperties": false,
+  "title": "Home interior balance",
+  "description": "assets/defs/balance/homeInterior.json: the size of a Home interior by Tier, the weights of the groups of its Comfort and the Well-being it adds at most."
+}

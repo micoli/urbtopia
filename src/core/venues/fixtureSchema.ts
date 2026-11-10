@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { pairSchema } from '../buildings/tierSchema.ts';
 import { count, filled, localizedText } from '../economy/itemSchemas.ts';
-import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_SIDES } from './venueVocabulary.ts';
+import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_SIDES, HOME_FIXTURE_ROLES } from './venueVocabulary.ts';
 
 const common = {
   $schema: z.string().optional(),
@@ -57,6 +57,16 @@ export const fixtureSchema = z
       checkout: z.int().min(1).optional(),
       // Diners an armchair holds while they wait for a seat.
       waiting: z.int().min(1).optional(),
+    }),
+    z.strictObject({
+      venue: z.literal('home'),
+      ...common,
+      // What the piece is in a dwelling, which the Comfort of the Home interior reads.
+      role: z.enum(HOME_FIXTURE_ROLES),
+      // Leisure and decor: the share of its group it covers, from 0 to 1 excluded.
+      comfort: z.number().gt(0).lte(1).optional(),
+      // Hangs on a wall segment instead of standing on a tile.
+      wall: z.literal(true).optional(),
     }),
     z.strictObject({
       venue: z.literal('factory'),

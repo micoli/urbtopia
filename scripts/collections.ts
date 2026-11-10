@@ -134,6 +134,7 @@ export const COLLECTIONS = {
         HotelFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'hotel'),
         RestaurantFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'restaurant'),
         FactoryFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'factory'),
+        HomeFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'home'),
       }),
     },
     schema: fixtureSchema,

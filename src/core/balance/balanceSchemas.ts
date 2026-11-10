@@ -72,6 +72,25 @@ export const factoryFloorBalanceSchema = z
   })
   .meta({ title: 'Factory floor balance', description: 'assets/defs/balance/factoryFloor.json: the size of the Factory floor and the cap of the bonus its linked Machines add, by Factory Tier.' });
 
+// How big the interior of a Home is by Tier, how its Comfort is weighed, and the most Well-being it can add by Tier.
+export const homeInteriorBalanceSchema = z
+  .strictObject({
+    ...schemaField,
+    gridSizes: z.array(z.int().min(1)).min(1),
+    wellbeingCaps: z.array(positive).min(1),
+    weights: z.strictObject({ sleeping: positive, washing: positive, eating: positive, cooking: positive, leisure: positive, decor: positive }),
+    // The floors a Home interior can have, the first being the one it starts with; each is the model furniture-floorparquet<name>.
+    parquets: z.array(z.string().min(1)).min(1),
+    // The Citizens a city needs before its Homes can be furnished.
+    unlockCitizens: count,
+    // The largest distance, in tiles, between a table and the chair that serves it.
+    chairReach: z.int().min(1),
+    // The decor that covers half of the decor group; each further piece adds a smaller share.
+    decorHalf: positive,
+    refundRatio: share,
+  })
+  .meta({ title: 'Home interior balance', description: 'assets/defs/balance/homeInterior.json: the size of a Home interior by Tier, the weights of the groups of its Comfort and the Well-being it adds at most.' });
+
 // What building a road costs per tile, and how fast a car drives on it, by road Tier.
 export const trafficBalanceSchema = z
   .strictObject({

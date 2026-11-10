@@ -36,7 +36,7 @@ import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, sign
 import { cancelShow, scheduleShow } from '../tourism/gatherings';
 import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
-import { hireFloorTechnician, moveFloorFixture, placeFloorFixture, releaseFloorTechnician, removeFloorFixture, repairFloorFixture } from '../factory/floorCommands';
+import { hireFloorTechnician, moveFloorFixture, placeFloorFixture, releaseFloorTechnician, removeFloorFixture, repairFloorFixture, setHomeParquet } from '../factory/floorCommands';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { isItemUnlocked } from '../progression/unlocks';
@@ -152,6 +152,7 @@ export type Command =
   | { readonly type: 'MoveFloorFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'RemoveFloorFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RepairFloorFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'SetHomeParquet'; readonly buildingId: number; readonly parquet: number }
   | { readonly type: 'HireFloorTechnician'; readonly buildingId: number }
   | { readonly type: 'ReleaseFloorTechnician'; readonly buildingId: number }
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
@@ -482,6 +483,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return removeFloorFixture(state, command.buildingId, command.fixtureId);
     case 'RepairFloorFixture':
       return repairFloorFixture(state, command.buildingId, command.fixtureId);
+    case 'SetHomeParquet':
+      return setHomeParquet(state, command.buildingId, command.parquet);
     case 'HireFloorTechnician':
       return hireFloorTechnician(state, command.buildingId);
     case 'ReleaseFloorTechnician':

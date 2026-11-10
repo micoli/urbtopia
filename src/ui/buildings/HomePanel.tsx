@@ -9,6 +9,8 @@ import { ActionButton } from '../common/ActionButton';
 import { BlockedReason } from '../common/BlockedReason';
 import { urbsReason } from '../common/urbsReason';
 import { DrawerPanel } from '../common/DrawerPanel';
+import { FurnishButton } from '../home/FurnishButton';
+import { HomeComfort } from '../home/HomeComfort';
 import { Icon } from '../common/Icon';
 
 interface HomePanelProps {
@@ -51,6 +53,8 @@ export function HomePanel({ building }: HomePanelProps) {
           {t('eco.wellbeing')}: {benefits.wellbeing.toFixed(1)}
       </>}/>
 
+      <HomeComfort building={building} />
+      <FurnishButton building={building} />
       <DrawerPanel.LabelValue label={t('home.knowledge')} value={Math.round(homeKnowledge(state, building, coverage))}/>
 
       <DrawerPanel.LabelValue label={t('home.services')} value={<>{covered.length ? covered.map(type => coveredLabel(type)).join(', ') : t('home.servicesNone')}</>}/>
