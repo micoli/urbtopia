@@ -40,7 +40,9 @@ import { surfaceDisplayOf } from './levelDisplay';
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
 const GROUND_FADE_TILES = 24;
 const GROUND_SIZE = MAP_TILES + 2 * (WILD_RIM_TILES + GROUND_FADE_TILES);
-const SUN_OFFSET = new THREE.Vector3(-20, 40, 10);
+// The sun shines from behind the buildings so their shadows fall toward the camera; without shadows it keeps its original side.
+const SHADOW_SUN_OFFSET = new THREE.Vector3(-20, 40, 10);
+const FLAT_SUN_OFFSET = new THREE.Vector3(20, 40, 10);
 const SHADOW_MAP_SIZE = 2048;
 const SHADOW_REACH = 36;
 const SELECTION_COLOR = 0x4da3ff;
@@ -179,7 +181,7 @@ export class GameScene {
     this.scene.environment = this.buildEnvironment();
     this.scene.environmentIntensity = 0.12;
     const sun = this.sun, sky = this.sky;
-    sun.position.copy(SUN_OFFSET);
+    sun.position.copy(SHADOW_SUN_OFFSET);
     sun.castShadow = true;
     sun.shadow.mapSize.set(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
     Object.assign(sun.shadow.camera, { left: -SHADOW_REACH, right: SHADOW_REACH, top: SHADOW_REACH, bottom: -SHADOW_REACH, near: 1, far: 120 });
@@ -722,7 +724,8 @@ export class GameScene {
   private followSunShadow(): void {
     const { x, z } = this.controller.center;
     this.sun.target.position.set(x, 0, z);
-    this.sun.position.set(x + SUN_OFFSET.x, SUN_OFFSET.y, z + SUN_OFFSET.z);
+    const offset = this.sun.castShadow ? SHADOW_SUN_OFFSET : FLAT_SUN_OFFSET;
+    this.sun.position.set(x + offset.x, offset.y, z + offset.z);
   }
 
   private applyLighting(lighting: DayLighting): void {
