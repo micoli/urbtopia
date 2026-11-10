@@ -69,10 +69,15 @@ import type { Difficulty } from './difficulty';
 import { proposeOrdinance, repealOrdinance } from '../politics/ordinanceCommands';
 import { claimGrants } from '../politics/objectiveCommands';
 import { officeYieldMultiplierOf } from '../politics/ordinanceEffects';
+import { cancelReplan, finishReplan, replanAction, startReplan, type ReplanAction } from '../replan/replanCommands';
 
 const HOUR_MS = 60 * 60 * 1000;
 
 export type Command =
+  | { readonly type: 'StartReplan' }
+  | { readonly type: 'CancelReplan' }
+  | { readonly type: 'FinishReplan' }
+  | { readonly type: 'Replan'; readonly action: ReplanAction }
   | { readonly type: 'BuildTransit'; readonly mode: NetworkMode; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'DemolishTransit'; readonly mode: NetworkMode; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'RepairTransitNetwork'; readonly mode: NetworkMode }
@@ -186,6 +191,10 @@ export type Command =
   | { readonly type: 'ReplayVenueTutorial'; readonly venueType: VenueTutorialType };
 
 export type ErrorKey =
+  | 'error.replanActive'
+  | 'error.replanChallenge'
+  | 'error.notInReplan'
+  | 'error.replanStashNotEmpty'
   | 'error.noCrossingHere'
   | 'error.unknownCommand'
   | 'error.unknownBuilding'
@@ -327,9 +336,21 @@ export function isError(outcome: CommandOutcome): outcome is CommandError {
 
 const fail = (key: ErrorKey): CommandError => ({ key });
 
+// A Replan edits the layout alone: what the server-side escrow needs still goes through, nothing else does.
+const ALLOWED_IN_REPLAN: readonly Command['type'][] = ['Replan', 'CancelReplan', 'FinishReplan', 'TradeApply', 'TradeConfirm', 'TradeRollback', 'ConfirmDonations'];
+
 export function handleCommand(state: GameState, command: Command, now: number): CommandOutcome {
   if (!tutorialAllows(state, command)) return fail('error.tutorialLocked');
+  if (state.replan && !ALLOWED_IN_REPLAN.includes(command.type)) return fail('error.replanActive');
   switch (command.type) {
+    case 'StartReplan':
+      return startReplan(state);
+    case 'CancelReplan':
+      return cancelReplan(state);
+    case 'FinishReplan':
+      return finishReplan(state);
+    case 'Replan':
+      return replanAction(state, command.action);
     case 'BuildTransit':
     case 'DemolishTransit':
     case 'RepairTransitNetwork':
