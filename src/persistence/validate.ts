@@ -427,7 +427,7 @@ function structureFailure(value: Json): string | null {
     field('solidarityMs', () => value.solidarityMs === undefined || (isNonNegative(value.solidarityMs) && value.solidarityMs <= SOLIDARITY_MAX_MS)),
     entries('donations', () => value.donations, isDonation, true),
     field('donations: duplicate id', () => !Array.isArray(value.donations) || !hasDuplicates((value.donations as { id: string }[]).map((donation) => donation.id))),
-    field('timeOffset', () => value.timeOffset === undefined || (isNonNegative(value.timeOffset) && value.timeOffset <= Number.MAX_SAFE_INTEGER)),
+    field('timeOffset', () => value.timeOffset === undefined || (isNumber(value.timeOffset) && Math.abs(value.timeOffset) <= Number.MAX_SAFE_INTEGER)),
     field('dayCycleOffset', () => value.dayCycleOffset === undefined || (isNonNegative(value.dayCycleOffset) && value.dayCycleOffset < 2 * 3_600_000)),
     field('adaptationUntil', () => value.adaptationUntil === undefined || isNumber(value.adaptationUntil)),
     entries('waterTiles', () => value.waterTiles, (tile) => isRecord(tile) && isCoord(tile), true),
