@@ -40,6 +40,11 @@ import { surfaceDisplayOf } from './levelDisplay';
 const MAP_TILES = GAME_CONFIG.mapSizeInParcels * GAME_CONFIG.parcelSizeInTiles;
 const GROUND_FADE_TILES = 24;
 const GROUND_SIZE = MAP_TILES + 2 * (WILD_RIM_TILES + GROUND_FADE_TILES);
+// The sun shines from behind the buildings so their shadows fall toward the camera; without shadows it keeps its original side.
+const SHADOW_SUN_OFFSET = new THREE.Vector3(-20, 40, 10);
+const FLAT_SUN_OFFSET = new THREE.Vector3(20, 40, 10);
+const SHADOW_MAP_SIZE = 2048;
+const SHADOW_REACH = 36;
 const SELECTION_COLOR = 0x4da3ff;
 const FLASH_COLOR = 0xffd23f;
 const FLASH_DURATION_MS = 2000;
@@ -170,13 +175,21 @@ export class GameScene {
     this.renderer.setPixelRatio(renderPixelRatio());
     this.renderer.toneMapping = THREE.NeutralToneMapping;
     this.renderer.toneMappingExposure = 0.8;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.scene.background = new THREE.Color(HORIZON_COLOR);
     this.scene.environment = this.buildEnvironment();
-    this.scene.environmentIntensity = 0.25;
+    this.scene.environmentIntensity = 0.12;
     const sun = this.sun, sky = this.sky;
-    sun.position.set(20, 40, 10);
+    sun.position.copy(SHADOW_SUN_OFFSET);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+    Object.assign(sun.shadow.camera, { left: -SHADOW_REACH, right: SHADOW_REACH, top: SHADOW_REACH, bottom: -SHADOW_REACH, near: 1, far: 120 });
+    sun.shadow.camera.updateProjectionMatrix();
+    sun.shadow.bias = -0.0004;
+    sun.shadow.normalBias = 0.03;
     this.movers.add(this.attractionCrowd.root, this.traffic.root, this.pedestrians.root, this.serviceVehicles.root, this.boats.root);
-    this.scene.add(sun, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.movers, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root, this.levelFloor.root, this.stationWorld.root, this.stationGlow.root, this.accessGlow.root, this.underground.walkwaysRoot, this.underground.accessesRoot, this.underground.tunnelsRoot, this.ecologyLayer.transit.metroRoot, this.undergroundWalkers.root);
+    this.scene.add(sun, sun.target, sky, this.buildGround(), this.parcels, this.scenery.root, this.world.root, this.ecologyLayer.root, this.congestion.root, this.movers, this.bridges.root, this.selectionLayer.root, this.flashLayer.root, this.ghostLayer.root, this.serviceCoverageLayer.root, this.analyticsLayer.root, this.levelFloor.root, this.stationWorld.root, this.stationGlow.root, this.accessGlow.root, this.underground.walkwaysRoot, this.underground.accessesRoot, this.underground.tunnelsRoot, this.ecologyLayer.transit.metroRoot, this.undergroundWalkers.root);
 
     this.controller = new CameraController(canvas, { min: 0, max: MAP_TILES });
     this.streetView = new StreetViewController(canvas);
@@ -254,6 +267,19 @@ export class GameScene {
 
   private get activeCamera(): THREE.Camera {
     return this.streetView.active ? this.streetView.camera : this.controller.camera;
+  }
+
+  setObjectShadows(enabled: boolean): void {
+    this.world.setObjectShadows(enabled);
+  }
+
+  setShinyModels(enabled: boolean): void {
+    this.library.setShiny(enabled);
+    this.world.rebuild();
+  }
+
+  setSunShadows(enabled: boolean): void {
+    this.sun.castShadow = enabled;
   }
 
   setHandlers(handlers: SceneHandlers): void {
@@ -512,6 +538,7 @@ export class GameScene {
     this.groundGrid = grid;
     this.ground = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ map: texture, vertexColors: true, transparent: true }));
     this.ground.position.y = -0.02;
+    this.ground.receiveShadow = true;
     return this.ground;
   }
 
@@ -673,7 +700,7 @@ export class GameScene {
     if (now - this.lightingRefreshedAt < LIGHTING_REFRESH_MS || !this.ecologicalState) return;
     this.lightingRefreshedAt = now;
     const cycleTime = this.cycleTime(this.ecologicalState);
-    this.applyLighting(lightingOf(this.alwaysDayNow ? 1 : daylightOf(cycleTime)));
+    this.applyLighting(lightingOf(this.alwaysDayNow ? 1 : daylightOf(cycleTime), this.sun.castShadow));
     setWindowGlow(this.alwaysDayNow || !this.windowsEnabled ? 0 : 1);
     setWindowNight(nightClockOf(cycleTime));
     this.world.setUnpowered(unpoweredBuildingIds(this.ecologicalState));
@@ -691,6 +718,14 @@ export class GameScene {
 
   private cycleTime(state: GameState): number {
     return this.pinnedCycleHour === null ? cycleTimeOf(state, state.lastSeen) : timeOfCycleHour(this.pinnedCycleHour);
+  }
+
+  // The shadow map only covers the tiles around the view centre, so the sun and its target follow the camera.
+  private followSunShadow(): void {
+    const { x, z } = this.controller.center;
+    this.sun.target.position.set(x, 0, z);
+    const offset = this.sun.castShadow ? SHADOW_SUN_OFFSET : FLAT_SUN_OFFSET;
+    this.sun.position.set(x + offset.x, offset.y, z + offset.z);
   }
 
   private applyLighting(lighting: DayLighting): void {
@@ -749,6 +784,7 @@ export class GameScene {
     this.traffic.update(delta, this.activeCamera);
     this.serviceVehicles.update(delta);
     this.boats.update(delta, this.bridges.closedTiles);
+    this.followSunShadow();
     this.world.cull(this.activeCamera);
     if (this.level === -2) this.stationWorld.cull(this.activeCamera);
     this.stationGlow.update(delta);

@@ -316,8 +316,8 @@ describe('renderItemsOf Livestock farm pens', () => {
   it('draws the animal of each production in its pen, on the floor of the pen', () => {
     const items = renderItemsOf(farm(0, [running('henEgg'), { ...running('milk'), startedAt: null, done: true }]));
     expect(items.slice(1)).toEqual([
-      { model: 'animals/hen', x: 11.64, z: 20.26, rotation: 0, elevation: 0.01, buildingId: 9 },
-      { model: 'animals/cow', x: 11, z: 20.26, rotation: 0, elevation: 0.01, buildingId: 9 },
+      { model: 'animals/hen', x: 11.64, z: 20.26, rotation: 0, elevation: 0.01, buildingId: 9, object: true },
+      { model: 'animals/cow', x: 11, z: 20.26, rotation: 0, elevation: 0.01, buildingId: 9, object: true },
     ]);
   });
 

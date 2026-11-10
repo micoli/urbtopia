@@ -20,6 +20,9 @@ export function DisplaySettings() {
   const pedestrianDensity = useStore(prefsStore, (store) => store.pedestrianDensity);
   const alwaysDay = useStore(prefsStore, (store) => store.alwaysDay);
   const fineRotation = useStore(prefsStore, (store) => store.fineRotation);
+  const sunShadows = useStore(prefsStore, (store) => store.sunShadows);
+  const objectShadows = useStore(prefsStore, (store) => store.objectShadows);
+  const shinyModels = useStore(prefsStore, (store) => store.shinyModels);
   const showReach = useStore(prefsStore, (store) => store.showReach);
   const showProductionPreview = useStore(prefsStore, (store) => store.showProductionPreview);
   const showRecipeStock = useStore(prefsStore, (store) => store.showRecipeStock);
@@ -27,7 +30,7 @@ export function DisplaySettings() {
   const showTaxBadges = useStore(prefsStore, (store) => store.showTaxBadges);
   const managementTabs = useStore(prefsStore, (store) => store.managementTabs);
   const taxBadgeThreshold = useStore(prefsStore, (store) => store.taxBadgeThreshold);
-  const { setManagementTabs, setTaxBadgeThreshold, setLanguage, setLayout, setTraffic, setPedestrians, setPedestrianModel, setTrafficDensity, setPedestrianDensity, setAlwaysDay, setFineRotation, setShowReach, setShowProductionPreview, setShowRecipeStock, setShowAutoProductionBadge, setShowTaxBadges } = prefsStore.getState();
+  const { setManagementTabs, setTaxBadgeThreshold, setLanguage, setLayout, setTraffic, setPedestrians, setPedestrianModel, setTrafficDensity, setPedestrianDensity, setAlwaysDay, setFineRotation, setSunShadows, setShinyModels, setObjectShadows, setShowReach, setShowProductionPreview, setShowRecipeStock, setShowAutoProductionBadge, setShowTaxBadges } = prefsStore.getState();
 
   return (
     <>
@@ -64,6 +67,11 @@ export function DisplaySettings() {
             <RadioChipGroup className="prefs-group" label={t('prefs.taxBadgeThreshold')} options={TAX_BADGE_THRESHOLDS.map(value => ({ value, label: `${value}%` }))} value={taxBadgeThreshold} onChange={setTaxBadgeThreshold} />
           </SettingRow>
         )}
+      </SettingsSection>
+      <SettingsSection title={t('settings.section.performance')} icon="power">
+        <SwitchField label={t('prefs.sunShadows')} description={t('prefs.sunShadows.description')} checked={sunShadows} onChange={setSunShadows} />
+        {sunShadows && <SwitchField label={t('prefs.objectShadows')} description={t('prefs.objectShadows.description')} checked={objectShadows} onChange={setObjectShadows} />}
+        <SwitchField label={t('prefs.shinyModels')} description={t('prefs.shinyModels.description')} checked={shinyModels} onChange={setShinyModels} />
       </SettingsSection>
     </>
   );

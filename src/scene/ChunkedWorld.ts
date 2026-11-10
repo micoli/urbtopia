@@ -24,6 +24,7 @@ export class ChunkedWorld {
   private fittedBoxes = new Map<string, THREE.Box3>();
   private unpowered: ReadonlySet<number> = new Set();
   private display: SurfaceDisplay = 'full';
+  private objectShadows = false;
 
   constructor(private library: ModelLibrary, private chunkSize?: number) {}
 
@@ -31,6 +32,21 @@ export class ChunkedWorld {
   setUnpowered(ids: ReadonlySet<number>): void {
     if (ids.size === this.unpowered.size && [...ids].every(id => this.unpowered.has(id))) return;
     this.unpowered = ids;
+    const items = this.lastItems;
+    this.lastItems = null;
+    if (items) this.sync(items);
+  }
+
+  // Buildings always cast a shadow; the other models (trees, street furniture, scenery) only when this is on.
+  setObjectShadows(enabled: boolean): void {
+    if (enabled === this.objectShadows) return;
+    this.objectShadows = enabled;
+    this.rebuild();
+  }
+
+  // Drops every chunk so the next sync rebuilds them, for a change in the models' materials.
+  rebuild(): void {
+    for (const key of [...this.chunks.keys()]) this.removeChunk(key);
     const items = this.lastItems;
     this.lastItems = null;
     if (items) this.sync(items);
@@ -164,6 +180,8 @@ export class ChunkedWorld {
         instanced.computeBoundingSphere();
         instanced.userData.buildingIds = modelItems.map((item) => item.buildingId);
         instanced.matrixAutoUpdate = false;
+        instanced.castShadow = this.display === 'full' && (this.objectShadows || modelItems.some((item) => item.buildingId !== undefined && !item.object));
+        instanced.receiveShadow = this.display === 'full';
         group.add(instanced);
       });
     }
