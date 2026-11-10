@@ -8,15 +8,29 @@ export interface DayLighting {
   environmentIntensity: number;
 }
 
-const DAY: DayLighting = {
+// With sun shadows: a strong sun and little ambient light, so the shadows read.
+const SHADOWED_DAY: DayLighting = {
   sunColor: 0xfff2d6, sunIntensity: 2.1,
   skyColor: 0xbcd8f5, groundColor: 0x8a7a64, hemisphereIntensity: 0.25,
   background: 0x9ec5e8, environmentIntensity: 0.12,
 };
 
 // A bluish dusk, never black: about 40% of the day light, so the grid and the colours stay readable.
-const NIGHT: DayLighting = {
+const SHADOWED_NIGHT: DayLighting = {
   sunColor: 0x5a7bd6, sunIntensity: 0.85,
+  skyColor: 0x4a63b8, groundColor: 0x2a3050, hemisphereIntensity: 0.3,
+  background: 0x1f2c4d, environmentIntensity: 0.1,
+};
+
+// Without sun shadows: a softer sun and more ambient light, so the faces of a building stay close in tone.
+const FLAT_DAY: DayLighting = {
+  sunColor: 0xfff2d6, sunIntensity: 1.7,
+  skyColor: 0xbcd8f5, groundColor: 0x8a7a64, hemisphereIntensity: 0.5,
+  background: 0x9ec5e8, environmentIntensity: 0.25,
+};
+
+const FLAT_NIGHT: DayLighting = {
+  sunColor: 0x5a7bd6, sunIntensity: 0.7,
   skyColor: 0x4a63b8, groundColor: 0x2a3050, hemisphereIntensity: 0.3,
   background: 0x1f2c4d, environmentIntensity: 0.1,
 };
@@ -34,7 +48,9 @@ export function mixColor(from: number, to: number, amount: number): number {
 const mix = (from: number, to: number, amount: number): number => from + (to - from) * amount;
 
 // `daylight` is 1 in Daytime, 0 in full Night and between 0 and 1 during dawn and dusk, which are warmer.
-export function lightingOf(daylight: number): DayLighting {
+export function lightingOf(daylight: number, shadowed = true): DayLighting {
+  const DAY = shadowed ? SHADOWED_DAY : FLAT_DAY;
+  const NIGHT = shadowed ? SHADOWED_NIGHT : FLAT_NIGHT;
   const level = Math.min(1, Math.max(0, daylight));
   const warmth = 4 * level * (1 - level);
   return {
@@ -48,4 +64,4 @@ export function lightingOf(daylight: number): DayLighting {
   };
 }
 
-export const DAY_BACKGROUND = DAY.background;
+export const DAY_BACKGROUND = SHADOWED_DAY.background;

@@ -17,6 +17,14 @@ describe('day lighting', () => {
     expect(day.environmentIntensity).toBe(0.12);
   });
 
+  it('uses a softer sun and more ambient light when the sun casts no shadow', () => {
+    const day = lightingOf(1, false);
+    expect(day.sunIntensity).toBe(1.7);
+    expect(day.hemisphereIntensity).toBe(0.5);
+    expect(day.environmentIntensity).toBe(0.25);
+    expect(lightingOf(0, false).sunIntensity).toBe(0.7);
+  });
+
   it('never goes dark at Night: the sun keeps about 40% of the day intensity', () => {
     const night = lightingOf(0);
     expect(night.sunIntensity / lightingOf(1).sunIntensity).toBeGreaterThanOrEqual(0.4);

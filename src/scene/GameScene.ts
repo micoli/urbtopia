@@ -698,7 +698,7 @@ export class GameScene {
     if (now - this.lightingRefreshedAt < LIGHTING_REFRESH_MS || !this.ecologicalState) return;
     this.lightingRefreshedAt = now;
     const cycleTime = this.cycleTime(this.ecologicalState);
-    this.applyLighting(lightingOf(this.alwaysDayNow ? 1 : daylightOf(cycleTime)));
+    this.applyLighting(lightingOf(this.alwaysDayNow ? 1 : daylightOf(cycleTime), this.sun.castShadow));
     setWindowGlow(this.alwaysDayNow || !this.windowsEnabled ? 0 : 1);
     setWindowNight(nightClockOf(cycleTime));
     this.world.setUnpowered(unpoweredBuildingIds(this.ecologicalState));
