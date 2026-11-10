@@ -2,10 +2,11 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import { FloatingBadges } from './FloatingBadges';
 
-const context = vi.hoisted(() => ({ serviceCoverageOpen: false, visit: { kind: 'idle' } as { kind: string } }));
+const context = vi.hoisted(() => ({ serviceCoverageOpen: false, visit: { kind: 'idle' } as { kind: string }, replan: undefined as object | undefined }));
 vi.mock('../common/hooks', () => ({
   useUi: (selector: (state: typeof context) => unknown) => selector(context),
   useShowcase: (selector: (state: typeof context) => unknown) => selector(context),
+  useGame: (selector: (store: { state: { replan: object | undefined } }) => unknown) => selector({ state: { replan: context.replan } }),
 }));
 vi.mock('../collect/CollectBadges', () => ({ CollectBadges: () => 'collect' }));
 vi.mock('../tourism/GatheringBadges', () => ({ GatheringBadges: () => 'gatherings' }));
@@ -31,5 +32,12 @@ describe('floating badges', () => {
     expect(renderToStaticMarkup(<FloatingBadges />)).toBe('');
     context.visit = { kind: 'idle' };
     expect(renderToStaticMarkup(<FloatingBadges />)).toBe(normal);
+  });
+
+  it('hides every badge during a Replan, when the buildings are not operated', () => {
+    context.replan = {};
+    expect(renderToStaticMarkup(<FloatingBadges />)).toBe('');
+    context.replan = undefined;
+    expect(renderToStaticMarkup(<FloatingBadges />)).toContain('collect');
   });
 });
