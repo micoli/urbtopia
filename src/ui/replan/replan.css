@@ -3,6 +3,10 @@
   font-size: inherit;
 }
 
+.replan-flyout[data-collapsed='true'] {
+  bottom: auto;
+}
+
 .replan-actions {
   display: flex;
   flex-wrap: wrap;

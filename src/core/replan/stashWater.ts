@@ -19,15 +19,14 @@ export function placeStashedBridge(state: GameState, index: number, target: Pick
   const bridge = stashOf(state).bridges?.[index];
   if (!state.replan || !bridge) return { key: 'error.unknownCommand' };
   const placed: Bridge = { x: target.x, y: target.y, length: bridge.length, axis: target.axis, ...(bridge.carrier ? { carrier: bridge.carrier } : {}), ...(isPedestrianBridge(bridge) && target.side ? { side: target.side } : {}) };
-  // The Homes in the Stash still count towards the Citizens that unlock a Bridge over Water.
-  const outcome = placeBridge({ ...state, urbs: Number.MAX_SAFE_INTEGER, buildings: [...state.buildings, ...stashOf(state).buildings] }, placed);
+  const outcome = placeBridge({ ...state, urbs: Number.MAX_SAFE_INTEGER }, placed);
   if (!('state' in outcome)) return { key: outcome.key };
   const tier = bridge.tier;
   const bridges = (outcome.state.bridges ?? []).map((candidate) => (candidate.x === placed.x && candidate.y === placed.y && candidate.axis === placed.axis && tier !== undefined ? { ...candidate, tier } : candidate));
   const ramps = new Set(bridgeRamps(placed).map(tileKey));
   const roads = tier === undefined || !isInfrastructureBridge(placed) ? outcome.state.roads : outcome.state.roads.map((road) => (ramps.has(tileKey(road)) ? { ...road, tier } : road));
   const stashed = (stashOf(state).bridges ?? []).filter((_, position) => position !== index);
-  return { state: withStash({ ...outcome.state, urbs: state.urbs, buildings: state.buildings, bridges, roads }, { bridges: stashed }) };
+  return { state: withStash({ ...outcome.state, urbs: state.urbs, bridges, roads }, { bridges: stashed }) };
 }
 
 export function liftBoat(state: GameState, id: number): StashOutcome {

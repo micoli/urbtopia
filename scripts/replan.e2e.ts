@@ -45,6 +45,14 @@ test('a City is replanned from its Cities row: lifted into the Stash, cancelled,
   await expect(panel).toBeVisible();
   expect(await stateSummary(page)).toMatchObject({ replanning: true, buildings: 0, roads: 0, stashed: 2, urbs: before.urbs });
   await expect(panel.getByRole('heading', { name: 'Network' })).toBeVisible();
+  await panel.getByRole('button', { name: 'Hide the Stash' }).click();
+  await expect(panel.getByRole('heading', { name: 'Network' })).toHaveCount(0);
+  await expect(panel.getByRole('button', { name: 'Cancel Replan', exact: true })).toBeVisible();
+  await panel.getByRole('button', { name: 'Show the Stash' }).click();
+  const network = panel.getByRole('button', { name: 'Network', exact: true });
+  await expect(network).toHaveAttribute('aria-expanded', 'true');
+  await network.click();
+  await expect(panel.locator('[aria-expanded="true"]:not([aria-label])')).toHaveCount(0);
   await openHousing(panel);
   await expect(panel.getByRole('button', { name: /Home/ }).first()).toBeVisible();
   await expect(panel.getByRole('button', { name: 'Finish', exact: true })).toBeDisabled();
