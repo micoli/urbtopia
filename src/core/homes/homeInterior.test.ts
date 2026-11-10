@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type Rotation, type VenueFixture } from '../index';
 import { homeBenefits } from '../environment/wellbeing';
-import { comfortBonusOf, comfortCoverageOf, comfortOf, homeFixtureRefund, homeGridSizeOf, homeWellbeingCapOf } from './homeInterior';
+import { comfortBonusOf, comfortCoverageOf, comfortOf, homeFixtureRefund, homeGridSizeOf, homeWellbeingCapOf, wallPlacementOf } from './homeInterior';
 import { FIXTURES } from '../venues/fixtures';
 
 const city = (tier = 1, urbs = 100_000, big = true): GameState => ({
@@ -153,5 +153,33 @@ describe('the cost of the Comfort', () => {
     expect(comfortCoverageOf(fixtures)).toBe(comfortCoverageOf(fixtures));
     expect(comfortOf(fixtures)).toBe(comfortOf(fixtures));
     expect(comfortCoverageOf([...fixtures])).not.toBe(comfortCoverageOf(fixtures));
+  });
+});
+
+describe('hanging a painting on a wall', () => {
+  it('stands for the wall slot of an edge cell', () => {
+    expect(wallPlacementOf({ x: 2, y: 0 })).toEqual({ x: 2, y: 0, rotation: 0 });
+    expect(wallPlacementOf({ x: 0, y: 2 })).toEqual({ x: 0, y: 2, rotation: 1 });
+    expect(wallPlacementOf({ x: 0, y: 0 })).toEqual({ x: 0, y: 0, rotation: 0 });
+    expect(wallPlacementOf({ x: 2, y: 2 })).toBeNull();
+  });
+
+  it('hangs on the north and west walls and takes no tile of the floor', () => {
+    let state = send(city(), place('homePaintingLandscape', 1, 0, 0));
+    state = send(state, place('homePaintingSeascape', 0, 2, 1));
+    state = send(state, place('homeBed', 1, 0));
+    expect(home(state).floor?.fixtures).toHaveLength(3);
+  });
+
+  it('refuses a slot that is not on a back wall, at the doorway or already taken', () => {
+    expect(failure(city(), place('homePaintingLandscape', 1, 1, 0))).toBe('error.tilesOccupied');
+    expect(failure(city(), place('homePaintingLandscape', 1, 0, 2))).toBe('error.tilesOccupied');
+    expect(failure(city(), place('homePaintingLandscape', 3, 0, 0))).toBe('error.tilesOccupied');
+    const state = send(city(), place('homePaintingLandscape', 1, 0, 0));
+    expect(failure(state, place('homePaintingAbstract', 1, 0, 0))).toBe('error.tilesOccupied');
+  });
+
+  it('counts in the decor of the Comfort', () => {
+    expect(comfortCoverageOf([{ id: 1, type: 'homePaintingLandscape', x: 1, y: 0, rotation: 0 }]).decor).toBeGreaterThan(0);
   });
 });

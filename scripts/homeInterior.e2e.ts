@@ -18,6 +18,9 @@ test('a Home is furnished from its panel and its Comfort follows the layout', as
       { id: 3, type: 'homeChair', x: 3, y: 3, rotation: 0 },
       { id: 4, type: 'homeTelevision', x: 3, y: 1, rotation: 0 },
       { id: 5, type: 'homeBookcase', x: 0, y: 3, rotation: 0 },
+      { id: 6, type: 'homePaintingLandscape', x: 1, y: 0, rotation: 0 },
+      { id: 7, type: 'homePaintingSeascape', x: 0, y: 2, rotation: 1 },
+      { id: 8, type: 'homePaintingAbstract', x: 2, y: 0, rotation: 0 },
     ];
     const home = { ...createBuilding(50, 'home', 64, 64, 0), tier: 2, floor: { fixtures, nextFixtureId: 10 } };
     gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [home, { ...createBuilding(51, 'home', 70, 64, 0), tier: 8 }, { ...createBuilding(52, 'home', 74, 64, 0), tier: 8 }], nextId: 53, adaptationUntil: 0 });

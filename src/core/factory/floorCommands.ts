@@ -7,7 +7,7 @@ import type { CommandOutcome } from '../engine/commands';
 import type { Building, FixtureId, FloorData, GameState, Rotation, VenueFixture, VenueType } from '../engine/state';
 import type { FixtureVenue } from '../venues/fixtures';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
+import { canHangOnWall, hangsOnWall, homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
 import { floorGridSizeOf } from './factoryFloor';
 import { technicianPostsOf } from './floorWear';
 
@@ -51,7 +51,8 @@ const floorOf = (host: FloorHost): FloorData => host.floor ?? EMPTY_FLOOR;
 export function canStandOnFloor(host: FloorHost, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
   const size = gridSizeOf(host);
   const entrance = entranceCell(host.tier);
-  const occupied = new Set(floorOf(host).fixtures.filter(other => other.id !== ignoreId).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
+  if (hangsOnWall(fixture.type)) return host.type !== 'factory' && canHangOnWall(floorOf(host).fixtures, fixture, size, entrance.x, ignoreId);
+  const occupied = new Set(floorOf(host).fixtures.filter(other => other.id !== ignoreId && !hangsOnWall(other.type)).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
   return fixtureTiles(fixture).every(tile => tile.x >= 0 && tile.y >= 0 && tile.x < size && tile.y < size && !occupied.has(`${tile.x}:${tile.y}`) && !(tile.x === entrance.x && tile.y === entrance.y));
 }
 

@@ -21,6 +21,26 @@ export const homeWellbeingCapOf = (tier: number): number => capOf(homeBalance.we
 // Homes can be furnished once the city has grown to a number of Citizens.
 export const isHomeInteriorUnlocked = (state: GameState): boolean => citizenCount(state) >= homeBalance.unlockCitizens;
 
+// A wall Fixture hangs on the back walls: rotation 0 on the north wall along its x, rotation 1 on the west wall along its y.
+export const hangsOnWall = (type: FixtureId): boolean => FIXTURES[type].wall === true;
+
+// The wall slot a cell of the floor edge stands for, if it is on a back wall; the north wall wins in the corner.
+export function wallPlacementOf(cell: { x: number; y: number }): { x: number; y: number; rotation: 0 | 1 } | null {
+  if (cell.y === 0) return { x: cell.x, y: 0, rotation: 0 };
+  if (cell.x === 0) return { x: 0, y: cell.y, rotation: 1 };
+  return null;
+}
+
+// A wall Fixture needs a wall slot inside the grid, not at the doorway, and not taken by another one.
+export function canHangOnWall(fixtures: readonly VenueFixture[], fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, size: number, doorX: number, ignoreId?: number): boolean {
+  const north = fixture.rotation === 0;
+  if (!north && fixture.rotation !== 1) return false;
+  const along = north ? fixture.x : fixture.y;
+  if (north ? fixture.y !== 0 : fixture.x !== 0) return false;
+  if (along < 0 || along >= size || (north && along === doorX)) return false;
+  return !fixtures.some(other => other.id !== ignoreId && hangsOnWall(other.type) && other.rotation === fixture.rotation && other.x === fixture.x && other.y === fixture.y);
+}
+
 export const homeFixtureRefund = (type: FixtureId): number => Math.floor(FIXTURES[type].price * homeBalance.refundRatio);
 
 const withRole = (fixtures: readonly VenueFixture[], role: string): VenueFixture[] => fixtures.filter(fixture => FIXTURES[fixture.type].role === role);

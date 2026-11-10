@@ -31,6 +31,9 @@ export interface VenueGhost {
   valid: boolean;
 }
 
+// How far a wall Fixture stands from the axis of a wall, so that it hangs on the face turned to the room.
+const WALL_FACE = 0.06;
+
 export class VenueScene {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
@@ -262,7 +265,9 @@ export class VenueScene {
       const piece = spec.joins ? partitionPieceOf(fixture, this.lastFixtures) : undefined;
       const model = piece && piece.shape !== 'straight' ? spec.joins![piece.shape] : spec.model;
       const rotation = (piece ? piece.turns * Math.PI / 2 : -fixture.rotation * Math.PI / 2);
-      const object = this.place(this.fixtureRoot, model, fixture.x + width / 2, fixture.y + depth / 2, rotation);
+      const object = spec.wall
+        ? this.place(this.fixtureRoot, model, fixture.rotation === 0 ? fixture.x + 0.5 : WALL_FACE, fixture.rotation === 0 ? WALL_FACE : fixture.y + 0.5, fixture.rotation === 0 ? 0 : Math.PI / 2)
+        : this.place(this.fixtureRoot, model, fixture.x + width / 2, fixture.y + depth / 2, rotation);
       object.userData.fixtureId = fixture.id;
       this.motion.bind(fixture.id, object, spec.smoke);
       if (spec.tint !== undefined) this.tint(object, spec.tint);

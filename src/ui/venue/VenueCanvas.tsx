@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, floorBonusOfBuilding, floorFixturesOf, floorMotionOf, floorOverloadedOf, floorSizeOf, gridSizeOf, hiredOf, isBroken, isFactory, isFloorBuilding, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureVenue, type VenueFixture, type VenueType } from '../../core';
+import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, wallPlacementOf, floorBonusOfBuilding, floorFixturesOf, FIXTURES, floorMotionOf, floorOverloadedOf, floorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isFactory, isFloorBuilding, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type VenueFixture, type VenueType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
@@ -20,6 +20,9 @@ const interiorOf = (venueId: number): Interior | undefined => {
   if (isFloorBuilding(building)) return { building, fixtures: floorFixturesOf(building), floor: true };
   return isVenue(building) ? { building, fixtures: building.venue.fixtures, floor: false } : undefined;
 };
+
+// A wall Fixture goes where the cell leads on a back wall; the others go on the cell.
+const targetOf = (type: FixtureId, cell: Coord): { x: number; y: number; rotation?: 0 | 1 } => (hangsOnWall(type) ? wallPlacementOf(cell) ?? cell : cell);
 
 const moveCommandOf = (venueId: number): 'MoveFixture' | 'MoveFloorFixture' => (interiorOf(venueId)?.floor ? 'MoveFloorFixture' : 'MoveFixture');
 
@@ -60,7 +63,8 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       const moving = interior?.fixtures.find(fixture => fixture.id === movingId);
       const type = moving?.type ?? selectedFixture;
       if (!interior || !type || !hovered) return scene.setGhost(null);
-      const candidate = { type, x: hovered.x, y: hovered.y, rotation: moving?.rotation ?? (0 as const) };
+      const target = targetOf(type, hovered);
+      const candidate = { type, x: target.x, y: target.y, rotation: target.rotation ?? moving?.rotation ?? (0 as const) };
       const building = interior.building;
       const valid = isFloorBuilding(building) ? canStandOnFloor(building, candidate, moving?.id) : isVenue(building) && canPlaceFixture(building, candidate, moving?.id);
       scene.setGhost({ tiles: fixtureTiles(candidate), valid });
@@ -136,7 +140,9 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       if (!carried?.carrying) return;
       venueStore.getState().stopMove();
       if (!cell) return;
-      gameStore.getState().send({ type: moveCommandOf(venueId), buildingId: venueId, fixtureId: carried.id, x: cell.x - carried.offset.x, y: cell.y - carried.offset.y });
+      const carriedFixture = interiorOf(venueId)?.fixtures.find(fixture => fixture.id === carried.id);
+      const dropped = { x: cell.x - carried.offset.x, y: cell.y - carried.offset.y };
+      gameStore.getState().send({ type: moveCommandOf(venueId), buildingId: venueId, fixtureId: carried.id, ...(carriedFixture ? targetOf(carriedFixture.type, dropped) : dropped) });
     };
     scene.onTapCell = (cell, repeat, fixtureId) => {
       const interior = interiorOf(venueId);
@@ -145,13 +151,14 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       const { send } = gameStore.getState();
       if (selectedFixture) {
         const before = interior.fixtures.length;
-        send({ type: interior.floor ? 'PlaceFloorFixture' : 'PlaceFixture', buildingId: venueId, fixture: selectedFixture, x: cell.x, y: cell.y });
+        send({ type: interior.floor ? 'PlaceFloorFixture' : 'PlaceFixture', buildingId: venueId, fixture: selectedFixture, ...targetOf(selectedFixture, cell) });
         // Once the item is placed the add mode ends, unless Shift is held, to put several in a row; a refused placement keeps it, to try another cell.
         if (!repeat && (interiorOf(venueId)?.fixtures.length ?? before) > before) venueStore.getState().selectFixture(null);
         return;
       }
       if (movingId !== null) {
-        send({ type: moveCommandOf(venueId), buildingId: venueId, fixtureId: movingId, x: cell.x, y: cell.y });
+        const moving = interior.fixtures.find(fixture => fixture.id === movingId);
+        send({ type: moveCommandOf(venueId), buildingId: venueId, fixtureId: movingId, ...(moving ? targetOf(moving.type, cell) : cell) });
         return stopMove();
       }
       const tapped = fixtureAt(venueId, cell, fixtureId);
