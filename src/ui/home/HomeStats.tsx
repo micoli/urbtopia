@@ -14,7 +14,7 @@ export function HomeStats({ home }: HomeStatsProps) {
     <>
       <UrbsStat />
       <div className="dock-stat" title={t('home.interior.comfort')}>
-        <span className="dock-stat-value">{comfort} / 100</span>
+        <span className="dock-stat-value">{comfort} %</span>
         <span className="dock-stat-label">{t('home.interior.comfort')}</span>
       </div>
       <div className="dock-stat" title={t('home.interior.wellbeing')}>
