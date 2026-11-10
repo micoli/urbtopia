@@ -262,8 +262,30 @@ export interface Stash {
   boats?: Boat[];
 }
 
+// Everything a Replan lifts off the map or leaves on it: the layout the player can change.
+export interface Layout {
+  buildings: Building[];
+  roads: RoadTile[];
+  pedestrianWays?: PedestrianWayTile[];
+  walkways?: Coord[];
+  pedestrianAccesses?: PedestrianAccess[];
+  tunnels?: TransitTile[];
+  roundabouts: Coord[];
+  waterTiles?: Coord[];
+  boats?: Boat[];
+  bridges?: Bridge[];
+  brtRoads?: TransitTile[];
+  rails?: TransitTile[];
+  fields: FieldTile[];
+  busLines?: BusLine[];
+  transitLines?: TransitLine[];
+  transitFleet?: TransitVehicle[];
+}
+
 export interface ReplanState {
   stash: Stash;
+  // The layout the Replan started from, which Cancel restores.
+  start?: Layout;
 }
 
 export interface GameState {
