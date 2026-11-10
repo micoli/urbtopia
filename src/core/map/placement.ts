@@ -146,6 +146,8 @@ export function autoRotation(state: GameState, type: BuildingType, x: number, y:
 interface PlacementOptions {
   ignoreBuildingId?: number;
   isMove?: boolean;
+  // A Replan places a Building before the Road, Water or Cove it needs: only the tiles and the Parcels are checked.
+  replan?: boolean;
   tier?: number;
 }
 
@@ -155,7 +157,7 @@ export function placementIssue(
   x: number,
   y: number,
   rotation: Rotation,
-  { ignoreBuildingId, isMove = false, tier = 1 }: PlacementOptions = {},
+  { ignoreBuildingId, isMove = false, replan = false, tier = 1 }: PlacementOptions = {},
 ): PlacementIssue | null {
   const tiles = footprintTiles({ type, x, y, rotation, tier });
   if (!tiles.every((tile) => isInsideOwnedParcels(state, tile))) return 'error.outsideOwnedParcels';
@@ -163,6 +165,7 @@ export function placementIssue(
   if (sceneryIssue) return sceneryIssue;
   const occupied = occupiedTiles(state, ignoreBuildingId);
   if (!isSeaSceneryType(type) && tiles.some((tile) => occupied.has(tileKey(tile)))) return 'error.tilesOccupied';
+  if (replan) return null;
   if (BUILDING_SPECS[type].requiresRoad && !frontHasAccess(state, type, x, y, rotation, tier)) {
     if (BUILDING_SPECS[type].accessModes.includes('pedestrianWay')) return 'error.needsAccess';
     return BUILDING_SPECS[type].accessModes.includes('brt') ? 'error.needsRoadOrBrt' : 'error.needsRoad';

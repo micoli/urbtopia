@@ -245,7 +245,18 @@ export interface FieldTile extends Coord {
 
 export type SeedStock = Partial<Record<string, number>>;
 
+// What a Replan has lifted off the map and the player has not placed again; each object is kept whole.
+export interface Stash {
+  buildings: Building[];
+}
+
+export interface ReplanState {
+  stash: Stash;
+}
+
 export interface GameState {
+  // Present only while a Replan lasts.
+  replan?: ReplanState;
   solidarityMs?: number;
   donations?: DonationRecord[];
   seedStock: SeedStock;
