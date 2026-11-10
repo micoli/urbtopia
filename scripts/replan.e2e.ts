@@ -1,4 +1,9 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
+
+async function openHousing(panel: Locator) {
+  const housing = panel.getByRole('button', { name: 'Housing' });
+  if ((await housing.getAttribute('aria-expanded')) === 'false') await housing.click();
+}
 
 async function stateSummary(page: Page) {
   return page.evaluate(async () => {
@@ -39,9 +44,11 @@ test('a City is replanned from its Cities row: lifted into the Stash, cancelled,
   const panel = page.getByRole('complementary', { name: 'Replan' });
   await expect(panel).toBeVisible();
   expect(await stateSummary(page)).toMatchObject({ replanning: true, buildings: 0, roads: 0, stashed: 2, urbs: before.urbs });
-  await expect(panel.getByRole('button', { name: /Home/ })).toBeVisible();
+  await expect(panel.getByRole('heading', { name: 'Network' })).toBeVisible();
+  await openHousing(panel);
+  await expect(panel.getByRole('button', { name: /Home/ }).first()).toBeVisible();
   await expect(panel.getByRole('button', { name: 'Finish', exact: true })).toBeDisabled();
-
+  await page.locator('[data-action="stats"]').click({ trial: true });
   await panel.getByRole('button', { name: 'Cancel Replan', exact: true }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Cancel Replan', exact: true }).click();
   await expect(panel).toHaveCount(0);
@@ -52,7 +59,15 @@ test('a City is replanned from its Cities row: lifted into the Stash, cancelled,
   await page.getByRole('button', { name: 'Replan', exact: true }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Replan', exact: true }).click();
   await expect(panel).toBeVisible();
-  await panel.getByRole('button', { name: /Home/ }).click();
+  await openHousing(panel);
+  await panel.getByRole('button', { name: /Home/ }).first().click();
+  expect(await page.evaluate(async () => {
+    const { uiStore } = await import('../src/store/uiStore.ts');
+    uiStore.getState().cancelTool();
+    uiStore.getState().tapTile({ x: 66, y: 57 });
+    return uiStore.getState().selectedBuildingId;
+  })).toBeNull();
+  await panel.getByRole('button', { name: /Home/ }).first().click();
   await page.evaluate(async () => {
     const { uiStore } = await import('../src/store/uiStore.ts');
     uiStore.getState().hoverTile({ x: 60, y: 62 });

@@ -1,18 +1,25 @@
 import { t } from '../../i18n/t';
-import { ActionButton } from '../common/ActionButton';
 import { useUi } from '../common/hooks';
+import { FlyoutItem } from '../layout/FlyoutItem';
 import type { StashGroup } from './stashGroups';
 
-export function StashGroupButton({ group }: { group: StashGroup }) {
+interface StashGroupButtonProps {
+  group: StashGroup;
+  preview: string | undefined;
+}
+
+export function StashGroupButton({ group, preview }: StashGroupButtonProps) {
   const chooseTool = useUi((store) => store.chooseTool);
   const armed = useUi((store) => store.tool?.kind === group.tool.kind && JSON.stringify(withoutProgress(store.tool)) === JSON.stringify(withoutProgress(group.tool)));
   return (
-    <li>
-      <ActionButton size="sm" variant={armed ? 'primary' : 'default'} aria-pressed={armed} onClick={() => chooseTool(group.tool)}>
-        <span className="stash-group-label">{t(group.label)}{group.detail ? ` ${group.detail}` : ''}</span>
-        <span className="stash-group-count">{group.count}</span>
-      </ActionButton>
-    </li>
+    <FlyoutItem
+      label={`${t(group.label)}${group.detail ? ` ${group.detail}` : ''}`}
+      badge={group.count}
+      selected={armed}
+      preview={preview}
+      icon={preview ? undefined : group.icon}
+      onChoose={() => chooseTool(group.tool)}
+    />
   );
 }
 

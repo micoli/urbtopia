@@ -817,6 +817,7 @@ export const CATALOG = {
   'replan.summary.lines': ['Your transit lines were dropped: draw them again.', 'Vos lignes de transport ont été supprimées : redessinez-les.'],
   'replan.summary.ok': ['OK', 'OK'],
   'replan.keep': ['Keep replanning', 'Continuer'],
+  'replan.section.network': ['Network', 'Réseau'],
   'replan.group.road': ['Road, tier', 'Route, niveau'],
   'replan.group.crossing': ['Crossing', 'Passage piéton'],
   'replan.group.pedestrianWay': ['Pedestrian way, tier', 'Voie piétonne, niveau'],

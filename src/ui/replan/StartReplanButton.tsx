@@ -17,11 +17,13 @@ export function StartReplanButton() {
   const settingsOpen = useUi((store) => store.settingsOpen);
   const toggleSettings = useUi((store) => store.toggleSettings);
   const enabled = useFeatureFlag('replan');
+  const select = useUi((store) => store.select);
   const refusal = startRefusal(state, saveConflict);
 
   const start = () => {
     setAsking(false);
     gameStore.getState().send({ type: 'StartReplan' });
+    select(null);
     if (statsOpen) toggleStats();
     if (settingsOpen) toggleSettings();
   };

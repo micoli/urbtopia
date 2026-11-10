@@ -438,6 +438,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (get().analyticsLayer === 'movement.flows') return set({ analyticsBuildingId: buildingId ?? building?.id ?? null });
       if (get().analyticsLayer) return set({ analyticsProbe: tile });
       if (get().tool) return;
+      if (state.replan) return;
       if (get().level !== SURFACE) return;
       if (get().moveMode) {
         const movedId = buildingId ?? building?.id ?? null;
@@ -451,7 +452,10 @@ export const uiStore = createStore<UiStore>((set, get) => {
       if (access) return set({ selectedAccess: { x: access.x, y: access.y }, selectedBuildingId: null, flyout: null });
       set({ selectedBuildingId: buildingId ?? building?.id ?? null, selectedAccess: null, flyout: null });
     },
-    select: (id) => set({ selectedBuildingId: id, selectedAccess: null }),
+    select: (id) => {
+      if (id !== null && gameStore.getState().state.replan) return;
+      set({ selectedBuildingId: id, selectedAccess: null });
+    },
     sellSelected: () => {
       const id = get().selectedBuildingId;
       if (id === null) return;

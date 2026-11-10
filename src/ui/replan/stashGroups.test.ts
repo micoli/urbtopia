@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type GameState } from '../../core';
-import { stashGroups } from './stashGroups';
+import { stashGroups, stashSections } from './stashGroups';
 
 const T0 = 1_700_000_000_000;
 
@@ -34,5 +34,12 @@ describe('the groups of the Stash', () => {
   it('has no group for what is not in the Stash', () => {
     const groups = stashGroups(replanning());
     expect(groups.some((group) => group.id === 'rails' || group.id === 'fields' || group.id.startsWith('boat-'))).toBe(false);
+  });
+
+  it('puts the network first, then the Buildings in the order of the build menu, with a picture for each', () => {
+    const sections = stashSections(replanning());
+    expect(sections.map((section) => section.id)).toEqual(['replan.section.network', 'build.housing', 'build.production']);
+    expect(sections[0]?.groups.every((group) => group.codexId !== undefined || group.icon !== undefined)).toBe(true);
+    expect(sections[1]?.groups.map((group) => group.id)).toEqual(['building-home']);
   });
 });
