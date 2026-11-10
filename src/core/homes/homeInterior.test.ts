@@ -53,7 +53,8 @@ describe('the Comfort of a Home interior', () => {
 
   it('gives decor diminishing returns', () => {
     const pieces = Array.from({ length: 6 }, (_, index) => fixture('homePlant', index, 0, index + 1));
-    const [one, three, six] = [1, 3, 6].map(count => comfortCoverageOf(pieces.slice(0, count)).decor);
+    const decorOf = (count: number): number => comfortCoverageOf(pieces.slice(0, count)).decor;
+    const [one, three, six] = [decorOf(1), decorOf(3), decorOf(6)] as const;
     expect(one).toBeLessThan(three);
     expect(three - one).toBeGreaterThan(six - three - 0.2);
     expect(six).toBeLessThan(1);
@@ -138,5 +139,14 @@ describe('the Well-being of a furnished Home', () => {
     expect(benefits.comfortBonus).toBeGreaterThan(0);
     expect(benefits.wellbeing).toBeGreaterThanOrEqual(empty.wellbeing);
     expect(empty.comfortBonus).toBe(0);
+  });
+});
+
+describe('the cost of the Comfort', () => {
+  it('is computed once for as long as the interior does not change', () => {
+    const fixtures = [fixture('homeBed', 0, 0)];
+    expect(comfortCoverageOf(fixtures)).toBe(comfortCoverageOf(fixtures));
+    expect(comfortOf(fixtures)).toBe(comfortOf(fixtures));
+    expect(comfortCoverageOf([...fixtures])).not.toBe(comfortCoverageOf(fixtures));
   });
 });

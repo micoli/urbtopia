@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, floorBonusOfBuilding, floorFixturesOf, floorGridSizeOf, floorMotionOf, floorOverloadedOf, gridSizeOf, hiredOf, isBroken, isFactory, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type VenueFixture, type VenueType } from '../../core';
+import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, floorBonusOfBuilding, floorFixturesOf, floorMotionOf, floorOverloadedOf, floorSizeOf, gridSizeOf, hiredOf, isBroken, isFactory, isFloorBuilding, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureVenue, type VenueFixture, type VenueType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
@@ -7,7 +7,7 @@ import { gameStore } from '../../store/gameStore';
 import { venueSceneHandle } from '../../store/venueSceneHandle';
 import { venueStore } from '../../store/venueStore';
 
-// What the canvas edits: the interior of a Venue, or the floor of a Factory.
+// What the canvas edits: the interior of a Venue, the floor of a Factory or the interior of a Home.
 interface Interior {
   building: Building;
   fixtures: readonly VenueFixture[];
@@ -17,13 +17,13 @@ interface Interior {
 const interiorOf = (venueId: number): Interior | undefined => {
   const building = gameStore.getState().state.buildings.find(candidate => candidate.id === venueId);
   if (!building) return undefined;
-  if (isFactory(building)) return { building, fixtures: floorFixturesOf(building), floor: true };
+  if (isFloorBuilding(building)) return { building, fixtures: floorFixturesOf(building), floor: true };
   return isVenue(building) ? { building, fixtures: building.venue.fixtures, floor: false } : undefined;
 };
 
 const moveCommandOf = (venueId: number): 'MoveFixture' | 'MoveFloorFixture' => (interiorOf(venueId)?.floor ? 'MoveFloorFixture' : 'MoveFixture');
 
-const sizeOf = (interior: Interior, venueType: VenueType | 'factory'): number => (interior.floor ? floorGridSizeOf(interior.building.tier) : gridSizeOf(venueType as VenueType, interior.building.tier));
+const sizeOf = (interior: Interior, venueType: FixtureVenue): number => (interior.floor ? floorSizeOf(interior.building) : gridSizeOf(venueType as VenueType, interior.building.tier));
 
 // The piece of furniture a tap picked: the one whose model it hit, else the one on the cell.
 const fixtureAt = (venueId: number, cell: Coord, fixtureId: number | null) => {
@@ -34,7 +34,7 @@ const fixtureAt = (venueId: number, cell: Coord, fixtureId: number | null) => {
 
 interface VenueCanvasProps {
   venueId: number;
-  venueType: VenueType | 'factory';
+  venueType: FixtureVenue;
 }
 
 export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
@@ -62,7 +62,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       if (!interior || !type || !hovered) return scene.setGhost(null);
       const candidate = { type, x: hovered.x, y: hovered.y, rotation: moving?.rotation ?? (0 as const) };
       const building = interior.building;
-      const valid = isFactory(building) ? canStandOnFloor(building, candidate, moving?.id) : isVenue(building) && canPlaceFixture(building, candidate, moving?.id);
+      const valid = isFloorBuilding(building) ? canStandOnFloor(building, candidate, moving?.id) : isVenue(building) && canPlaceFixture(building, candidate, moving?.id);
       scene.setGhost({ tiles: fixtureTiles(candidate), valid });
     };
     const showSelection = () => {
@@ -75,9 +75,9 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       if (!interior) return;
       const hints = isVenue(interior.building) ? venuePerformance(gameStore.getState().state, interior.building).layout.hints : new Map<number, readonly string[]>();
       scene.setWarnings(interior.fixtures.filter(fixture => hints.has(fixture.id) && !isBroken(fixture)).flatMap(fixtureTiles));
-      const overloaded = interior.floor ? floorOverloadedOf(interior.fixtures) : new Set<number>();
+      const overloaded = isFactory(interior.building) ? floorOverloadedOf(interior.fixtures) : new Set<number>();
       scene.setBroken(interior.fixtures.filter(fixture => isBroken(fixture) || overloaded.has(fixture.id)).flatMap(fixtureTiles));
-      scene.setWear([...interior.fixtures], interior.floor);
+      scene.setWear([...interior.fixtures], interior.floor && isFactory(interior.building));
     };
     const showCrowd = () => {
       const venue = interiorOf(venueId)?.building;
@@ -99,7 +99,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       if (interior) {
         scene.setSize(sizeOf(interior, venueType));
         scene.setFixtures([...interior.fixtures]);
-        scene.setMotion(interior.floor ? floorMotionOf(interior.fixtures) : new Map(), 1 + floorBonusOfBuilding(interior.building).speed);
+        scene.setMotion(isFactory(interior.building) ? floorMotionOf(interior.fixtures) : new Map(), 1 + floorBonusOfBuilding(interior.building).speed);
       }
       showCrowd();
       showSelection();

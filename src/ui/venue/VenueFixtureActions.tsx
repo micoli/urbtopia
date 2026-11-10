@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { FIXTURES, conditionOf, fixtureRefund, isBroken, repairCost, WEAR } from '../../core';
+import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, isBroken, isFloorBuilding, isHomeType, repairCost, WEAR } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -24,12 +24,13 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
     return (building?.venue?.fixtures ?? building?.floor?.fixtures)?.find(candidate => candidate.id === (movingId ?? placedId));
   });
   const floorOwner = useGame(store => store.state.buildings.find(candidate => candidate.id === venueId && candidate.type === 'factory'));
-  const onFloor = floorOwner !== undefined;
+  const onFloor = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isFloorBuilding(candidate)));
+  const inHome = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isHomeType(candidate.type)));
   const performance = useVenuePerformance(venueId);
   const earnings = fixture ? performance?.earningsByFixture.get(fixture.id) : undefined;
   const hints = fixture ? performance?.layout.hints.get(fixture.id) ?? [] : [];
   if (!fixture) return null;
-  const partition = FIXTURES[fixture.type].partition === true;
+  const partition = FIXTURES[fixture.type].partition === true || inHome;
   const { startMove, stopMove, selectPlaced } = venueStore.getState();
   const send = gameStore.getState().send;
   return (
@@ -48,7 +49,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
         </>
       ) : (
         <ButtonRow align="stretch" spaced>
-          {Math.round(100-conditionOf(fixture)) > 2
+          {!inHome && Math.round(100-conditionOf(fixture)) > 2
               ? <ActionButton variant="primary" onClick={() => send({ type: onFloor ? 'RepairFloorFixture' : 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>
                 <Icon name="repair" /> {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} />
                 </ActionButton>
@@ -62,7 +63,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
               selectPlaced(null);
             }}
           >
-            <Icon name="trash" /> {t('panel.sell')} · +<UrbsAmount value={fixtureRefund(fixture.type)} />
+            <Icon name="trash" /> {t('panel.sell')} · +<UrbsAmount value={inHome ? homeFixtureRefund(fixture.type) : fixtureRefund(fixture.type)} />
           </ActionButton>
         </ButtonRow>
       )}

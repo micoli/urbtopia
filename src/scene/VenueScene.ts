@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, partitionPieceOf, type Coord, type VenueFixture, type VenueType } from '../core';
+import { FIXTURES, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, partitionPieceOf, type Coord, type FixtureVenue, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
@@ -83,7 +83,7 @@ export class VenueScene {
   private shellModels: { floor: string; wall: string; corner: string };
   private cornerPlacement: { x: number; z: number; rotation: number };
 
-  constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1, venueType: VenueType | 'factory' = 'arcade', seed = 1) {
+  constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1, venueType: FixtureVenue = 'arcade', seed = 1) {
     this.shellModels = VENUE_SHELL_MODELS[venueType];
     this.cornerPlacement = VENUE_CORNER_PLACEMENT[venueType];
     this.crowd = new VenueCrowdLayer(this.library, size, entranceCell(tier), seed, venueType);

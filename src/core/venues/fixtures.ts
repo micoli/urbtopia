@@ -93,6 +93,6 @@ export const FIXTURE_IDS = Object.keys(FIXTURES) as FixtureId[];
 
 export const fixtureIdsOf = (venue: FixtureVenue): FixtureId[] => FIXTURE_IDS.filter(id => FIXTURES[id].venue === venue);
 
-export const fixtureIdsInCategory = (venue: VenueType | 'factory', category: FixtureCategory): FixtureId[] => fixtureIdsOf(venue).filter(id => FIXTURES[id].category === category);
+export const fixtureIdsInCategory = (venue: FixtureVenue, category: FixtureCategory): FixtureId[] => fixtureIdsOf(venue).filter(id => FIXTURES[id].category === category);
 
 export const FIXTURE_MODELS: readonly string[] = [...new Set(Object.values(FIXTURES).flatMap(spec => [spec.model, ...(spec.joins ? Object.values(spec.joins) : [])]))];

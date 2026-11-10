@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import { useStore } from 'zustand';
-import { FIXTURE_CATEGORIES, fixtureIdsInCategory, type FixtureCategory, type VenueType } from '../../core';
+import { FIXTURE_CATEGORIES, fixtureIdsInCategory, type FixtureCategory, type FixtureVenue } from '../../core';
 import { t } from '../../i18n/t';
 import { venueStore } from '../../store/venueStore';
 import { AccordionSection } from '../common/AccordionSection';
@@ -9,7 +9,7 @@ import { VenueFixtureItem } from './VenueFixtureItem';
 interface VenueBuildMenuProps {
   tier: number;
   rank: number;
-  venueType: VenueType | 'factory';
+  venueType: FixtureVenue;
 }
 
 // The same menu as the city: at most one section open at a time, with the items of the section as rows with a picture and a cost.

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, fixtureTiles, type Coord, type VenueFixture, type VenueType } from '../core';
+import { FIXTURES, fixtureTiles, type Coord, type FixtureVenue, type VenueFixture, type VenueType } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
 import { clipSeconds, makeWorld, pickClip, reconcile, repath, stepAgent, type Agent, type Dice, type World } from './venueAgents';
@@ -41,7 +41,7 @@ export class VenueCrowdLayer {
   private enabled = false;
   private started = false;
 
-  constructor(private library: ModelLibrary, private size: number, private entrance: Coord, seed: number, private venueType: VenueType | 'factory') {
+  constructor(private library: ModelLibrary, private size: number, private entrance: Coord, seed: number, private venueType: FixtureVenue) {
     this.dice = { rng: seed >>> 0 };
     this.world = makeWorld(size, entrance, [], []);
   }

@@ -69,6 +69,10 @@ type VenueMessageKey =
   | 'venue.hint.noHost'
   | 'venue.fixtureEarnings'
   | 'venue.manage'
+  | 'home.interior.open'
+  | 'home.interior.comfort'
+  | 'home.interior.wellbeing'
+  | 'home.interior.wellbeingShort'
   | 'factory.floor.open'
   | 'factory.floor.linked'
   | 'factory.floor.speed'
@@ -311,6 +315,10 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.fixture.panel': ['Fixture', 'Équipement'],
   'venue.cancel': ['Cancel', 'Annuler'],
   'venue.manage': ['Manage', 'Gérer'],
+  'home.interior.open': ['Furnish', 'Aménager'],
+  'home.interior.comfort': ['Comfort', 'Confort'],
+  'home.interior.wellbeing': ['Well-being', 'Bien-être'],
+  'home.interior.wellbeingShort': ['Well-being', 'bien-être'],
   'factory.floor.open': ['Open the Factory floor', "Ouvrir l'atelier de l'usine"],
   'factory.floor.linked': ['Machines linked', 'Machines reliées'],
   'factory.floor.speed': ['Speed', 'Vitesse'],

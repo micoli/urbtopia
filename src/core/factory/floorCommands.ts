@@ -4,7 +4,8 @@ import { fixtureRefund, fixtureTiles } from '../venues/venues';
 import { hireFeeOf } from '../venues/staff';
 import { repairCost, restored } from '../venues/wear';
 import type { CommandOutcome } from '../engine/commands';
-import type { Building, FixtureId, FloorData, GameState, Rotation, VenueFixture } from '../engine/state';
+import type { Building, FixtureId, FloorData, GameState, Rotation, VenueFixture, VenueType } from '../engine/state';
+import type { FixtureVenue } from '../venues/fixtures';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { homeFixtureRefund, homeGridSizeOf } from '../homes/homeInterior';
 import { floorGridSizeOf } from './factoryFloor';
@@ -16,12 +17,22 @@ const EMPTY_FLOOR: FloorData = { fixtures: [], nextFixtureId: 1 };
 
 export const isFactory = (building: Building): building is Factory => building.type === 'factory';
 
+// A Factory or a Home: the buildings that have a floor to fit out.
+export const isFloorBuilding = (building: Building): boolean => building.type === 'factory' || isHomeType(building.type);
+
+// What a floor building offers in its build menu: its kind of Fixtures.
+export const floorKindOf = (building: Building): 'factory' | 'home' => (building.type === 'factory' ? 'factory' : 'home');
+
+// The kind of Fixtures a building takes: those of its Venue, of a Factory floor or of a Home interior.
+export const fixtureVenueOf = (building: Building): FixtureVenue => (isFloorBuilding(building) ? floorKindOf(building) : (building.type as VenueType));
+
+export const floorSizeOf = (building: Building): number => (building.type === 'factory' ? floorGridSizeOf(building.tier) : homeGridSizeOf(building.tier));
+
 const factoryOf = (state: GameState, buildingId: number): Factory | undefined => {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
   return building?.type === 'factory' ? (building as Factory) : undefined;
 };
 
-// A Factory or a Home: the buildings that have a floor to fit out.
 type FloorHost = Building;
 
 const hostOf = (state: GameState, buildingId: number): FloorHost | undefined => {
@@ -29,9 +40,9 @@ const hostOf = (state: GameState, buildingId: number): FloorHost | undefined => 
   return building && (building.type === 'factory' || isHomeType(building.type)) ? building : undefined;
 };
 
-const kindOf = (host: FloorHost): 'factory' | 'home' => (host.type === 'factory' ? 'factory' : 'home');
+const kindOf = floorKindOf;
 
-const gridSizeOf = (host: FloorHost): number => (host.type === 'factory' ? floorGridSizeOf(host.tier) : homeGridSizeOf(host.tier));
+const gridSizeOf = floorSizeOf;
 
 const refundOf = (host: FloorHost, type: FixtureId): number => (host.type === 'factory' ? fixtureRefund(type) : homeFixtureRefund(type));
 
