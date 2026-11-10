@@ -1,13 +1,13 @@
 export const meta = {
-  title: 'Replanning your city',
-  summary: 'Lift everything you placed into the Stash and lay it out again on the same land, for free, without losing your buildings.',
+  title: 'Replanning a zone of your city',
+  summary: 'Draw a rectangle, lift what is inside into the Stash and lay it out again on the same land, for free, without losing your buildings.',
   order: 55,
   flag: 'replan',
 };
 
 ## What it is
 
-If you are unhappy with the layout of your city, **Replan** it. Open City management, then **Cities**, and press **Replan** on the row of the open city. Everything you placed (buildings, roads of every kind, water, fields, orchard trees, hives) goes into the **Stash**, and you lay it out again where you want.
+If you are unhappy with the layout of your city, **Replan** it. Open City management, then **Cities**, and press **Replan** on the row of the open city. The window closes: **draw a rectangle** on the map with two opposite corners. Everything you placed inside it, on every level (buildings, roads of every kind, water, fields, orchard trees, hives, underground), goes into the **Stash**, and you lay it out again where you want. The rest of the city stays as it is. A building the rectangle only touches comes out whole.
 
 Your land does not change, and neither do your Urbs, your Citizens, your objectives or your politics. A building comes back with its Tier and its interior: a Venue keeps its fixtures, a Factory its Factory floor, a Home its furniture.
 
@@ -26,11 +26,13 @@ Placing is only checked for what the object needs on its own: free tiles and you
 
 ## Transit lines
 
-Bus and transit **lines are dropped**: their stops and stations go into the Stash like any building, and you draw the lines again afterwards. The vehicles you bought stay yours.
+Bus and transit **lines stay**. Only the stops that went into the Stash are taken out of them, and a stop you place again is not put back in its line: add it yourself. A line left with fewer than two stops disappears, and its vehicles wait unassigned.
 
 ## Finishing or cancelling
 
-- **Finish** is open when the Stash is empty. A summary lists the buildings with no road, BRT corridor or pedestrian way in front of them, and reminds you to draw your lines again. It does not stop you.
+- **Finish** is open when the Stash is empty. A summary lists the buildings with no road, BRT corridor or pedestrian way in front of them, and lists the transit lines that lost a stop. It does not stop you.
 - **Cancel Replan** puts your city back exactly as it was when you started, lines included.
+
+You can also **drop** a group of the Stash with a long press: it pays back its initial price, tiers and options included, and Cancel takes it back.
 
 A Replan cannot start during a Challenge, during the tutorial, or while a Save conflict is open.

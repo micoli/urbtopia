@@ -2,17 +2,15 @@ import { utilityCapacity, utilityDemand } from '../buildings/city';
 import { canRemoveStorage, isStorageType } from '../economy/storage';
 import { isProductionType } from '../economy/productionTypes';
 import { isPirateCoveInUse } from '../water/pirateCove';
-import { bridgesOf } from '../water/bridges';
 import type { Coord } from '../map/coord';
 import type { CommandOutcome, ErrorKey } from '../engine/commands';
 import type { GameState, NetworkMode, Rotation, Stash } from '../engine/state';
-import { layoutOf } from './layout';
 import { liftBuilding, placeStashedBuilding, type StashOutcome } from './stash';
 import { liftNetwork, placeStashedNetwork } from './stashNetworks';
 import { liftTiles, placeStashedTiles, type TileLayer } from './stashTiles';
 import { liftBoat, liftBridge, placeStashedBoat, placeStashedBridge } from './stashWater';
-import { withoutTransitLines } from './transitLines';
 import { takeGroup, type DropGroup } from './value';
+import { liftZone, type ReplanArea } from './zone';
 
 export type ReplanAction =
   | { readonly kind: 'liftBuilding'; readonly id: number }
@@ -41,34 +39,11 @@ function roadMatch(action: Extract<ReplanAction, { kind: 'placeTiles' }>): (tile
   };
 }
 
-export function startReplan(state: GameState): CommandOutcome {
+export function startReplan(state: GameState, area?: ReplanArea): CommandOutcome {
   if (state.replan) return fail('error.replanActive');
   if (state.challenge) return fail('error.replanChallenge');
-  const unbridged = bridgesOf(state).reduce<GameState>((current, bridge) => {
-    const lifted = liftBridge(current, bridge);
-    return 'state' in lifted ? lifted.state : current;
-  }, state);
-  const stash: Stash = {
-    buildings: unbridged.buildings,
-    roads: unbridged.roads,
-    pedestrianWays: unbridged.pedestrianWays ?? [],
-    walkways: unbridged.walkways ?? [],
-    pedestrianAccesses: unbridged.pedestrianAccesses ?? [],
-    waterTiles: unbridged.waterTiles ?? [],
-    fields: unbridged.fields,
-    roundabouts: unbridged.roundabouts,
-    brtRoads: unbridged.brtRoads ?? [],
-    rails: unbridged.rails ?? [],
-    tunnels: unbridged.tunnels ?? [],
-    bridges: unbridged.replan?.stash.bridges ?? [],
-    boats: unbridged.boats ?? [],
-  };
-  const bare: GameState = {
-    ...withoutTransitLines(unbridged),
-    buildings: [], roads: [], pedestrianWays: [], walkways: [], pedestrianAccesses: [], waterTiles: [], fields: [], roundabouts: [], brtRoads: [], rails: [], tunnels: [], bridges: [], boats: [],
-    replan: { stash, start: layoutOf(state) },
-  };
-  return done(bare);
+  const lifted = liftZone(state, area);
+  return lifted ? done(lifted) : fail('error.replanNothingInZone');
 }
 
 function withoutReplan(state: GameState): GameState {

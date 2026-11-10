@@ -21,7 +21,7 @@ describe('the summary of a Replan', () => {
     const start = city({ busLines: [{ id: 7, stops: [3, 4] }], transitLines: [{ id: 8, mode: 'rail', stops: [5, 6], peakHeadway: 5, offPeakHeadway: 10 }] });
     const summary = replanSummary({ ...state, replan: { stash: { buildings: [] }, start: layoutOf(start) } });
     expect(summary.withoutAccess.map((building) => building.id)).toEqual([2]);
-    expect(summary.droppedLines).toBe(2);
+    expect(summary.brokenLines).toBe(2);
     expect(isReplanSummaryEmpty(summary)).toBe(false);
   });
 

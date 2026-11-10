@@ -70,11 +70,12 @@ import { proposeOrdinance, repealOrdinance } from '../politics/ordinanceCommands
 import { claimGrants } from '../politics/objectiveCommands';
 import { officeYieldMultiplierOf } from '../politics/ordinanceEffects';
 import { cancelReplan, finishReplan, replanAction, startReplan, type ReplanAction } from '../replan/replanCommands';
+import type { ReplanArea } from '../replan/zone';
 
 const HOUR_MS = 60 * 60 * 1000;
 
 export type Command =
-  | { readonly type: 'StartReplan' }
+  | { readonly type: 'StartReplan'; readonly area?: ReplanArea }
   | { readonly type: 'CancelReplan' }
   | { readonly type: 'FinishReplan' }
   | { readonly type: 'Replan'; readonly action: ReplanAction }
@@ -193,6 +194,7 @@ export type Command =
 export type ErrorKey =
   | 'error.replanActive'
   | 'error.replanChallenge'
+  | 'error.replanNothingInZone'
   | 'error.notInReplan'
   | 'error.replanStashNotEmpty'
   | 'error.noCrossingHere'
@@ -344,7 +346,7 @@ export function handleCommand(state: GameState, command: Command, now: number): 
   if (state.replan && !ALLOWED_IN_REPLAN.includes(command.type)) return fail('error.replanActive');
   switch (command.type) {
     case 'StartReplan':
-      return startReplan(state);
+      return startReplan(state, command.area);
     case 'CancelReplan':
       return cancelReplan(state);
     case 'FinishReplan':

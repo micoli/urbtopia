@@ -64,3 +64,29 @@ describe('Replan tools', () => {
     expect(evaluateTool(tool, { state: replanning(), tile: at(50, 50), rotation: null }).command).toBeNull();
   });
 });
+
+describe('the Replan zone tool', () => {
+  const area: Tool = { kind: 'replanArea', start: null, horizontalFirst: true };
+
+  it('picks the first corner, then draws the rectangle and starts the Replan on the second', () => {
+    const state = newGame({ seed: 'replan-zone-tool', now: T0 });
+    const city: GameState = { ...state, tutorial: null, buildings: [createBuilding(500, 'home', 56, 57, 0)] };
+    const first = confirmTool(area, at(50, 50), evaluateTool(area, { state: city, tile: at(50, 50), rotation: null }));
+    expect(first.command).toBeNull();
+    const armed = first.nextTool as Extract<Tool, { kind: 'replanArea' }>;
+    expect(armed.start).toEqual(at(50, 50));
+    const evaluation = evaluateTool(armed, { state: city, tile: at(60, 62), rotation: null });
+    expect(evaluation.ghost.rects).toEqual([{ x: 50, y: 50, width: 11, depth: 13, tone: 'target' }]);
+    expect(evaluation.valid).toBe(true);
+    expect(evaluation.command).toEqual({ type: 'StartReplan', area: { from: at(50, 50), to: at(60, 62) } });
+    expect(confirmTool(armed, at(60, 62), evaluation).nextTool).toBeNull();
+  });
+
+  it('refuses an empty zone with its reason', () => {
+    const city: GameState = { ...newGame({ seed: 'replan-empty-zone', now: T0 }), tutorial: null, buildings: [], roads: [] };
+    const armed: Tool = { kind: 'replanArea', start: at(1, 1), horizontalFirst: true };
+    const evaluation = evaluateTool(armed, { state: city, tile: at(3, 3), rotation: null });
+    expect(evaluation.valid).toBe(false);
+    expect(evaluation.issue).toBe('error.replanNothingInZone');
+  });
+});

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
 import { t } from '../../i18n/t';
-import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
 import { BlockedReason } from '../common/BlockedReason';
 import { useCloud, useGame, useUi } from '../common/hooks';
@@ -18,14 +17,16 @@ export function StartReplanButton() {
   const toggleSettings = useUi((store) => store.toggleSettings);
   const enabled = useFeatureFlag('replan');
   const select = useUi((store) => store.select);
+  const chooseTool = useUi((store) => store.chooseTool);
   const refusal = startRefusal(state, saveConflict);
 
   const start = () => {
     setAsking(false);
-    gameStore.getState().send({ type: 'StartReplan' });
     select(null);
     if (statsOpen) toggleStats();
     if (settingsOpen) toggleSettings();
+    // Closing a window drops the tool in hand: the zone tool comes last.
+    chooseTool({ kind: 'replanArea', start: null, horizontalFirst: true });
   };
 
   if (!enabled) return null;

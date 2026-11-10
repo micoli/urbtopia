@@ -31,7 +31,7 @@ export function FinishSummaryDialog() {
             </ul>
           </>
         ) : null}
-        {summary.droppedLines > 0 ? <p>{t('replan.summary.lines')} ({summary.droppedLines})</p> : null}
+        {summary.brokenLines > 0 ? <p>{t('replan.summary.lines')} ({summary.brokenLines})</p> : null}
       </Dialog.Body>
       <Dialog.Actions>
         <ActionButton variant="primary" onClick={dismiss}>{t('replan.summary.ok')}</ActionButton>

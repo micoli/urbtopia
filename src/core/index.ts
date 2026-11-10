@@ -285,6 +285,7 @@ export { playUntil as playBasketball, startMatch as startBasketball, autoStarter
 
 export { layoutOf, stashOf, stashedBuildings } from './replan';
 export type { ReplanAction } from './replan/replanCommands';
+export type { ReplanArea } from './replan';
 export { takeGroup } from './replan';
 export type { DropGroup } from './replan';
 export type { TileLayer } from './replan';

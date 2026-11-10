@@ -1,5 +1,18 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
+// The Replan button closes the window and arms the zone tool: two corners start it.
+async function drawZone(page: Page) {
+  await expect(page.locator('.city-management-backdrop')).toHaveCount(0);
+  await page.evaluate(async () => {
+    const { uiStore } = await import('../src/store/uiStore.ts');
+    uiStore.getState().setPointerKind('mouse');
+    uiStore.getState().hoverTile({ x: 48, y: 48 });
+    uiStore.getState().confirm();
+    uiStore.getState().hoverTile({ x: 65, y: 65 });
+    uiStore.getState().confirm();
+  });
+}
+
 async function openHousing(panel: Locator) {
   const housing = panel.getByRole('button', { name: 'Housing' });
   if ((await housing.getAttribute('aria-expanded')) === 'false') await housing.click();
@@ -40,10 +53,11 @@ test('a City is replanned from its Cities row: lifted into the Stash, cancelled,
   await page.getByRole('button', { name: 'Replan', exact: true }).click();
   await expect(page.getByRole('alertdialog')).toBeVisible();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Replan', exact: true }).click();
+  await drawZone(page);
 
   const panel = page.getByRole('complementary', { name: 'Replan' });
   await expect(panel).toBeVisible();
-  expect(await stateSummary(page)).toMatchObject({ replanning: true, buildings: 0, roads: 0, stashed: 2, urbs: before.urbs });
+  expect(await stateSummary(page)).toMatchObject({ replanning: true, buildings: 1, roads: 0, stashed: 1, urbs: before.urbs });
   await expect(panel.getByRole('heading', { name: 'Network' })).toBeVisible();
   await panel.getByRole('button', { name: 'Hide the Stash' }).click();
   await expect(panel.getByRole('heading', { name: 'Network' })).toHaveCount(0);
@@ -66,6 +80,7 @@ test('a City is replanned from its Cities row: lifted into the Stash, cancelled,
   await page.getByRole('tab', { name: 'Cities' }).click();
   await page.getByRole('button', { name: 'Replan', exact: true }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Replan', exact: true }).click();
+  await drawZone(page);
   await expect(panel).toBeVisible();
   await openHousing(panel);
   await panel.getByRole('button', { name: /Home/ }).first().click();
@@ -83,7 +98,6 @@ test('a City is replanned from its Cities row: lifted into the Stash, cancelled,
     uiStore.getState().cancelTool();
     const { gameStore } = await import('../src/store/gameStore.ts');
     const send = gameStore.getState().send;
-    send({ type: 'Replan', action: { kind: 'placeBuilding', id: 501, x: 70, y: 62, rotation: 0 } });
     send({ type: 'Replan', action: { kind: 'placeTiles', layer: 'roads', tiles: [{ x: 50, y: 50 }, { x: 51, y: 50 }] } });
     send({ type: 'Replan', action: { kind: 'placeTiles', layer: 'roads', tiles: [{ x: 52, y: 50 }], tier: 2 } });
   });

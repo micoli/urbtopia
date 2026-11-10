@@ -85,7 +85,8 @@ export type Tool =
   | { kind: 'replanPath'; layer: ReplanPathLayer; tier?: number; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'replanTile'; layer: 'pedestrianAccesses' | 'roundabouts' | 'roads'; crossing?: boolean }
   | { kind: 'replanBridge'; length: number; carrier?: 'road' | 'brt' | 'pedestrian' }
-  | { kind: 'replanBoat'; family: BoatFamily };
+  | { kind: 'replanBoat'; family: BoatFamily }
+  | { kind: 'replanArea'; start: Coord | null; horizontalFirst: boolean };
 
 // The layers a Replan draws by path: a Road, a Pedestrian way, an Underground walkway, and the three networks that have their own tiles.
 export type ReplanPathLayer = 'roads' | 'pedestrianWays' | 'walkways' | 'brtRoads' | 'rails' | 'tunnels';
@@ -100,10 +101,10 @@ export function toolLevel(tool: Tool): Level {
   return SURFACE;
 }
 
-export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' | 'pedestrianWay' | 'demolishPedestrianWay' | 'upgradePedestrianWay' | 'walkway' | 'demolishWalkway' | 'replanPath' }>;
+export type PathTool = Extract<Tool, { kind: 'road' | 'demolishRoad' | 'upgradeRoad' | 'pedestrianWay' | 'demolishPedestrianWay' | 'upgradePedestrianWay' | 'walkway' | 'demolishWalkway' | 'replanPath' | 'replanArea' }>;
 
 export function isPathTool(tool: Tool | null): tool is PathTool {
-  return tool?.kind === 'road' || tool?.kind === 'demolishRoad' || tool?.kind === 'upgradeRoad' || tool?.kind === 'pedestrianWay' || tool?.kind === 'demolishPedestrianWay' || tool?.kind === 'upgradePedestrianWay' || tool?.kind === 'walkway' || tool?.kind === 'demolishWalkway' || tool?.kind === 'replanPath';
+  return tool?.kind === 'road' || tool?.kind === 'demolishRoad' || tool?.kind === 'upgradeRoad' || tool?.kind === 'pedestrianWay' || tool?.kind === 'demolishPedestrianWay' || tool?.kind === 'upgradePedestrianWay' || tool?.kind === 'walkway' || tool?.kind === 'demolishWalkway' || tool?.kind === 'replanPath' || tool?.kind === 'replanArea';
 }
 
 export type BrushAction = 'layField' | 'removeField' | 'plant' | 'layWater' | 'removeWater' | 'replanField' | 'replanWater';
@@ -261,11 +262,22 @@ export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext)
       return evaluateReplanTile(state, tool, tile);
     case 'replanBridge':
       return evaluateReplanBridge(state, tool.length, tool.carrier, tile, rotation);
+    case 'replanArea':
+      return evaluateReplanArea(state, tool, tile);
     case 'replanBoat': {
       const boat = stashOf(state).boats?.find((candidate) => candidate.family === tool.family);
       return evaluation([tile], boat ? replan({ kind: 'placeBoat', id: boat.id, x: tile.x, y: tile.y }) : null, state);
     }
   }
+}
+
+// The zone to replan: a rectangle from the first corner to the tile under the pointer.
+function evaluateReplanArea(state: GameState, tool: Extract<Tool, { kind: 'replanArea' }>, hovered: Coord): Evaluation {
+  const from = tool.start ?? hovered;
+  const [x0, y0] = [Math.min(from.x, hovered.x), Math.min(from.y, hovered.y)];
+  const rect: GhostRect = { x: x0, y: y0, width: Math.abs(from.x - hovered.x) + 1, depth: Math.abs(from.y - hovered.y) + 1, tone: 'target' };
+  const result = evaluation([], tool.start ? { type: 'StartReplan', area: { from, to: hovered } } : null, state);
+  return { ...result, ghost: { ...result.ghost, rects: [rect] } };
 }
 
 const replan = (action: ReplanAction): Command => ({ type: 'Replan', action });
@@ -566,6 +578,7 @@ export function confirmTool(tool: Tool, tile: Coord, current: Evaluation, keepTo
   const pathTool = isPathTool(tool);
   if (pathTool && !tool.start) return { command: null, nextTool: { ...tool, start: tile } };
   if (!current.valid) return { command: null, nextTool: tool };
+  if (tool.kind === 'replanArea') return { command: current.command, nextTool: null };
   if (pathTool) return { command: current.command, nextTool: { ...tool, start: null } };
   if (tool.kind === 'building') return { command: current.command, nextTool: keepTool || tool.repeat ? tool : null };
   if (tool.kind === 'boat') return { command: current.command, nextTool: keepTool ? tool : null };

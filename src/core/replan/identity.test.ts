@@ -6,7 +6,6 @@ import type { ClubData } from '../clubs/clubTypes';
 import { liftBuilding, placeStashedBuilding, stashOf } from './stash';
 import { placeStashedTiles } from './stashTiles';
 import { liftBoat, placeStashedBoat } from './stashWater';
-import { withoutTransitLines } from './transitLines';
 
 const T0 = 1_700_000_000_000;
 const row = (from: number, to: number, y: number) => Array.from({ length: to - from + 1 }, (_, index) => ({ x: from + index, y }));
@@ -15,21 +14,6 @@ function ok(outcome: { state: GameState } | { key: string }): GameState {
   if (!('state' in outcome)) throw new Error(outcome.key);
   return outcome.state;
 }
-
-describe('Transit lines through a Replan', () => {
-  it('drops the lines and keeps the purchased vehicles, assigned to nothing', () => {
-    const state: GameState = {
-      ...newGame({ seed: 'replan-lines', now: T0 }),
-      busLines: [{ id: 7, stops: [1, 2] }],
-      transitLines: [{ id: 8, mode: 'rail', stops: [3, 4], peakHeadway: 4, offPeakHeadway: 8 }],
-      transitFleet: [{ id: 9, kind: 'trainElectric' as never, purchasePrice: 500, lineId: 8 }, { id: 10, kind: 'trainElectric' as never, purchasePrice: 500 }],
-    };
-    const dropped = withoutTransitLines(state);
-    expect(dropped.busLines).toEqual([]);
-    expect(dropped.transitLines).toEqual([]);
-    expect(dropped.transitFleet).toEqual([{ id: 9, kind: 'trainElectric', purchasePrice: 500 }, { id: 10, kind: 'trainElectric', purchasePrice: 500 }]);
-  });
-});
 
 describe('Clubs and Boats through a Replan', () => {
   it('brings an Arena back with its Club', () => {
