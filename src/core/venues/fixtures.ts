@@ -5,7 +5,7 @@ import type { FixtureId, VenueType } from '../engine/state';
 import { modelFileOf } from '../models/modelFiles';
 import type { FixtureDefinition } from './fixtureSchema';
 import { VENUE_TYPES } from './profiles';
-import { FACTORY_FIXTURE_CATEGORIES, type FactoryFixtureRole, type FixtureCategory, type FixtureSide } from './venueVocabulary';
+import { FACTORY_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide } from './venueVocabulary';
 
 export type { FixtureCategory };
 
@@ -13,10 +13,14 @@ export type { FixtureCategory };
 export const FIXTURE_CATEGORIES = {
   ...(Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).fixtureCategories!])) as unknown as Record<VenueType, readonly FixtureCategory[]>),
   factory: FACTORY_FIXTURE_CATEGORIES,
-} as Record<VenueType | 'factory', readonly FixtureCategory[]>;
+  home: HOME_FIXTURE_CATEGORIES,
+} as Record<FixtureVenue, readonly FixtureCategory[]>;
+
+// What a Fixture can be placed in: a Venue, a Factory floor or a Home interior.
+export type FixtureVenue = VenueType | 'factory' | 'home';
 
 export interface FixtureSpec {
-  venue: VenueType | 'factory';
+  venue: FixtureVenue;
   category: FixtureCategory;
   model: string;
   footprint: readonly [number, number];
@@ -51,7 +55,9 @@ export interface FixtureSpec {
   attract?: number;
   // Factory floor: what the Fixture does, the sides through which Drive and Flow pass, the direction a Machine needs its Drive to turn,
   // and what a linked Machine adds to the speed and the yield of the Factory's Slots.
-  role?: FactoryFixtureRole;
+  role?: FactoryFixtureRole | HomeFixtureRole;
+  // Home interior: the Fixture hangs on a wall segment.
+  wall?: true;
   drive?: readonly FixtureSide[];
   flow?: readonly FixtureSide[];
   rim?: readonly FixtureSide[];
@@ -85,7 +91,7 @@ export const FIXTURES = Object.fromEntries(FIXTURE_ENTRIES.map(entry => [entry.i
 
 export const FIXTURE_IDS = Object.keys(FIXTURES) as FixtureId[];
 
-export const fixtureIdsOf = (venue: VenueType | 'factory'): FixtureId[] => FIXTURE_IDS.filter(id => FIXTURES[id].venue === venue);
+export const fixtureIdsOf = (venue: FixtureVenue): FixtureId[] => FIXTURE_IDS.filter(id => FIXTURES[id].venue === venue);
 
 export const fixtureIdsInCategory = (venue: VenueType | 'factory', category: FixtureCategory): FixtureId[] => fixtureIdsOf(venue).filter(id => FIXTURES[id].category === category);
 

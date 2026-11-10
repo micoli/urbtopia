@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "home",
+  "category": "comfort",
+  "name": {
+    "en": "Old television on a cabinet",
+    "fr": "Télévision cathodique sur meuble"
+  },
+  "model": "furniture-televisioncrt",
+  "footprint": [1, 1],
+  "price": 160,
+  "minTier": 1,
+  "comfort": 1,
+  "role": "leisure"
+}

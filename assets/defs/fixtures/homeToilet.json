@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "home",
+  "category": "bathroom",
+  "name": {
+    "en": "Toilet",
+    "fr": "Toilettes"
+  },
+  "model": "furniture-toilet",
+  "footprint": [1, 1],
+  "price": 120,
+  "minTier": 1,
+  "role": "toilet"
+}

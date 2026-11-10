@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "home",
+  "category": "shelves",
+  "name": {
+    "en": "Bookcase",
+    "fr": "Bibliothèque"
+  },
+  "model": "furniture-bookcase",
+  "footprint": [1, 1],
+  "price": 110,
+  "minTier": 1,
+  "comfort": 0.7,
+  "role": "leisure"
+}

@@ -5,6 +5,8 @@ import { hireFeeOf } from '../venues/staff';
 import { repairCost, restored } from '../venues/wear';
 import type { CommandOutcome } from '../engine/commands';
 import type { Building, FixtureId, FloorData, GameState, Rotation, VenueFixture } from '../engine/state';
+import { isHomeType } from '../buildings/buildingDefinitions';
+import { homeFixtureRefund, homeGridSizeOf } from '../homes/homeInterior';
 import { floorGridSizeOf } from './factoryFloor';
 import { technicianPostsOf } from './floorWear';
 
@@ -19,25 +21,39 @@ const factoryOf = (state: GameState, buildingId: number): Factory | undefined =>
   return building?.type === 'factory' ? (building as Factory) : undefined;
 };
 
-const floorOf = (factory: Factory): FloorData => factory.floor ?? EMPTY_FLOOR;
+// A Factory or a Home: the buildings that have a floor to fit out.
+type FloorHost = Building;
 
-export function canStandOnFloor(factory: Factory, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
-  const size = floorGridSizeOf(factory.tier);
-  const entrance = entranceCell(factory.tier);
-  const occupied = new Set(floorOf(factory).fixtures.filter(other => other.id !== ignoreId).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
+const hostOf = (state: GameState, buildingId: number): FloorHost | undefined => {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  return building && (building.type === 'factory' || isHomeType(building.type)) ? building : undefined;
+};
+
+const kindOf = (host: FloorHost): 'factory' | 'home' => (host.type === 'factory' ? 'factory' : 'home');
+
+const gridSizeOf = (host: FloorHost): number => (host.type === 'factory' ? floorGridSizeOf(host.tier) : homeGridSizeOf(host.tier));
+
+const refundOf = (host: FloorHost, type: FixtureId): number => (host.type === 'factory' ? fixtureRefund(type) : homeFixtureRefund(type));
+
+const floorOf = (host: FloorHost): FloorData => host.floor ?? EMPTY_FLOOR;
+
+export function canStandOnFloor(host: FloorHost, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
+  const size = gridSizeOf(host);
+  const entrance = entranceCell(host.tier);
+  const occupied = new Set(floorOf(host).fixtures.filter(other => other.id !== ignoreId).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
   return fixtureTiles(fixture).every(tile => tile.x >= 0 && tile.y >= 0 && tile.x < size && tile.y < size && !occupied.has(`${tile.x}:${tile.y}`) && !(tile.x === entrance.x && tile.y === entrance.y));
 }
 
-const withFloor = (state: GameState, factory: Factory, floor: FloorData, urbs = state.urbs): GameState => ({
+const withFloor = (state: GameState, factory: FloorHost, floor: FloorData, urbs = state.urbs): GameState => ({
   ...state,
   urbs,
   buildings: state.buildings.map(candidate => (candidate === factory ? { ...factory, floor } : candidate)),
 });
 
 export function placeFloorFixture(state: GameState, buildingId: number, type: FixtureId, x: number, y: number, rotation: Rotation): CommandOutcome {
-  const factory = factoryOf(state, buildingId);
+  const factory = hostOf(state, buildingId);
   if (!factory) return { key: 'error.unknownBuilding' };
-  if (!(type in FIXTURES) || FIXTURES[type].venue !== 'factory') return { key: 'error.unknownCommand' };
+  if (!(type in FIXTURES) || FIXTURES[type].venue !== kindOf(factory)) return { key: 'error.unknownCommand' };
   if (factory.tier < FIXTURES[type].minTier) return { key: 'error.tierTooLow' };
   const fixture = { type, x, y, rotation };
   if (!canStandOnFloor(factory, fixture)) return { key: 'error.tilesOccupied' };
@@ -49,7 +65,7 @@ export function placeFloorFixture(state: GameState, buildingId: number, type: Fi
 }
 
 export function moveFloorFixture(state: GameState, buildingId: number, fixtureId: number, x: number, y: number, rotation?: Rotation): CommandOutcome {
-  const factory = factoryOf(state, buildingId);
+  const factory = hostOf(state, buildingId);
   if (!factory) return { key: 'error.unknownBuilding' };
   const floor = floorOf(factory);
   const fixture = floor.fixtures.find(candidate => candidate.id === fixtureId);
@@ -60,16 +76,16 @@ export function moveFloorFixture(state: GameState, buildingId: number, fixtureId
 }
 
 export function removeFloorFixture(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {
-  const factory = factoryOf(state, buildingId);
+  const factory = hostOf(state, buildingId);
   if (!factory) return { key: 'error.unknownBuilding' };
   const floor = floorOf(factory);
   const fixture = floor.fixtures.find(candidate => candidate.id === fixtureId);
   if (!fixture) return { key: 'error.unknownFixture' };
-  return { state: withFloor(state, factory, { ...floor, fixtures: floor.fixtures.filter(candidate => candidate !== fixture) }, state.urbs + fixtureRefund(fixture.type)), events: [] };
+  return { state: withFloor(state, factory, { ...floor, fixtures: floor.fixtures.filter(candidate => candidate !== fixture) }, state.urbs + refundOf(factory, fixture.type)), events: [] };
 }
 
 export function repairFloorFixture(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {
-  const factory = factoryOf(state, buildingId);
+  const factory = hostOf(state, buildingId);
   if (!factory) return { key: 'error.unknownBuilding' };
   const floor = floorOf(factory);
   const fixture = floor.fixtures.find(candidate => candidate.id === fixtureId);

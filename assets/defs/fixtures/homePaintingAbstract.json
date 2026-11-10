@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "home",
+  "category": "decor",
+  "name": {
+    "en": "Abstract painting",
+    "fr": "Tableau abstrait"
+  },
+  "model": "furniture-paintingabstract",
+  "footprint": [1, 1],
+  "price": 50,
+  "minTier": 1,
+  "comfort": 0.5,
+  "role": "decor",
+  "wall": true
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "home",
+  "category": "dining",
+  "name": {
+    "en": "Chair",
+    "fr": "Chaise"
+  },
+  "model": "furniture-chair",
+  "footprint": [1, 1],
+  "price": 25,
+  "minTier": 1,
+  "role": "chair"
+}
