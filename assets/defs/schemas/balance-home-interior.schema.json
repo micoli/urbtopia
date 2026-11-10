@@ -60,6 +60,11 @@
       ],
       "additionalProperties": false
     },
+    "unlockCitizens": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
     "chairReach": {
       "type": "integer",
       "minimum": 1,
@@ -79,6 +84,7 @@
     "gridSizes",
     "wellbeingCaps",
     "weights",
+    "unlockCitizens",
     "chairReach",
     "decorHalf",
     "refundRatio"

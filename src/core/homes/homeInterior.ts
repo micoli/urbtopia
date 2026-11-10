@@ -1,5 +1,6 @@
 import homeBalance from '../../../assets/defs/balance/homeInterior.json' with { type: 'json' };
-import type { Building, FixtureId, VenueFixture } from '../engine/state';
+import { citizenCount } from '../environment/ecology';
+import type { Building, FixtureId, GameState, VenueFixture } from '../engine/state';
 import { FIXTURES } from '../venues/fixtures';
 import { fixtureTiles } from '../venues/venues';
 
@@ -16,6 +17,9 @@ const WEIGHT_TOTAL = COMFORT_GROUPS.reduce((sum, group) => sum + homeBalance.wei
 export const homeGridSizeOf = (tier: number): number => capOf(homeBalance.gridSizes, tier);
 
 export const homeWellbeingCapOf = (tier: number): number => capOf(homeBalance.wellbeingCaps, tier);
+
+// Homes can be furnished once the city has grown to a number of Citizens.
+export const isHomeInteriorUnlocked = (state: GameState): boolean => citizenCount(state) >= homeBalance.unlockCitizens;
 
 export const homeFixtureRefund = (type: FixtureId): number => Math.floor(FIXTURES[type].price * homeBalance.refundRatio);
 

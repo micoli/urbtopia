@@ -70,6 +70,7 @@ type VenueMessageKey =
   | 'venue.fixtureEarnings'
   | 'venue.manage'
   | 'home.interior.open'
+  | 'blocked.furnish'
   | 'home.interior.comfort'
   | 'home.interior.wellbeing'
   | 'home.interior.wellbeingShort'
@@ -315,6 +316,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.fixture.panel': ['Fixture', 'Équipement'],
   'venue.cancel': ['Cancel', 'Annuler'],
   'venue.manage': ['Manage', 'Gérer'],
+  'blocked.furnish': ['Furnishing opens at {citizens} Citizens.', "L'aménagement s'ouvre à {citizens} habitants."],
   'home.interior.open': ['Furnish', 'Aménager'],
   'home.interior.comfort': ['Comfort', 'Confort'],
   'home.interior.wellbeing': ['Well-being', 'Bien-être'],

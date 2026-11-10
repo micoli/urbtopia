@@ -10,6 +10,7 @@
     "leisure": 15,
     "decor": 10
   },
+  "unlockCitizens": 700,
   "chairReach": 2,
   "decorHalf": 2,
   "refundRatio": 0.5

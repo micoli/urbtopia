@@ -7,7 +7,7 @@ import type { CommandOutcome } from '../engine/commands';
 import type { Building, FixtureId, FloorData, GameState, Rotation, VenueFixture, VenueType } from '../engine/state';
 import type { FixtureVenue } from '../venues/fixtures';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { homeFixtureRefund, homeGridSizeOf } from '../homes/homeInterior';
+import { homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
 import { floorGridSizeOf } from './factoryFloor';
 import { technicianPostsOf } from './floorWear';
 
@@ -65,6 +65,7 @@ export function placeFloorFixture(state: GameState, buildingId: number, type: Fi
   const factory = hostOf(state, buildingId);
   if (!factory) return { key: 'error.unknownBuilding' };
   if (!(type in FIXTURES) || FIXTURES[type].venue !== kindOf(factory)) return { key: 'error.unknownCommand' };
+  if (factory.type !== 'factory' && !isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
   if (factory.tier < FIXTURES[type].minTier) return { key: 'error.tierTooLow' };
   const fixture = { type, x, y, rotation };
   if (!canStandOnFloor(factory, fixture)) return { key: 'error.tilesOccupied' };

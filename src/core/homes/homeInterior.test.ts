@@ -4,12 +4,12 @@ import { homeBenefits } from '../environment/wellbeing';
 import { comfortBonusOf, comfortCoverageOf, comfortOf, homeFixtureRefund, homeGridSizeOf, homeWellbeingCapOf } from './homeInterior';
 import { FIXTURES } from '../venues/fixtures';
 
-const city = (tier = 1, urbs = 100_000): GameState => ({
+const city = (tier = 1, urbs = 100_000, big = true): GameState => ({
   ...newGame({ seed: 'home-interior', now: 0 }),
   nextId: 100,
   urbs,
   tutorial: null,
-  buildings: [{ ...createBuilding(1, 'home', 55, 50, 0), tier }, createBuilding(2, 'arcade', 60, 50, 0)],
+  buildings: [{ ...createBuilding(1, 'home', 55, 50, 0), tier }, createBuilding(2, 'arcade', 60, 50, 0), ...(big ? [3, 4].map(id => ({ ...createBuilding(id, 'home', 50 + id * 3, 40, 0), tier: 8 })) : [])],
 });
 const send = (state: GameState, command: Command): GameState => {
   const result = dispatch(state, command, 0);
@@ -105,6 +105,11 @@ describe('furnishing a Home', () => {
   it('refuses a Fixture the Tier does not unlock', () => {
     expect(failure(city(1), place('homeDoubleBed', 0, 1))).toBe('error.tierTooLow');
     expect(send(city(2), place('homeDoubleBed', 0, 1))).toBeDefined();
+  });
+
+  it('opens only once the city has 700 Citizens', () => {
+    expect(failure(city(1, 100_000, false), place('homeBed', 0, 1))).toBe('error.itemLocked');
+    expect(send(city(), place('homeBed', 0, 1))).toBeDefined();
   });
 
   it('refuses without the Urbs', () => {

@@ -79,6 +79,8 @@ export const homeInteriorBalanceSchema = z
     gridSizes: z.array(z.int().min(1)).min(1),
     wellbeingCaps: z.array(positive).min(1),
     weights: z.strictObject({ sleeping: positive, washing: positive, eating: positive, cooking: positive, leisure: positive, decor: positive }),
+    // The Citizens a city needs before its Homes can be furnished.
+    unlockCitizens: count,
     // The largest distance, in tiles, between a table and the chair that serves it.
     chairReach: z.int().min(1),
     // The decor that covers half of the decor group; each further piece adds a smaller share.

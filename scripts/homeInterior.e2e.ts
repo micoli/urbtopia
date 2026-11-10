@@ -20,12 +20,12 @@ test('a Home is furnished from its panel and its Comfort follows the layout', as
       { id: 5, type: 'homeBookcase', x: 0, y: 3, rotation: 0 },
     ];
     const home = { ...createBuilding(50, 'home', 64, 64, 0), tier: 2, floor: { fixtures, nextFixtureId: 10 } };
-    gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [home], nextId: 51, adaptationUntil: 0 });
+    gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [home, { ...createBuilding(51, 'home', 70, 64, 0), tier: 8 }, { ...createBuilding(52, 'home', 74, 64, 0), tier: 8 }], nextId: 53, adaptationUntil: 0 });
     uiStore.getState().select(50);
   });
   await page.getByRole('button', { name: 'Aménager' }).click();
   const stats = page.locator('.dock-stat');
-  await expect(stats.filter({ hasText: 'Confort' })).toContainText('/ 100');
+  await expect(stats.filter({ hasText: 'Confort' })).toContainText('%');
   await page.waitForTimeout(1500);
   await page.screenshot({ path: 'test-results/home-interior.png' });
   const before = await stats.filter({ hasText: 'Confort' }).textContent();
