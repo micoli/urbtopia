@@ -13,6 +13,7 @@ test('a City is replanned from its Cities row: lifted into the Stash, cancelled,
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.addInitScript(() => {
+    localStorage.setItem('urbtopia-flags', JSON.stringify({ replan: true }));
     localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
   });
   await page.goto('/?e2e');

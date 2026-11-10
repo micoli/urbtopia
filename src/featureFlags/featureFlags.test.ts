@@ -3,7 +3,7 @@ import { FLAG_IDS, createFeatureFlagStore, flagOfCommand, offFlags, resolveFlags
 
 describe('feature flags', () => {
   it('ship off', () => {
-    expect(FLAG_IDS).toEqual(expect.arrayContaining(['clubs', 'advisor', 'homeInterior']));
+    expect(FLAG_IDS).toEqual(expect.arrayContaining(['clubs', 'advisor', 'homeInterior', 'replan']));
     expect(Object.values(offFlags()).every(value => !value)).toBe(true);
     expect(resolveFlags(null, true).clubs).toBe(false);
   });
@@ -27,6 +27,9 @@ describe('feature flags', () => {
     expect(flagOfCommand('SetLineup')).toBe('clubs');
     expect(flagOfCommand('PlayMatch')).toBe('clubs');
     expect(flagOfCommand('SetHomeParquet')).toBe('homeInterior');
+    expect(flagOfCommand('StartReplan')).toBe('replan');
+    expect(flagOfCommand('CancelReplan')).toBeUndefined();
+    expect(flagOfCommand('FinishReplan')).toBeUndefined();
     expect(flagOfCommand('Collect')).toBeUndefined();
   });
 });

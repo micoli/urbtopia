@@ -18,6 +18,12 @@ export const FLAGS = {
     description: "Ouvre l'intérieur d'un logement : meubles, tableaux, parquet et confort.",
     commands: ['SetHomeParquet'] as readonly Command['type'][],
   },
+  // Only the start is gated: a Replan already under way must always be finished or cancelled, whatever the flag says.
+  replan: {
+    label: 'Réaménagement de la ville',
+    description: 'Décroche tout ce qui est posé dans une réserve pour replacer routes, eau et bâtiments ; le jeu se fige pendant ce temps.',
+    commands: ['StartReplan'] as readonly Command['type'][],
+  },
 } as const;
 
 export type FlagId = keyof typeof FLAGS;

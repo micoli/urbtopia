@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
@@ -15,6 +16,7 @@ export function StartReplanButton() {
   const toggleStats = useUi((store) => store.toggleStats);
   const settingsOpen = useUi((store) => store.settingsOpen);
   const toggleSettings = useUi((store) => store.toggleSettings);
+  const enabled = useFeatureFlag('replan');
   const refusal = startRefusal(state, saveConflict);
 
   const start = () => {
@@ -24,6 +26,7 @@ export function StartReplanButton() {
     if (settingsOpen) toggleSettings();
   };
 
+  if (!enabled) return null;
   return (
     <>
       <ActionButton disabled={refusal !== null || state.replan !== undefined} onClick={() => setAsking(true)}>{t('replan.start')}</ActionButton>
