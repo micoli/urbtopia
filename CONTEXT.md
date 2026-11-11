@@ -94,7 +94,7 @@ The player gesture that collects ready Crops by pressing a ready Field's bubble 
 _Avoid_: Picking, gathering
 
 **Packhouse**:
-A building that packs Crop Materials, Cherries, Olive oil, Eggs, Milk and Honey into packed Goods, the only way to sell a Harvest. Several can be built, up to its Build limit; each has its own Tiers.
+A building that packs Crop Materials, Cherries, Olive oil, Eggs, Milk and Honey into packed Goods, the only way to sell a Harvest. It employs Citizens like any workplace (5 Jobs per Tier). Several can be built, up to its Build limit; each has its own Tiers.
 _Avoid_: Factory, cannery, packing plant
 
 **Livestock farm**:

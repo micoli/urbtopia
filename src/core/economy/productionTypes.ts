@@ -6,7 +6,7 @@ export const PRODUCTION_TYPES: readonly ProductionType[] = BUILDING_ENTRIES.filt
 export const isProductionType = (type: string): type is ProductionType => (PRODUCTION_TYPES as readonly string[]).includes(type);
 
 interface ProductionRules {
-  // Economic activity carried per Tier. The Packhouse carries none: it employs nobody and draws no economic power.
+  // Economic activity carried per Tier. The Packhouse carries none: it draws no economic power, though it employs Citizens.
   weight: number;
   // Emissions per Tier.
   emissions: number;

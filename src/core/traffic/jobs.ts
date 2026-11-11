@@ -6,10 +6,11 @@ import { SHOP_TYPES, isShopType, shopTierOf } from '../economy/shops';
 import { OFFICE_TYPES, isOfficeType, officeTierOf } from '../economy/offices';
 import { FACILITIES, FACILITY_TYPES, facilityCapacity, isFacilityType } from '../services/facilities';
 
-export const workplaceTypes: readonly BuildingType[] = [...INDUSTRY_TYPES, ...SHOP_TYPES, ...OFFICE_TYPES, 'casino', 'farm', ...VENUE_TYPES, ...FACILITY_TYPES];
+export const workplaceTypes: readonly BuildingType[] = [...INDUSTRY_TYPES, ...SHOP_TYPES, ...OFFICE_TYPES, 'casino', 'farm', 'packhouse', ...VENUE_TYPES, ...FACILITY_TYPES];
 
 export const JOBS = {
   farmPerTier: 10,
+  packhousePerTier: 5,
   workshopPerTier: 25,
   factoryPerTier: 25,
   casinoPerTier: 15,
@@ -20,6 +21,7 @@ export const JOBS = {
 export function jobsOf(building: Building): number {
   if (building.type === 'casino') return JOBS.casinoPerTier * building.tier;
   if (building.type === 'farm') return JOBS.farmPerTier * building.tier;
+  if (building.type === 'packhouse') return JOBS.packhousePerTier * building.tier;
   const weight = industryWeightOf(building.type);
   if (weight > 0) return (weight === 1 ? JOBS.workshopPerTier : JOBS.factoryPerTier) * building.tier;
   if (isShopType(building.type)) return shopTierOf(building).jobs;
