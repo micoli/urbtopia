@@ -60,6 +60,8 @@ export class VenueScene {
   private pan = { x: 0, z: 0 };
   private yaw = Math.PI / 4;
   private yawTarget = Math.PI / 4;
+  // Where the pointer last was over the canvas, to find the cell under it again when the room turns without the pointer moving.
+  private lastPointer: { x: number; y: number } | null = null;
   private northWalls = new THREE.Group();
   private westWalls = new THREE.Group();
   private cornerPost = new THREE.Group();
@@ -429,6 +431,7 @@ export class VenueScene {
 
   // Dragging with the button down moves the room under the pointer, as in the city.
   private handlePointerMove = (event: PointerEvent): void => {
+    this.lastPointer = { x: event.clientX, y: event.clientY };
     if (this.pointers.has(event.pointerId)) this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     if (this.pointers.size >= 2) {
       this.handlePinch();
@@ -483,6 +486,7 @@ export class VenueScene {
   };
 
   private handlePointerLeave = (): void => {
+    this.lastPointer = null;
     this.onHoverCell(null);
   };
 
@@ -548,6 +552,8 @@ export class VenueScene {
     const step = (this.yawTarget - this.yaw) * Math.min(1, delta * 10);
     this.yaw = Math.abs(this.yawTarget - this.yaw) < 0.002 ? this.yawTarget : this.yaw + step;
     this.placeCamera();
+    this.camera.updateMatrixWorld();
+    if (this.lastPointer && !this.pointerDown) this.onHoverCell(this.cellAt(this.lastPointer.x, this.lastPointer.y));
     this.dirty = true;
   }
 
