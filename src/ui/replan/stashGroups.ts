@@ -44,6 +44,12 @@ function single(stash: Stash, key: 'walkways' | 'pedestrianAccesses' | 'roundabo
 
 const NETWORK = 'replan.section.network' as const;
 
+function crossingsByTier(items: readonly { tier?: number }[]): StashGroup[] {
+  return [...countBy(items, (tile) => String(tierOf(tile))).entries()]
+    .sort(([a], [b]) => Number(a) - Number(b))
+    .map(([tier, { count }]) => ({ id: tier === '1' ? 'crossings' : `crossings-${tier}`, section: NETWORK, codexId: 'crossing' as CodexId, label: 'replan.group.crossing' as const, ...(tier === '1' ? {} : { detail: tier }), count, tool: { kind: 'replanTile', layer: 'roads', crossing: true, ...(tier === '1' ? {} : { tier: Number(tier) }) } as Tool, drop: { kind: 'tiles', layer: 'roads', crossing: true, ...(tier === '1' ? {} : { tier: Number(tier) }) } as DropGroup }));
+}
+
 function tilesByTier(items: readonly { tier?: number }[] | undefined, layer: 'roads' | 'pedestrianWays', label: MessageKey, codexId: CodexId): StashGroup[] {
   return [...countBy(items, (tile) => String(tierOf(tile))).entries()]
     .sort(([a], [b]) => Number(a) - Number(b))
@@ -69,7 +75,6 @@ export function stashSections(state: GameState): { id: StashSectionId; groups: S
 export function stashGroups(state: GameState): StashGroup[] {
   const stash = stashOf(state);
   const roads = stash.roads ?? [];
-  const crossings = roads.filter((road) => road.kind === 'crossing').length;
   const buildings = [...countBy(stash.buildings, (building) => building.type).entries()].map(([type, { count }]): StashGroup => ({
     id: `building-${type}`, section: sectionOfBuilding(type as BuildingType), codexId: type as CodexId, label: `building.${type}` as MessageKey, count, tool: { kind: 'replanBuilding', buildingType: type as BuildingType }, drop: { kind: 'buildings', type: type as BuildingType },
   }));
@@ -82,7 +87,7 @@ export function stashGroups(state: GameState): StashGroup[] {
   return [
     ...buildings,
     ...tilesByTier(roads.filter((road) => road.kind !== 'crossing'), 'roads', 'replan.group.road', 'road'),
-    ...(crossings > 0 ? [{ id: 'crossings', section: NETWORK, codexId: 'crossing' as CodexId, label: 'replan.group.crossing' as const, count: crossings, tool: { kind: 'replanTile', layer: 'roads', crossing: true } as Tool, drop: { kind: 'tiles', layer: 'roads', crossing: true } as DropGroup }] : []),
+    ...crossingsByTier(roads.filter((road) => road.kind === 'crossing')),
     ...tilesByTier(stash.pedestrianWays, 'pedestrianWays', 'replan.group.pedestrianWay', 'pedestrianWay'),
     ...single(stash, 'walkways', { id: 'walkways', section: NETWORK, icon: 'infrastructure-networks.png', label: 'replan.group.walkway', tool: { kind: 'replanPath', layer: 'walkways', start: null, horizontalFirst: true }, drop: { kind: 'tiles', layer: 'walkways' } }),
     ...single(stash, 'pedestrianAccesses', { id: 'accesses', section: NETWORK, codexId: 'pedestrianAccess', label: 'replan.group.access', tool: { kind: 'replanTile', layer: 'pedestrianAccesses' }, drop: { kind: 'tiles', layer: 'pedestrianAccesses' } }),
