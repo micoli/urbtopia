@@ -1,6 +1,7 @@
 import { STAFF, hireFeeOf, minTierOfTechnician, technicianPostsOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
+import { FloorRestocker } from './FloorRestocker';
 import { ActionButton } from '../common/ActionButton';
 import { UrbsAmount } from '../common/UrbsAmount';
 
@@ -28,6 +29,7 @@ export function FloorStaff({ factory }: FloorStaffProps) {
             <ActionButton aria-label={`${t('venue.hire')} ${t('venue.role.technician')}`} disabled={hired >= posts || locked} onClick={() => send({ type: 'HireFloorTechnician', buildingId: factory.id })}>+</ActionButton>
           </div>
         </div>
+        {factory.type === 'packhouse' ? <FloorRestocker packhouse={factory} /> : null}
       </div>
     </section>
   );

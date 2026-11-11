@@ -220,7 +220,9 @@ export function releaseFloorRestocker(state: GameState, buildingId: number): Com
   return { state: withFloor(state, packhouse, { ...floor, fixtures, restockers: hired - 1 }), events: [] };
 }
 
-const withoutRestocker = ({ restocker: _released, ...fixture }: VenueFixture): VenueFixture => fixture;
+const without = (fixture: VenueFixture, ...fields: (keyof VenueFixture)[]): VenueFixture => Object.fromEntries(Object.entries(fixture).filter(([field]) => !fields.includes(field as keyof VenueFixture))) as unknown as VenueFixture;
+
+const withoutRestocker = (fixture: VenueFixture): VenueFixture => without(fixture, 'restocker');
 
 const exitOf = (floor: FloorData, fixtureId: number): VenueFixture | CommandError => {
   const fixture = floor.fixtures.find(candidate => candidate.id === fixtureId);
@@ -239,8 +241,7 @@ export function setExitRestock(state: GameState, buildingId: number, fixtureId: 
   const exit = exitOf(floorOf(packhouse), fixtureId);
   if ('key' in exit) return exit;
   if (good === null) {
-    const { restock: _cleared, ...cleared } = withoutRestocker(exit);
-    return withFixture(state, packhouse, cleared);
+    return withFixture(state, packhouse, without(exit, 'restock', 'restocker'));
   }
   if (!producibleItems('packhouse').includes(good)) return { key: 'error.cannotProduce' };
   if (packSizeOf(good) !== FIXTURES[exit.type].packSize) return { key: 'error.wrongPackSize' };

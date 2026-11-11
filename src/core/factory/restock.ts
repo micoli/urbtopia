@@ -1,4 +1,4 @@
-import { advanceBuilding, isIdle, newQueueEntry, recipeMultiplierOf } from '../economy/production';
+import { advanceBuilding, newQueueEntry, recipeMultiplierOf } from '../economy/production';
 import { compartmentOf, hasStorage, storageCapacity, storageUsed } from '../economy/storage';
 import { isGood, isMaterial, minTierOf, producibleItems, recipeOf } from '../economy/items';
 import { isItemUnlocked } from '../progression/unlocks';

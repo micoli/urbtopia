@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advance, createBuilding, dispatch, newGame, productionTierOf, type Building, type Command, type FixtureId, type GameState, type Rotation, type VenueFixture } from '../index';
+import { advance, createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type Rotation, type VenueFixture } from '../index';
 import { productionDurationOf } from '../economy/production';
 import { storageCapacity } from '../economy/storage';
 

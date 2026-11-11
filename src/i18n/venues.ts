@@ -69,6 +69,14 @@ type VenueMessageKey =
   | 'venue.priceLocked'
   | `venue.role.${StaffRole}`
   | `venue.roleEffect.${StaffRole}`
+  | 'venue.role.restocker'
+  | 'venue.roleEffect.restocker'
+  | 'venue.restock'
+  | 'venue.restockNone'
+  | 'venue.restockAssign'
+  | 'venue.restockRelease'
+  | 'venue.restockAtWork'
+  | 'venue.restockerFree'
   | 'venue.attractiveness'
   | 'venue.serviceRate'
   | 'venue.hint.counterFar'
@@ -318,6 +326,14 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.role.manager': ['Manager', 'Manager'],
   'venue.role.employee': ['Employee', 'Personnel de comptoir'],
   'venue.role.technician': ['Technician', 'Personnel technique'],
+  'venue.role.restocker': ['Restocker', 'Employé de réassort'],
+  'venue.roleEffect.restocker': ['Keeps the production of an Exit’s Restock going and stores it', 'Relance la production du réassort d’une sortie et la range à l’entrepôt'],
+  'venue.restock': ['Restock', 'Réassort'],
+  'venue.restockNone': ['No restock', 'Aucun réassort'],
+  'venue.restockAssign': ['Assign a Restocker', 'Affecter un employé de réassort'],
+  'venue.restockRelease': ['Free the Restocker', 'Libérer l’employé de réassort'],
+  'venue.restockAtWork': ['A Restocker works on this Line', 'Un employé de réassort travaille sur cette ligne'],
+  'venue.restockerFree': ['Free Restockers', 'Employés de réassort libres'],
   'venue.role.security': ['Security', 'Sécurité'],
   'venue.roleEffect.manager': ['Unlocks pricing and events, +10% yield', 'Débloque les prix et les événements, +10 % de rendement'],
   'venue.roleEffect.employee': ['Serves the counter: faster service', 'Tient le comptoir : service plus rapide'],
