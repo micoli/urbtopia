@@ -345,7 +345,7 @@ The page that opens from a Venue's side panel and shows its interior, where the 
 _Avoid_: Interior, editor, back office
 
 **Fixture**:
-An item the player places inside a Venue's interior or a Factory floor: a counter, a table, a chair, a game machine, a billiard table, an air hockey table; on a Factory floor, a Motor, Gear, Shaft, Pump, Pipe or Machine. Its position relative to the other Fixtures affects the Venue's performance.
+An item the player places inside a Venue's interior or a Factory floor: a counter, a table, a chair, a game machine, a billiard table, an air hockey table; on a Factory floor, a Motor, Gear, Shaft, Pump, Pipe or Machine; on a Packhouse floor, a Motor, Gear, Shaft, Packer, Conveyor, Strapper, Scanner or Exit. Its position relative to the other Fixtures affects the Venue's performance.
 _Avoid_: Furniture, equipment, decoration
 
 **Staff**:
@@ -399,6 +399,34 @@ _Avoid_: Customer, guest, Citizen
 **Factory floor**:
 The interior of a Factory, opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Factory's Tier, where the player places Fixtures. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. A Factory with an empty floor produces as it always did; the floor only adds a bonus to speed and yield, capped by the Factory's Tier.
 _Avoid_: Venue (earns Urbs from Visitors), workshop floor, plant
+
+**Packhouse floor**:
+The interior of a Packhouse, opened from its side panel in the same Management view as a Venue and built on the same engine as the Factory floor: a 3D room whose grid grows with the Packhouse's Tier, where the player places Fixtures. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. A Packhouse with an empty floor packs as it always did; the floor only adds a bonus to speed and yield, capped by the Packhouse's Tier, and only for the packed Goods whose Line is Linked. Its Machines wear like those of a Factory floor, and a Technician repairs them.
+_Avoid_: Venue, Factory floor (a Factory's interior), packing line
+
+**Line**:
+The network of a Packhouse floor that carries Packets from a Packer to an Exit, through Conveyors and Strappers, in one direction. A Line is Linked when it is unbroken from the Packer to an Exit; a break, or a worn Fixture that has broken down, unlinks everything downstream of it. Packets shown on it are a picture of the Line, never counted.
+_Avoid_: Belt, pipeline, Flow (the liquid network of a Factory floor)
+
+**Packer**:
+The Machine at the start of a Line, hung on the back wall of a Packhouse floor, that needs Drive and puts Packets on the Line. It takes no floor tile.
+_Avoid_: Packing machine, entry
+
+**Conveyor**:
+A Fixture of a Line, at a worker's height, that carries Packets one way: straight, in an elbow (a left or a right turn for the Packets) or in a T that merges two entries into one exit. It needs no Drive.
+_Avoid_: Belt, tape, treadmill
+
+**Strapper**:
+A Machine that a Line passes through, taking Packets in on one side and giving them out on the opposite side; it needs Drive. Several in a row add a small bonus of variety.
+_Avoid_: Binder, wrapper
+
+**Exit**:
+The end of a Line: a Conveyor hung on any wall of a Packhouse floor, taking no floor tile, that delivers the Packets. Each Exit serves one size of packed Goods (Crate, Box or Pallet); a Slot's bonus counts only if an Exit of its size is Linked. A cart or truck is seen leaving at it.
+_Avoid_: Output, outlet, door
+
+**Scanner**:
+A Fixture a Line passes through, like a Strapper, that checks Packets and lowers the wear of the Fixtures downstream of it.
+_Avoid_: Quality control, inspector
 
 **Home interior**:
 The interior of one sample dwelling of a Home (its Comfort applies to the whole Home whatever its number of Citizens), opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Home's Tier, where the player places Fixtures of everyday life (bed, table, chair, stove, sink, bathroom, television, bookcase, wall paintings…) and chooses the floor. It is not a Venue: it has no Staff, Jobs, Takings, Visitors, Rank or events, and its Fixtures have no Condition. An empty interior leaves the Home exactly as it was; the only effect of a furnished one is its Comfort. It opens once the city has 700 Citizens. The floor is one of four parquets, a free choice; paintings hang on the back walls instead of standing on a tile.
