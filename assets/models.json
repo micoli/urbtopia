@@ -24218,6 +24218,56 @@
     ],
     "flush": true
   },
+  "packhouse-floor-conveyor-join-straight-left": {
+    "file": "packhouse-floor/conveyor-join-straight-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-conveyor-join-straight-right": {
+    "file": "packhouse-floor/conveyor-join-straight-right",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-conveyor-split": {
+    "file": "packhouse-floor/conveyor-split",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-conveyor-split-straight-left": {
+    "file": "packhouse-floor/conveyor-split-straight-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-conveyor-split-straight-right": {
+    "file": "packhouse-floor/conveyor-split-straight-right",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "packhouse-floor-conveyor-straight": {
     "file": "packhouse-floor/conveyor-straight",
     "source": "managed",
@@ -24258,6 +24308,16 @@
     ],
     "flush": true
   },
+  "packhouse-floor-packer-left": {
+    "file": "packhouse-floor/packer-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "packhouse-floor-scanner": {
     "file": "packhouse-floor/scanner",
     "source": "managed",
@@ -24270,6 +24330,16 @@
   },
   "packhouse-floor-strapper": {
     "file": "packhouse-floor/strapper",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-strapper-left": {
+    "file": "packhouse-floor/strapper-left",
     "source": "managed",
     "license": "Own work",
     "footprint": [

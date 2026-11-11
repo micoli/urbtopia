@@ -437,6 +437,7 @@ export const floorLinksOf = (allFixtures: readonly VenueFixture[]): FloorLinks =
 export const floorMotionOf = memoized((allFixtures): ReadonlyMap<number, FloorMotion> => {
   const { fixtures, drive, powered, flow, links } = reportOf(allFixtures);
   const motion = new Map<number, FloorMotion>(drive.carried);
+  for (const id of links.lined) motion.set(id, 'cw');
   for (const id of powered) if (pushesToLinked(id, flow, links.linked)) motion.set(id, 'cw');
   for (const machine of fixtures.filter(fixture => links.linked.has(fixture.id))) {
     const turns = drive.received.get(machine.id);
@@ -486,7 +487,7 @@ export const floorGridSizeOf = (tier: number): number => capOf(floorBalance.grid
 
 export const packhouseGridSizeOf = (tier: number): number => capOf(packhouseBalance.gridSizes, tier);
 
-// The most Exits a Packhouse floor can have at a Tier.
+// The most Exits of each size a Packhouse floor can have at a Tier.
 export const packhouseExitLimitOf = (tier: number): number => capOf(packhouseBalance.exitLimits, tier);
 
 // The Machines that a circuit of Flow reaches from a Machine, through its Pipes and Pumps.
@@ -553,10 +554,104 @@ function bonusOf(allFixtures: readonly VenueFixture[], tier: number): FloorBonus
   };
 }
 
+// A way that Packets take on a Packhouse floor, as the points of the floor they go through, in cell units: from the mouth of a Packer, through the middle of each Fixture
+// of its Line, to the hatch of an Exit. A Line that splits has a way for each Exit, which share their start, and Packets take them in turn.
+export interface LinePath {
+  source: number;
+  points: readonly { x: number; y: number }[];
+}
+
+const MOUTH = 0.15;
+const HATCH = 0.8;
+
+export function linePathsOf(allFixtures: readonly VenueFixture[]): readonly LinePath[] {
+  const { fixtures, line } = reportOf(allFixtures);
+  const byId = new Map(fixtures.map(fixture => [fixture.id, fixture]));
+  const centre = (fixture: VenueFixture) => ({ x: fixture.x + 0.5, y: fixture.y + 0.5 });
+  const toward = (fixture: VenueFixture, side: FixtureSide, distance: number) => {
+    const offset = turned(SIDE_OFFSETS[side], fixture.rotation);
+    return { x: fixture.x + 0.5 + offset.x * distance, y: fixture.y + 0.5 + offset.y * distance };
+  };
+  const sources = fixtures.filter(fixture => line.lined.has(fixture.id) && (FIXTURES[fixture.type].lineOut?.length ?? 0) > 0 && FIXTURES[fixture.type].lineIn === undefined);
+  const paths: LinePath[] = [];
+  const walk = (source: VenueFixture, current: VenueFixture, points: readonly { x: number; y: number }[], seen: ReadonlySet<number>): void => {
+    const nexts = (line.next.get(current.id) ?? []).filter(id => line.lined.has(id) && !seen.has(id));
+    if (nexts.length === 0) {
+      if (roleOf(current) === 'exit') paths.push({ source: source.id, points: [...points, toward(current, 'back', HATCH)] });
+      return;
+    }
+    for (const id of nexts) {
+      const next = byId.get(id);
+      if (next) walk(source, next, [...points, centre(next)], new Set([...seen, id]));
+    }
+  };
+  for (const source of sources) walk(source, source, [toward(source, 'front', MOUTH)], new Set([source.id]));
+  return paths;
+}
+
+// Why a Fixture of a Line carries no Packets: following what should feed it backwards, where the chain stops.
+export type LineFault =
+  // The Fixture that feeds the chain is broken: repair it.
+  | { kind: 'broken'; fixture: VenueFixture }
+  // A Packer or a Strapper along the way gets no Drive.
+  | { kind: 'noDrive'; fixture: VenueFixture }
+  // The Fixture next to the entry does not carry toward it: turn it, or replace it.
+  | { kind: 'misfacing'; fixture: VenueFixture }
+  // Nothing at all lies next to the entry.
+  | { kind: 'deadEnd'; cell: { x: number; y: number }; of: VenueFixture };
+
+export function lineFaultOf(allFixtures: readonly VenueFixture[], start: VenueFixture): LineFault | undefined {
+  const { links } = reportOf(allFixtures);
+  if (links.lined.has(start.id)) return undefined;
+  const sides = (fixture: VenueFixture, key: 'lineIn' | 'lineOut'): readonly FixtureSide[] => FIXTURES[fixture.type][key] ?? [];
+  const at = placedOn(allFixtures.filter(isFactoryFixture));
+  const cellAt = (fixture: VenueFixture, side: FixtureSide) => {
+    const offset = turned(SIDE_OFFSETS[side], fixture.rotation);
+    return { x: fixture.x + offset.x, y: fixture.y + offset.y };
+  };
+  const seen = new Set<number>();
+  let current = start;
+  for (;;) {
+    seen.add(current.id);
+    if (isMachine(current) && !links.linked.has(current.id) && current.broken !== true) return { kind: 'noDrive', fixture: current };
+    const entries = sides(current, 'lineIn');
+    if (entries.length === 0) return undefined;
+    const feeders = entries.flatMap(side => {
+      const cell = cellAt(current, side);
+      const neighbour = at.get(keyOf(cell.x, cell.y));
+      const facing = neighbour && sideToward(neighbour, current);
+      return neighbour && facing && sides(neighbour, 'lineOut').includes(facing) ? [neighbour] : [];
+    });
+    const feeder = feeders.find(candidate => !seen.has(candidate.id));
+    if (!feeder) {
+      const first = entries.map(side => cellAt(current, side)).find(cell => !at.has(keyOf(cell.x, cell.y))) ?? cellAt(current, entries[0]!);
+      const wrong = entries.map(side => at.get(keyOf(cellAt(current, side).x, cellAt(current, side).y))).find(neighbour => neighbour !== undefined);
+      return wrong ? { kind: 'misfacing', fixture: wrong } : { kind: 'deadEnd', cell: first, of: current };
+    }
+    if (feeder.broken === true) return { kind: 'broken', fixture: feeder };
+    current = feeder;
+  }
+}
+
 // The Exits of a Packhouse floor that Packets reach.
 export const linkedExitsOf = (allFixtures: readonly VenueFixture[]): readonly VenueFixture[] => {
   const { lined } = floorLinksOf(allFixtures);
   return allFixtures.filter(fixture => lined.has(fixture.id) && roleOf(fixture) === 'exit');
+};
+
+// What the Motors of a Packhouse floor ask of the city's power, as those of a Factory floor do: all of it when the Machines they drive run, a share of it at rest.
+function packhousePowerOf(allFixtures: readonly VenueFixture[]): number {
+  const { fixtures, drive } = reportOf(allFixtures);
+  const motors = fixtures.filter(fixture => roleOf(fixture) === 'motor');
+  if (motors.length === 0) return 0;
+  const busy = Math.min(1, drive.received.size / (motors.length * floorBalance.motorCapacity));
+  return motors.length * floorBalance.motorPower * (floorBalance.idlePowerShare + (1 - floorBalance.idlePowerShare) * busy);
+}
+
+// What the Motors of a building's floor ask of the city's power.
+export const floorPowerOfBuilding = (building: Pick<Building, 'type' | 'tier' | 'floor'>): number => {
+  if (!building.floor) return 0;
+  return building.type === 'packhouse' ? packhousePowerOf(building.floor.fixtures) : floorBonusOf(building.floor.fixtures, building.tier).power;
 };
 
 const packBonuses = new WeakMap<readonly VenueFixture[], Map<string, FloorBonus>>();
@@ -564,7 +659,8 @@ const packBonuses = new WeakMap<readonly VenueFixture[], Map<string, FloorBonus>
 const packSizeOf = (item: ItemId): PackSize | null => (['Crate', 'Box', 'Pallet'] as const).find(size => item.endsWith(size)) ?? null;
 
 // What the Line of a Packhouse floor adds to the speed and the yield of the Slots that pack a size of Goods: only the Packers and Strappers that Packets leave through
-// an Exit of that size count, each Strapper beyond the first adds to the yield, and with no size asked it is the best that a size gets. A Packhouse draws no power for its Motors.
+// an Exit of that size count, each Strapper beyond the first adds to the yield, and with no size asked it is the best that a size gets. The power its Motors draw is
+// told apart, by `floorPowerOfBuilding`.
 export function packhouseBonusOf(allFixtures: readonly VenueFixture[], tier: number, size?: PackSize | null): FloorBonus {
   const perKey = packBonuses.get(allFixtures) ?? new Map<string, FloorBonus>();
   packBonuses.set(allFixtures, perKey);

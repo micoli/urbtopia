@@ -409,19 +409,19 @@ The network of a Packhouse floor that carries Packets from a Packer to an Exit, 
 _Avoid_: Belt, pipeline, Flow (the liquid network of a Factory floor)
 
 **Packer**:
-The Machine at the start of a Line, standing against the back wall of a Packhouse floor, on the tile along it and facing the room, that needs Drive and puts Packets on the Line.
+The Machine at the start of a Line, standing against the back wall of a Packhouse floor, on the tile along it and facing the room, that needs Drive, which enters on its right side or, in its left-handed version, on its left side, and puts Packets on the Line.
 _Avoid_: Packing machine, entry
 
 **Conveyor**:
-A Fixture of a Line, at a worker's height, that carries Packets one way: straight, in an elbow (a left or a right turn for the Packets) or in a T that merges two entries into one exit. It needs no Drive.
+A Fixture of a Line, at a worker's height, that carries Packets one way: straight, in an elbow (a left or a right turn for the Packets), in a T that merges two entries into one exit (from both sides, or from straight behind and one side), or in a T that splits one entry into two exits (to both sides, or straight on and to one side), where Packets take the two ways in turn. It needs no Drive.
 _Avoid_: Belt, tape, treadmill
 
 **Strapper**:
-A Machine that a Line passes through, taking Packets in on one side and giving them out on the opposite side; it needs Drive. Several in a row add a small bonus of variety.
+A Machine that a Line passes through, taking Packets in on one side and giving them out on the opposite side; it needs Drive, which enters on its right side or, in its left-handed version, on its left side. Several in a row add a small bonus of variety.
 _Avoid_: Binder, wrapper
 
 **Exit**:
-The end of a Line: a Conveyor standing against the back wall or the left wall of a Packhouse floor, on the tile along it with its back to the wall, that delivers the Packets through a hatch. Each Exit serves one size of packed Goods (Crate, Box or Pallet), told apart by its colour; a Slot's bonus counts only if an Exit of its size is Linked, and a Packhouse floor has as many Exits as its Tier allows. A truck waits outside each Exit that is Linked.
+The end of a Line: a Conveyor standing against any edge of a Packhouse floor, on the tile along it with its back to the edge, turned by itself to face away from the room, that delivers the Packets through a hatch. Each Exit serves one size of packed Goods (Crate, Box or Pallet), told apart by its colour; a Slot's bonus counts only if an Exit of its size is Linked, and a Packhouse floor has as many Exits of each size as its Tier allows. A truck waits outside each Exit that is Linked.
 _Avoid_: Output, outlet, door
 
 **Scanner**:

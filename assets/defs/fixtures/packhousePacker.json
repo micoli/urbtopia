@@ -4,8 +4,8 @@
   "venue": "packhouse",
   "category": "machines",
   "name": {
-    "en": "Packer",
-    "fr": "Emballeuse"
+    "en": "Packer (Drive on the right)",
+    "fr": "Emballeuse (prise à droite)"
   },
   "model": "packhouse-floor-packer",
   "footprint": [1, 1],
@@ -14,8 +14,8 @@
   "wear": 0.1,
   "role": "machine",
   "drive": ["right"],
-  "speed": 0.15,
-  "yield": 0.05,
+  "speed": 0.2,
+  "yield": 0.08,
   "family": "packer",
   "lineOut": ["front"]
 }

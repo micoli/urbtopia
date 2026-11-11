@@ -11,7 +11,7 @@ import { durationOf, valueOf, type ItemId } from './items';
 import type { Building, GameState, QueueEntry, ShopStack } from '../engine/state';
 import { productionTierOf } from './tiers';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { floorBonusOfBuilding } from '../factory/factoryFloor';
+import { floorBonusOfBuilding, floorPowerOfBuilding } from '../factory/factoryFloor';
 
 // A Mill or a Bakery consumes as many recipes as its yield per cycle.
 export const recipeMultiplierOf = (building: Building): number => (scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1);
@@ -173,9 +173,10 @@ export function taxDue(building: Building): number {
 export function advanceProduction(state: GameState, now: number, elapsedMs: number, economicRatio = 1, homeRatios: ReadonlyMap<number, number> = new Map(), idleShops: ReadonlySet<number> = new Set(), filledJobs: ReadonlyMap<number, number> = new Map(), industrySpeed = 1): { state: GameState; events: GameEvent[] } {
   const results = state.buildings.map((building) => {
     const idle = idleShops.has(building.id);
+    const drawsPower = building.type === 'packhouse' && floorPowerOfBuilding(building) > 0;
     const ratio = isIndustryType(building.type) ? economicRatio * industrySpeed : economicRatio;
     const delay = idle ? elapsedMs : elapsedMs * (1 - ratio);
-    const slowed = isIndustryType(building.type) || isShopType(building.type) ? {
+    const slowed = isIndustryType(building.type) || isShopType(building.type) || drawsPower ? {
       ...building,
       queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delay }),
       stacks: building.stacks.map(stack => stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + delay }),

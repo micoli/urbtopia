@@ -99,6 +99,10 @@ type VenueMessageKey =
   | 'factory.floor.linkedMachine'
   | 'packhouse.floor.lined'
   | 'packhouse.floor.idle'
+  | 'packhouse.floor.fault.broken'
+  | 'packhouse.floor.fault.noDrive'
+  | 'packhouse.floor.fault.misfacing'
+  | 'packhouse.floor.fault.deadEnd'
   | 'packhouse.floor.noExit'
   | 'packhouse.floor.exitSize'
   | 'packhouse.floor.size.Crate'
@@ -265,7 +269,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.eventNeedsRank': ['Events open at Rank 2: keep trading to earn it.', 'Les événements s’ouvrent au rang 2 : continuez d’exploiter pour l’atteindre.'],
   'venue.hireFee': ['Hiring fee', 'Frais d’embauche'],
   'error.noStaffPost': ['All the posts of this role are filled.', 'Tous les postes de ce rôle sont pourvus.'],
-  'error.exitLimitReached': ['This floor has all the Exits its Tier allows.', 'Cet étage a toutes les sorties que son niveau permet.'],
+  'error.exitLimitReached': ['This floor has all the Exits of this size its Tier allows.', 'Cet étage a toutes les sorties de ce format que son niveau permet.'],
   'error.noStaffToRelease': ['Nobody to release in this role.', 'Personne à licencier dans ce rôle.'],
   'codex.fact.grid': ['Interior', 'Intérieur'],
   'codex.fact.posts': ['Staff posts', 'Postes de personnel'],
@@ -362,6 +366,10 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'factory.floor.linkedMachine': ['Linked: it adds its bonus.', 'Reliée : elle apporte son bonus.'],
   'packhouse.floor.lined': ['On a Line that reaches an Exit.', 'Sur une ligne qui atteint une sortie.'],
   'packhouse.floor.idle': ['Carries no Packets: no Packer with Drive sends any here, or this does not lead to an Exit.', 'Ne porte aucun paquet : aucune emballeuse alimentée n’en envoie ici, ou cela ne mène pas à une sortie.'],
+  'packhouse.floor.fault.broken': ['The Line is cut: {name} is broken (marked on the floor). Repair it.', 'La ligne est coupée : {name} est en panne (marqué au sol). Réparez-le.'],
+  'packhouse.floor.fault.noDrive': ['{name} gets no Drive (marked on the floor): its input must face a Shaft or a Gear that a Motor turns.', '{name} ne reçoit aucune force (marqué au sol) : son entrée doit faire face à un arbre ou un engrenage que tourne un moteur.'],
+  'packhouse.floor.fault.misfacing': ['{name} next to it (marked on the floor) does not carry Packets toward it: turn it or replace it.', '{name} à côté (marqué au sol) ne porte pas les paquets vers lui : pivotez-le ou remplacez-le.'],
+  'packhouse.floor.fault.deadEnd': ['Nothing brings Packets to {name}: the cell in front of its entry (marked on the floor) is empty, lay a Conveyor there that carries toward it.', 'Rien n’apporte de paquets à {name} : la case devant son entrée (marquée au sol) est vide, posez-y un tapis qui porte vers lui.'],
   'packhouse.floor.noExit': ['Its Packets reach no Exit: it adds no bonus.', 'Ses paquets n’atteignent aucune sortie : elle n’apporte aucun bonus.'],
   'packhouse.floor.exitSize': ['Serves {size} of packed Goods.', 'Dessert les {size} de produits emballés.'],
   'packhouse.floor.size.Crate': ['crates', 'caisses'],

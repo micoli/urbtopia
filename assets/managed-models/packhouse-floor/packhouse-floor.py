@@ -63,13 +63,14 @@ def packer(rng):
              block("belt_rail_l", -0.2, -0.17, -1.0, front, 0.3, BELT_Z, P["steel"]), block("belt_rail_r", 0.17, 0.2, -1.0, front, 0.3, BELT_Z, P["steel"]),
              block("belt_bed", -0.17, 0.17, -1.0, front, 0.3, 0.4, P["belt"]),
              block("belt_leg_l", -0.2, -0.17, -0.98, -0.92, 0.0, 0.3, P["iron"]), block("belt_leg_r", 0.17, 0.2, -0.98, -0.92, 0.0, 0.3, P["iron"])]
-    parts += packet("packet", -0.1, 0.1, -0.74, -0.56, 0.4, 0.56)
     parts += [block("gearbox", 0.4, 0.46, -0.58, -0.42, 0.26, 0.42, P["iron"]),
               sideways(disc("stub", 0.04, 0.12, (0, 0, 0), P["steel"], 6), x=0.4, y=-0.5, z=DRIVE_Z)]
     pulley = [sideways(disc("pulley", 0.1, 0.04, (0, 0, 0), P["brass"], 10), x=0.46, y=-0.5, z=DRIVE_Z),
               sideways(disc("pulley_hub", 0.05, 0.08, (0, 0, 0), P["steel_dark"], 8), x=0.44, y=-0.5, z=DRIVE_Z),
               block("pulley_spoke", 0.46, 0.5, -0.5 - 0.09, -0.5 + 0.09, DRIVE_Z - 0.015, DRIVE_Z + 0.015, P["black"])]
-    return shifted(parts, 0.5), {"spin-x": (shifted(pulley, 0.5), (0.46, 0.0, DRIVE_Z))}
+    plunger = [block("plunger_plate", -0.2, 0.2, -0.46, -0.14, 1.0, 1.04, P["steel"]), block("plunger_rod", -0.03, 0.03, -0.32, -0.28, 1.04, 1.16, P["steel_dark"]),
+               block("plunger_knob", -0.06, 0.06, -0.34, -0.26, 1.16, 1.2, P["red"])]
+    return shifted(parts, 0.5), {"spin-x": (shifted(pulley, 0.5), (0.46, 0.0, DRIVE_Z)), "slide-up": (shifted(plunger, 0.5), (0, 0, 0))}
 
 
 def arrow(name, x, y, turn=0, color="yellow", size=0.09):
@@ -111,6 +112,39 @@ def conveyor_tee(rng):
     return parts + arrow("arrow_l", -0.33, 0.0, 90) + arrow("arrow_r", 0.33, 0.0, -90) + arrow("arrow_out", 0.0, -0.36)
 
 
+def conveyor_split(rng):
+    """T Conveyor that splits: the Packets come in at the back, along y, and leave to the left and to the right along x, a packet to one side and the next to the other.
+    The front is closed by a rail. Arrows on both arms point away from the junction, the one on the stem points in."""
+    parts = [block("belt_bed_bar", -0.5, 0.5, -0.17, 0.17, 0.3, BELT_Z - 0.02, P["belt"]), block("belt_bed_stem", -0.17, 0.17, 0.17, 0.5, 0.3, BELT_Z - 0.02, P["belt"]),
+             block("rail_front", -0.5, 0.5, -0.2, -0.17, 0.3, BELT_Z, P["steel"]),
+             block("rail_back_l", -0.5, -0.2, 0.17, 0.2, 0.3, BELT_Z, P["steel"]), block("rail_back_r", 0.2, 0.5, 0.17, 0.2, 0.3, BELT_Z, P["steel"]),
+             block("rail_stem_l", -0.2, -0.17, 0.17, 0.5, 0.3, BELT_Z, P["steel"]), block("rail_stem_r", 0.17, 0.2, 0.17, 0.5, 0.3, BELT_Z, P["steel"]),
+             block("junction_plate", -0.17, 0.17, -0.17, 0.17, BELT_Z - 0.02, BELT_Z - 0.016, P["steel_dark"]),
+             block("splitter_blade", -0.015, 0.015, -0.17, 0.12, BELT_Z - 0.02, BELT_Z + 0.04, P["yellow"])]
+    for k, (x, y) in enumerate(((-0.44, 0.17), (0.44, 0.17), (-0.44, -0.17), (0.44, -0.17), (-0.17, 0.44), (0.17, 0.44))):
+        parts.append(block(f"leg{k}", x - 0.03, x + 0.03, y - 0.03, y + 0.03, 0.0, 0.3, P["iron"]))
+    return parts + arrow("arrow_l", -0.33, 0.0, -90) + arrow("arrow_r", 0.33, 0.0, 90) + arrow("arrow_in", 0.0, 0.3)
+
+
+def split_straight(side, joining=False):
+    """Straight splitting T Conveyor: the Packets come in at the back and go on straight toward the front, and every other packet turns off to the right (side 1) or to the left
+    (side -1) along x. The belt keeps its two rails, opened on the side of the branch. Joining, the branch brings its Packets onto the straight belt instead, and there is no diverter."""
+    def at(name, x0, x1, y0, y1, z0, z1, color):
+        return block(name, min(x0 * side, x1 * side), max(x0 * side, x1 * side), y0, y1, z0, z1, P[color])
+
+    def build(rng):
+        parts = [at("belt_bed", -0.17, 0.17, -0.5, 0.5, 0.3, BELT_Z - 0.02, "belt"), at("branch_bed", 0.17, 0.5, -0.17, 0.17, 0.3, BELT_Z - 0.02, "belt"),
+                 at("rail_far", -0.2, -0.17, -0.5, 0.5, 0.3, BELT_Z, "steel"),
+                 at("rail_near_back", 0.17, 0.2, 0.17, 0.5, 0.3, BELT_Z, "steel"), at("rail_near_front", 0.17, 0.2, -0.5, -0.17, 0.3, BELT_Z, "steel"),
+                 at("rail_branch_back", 0.2, 0.5, 0.17, 0.2, 0.3, BELT_Z, "steel"), at("rail_branch_front", 0.2, 0.5, -0.2, -0.17, 0.3, BELT_Z, "steel"),
+                 at("junction_plate", -0.17, 0.17, -0.17, 0.17, BELT_Z - 0.02, BELT_Z - 0.016, "steel_dark"),
+                 *([] if joining else [at("diverter", 0.0, 0.17, -0.02, 0.02, BELT_Z - 0.02, BELT_Z + 0.04, "yellow")])]
+        for k, (x, y) in enumerate(((-0.185, 0.42), (0.185, 0.42), (-0.185, -0.42), (0.185, -0.42), (0.44, 0.185), (0.44, -0.185))):
+            parts.append(at(f"leg{k}", x - 0.03, x + 0.03, y - 0.03, y + 0.03, 0.0, 0.3, "iron"))
+        return parts + arrow("arrow_in", 0.0, 0.34) + arrow("arrow_straight", 0.0, -0.34) + arrow("arrow_branch", 0.33 * side, 0.0, -90 * side if joining else 90 * side)
+    return build
+
+
 REEL_X = -0.36
 REEL_Z = 0.8
 
@@ -122,14 +156,12 @@ def strapper(rng):
     parts += [block("post_l", -0.3, -0.2, -0.2, 0.2, 0.3, 0.84, P["olive"]), block("post_r", 0.2, 0.3, -0.2, 0.2, 0.3, 0.84, P["olive"]),
               block("foot_l", -0.32, -0.2, -0.22, 0.22, 0.26, 0.32, P["olive_dark"]), block("foot_r", 0.2, 0.32, -0.22, 0.22, 0.26, 0.32, P["olive_dark"]),
               block("beam", -0.32, 0.32, -0.22, 0.22, 0.84, 0.96, P["olive"]), block("beam_cap", -0.33, 0.33, -0.23, 0.23, 0.94, 0.98, P["olive_dark"]),
-              block("head", -0.14, 0.14, -0.14, 0.14, 0.7, 0.84, P["steel_dark"]), block("head_nose", -0.1, 0.1, -0.16, 0.16, 0.66, 0.7, P["iron"]),
               block("band_top", -0.14, 0.14, -0.006, 0.006, 0.6, 0.612, P["white"]), block("band_l", -0.14, -0.128, -0.006, 0.006, 0.4, 0.612, P["white"]),
               block("band_r", 0.128, 0.14, -0.006, 0.006, 0.4, 0.612, P["white"]),
               block("lamp_stem", 0.22, 0.26, -0.02, 0.02, 0.98, 1.02, P["steel_dark"]), block("lamp", 0.21, 0.27, -0.03, 0.03, 1.02, 1.08, P["green"]),
               block("panel", 0.3, 0.32, -0.12, 0.12, 0.6, 0.78, P["iron"]), block("screen", 0.32, 0.325, -0.08, 0.08, 0.66, 0.74, P["glass"]),
               block("gearbox", 0.3, 0.4, -0.1, 0.1, 0.26, 0.46, P["iron"]), block("gearbox_cap", 0.3, 0.4, -0.11, 0.11, 0.44, 0.48, P["steel_dark"]),
               sideways(disc("stub", 0.04, 0.12, (0, 0, 0), P["steel"], 6), x=0.4, y=0.0, z=DRIVE_Z)]
-    parts += packet("packet", -0.1, 0.1, -0.1, 0.1, 0.4, 0.56)[:1]
     parts += [block("reel_arm", -0.4, -0.3, -0.03, 0.03, REEL_Z - 0.03, REEL_Z + 0.03, P["iron"]), horizontal(disc("reel_axle", 0.03, 0.12, (0, 0, 0), P["steel"], 6), x=REEL_X, y=-0.06, z=REEL_Z)]
     reel = [horizontal(disc("reel", 0.12, 0.05, (0, 0, 0), P["white"], 12), x=REEL_X, y=-0.025, z=REEL_Z),
             horizontal(disc("reel_core", 0.05, 0.07, (0, 0, 0), P["steel_dark"], 8), x=REEL_X, y=-0.035, z=REEL_Z),
@@ -138,7 +170,8 @@ def strapper(rng):
     pulley = [sideways(disc("pulley", 0.1, 0.04, (0, 0, 0), P["brass"], 10), x=0.46, y=0.0, z=DRIVE_Z),
               sideways(disc("pulley_hub", 0.05, 0.08, (0, 0, 0), P["steel_dark"], 8), x=0.44, y=0.0, z=DRIVE_Z),
               block("pulley_spoke", 0.46, 0.5, -0.09, 0.09, DRIVE_Z - 0.015, DRIVE_Z + 0.015, P["black"])]
-    return parts, {"spin-x": (pulley, (0.46, 0.0, DRIVE_Z)), "spin-y": (reel, (REEL_X, 0.0, REEL_Z))}
+    head = [block("head", -0.14, 0.14, -0.14, 0.14, 0.7, 0.84, P["steel_dark"]), block("head_nose", -0.1, 0.1, -0.16, 0.16, 0.66, 0.7, P["iron"])]
+    return parts, {"spin-x": (pulley, (0.46, 0.0, DRIVE_Z)), "spin-y": (reel, (REEL_X, 0.0, REEL_Z)), "slide-up": (head, (0, 0, 0))}
 
 
 def exit_conveyor(rng):
@@ -154,7 +187,6 @@ def exit_conveyor(rng):
               block("lamp_stem", 0.1, 0.14, -0.02, 0.02, 0.74, 0.78, P["steel_dark"]), block("lamp", 0.09, 0.15, -0.03, 0.03, 0.78, 0.84, P["green"])]
     parts += [block(f"hazard{k}", -0.28 + 0.1 * k, -0.28 + 0.1 * k + 0.05, -0.07, -0.065, 0.62, 0.68, P["yellow" if k % 2 == 0 else "black"]) for k in range(6)]
     parts += [block(f"curtain{k}", -0.22 + 0.088 * k, -0.22 + 0.088 * k + 0.08, -0.03, -0.01, 0.46, 0.6, P["belt"]) for k in range(5)]
-    parts += packet("packet", -0.09, 0.09, 0.07, 0.25, 0.4, 0.55)[:1]
     return shifted(parts + arrow("arrow", 0.0, -0.8, 180), 0.5)
 
 
@@ -169,12 +201,12 @@ def scanner(rng):
               block("lens_frame", -0.12, 0.12, -0.06, 0.06, 0.74, 0.78, P["iron"]), block("lens", -0.1, 0.1, -0.04, 0.04, 0.73, 0.74, P["glass"]),
               disc("camera", 0.05, 0.05, (0.2, 0.0, 0.95), P["iron"], 8), disc("camera_lens", 0.03, 0.02, (0.2, 0.0, 1.0), P["glass"], 8),
               block("panel", 0.3, 0.32, -0.1, 0.1, 0.56, 0.74, P["iron"]), block("screen", 0.32, 0.325, -0.07, 0.07, 0.6, 0.7, P["green"]),
-              block("scan_top", -0.2, 0.2, -0.004, 0.004, 0.74, 0.745, P["red"]), block("scan_low", -0.2, 0.2, -0.004, 0.004, 0.43, 0.435, P["red"]),
+              block("scan_low", -0.2, 0.2, -0.004, 0.004, 0.43, 0.435, P["red"]),
               block("scan_l", -0.2, -0.195, -0.004, 0.004, 0.43, 0.745, P["red"]), block("scan_r", 0.195, 0.2, -0.004, 0.004, 0.43, 0.745, P["red"])]
-    parts += packet("packet", -0.1, 0.1, -0.1, 0.1, 0.4, 0.56)[:1]
     parts += [disc("beacon_base", 0.06, 0.03, (0.0, 0.0, 0.95), P["iron"], 8)]
     beacon = [block("beacon_bar", -0.07, 0.07, -0.02, 0.02, 1.0, 1.04, P["red"]), disc("beacon_hub", 0.03, 0.05, (0.0, 0.0, 0.98), P["steel_dark"], 6)]
-    return parts, {"spin-up": (beacon, (0.0, 0.0, 1.02))}
+    sweep = [block("scan_top", -0.2, 0.2, -0.004, 0.004, 0.74, 0.745, P["red"])]
+    return parts, {"spin-up": (beacon, (0.0, 0.0, 1.02)), "slide-up": (sweep, (0, 0, 0))}
 
 
 def truck(rng):
@@ -218,16 +250,32 @@ def elbow(side):
     return build
 
 
+def mirrored(builder):
+    """The model a builder draws, turned into its mirror image across the x = 0 plane, with the pivots of its moving parts."""
+    def build(rng):
+        parts, spinners = builder(rng)
+        flipped = {name: ([lpm.scale(part, sx=-1) for part in group], (-pivot[0], pivot[1], pivot[2])) for name, (group, pivot) in spinners.items()}
+        return [lpm.scale(part, sx=-1) for part in parts], flipped
+    return build
+
+
 if __name__ == "__main__":
     models = {
         "packer": packer,
+        "packer-left": mirrored(packer),
         "conveyor-elbow-left": elbow(1),
         "conveyor-elbow-right": elbow(-1),
         "truck": truck,
         "scanner": scanner,
         "exit": exit_conveyor,
         "strapper": strapper,
+        "strapper-left": mirrored(strapper),
         "conveyor-straight": conveyor_straight,
         "conveyor-tee": conveyor_tee,
+        "conveyor-split": conveyor_split,
+        "conveyor-split-straight-left": split_straight(-1),
+        "conveyor-split-straight-right": split_straight(1),
+        "conveyor-join-straight-left": split_straight(-1, True),
+        "conveyor-join-straight-right": split_straight(1, True),
     }
     export_all(models, P, 1200, HERE, center=False, ground=False)

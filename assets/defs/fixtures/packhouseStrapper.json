@@ -4,8 +4,8 @@
   "venue": "packhouse",
   "category": "machines",
   "name": {
-    "en": "Strapper",
-    "fr": "Cercleuse"
+    "en": "Strapper (Drive on the right)",
+    "fr": "Cercleuse (prise à droite)"
   },
   "model": "packhouse-floor-strapper",
   "footprint": [1, 1],

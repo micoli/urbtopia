@@ -29,7 +29,7 @@ export function FloorMachineStatus({ factory, fixture }: FloorMachineStatusProps
     );
   }
   if (!status.links) return null;
-  if (role === 'conveyor' || role === 'scanner' || role === 'exit') return <LineStatus lined={status.links.lined.has(fixture.id)} fixture={fixture} />;
+  if (role === 'conveyor' || role === 'scanner' || role === 'exit') return <LineStatus lined={status.links.lined.has(fixture.id)} fixture={fixture} fixtures={fixtures} />;
   if (factory.type === 'packhouse' && status.links.linked.has(fixture.id) && !status.links.lined.has(fixture.id)) return <><p className="note note--warn">{t('packhouse.floor.noExit')}</p></>;
   if (status.links.linked.has(fixture.id)) return <><p className="note">{t('factory.floor.linkedMachine')}</p><FloorBenefits fixtures={fixtures} fixture={fixture} /></>;
   const problems = status.links.problems.get(fixture.id) ?? [];

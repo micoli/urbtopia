@@ -52,17 +52,28 @@ const refundOf = (host: FloorHost, type: FixtureId): number => (host.type === 'f
 
 const floorOf = (host: FloorHost): FloorData => host.floor ?? EMPTY_FLOOR;
 
-// A Packer stands against the back wall of a Packhouse floor, an Exit against the back wall or the left wall, each turned with its back to the wall.
-function standsAgainstItsWall(fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>): boolean {
-  const spec = FIXTURES[fixture.type];
-  if (spec.role === 'exit') return (fixture.y === 0 && fixture.rotation === 0) || (fixture.x === 0 && fixture.rotation === 3);
-  const startsALine = spec.role === 'machine' && spec.lineOut !== undefined && spec.lineIn === undefined;
-  return !startsALine || (fixture.y === 0 && fixture.rotation === 0);
-}
+const startsALine = (type: FixtureId): boolean => FIXTURES[type].role === 'machine' && FIXTURES[type].lineOut !== undefined && FIXTURES[type].lineIn === undefined;
+
+// The turns a Fixture of a Packhouse floor can take on a cell of the edge of a floor of a given size, with its back to that edge: a Packer stands against the back wall
+// only, an Exit against any of the four edges. None for a Fixture that stands anywhere, and none for a cell where it cannot stand.
+const wallTurnsOf = (type: FixtureId, cell: { x: number; y: number }, size: number): readonly Rotation[] => {
+  if (FIXTURES[type].role !== 'exit' && !startsALine(type)) return [];
+  const turns: Rotation[] = [];
+  if (cell.y === 0) turns.push(0);
+  if (cell.x === 0 && FIXTURES[type].role === 'exit') turns.push(3);
+  if (cell.y === size - 1 && FIXTURES[type].role === 'exit') turns.push(2);
+  if (cell.x === size - 1 && FIXTURES[type].role === 'exit') turns.push(1);
+  return turns;
+};
+
+// The turn a Packer or an Exit takes when put on a cell, if it can stand there.
+export const wallFacingOf = (type: FixtureId, cell: { x: number; y: number }, size: number): Rotation | undefined => wallTurnsOf(type, cell, size)[0];
+
+const needsAWall = (type: FixtureId): boolean => FIXTURES[type].role === 'exit' || startsALine(type);
 
 export function canStandOnFloor(host: FloorHost, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
-  if (host.type === 'packhouse' && !standsAgainstItsWall(fixture)) return false;
   const size = gridSizeOf(host);
+  if (host.type === 'packhouse' && needsAWall(fixture.type) && !wallTurnsOf(fixture.type, fixture, size).includes(fixture.rotation)) return false;
   const entrance = entranceCell(host.tier);
   if (hangsOnWall(fixture.type)) return host.type !== 'factory' && canHangOnWall(floorOf(host).fixtures, fixture, size, entrance.x, ignoreId);
   const occupied = new Set(floorOf(host).fixtures.filter(other => other.id !== ignoreId && !hangsOnWall(other.type)).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
@@ -83,7 +94,7 @@ export function placeFloorFixture(state: GameState, buildingId: number, type: Fi
   if (factory.tier < FIXTURES[type].minTier) return { key: 'error.tierTooLow' };
   const fixture = { type, x, y, rotation };
   if (!canStandOnFloor(factory, fixture)) return { key: 'error.tilesOccupied' };
-  if (FIXTURES[type].role === 'exit' && floorOf(factory).fixtures.filter(other => FIXTURES[other.type].role === 'exit').length >= packhouseExitLimitOf(factory.tier)) return { key: 'error.exitLimitReached' };
+  if (FIXTURES[type].role === 'exit' && floorOf(factory).fixtures.filter(other => FIXTURES[other.type].packSize === FIXTURES[type].packSize).length >= packhouseExitLimitOf(factory.tier)) return { key: 'error.exitLimitReached' };
   const price = FIXTURES[type].price;
   if (state.urbs < price) return { key: 'error.notEnoughUrbs' };
   const floor = floorOf(factory);

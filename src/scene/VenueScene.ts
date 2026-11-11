@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, hostWallOf, partitionPieceOf, type Coord, type FixtureVenue, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, hostWallOf, partitionPieceOf, type Coord, type FixtureVenue, type LinePath, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
+import { FloorLineLayer } from './FloorLineLayer';
 import { FloorMotionLayer, type FixtureMotion } from './FloorMotionLayer';
 import { VenueCrowdLayer } from './VenueCrowdLayer';
 import { ShelfStockLayer } from './ShelfStockLayer';
@@ -52,6 +53,7 @@ export class VenueScene {
   private warningRoot = new THREE.Group();
   private crowd: VenueCrowdLayer;
   private motion = new FloorMotionLayer();
+  private line = new FloorLineLayer();
   private lastFrame = performance.now();
   private fixturesSignature = '';
   private zoom = 1;
@@ -104,7 +106,7 @@ export class VenueScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 2.2);
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
-    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.truckRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
+    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.truckRoot, this.line.root, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
     this.ready = this.library.ensure([...Object.values(this.shellModels), ...(venueType === 'home' ? PARQUET_MODELS : []), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...(FIXTURES[id].truck ? [FIXTURES[id].truck!] : []), ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
@@ -155,6 +157,13 @@ export class VenueScene {
   setMotion(motion: ReadonlyMap<number, FixtureMotion>, speed = 1): void {
     this.motion.setMotion(motion);
     this.motion.setSpeed(speed);
+    this.dirty = true;
+  }
+
+  // The ways that Packets take on a Packhouse floor, and the pace they ride at.
+  setLine(paths: readonly LinePath[], speed = 1): void {
+    this.line.setPaths(paths);
+    this.line.setSpeed(speed);
     this.dirty = true;
   }
 
@@ -553,7 +562,8 @@ export class VenueScene {
     this.turnTowardTarget(delta);
     this.crowd.update(delta, this.camera);
     this.motion.update(delta);
-    if (this.crowd.active || this.motion.active) this.dirty = true;
+    this.line.update(delta);
+    if (this.crowd.active || this.motion.active || this.line.active) this.dirty = true;
     if (this.dirty) {
       this.dirty = false;
       this.renderer.render(this.scene, this.camera);

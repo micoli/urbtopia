@@ -84,7 +84,7 @@ export const packhouseFloorBalanceSchema = z
     technicianPosts: z.array(count).min(1),
     // The share of its cap at which a bonus stops counting in full and starts to flatten.
     bonusKnee: z.number().gt(0).lt(1),
-    // How many Exits a floor can have, by Tier.
+    // How many Exits of each size a floor can have, by Tier.
     exitLimits: z.array(z.int().min(1)).min(1),
     // The yield each Strapper beyond the first on the floor adds.
     strapperSeriesYield: positive,

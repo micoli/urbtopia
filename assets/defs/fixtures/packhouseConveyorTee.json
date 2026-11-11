@@ -5,7 +5,7 @@
   "category": "line",
   "name": {
     "en": "Merging conveyor",
-    "fr": "Tapis en T"
+    "fr": "Tapis fusionneur"
   },
   "model": "packhouse-floor-conveyor-tee",
   "footprint": [1, 1],
