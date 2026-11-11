@@ -1,4 +1,5 @@
 import floorBalance from '../../../assets/defs/balance/factoryFloor.json' with { type: 'json' };
+import packhouseBalance from '../../../assets/defs/balance/packhouseFloor.json' with { type: 'json' };
 import { hashSeed } from '../engine/random';
 import { VENUE } from '../venues/shared';
 import { STAFF } from '../venues/staff';
@@ -14,6 +15,8 @@ export const minTierOfTechnician = (): number => floorBalance.technicianPosts.fi
 export const technicianPostsOf = (tier: number): number => tierValue(floorBalance.technicianPosts, tier);
 
 const hasFloor = (building: Building): building is Building & { floor: FloorData } => (building.type === 'factory' || building.type === 'packhouse') && building.floor !== undefined && building.floor.fixtures.length > 0;
+
+export const restockerPostsOf = (tier: number): number => tierValue(packhouseBalance.restockerPosts, tier);
 
 export const technicianWagePerHour = (): number => STAFF.dailyWage.technician / STAFF.dayHours;
 

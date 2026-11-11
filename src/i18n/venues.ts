@@ -29,6 +29,12 @@ type VenueMessageKey =
   | 'error.noStaffPost'
   | 'error.exitLimitReached'
   | 'error.noStaffToRelease'
+  | 'error.wrongPackSize'
+  | 'error.notAnExit'
+  | 'error.noRestock'
+  | 'error.restockerAlreadyAssigned'
+  | 'error.noFreeRestocker'
+  | 'error.noRestockerAssigned'
   | 'codex.fact.grid'
   | 'codex.fact.posts'
   | 'codex.fact.takingsCap'
@@ -270,6 +276,12 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.hireFee': ['Hiring fee', 'Frais d’embauche'],
   'error.noStaffPost': ['All the posts of this role are filled.', 'Tous les postes de ce rôle sont pourvus.'],
   'error.exitLimitReached': ['This floor has all the Exits of this size its Tier allows.', 'Cet étage a toutes les sorties de ce format que son niveau permet.'],
+  'error.wrongPackSize': ['This Good is not packed in the size of this Exit.', 'Ce produit n’est pas emballé au format de cette sortie.'],
+  'error.notAnExit': ['This Fixture is not an Exit.', 'Cet équipement n’est pas une sortie.'],
+  'error.noRestock': ['Choose a Restock for this Exit first.', 'Choisissez d’abord un réassort pour cette sortie.'],
+  'error.restockerAlreadyAssigned': ['A Restocker is already assigned to this Exit.', 'Un employé de réassort est déjà affecté à cette sortie.'],
+  'error.noFreeRestocker': ['No Restocker is free: hire one or release another Exit.', 'Aucun employé de réassort n’est libre : embauchez-en un ou libérez une autre sortie.'],
+  'error.noRestockerAssigned': ['No Restocker is assigned to this Exit.', 'Aucun employé de réassort n’est affecté à cette sortie.'],
   'error.noStaffToRelease': ['Nobody to release in this role.', 'Personne à licencier dans ce rôle.'],
   'codex.fact.grid': ['Interior', 'Intérieur'],
   'codex.fact.posts': ['Staff posts', 'Postes de personnel'],

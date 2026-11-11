@@ -61,6 +61,9 @@ export interface VenueFixture extends Coord {
   broken?: boolean;
   good?: GoodId;
   stock?: number;
+  // Exit of a Packhouse floor: the packed Good its Line restarts, and whether a Restocker is assigned to it.
+  restock?: GoodId;
+  restocker?: true;
 }
 
 export interface VenueEvent {
@@ -81,6 +84,8 @@ export interface FloorData {
   parquet?: number;
   // Technicians hired for the floor; they repair worn Fixtures by the hour and slow their wear.
   technicians?: number;
+  // Restockers hired for a Packhouse floor; each is assigned by hand to an Exit.
+  restockers?: number;
   // The floor's own stream of the game's Seed, for its breakdowns.
   rng?: number;
 }

@@ -12,7 +12,10 @@ export const staffRolesOf = (venue: VenueType): readonly StaffRole[] => STAFF_RO
 // The role that serves the front desk of each kind of Venue.
 export const FRONT_ROLE = Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).frontRole!])) as Record<VenueType, StaffRole>;
 
-export const STAFF = venues.staff as Omit<typeof venues.staff, 'dailyWage'> & { dailyWage: Record<StaffRole, number> };
+// The Restocker of a Packhouse floor is paid like Staff but belongs to no Venue.
+export type WagedRole = StaffRole | 'restocker';
+
+export const STAFF = venues.staff as Omit<typeof venues.staff, 'dailyWage'> & { dailyWage: Record<WagedRole, number> };
 
 // Posts by Tier, from the Venue's Tiers; a role with no post at a Tier cannot be hired there yet.
 const postsByTier = (type: VenueType, role: StaffRole): number[] => tiersOf(type).map(({ posts }) => posts?.[role] ?? 0);
@@ -22,7 +25,7 @@ export const postsOf = (type: VenueType, role: StaffRole, tier: number): number 
   return posts[tier - 1] ?? posts[posts.length - 1]!;
 };
 
-export const hireFeeOf = (role: StaffRole): number => STAFF.dailyWage[role] * STAFF.hireFeeDays;
+export const hireFeeOf = (role: WagedRole): number => STAFF.dailyWage[role] * STAFF.hireFeeDays;
 
 export const minTierOfRole = (type: VenueType, role: StaffRole): number => postsByTier(type, role).findIndex(posts => posts > 0) + 1;
 
