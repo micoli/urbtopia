@@ -10,6 +10,7 @@ import { isHomeType } from '../buildings/buildingDefinitions';
 import { PARQUETS, canHangOnWall, hangsOnWall, homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
 import { floorGridSizeOf, packSizeOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factoryFloor';
 import { producibleItems, type GoodId } from '../economy/items';
+import { isItemUnlocked } from '../progression/unlocks';
 import { restockerPostsOf, technicianPostsOf } from './floorWear';
 
 export type Factory = Building & { type: 'factory' };
@@ -245,6 +246,7 @@ export function setExitRestock(state: GameState, buildingId: number, fixtureId: 
   }
   if (!producibleItems('packhouse').includes(good)) return { key: 'error.cannotProduce' };
   if (packSizeOf(good) !== FIXTURES[exit.type].packSize) return { key: 'error.wrongPackSize' };
+  if (!isItemUnlocked(state, good)) return { key: 'error.itemLocked' };
   return withFixture(state, packhouse, { ...exit, restock: good });
 }
 

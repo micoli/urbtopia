@@ -5,12 +5,12 @@ import { hireFeeOf } from '../venues/staff';
 import { wallFacingOf } from './floorCommands';
 import packhouseBalance from '../../../assets/defs/balance/packhouseFloor.json' with { type: 'json' };
 
-const city = (tier = 3, urbs = 100_000): GameState => ({
+const city = (tier = 3, urbs = 100_000, citizens = true): GameState => ({
   ...newGame({ seed: 'restocker', now: 0 }),
   nextId: 100,
   urbs,
   tutorial: null,
-  buildings: [{ ...createBuilding(1, 'packhouse', 55, 50, 0), tier }],
+  buildings: [{ ...createBuilding(1, 'packhouse', 55, 50, 0), tier }, ...(citizens ? [{ ...createBuilding(2, 'home', 40, 40, 0), tier: 3 }] : [])],
 });
 const send = (state: GameState, command: Command): GameState => {
   const result = dispatch(state, command, 0);
@@ -51,14 +51,14 @@ describe('hiring a Restocker for a Packhouse floor', () => {
 
 const crate = packedGood('Crate');
 const box = packedGood('Box');
-const withExits = (hired: number): GameState => {
-  const state = city(4);
+const withExits = (hired: number, citizens = true): GameState => {
+  const state = city(4, 100_000, citizens);
   const fixtures: VenueFixture[] = [
     { id: 1, type: 'packhouseExitCrate', x: 2, y: 3, rotation: 2 },
     { id: 2, type: 'packhouseExitBox', x: 4, y: 3, rotation: 2 },
     { id: 3, type: 'packhouseConveyor', x: 2, y: 1, rotation: 0 },
   ];
-  return { ...state, buildings: [{ ...packhouse(state), floor: { fixtures, nextFixtureId: 4, restockers: hired } }] };
+  return { ...state, buildings: state.buildings.map(building => (building.id === 1 ? { ...building, floor: { fixtures, nextFixtureId: 4, restockers: hired } } : building)) };
 };
 const exit = (state: GameState, id: number): VenueFixture => packhouse(state).floor!.fixtures.find(fixture => fixture.id === id)!;
 const choose = (fixtureId: number, good: GoodId | null): Command => ({ type: 'SetExitRestock', buildingId: 1, fixtureId, good });
@@ -76,6 +76,7 @@ describe('choosing the Restock of an Exit', () => {
     expect(failure(withExits(0), choose(1, box))).toBe('error.wrongPackSize');
     expect(failure(withExits(0), choose(1, 'planks' as GoodId))).toBe('error.cannotProduce');
     expect(failure(withExits(0), choose(3, crate))).toBe('error.notAnExit');
+    expect(failure(withExits(0, false), choose(1, crate))).toBe('error.itemLocked');
     expect(failure(withExits(0), choose(99, crate))).toBe('error.unknownFixture');
   });
 });
