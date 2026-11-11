@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type Building, type Command, type GameState, type VenueFixture } from '../index';
 import { minTierOf, producibleItems, type GoodId } from '../economy/items';
 import { hireFeeOf } from '../venues/staff';
+import { wallFacingOf } from './floorCommands';
 import packhouseBalance from '../../../assets/defs/balance/packhouseFloor.json' with { type: 'json' };
 
 const city = (tier = 3, urbs = 100_000): GameState => ({
@@ -100,5 +101,24 @@ describe('assigning a Restocker to an Exit', () => {
 
   it('refuses to unassign an Exit that has none', () => {
     expect(failure(withExits(1), unassign(1))).toBe('error.noRestockerAssigned');
+  });
+});
+
+describe('moving or selling an Exit with a Restocker', () => {
+  const staffed = (): GameState => send(send(withExits(1), choose(1, crate)), assign(1));
+
+  it('frees the Restocker when the Exit is moved, and keeps its Restock', () => {
+    const moved = send(staffed(), { type: 'MoveFloorFixture', buildingId: 1, fixtureId: 1, x: 2, y: 8, rotation: wallFacingOf('packhouseExitCrate', { x: 2, y: 8 }, 9) });
+    expect(exit(moved, 1).restocker).toBeUndefined();
+    expect(exit(moved, 1).restock).toBe(crate);
+    expect(send(moved, assign(1))).toBeDefined();
+  });
+
+  it('frees the Restocker when the Exit is taken out', () => {
+    const removed = send(staffed(), { type: 'RemoveFloorFixture', buildingId: 1, fixtureId: 1 });
+    expect(packhouse(removed).floor?.restockers).toBe(1);
+    expect(packhouse(removed).floor?.fixtures.some(fixture => fixture.restocker)).toBe(false);
+    const other = send(send(removed, choose(2, box)), assign(2));
+    expect(exit(other, 2).restocker).toBe(true);
   });
 });

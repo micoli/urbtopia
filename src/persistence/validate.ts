@@ -144,12 +144,23 @@ function isGatheringResult(value: unknown): boolean {
   );
 }
 
+// What an Exit of a Packhouse floor keeps for its Restocker: a Restock that is a packed Good, and an assignment only once a Restock is set.
+const isSavedRestock = (fixture: Record<string, unknown>): boolean => {
+  const { restock, restocker, restockedAt } = fixture;
+  if (restock === undefined && restocker === undefined && restockedAt === undefined) return true;
+  if (FIXTURES[fixture.type as keyof typeof FIXTURES].role !== 'exit') return false;
+  return (restock === undefined || (typeof restock === 'string' && Object.hasOwn(GOODS, restock))) && (restocker === undefined || (restocker === true && restock !== undefined)) && (restockedAt === undefined || isNumber(restockedAt));
+};
+
 // A placed Fixture, in a Venue or on a Factory floor: its id must be one the next id has already passed.
 const isSavedFixture = (nextFixtureId: number) => (fixture: unknown): boolean =>
-  isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, nextFixtureId - 1) && FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean') && (fixture.good === undefined || (typeof fixture.good === 'string' && Object.hasOwn(GOODS, fixture.good))) && (fixture.stock === undefined || isNonNegative(fixture.stock));
+  isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, nextFixtureId - 1) && FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean') && (fixture.good === undefined || (typeof fixture.good === 'string' && Object.hasOwn(GOODS, fixture.good))) && (fixture.stock === undefined || isNonNegative(fixture.stock)) && isSavedRestock(fixture);
+
+const isAssignmentCovered = (floor: Record<string, unknown>): boolean =>
+  !Array.isArray(floor.fixtures) || floor.fixtures.filter((fixture) => isRecord(fixture) && fixture.restocker !== undefined).length <= ((floor.restockers as number | undefined) ?? 0);
 
 function isFloorData(value: unknown, kind: 'factory' | 'packhouse' | 'home'): boolean {
-  return isRecord(value) && isInt(value.nextFixtureId, 1) && (value.rng === undefined || isNumber(value.rng)) && (value.technicians === undefined || isInt(value.technicians, 0, 5)) && (value.restockers === undefined || isInt(value.restockers, 0, 5)) && (value.carry === undefined || (isNumber(value.carry) && value.carry >= 0 && value.carry < 1)) && (value.parquet === undefined || (kind === 'home' && isInt(value.parquet, 0, PARQUETS.length - 1))) && isArrayOf(value.fixtures, fixture => isSavedFixture(value.nextFixtureId as number)(fixture) && FIXTURES[(fixture as { type: keyof typeof FIXTURES }).type].venue === kind);
+  return isRecord(value) && isInt(value.nextFixtureId, 1) && (value.rng === undefined || isNumber(value.rng)) && (value.technicians === undefined || isInt(value.technicians, 0, 5)) && (value.restockers === undefined || isInt(value.restockers, 0, 5)) && isAssignmentCovered(value) && (value.carry === undefined || (isNumber(value.carry) && value.carry >= 0 && value.carry < 1)) && (value.parquet === undefined || (kind === 'home' && isInt(value.parquet, 0, PARQUETS.length - 1))) && isArrayOf(value.fixtures, fixture => isSavedFixture(value.nextFixtureId as number)(fixture) && FIXTURES[(fixture as { type: keyof typeof FIXTURES }).type].venue === kind);
 }
 
 function isVenueData(value: unknown): boolean {

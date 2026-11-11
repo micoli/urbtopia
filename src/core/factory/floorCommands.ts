@@ -130,7 +130,7 @@ export function moveFloorFixture(state: GameState, buildingId: number, fixtureId
   const floor = floorOf(factory);
   const fixture = floor.fixtures.find(candidate => candidate.id === fixtureId);
   if (!fixture) return { key: 'error.unknownFixture' };
-  const moved: VenueFixture = { ...fixture, x, y, rotation: rotation ?? fixture.rotation };
+  const moved: VenueFixture = withoutRestocker({ ...fixture, x, y, rotation: rotation ?? fixture.rotation });
   if (!canStandOnFloor(factory, moved, fixtureId)) return { key: 'error.tilesOccupied' };
   const relocated = floor.fixtures.map(candidate => (candidate === fixture ? moved : candidate));
   const taken = carryingHung(factory, relocated, fixture, moved);

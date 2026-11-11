@@ -65,3 +65,31 @@ describe('a saved Packhouse floor', () => {
     expect(checkGameState(withFloor({ fixtures: [{ id: 1, type: 'packhouseMotor', x: 1, y: 1, rotation: 0 }], nextFixtureId: 2 })).ok).toBe(true);
   });
 });
+
+describe('a saved Packhouse with Restockers', () => {
+  const start: GameState = {
+    ...newGame({ seed: 'restocker-save', now: 0 }), nextId: 100, urbs: 100_000, tutorial: null, adaptationUntil: 0, lastSeen: 0,
+    buildings: [{ ...createBuilding(1, 'packhouse', 55, 50, 0), tier: 3 }],
+  };
+  const exit = { id: 1, type: 'packhouseExitCrate', x: 2, y: 3, rotation: 2, restock: 'wheatCrate', restocker: true, restockedAt: 5 };
+  const withFloor = (floor: unknown) => JSON.parse(JSON.stringify({ ...start, buildings: start.buildings.map(b => ({ ...b, floor })) }));
+
+  it('keeps its Restockers, the Restock and the assignment of an Exit', () => {
+    const loaded = withFloor({ fixtures: [exit], nextFixtureId: 2, restockers: 1 });
+    expect(checkGameState(loaded).ok).toBe(true);
+  });
+
+  it('loads a Packhouse saved before the Restockers', () => {
+    expect(checkGameState(withFloor({ fixtures: [{ ...exit, restock: undefined, restocker: undefined, restockedAt: undefined }], nextFixtureId: 2 })).ok).toBe(true);
+  });
+
+  it('refuses a Restock that is not a Good, a Restocker that is not true, and a Restock on a Fixture that is no Exit', () => {
+    expect(checkGameState(withFloor({ fixtures: [{ ...exit, restock: 'unobtainium' }], nextFixtureId: 2, restockers: 1 })).ok).toBe(false);
+    expect(checkGameState(withFloor({ fixtures: [{ ...exit, restocker: false }], nextFixtureId: 2, restockers: 1 })).ok).toBe(false);
+    expect(checkGameState(withFloor({ fixtures: [{ ...exit, type: 'packhouseConveyor' }], nextFixtureId: 2, restockers: 1 })).ok).toBe(false);
+  });
+
+  it('refuses more assigned Exits than hired Restockers', () => {
+    expect(checkGameState(withFloor({ fixtures: [exit], nextFixtureId: 2 })).ok).toBe(false);
+  });
+});
