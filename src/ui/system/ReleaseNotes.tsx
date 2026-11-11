@@ -4,7 +4,7 @@ import { prefsStore } from '../../i18n/prefsStore';
 import { hasUnseenNotes, notesOf } from '../../releaseNotes/unseenNotes';
 import { isE2eRequested } from '../../store/e2eFlag';
 import { releaseNotesStore } from '../../store/releaseNotesStore';
-import { useGame, useReadOnly } from '../common/hooks';
+import { useCloud, useDialogs, useGame, useReadOnly } from '../common/hooks';
 import { ReleaseNotesDialog } from './ReleaseNotesDialog';
 import { useSignInPromptOpen } from './useSignInPromptOpen';
 
@@ -12,6 +12,8 @@ export function ReleaseNotes() {
   const tutorialDone = useGame(store => store.state.tutorial === null);
   const readOnly = useReadOnly();
   const signInPromptOpen = useSignInPromptOpen();
+  const saveConflictOpen = useCloud(store => store.status.kind === 'conflict');
+  const recoveryOpen = useDialogs(store => store.recovery !== null);
   const releases = useStore(releaseNotesStore, store => store.releases);
   const lastSeenId = useStore(releaseNotesStore, store => store.lastSeenId);
   const refreshing = useStore(releaseNotesStore, store => store.refreshing);
@@ -25,8 +27,8 @@ export function ReleaseNotes() {
     void releaseNotesStore.getState().load();
   }, [e2e]);
 
-  // Two modal dialogs cannot share the screen: the sign-in prompt comes first, the news right after it.
-  const automatic = tutorialDone && !readOnly && !signInPromptOpen && !e2e && hasUnseenNotes(releases, lastSeenId);
+  // Two modal dialogs cannot share the screen: the sign-in prompt, the Save conflict and the recovery screen come first, the news right after them.
+  const automatic = tutorialDone && !readOnly && !signInPromptOpen && !saveConflictOpen && !recoveryOpen && !e2e && hasUnseenNotes(releases, lastSeenId);
   const notes = notesOf(releases);
   const newest = notes[0];
   if (!newest || !(reviewing || automatic)) return null;
