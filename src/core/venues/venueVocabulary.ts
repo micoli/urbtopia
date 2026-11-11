@@ -2,6 +2,14 @@
 
 export const STAFF_ROLES_ALL = ['manager', 'employee', 'technician', 'security', 'cashier', 'stocker', 'receptionist', 'housekeeper', 'cook', 'kitchenAssistant', 'maitreD', 'waiter', 'bartender'] as const;
 
+// The Staff of a Production interior or a Service interior (a Technician is counted apart, as in the Factory interior).
+export const INTERIOR_ROLES_ALL = ['miller', 'baker', 'seller', 'cheesemaker', 'creamMaker', 'stocker', 'teacher', 'librarian', 'nurse', 'doctor', 'surgeon'] as const;
+
+// What a role of an interior carries: one part of the interior's effect.
+export const INTERIOR_PARTS_ALL = ['speed', 'salesRate', 'cheeseYield', 'creamYield', 'capacity', 'schooling', 'knowledge', 'carePrimary', 'careDoctor', 'careSurgeon'] as const;
+
+export const INTERIOR_FAMILIES_ALL = ['production', 'service'] as const;
+
 export const FIXTURE_CATEGORIES_ALL = ['games', 'service', 'furniture', 'shelves', 'checkouts', 'decor', 'beds', 'bathroom', 'comfort', 'reception', 'walls', 'kitchen', 'dining', 'bar', 'power', 'plumbing', 'machines', 'line'] as const;
 
 export type FixtureCategory = (typeof FIXTURE_CATEGORIES_ALL)[number];

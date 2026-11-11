@@ -1,3 +1,4 @@
+import type { INTERIOR_ROLES_ALL } from '../venues/venueVocabulary';
 import type { PirateShowTitle } from '../tourism/pirateShows';
 import type { ClubData } from '../clubs/clubTypes';
 import type { ChallengeClaim, ChallengeProgress } from '../challenges/types';
@@ -78,6 +79,8 @@ export interface VenueEvent {
 
 export type StaffRole = 'manager' | 'employee' | 'technician' | 'security' | 'cashier' | 'stocker' | 'receptionist' | 'housekeeper' | 'cook' | 'kitchenAssistant' | 'maitreD' | 'waiter' | 'bartender';
 
+export type InteriorRole = (typeof INTERIOR_ROLES_ALL)[number];
+
 // The interior of a Factory: the Fixtures the player placed, like a Venue's, without Takings or Visitors.
 export interface InteriorData {
   fixtures: VenueFixture[];
@@ -86,6 +89,8 @@ export interface InteriorData {
   carry?: number;
   // Home interior: the floor chosen among the parquets, 0 when left out.
   parquet?: number;
+  // The Staff hired for the interior, by role; each fills a Job of the building and carries its own part of the interior's effect.
+  staff?: Partial<Record<InteriorRole, number>>;
   // Technicians hired for the floor; they repair worn Fixtures by the hour and slow their wear.
   technicians?: number;
   // Restockers hired for a Packhouse interior; each is assigned by hand to an Exit.

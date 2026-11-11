@@ -38,6 +38,7 @@ import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { queueItem } from '../factory/restock';
 import { assignInteriorRestocker, hireInteriorRestocker, setExitRestock, unassignInteriorRestocker, hireInteriorTechnician, releaseInteriorRestocker, moveInteriorFixture, placeInteriorFixture, releaseInteriorTechnician, removeInteriorFixture, repairInteriorFixture, setHomeParquet } from '../factory/interiorCommands';
+import { hireInteriorStaff, releaseInteriorStaff } from '../interiors/interiorStaffCommands';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { withStartingCity } from './newGame';
@@ -61,7 +62,7 @@ import type { ChallengeRewardKind } from '../challenges/types';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import { buildPedestrianAccess, buildWalkway, demolishPedestrianAccess, demolishWalkways, movePedestrianAccess } from '../underground/walkways';
 import type { BlackjackAction } from '../leisure/blackjack';
-import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, NetworkMode, QueueEntry, ShopStack, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
+import type { FixtureId, InteriorRole, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, NetworkMode, QueueEntry, ShopStack, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { colorVariantsOf, isRepaintableType } from '../buildings/paint';
 import { STOP_NAME_MAX_LENGTH, isTransitStopType } from '../transit/stopNames';
@@ -161,6 +162,8 @@ export type Command =
   | { readonly type: 'SetHomeParquet'; readonly buildingId: number; readonly parquet: number }
   | { readonly type: 'HireInteriorTechnician'; readonly buildingId: number }
   | { readonly type: 'ReleaseInteriorTechnician'; readonly buildingId: number }
+  | { readonly type: 'HireInteriorStaff'; readonly buildingId: number; readonly role: InteriorRole }
+  | { readonly type: 'ReleaseInteriorStaff'; readonly buildingId: number; readonly role: InteriorRole }
   | { readonly type: 'HireInteriorRestocker'; readonly buildingId: number }
   | { readonly type: 'ReleaseInteriorRestocker'; readonly buildingId: number }
   | { readonly type: 'SetExitRestock'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId | null }
@@ -524,6 +527,10 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return hireInteriorTechnician(state, command.buildingId);
     case 'ReleaseInteriorTechnician':
       return releaseInteriorTechnician(state, command.buildingId);
+    case 'HireInteriorStaff':
+      return hireInteriorStaff(state, command.buildingId, command.role);
+    case 'ReleaseInteriorStaff':
+      return releaseInteriorStaff(state, command.buildingId, command.role);
     case 'HireInteriorRestocker':
       return hireInteriorRestocker(state, command.buildingId);
     case 'ReleaseInteriorRestocker':

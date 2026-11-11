@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SANCTIONABLE_FACTOR_IDS } from '../environment/needFactors.ts';
-import { STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
+import { INTERIOR_FAMILIES_ALL, INTERIOR_PARTS_ALL, INTERIOR_ROLES_ALL, STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
 
 const count = z.int().min(0);
 const positive = z.number().positive();
@@ -24,7 +24,7 @@ export const economyBalanceSchema = z
   })
   .meta({ title: 'Economy balance', description: 'assets/defs/balance/economy.json: tax, market, Slot and Parcel prices, shops.' });
 
-const wages = z.record(z.string(), count).refine(wage => STAFF_ROLES_ALL.every(role => wage[role] !== undefined), 'needs a wage for every Staff role');
+const wages = z.record(z.string(), count).refine(wage => [...STAFF_ROLES_ALL, ...INTERIOR_ROLES_ALL].every(role => wage[role] !== undefined), 'needs a wage for every Staff role and every interior role');
 
 // What the Staff of a Venue costs and yields, the rules shared by every Venue, and its events.
 export const venuesBalanceSchema = z
@@ -71,6 +71,20 @@ export const factoryInteriorBalanceSchema = z
     maxPowerSaving: positive,
   })
   .meta({ title: 'Factory interior balance', description: 'assets/defs/balance/factoryInterior.json: the size of the Factory interior and the cap of the bonus its linked Machines add, by Factory Tier.' });
+
+// Which buildings have an interior of the Production or Service families, and the Staff roles they hire: each role fills posts by Tier and carries one part of the effect.
+export const interiorsBalanceSchema = z
+  .strictObject({
+    ...schemaField,
+    buildings: z.record(
+      z.string().min(1),
+      z.strictObject({
+        family: z.enum(INTERIOR_FAMILIES_ALL),
+        roles: z.partialRecord(z.enum(INTERIOR_ROLES_ALL), z.strictObject({ part: z.enum(INTERIOR_PARTS_ALL), posts: z.array(count).min(1) })),
+      }),
+    ),
+  })
+  .meta({ title: 'Interiors balance', description: 'assets/defs/balance/interiors.json: the Production and Service interiors, their Staff roles, the posts by Tier and the part of the effect each role carries.' });
 
 // How big the interior of a Packhouse is by Tier, the most speed and yield its Line can add, and what its Strappers, Scanners and Exits do.
 export const packhouseInteriorBalanceSchema = z

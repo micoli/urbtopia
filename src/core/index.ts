@@ -71,7 +71,7 @@ export { PEDESTRIAN_ACCESS_COST, WALKWAY_COST_FACTOR, activeAccesses, disconnect
 export type { Layout, LayoutHint, RoomReport, VenuePerformance, FixtureSpec, FixtureCategory } from './venues/venues';
 export type { IngredientFamily } from './venues/restaurant';
 export type { VenueEvent } from './engine/state';
-export type { Stash, ReplanState, StaffRole, FixtureId, VenueType, ArcadeFixtureId, SupermarketFixtureId, HotelFixtureId, VenueData, VenueFixture, Boat, BoatFamily, Bridge, Building, BuildingType, GameState, ColorVariant, ParcelCoord, MarketPrice, QueueEntry, RoadTile, PedestrianWayTile, Rotation, FieldTile, PlantedCrop, SeedStock, ShopStack, Storage } from './engine/state';
+export type { Stash, ReplanState, StaffRole, InteriorRole, FixtureId, VenueType, ArcadeFixtureId, SupermarketFixtureId, HotelFixtureId, VenueData, VenueFixture, Boat, BoatFamily, Bridge, Building, BuildingType, GameState, ColorVariant, ParcelCoord, MarketPrice, QueueEntry, RoadTile, PedestrianWayTile, Rotation, FieldTile, PlantedCrop, SeedStock, ShopStack, Storage } from './engine/state';
 export { DIRECTIONS, DIRECTION_VECTORS, frontDirection, neighbour, tileKey } from './map/geometry';
 export type { Direction } from './map/geometry';
 export { roadPath, roadPiece, roundaboutPiece } from './map/roads';
@@ -221,6 +221,10 @@ export { PARQUETS, PARQUET_MODELS, parquetModelOf, canHangOnWall, hangsOnWall, h
 export type { ComfortGroup } from './homes/homeInterior';
 export { advanceInteriors, minTierOfTechnician, restockerPostsOf, technicianPostsOf, technicianWagePerHour } from './factory/interiorWear';
 export type { Factory, Packhouse } from './factory/interiorCommands';
+export { interiorFillRate, interiorPartsOf, interiorRoleShare } from './interiors/interiorParts';
+export { hiredInteriorOf, interiorDeclarationOf, interiorFamilyOf, interiorPostsOf, interiorRolesOf, interiorWagesPerHour, minTierOfInteriorRole, partOfRole, totalInteriorStaff } from './interiors/interiorStaff';
+export type { InteriorFamily, InteriorPart } from './interiors/interiorStaff';
+export { hireInteriorStaff, releaseInteriorStaff } from './interiors/interiorStaffCommands';
 export { challengeReward, clearChallenge, completeChallenge, findChallengeClaim, isChallengeStockComplete, remainingOf, setAsideForChallenge, setAsideOf, startChallenge } from './challenges/challengeStock';
 export { CHALLENGE_REWARD_MULTIPLIER } from './challenges/types';
 export type { ChallengeClaim, ChallengeProgress, ChallengeRewardKind } from './challenges/types';

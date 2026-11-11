@@ -1,5 +1,6 @@
 import { createStore } from 'zustand/vanilla';
-import type { Command } from '../core';
+import { interiorFamilyOf } from '../core';
+import type { Command, GameState } from '../core';
 
 // A feature that ships switched off. A development build can switch it on from the devtools; in production the Player switches it on in the Settings after subscribing to the beta features.
 export const FLAGS = {
@@ -17,6 +18,18 @@ export const FLAGS = {
     label: 'Aménagement des logements',
     description: "Ouvre l'intérieur d'un logement : meubles, tableaux, parquet et confort.",
     commands: ['SetHomeParquet'] as readonly Command['type'][],
+  },
+  // The interiors of the Production buildings and of the Storehouse: the Staff hired in them, and what their Management view offers.
+  productionInterior: {
+    label: 'Intérieurs de production',
+    description: "Ouvre l'intérieur de la minoterie, de la boulangerie, de la laiterie et de l'entrepôt : machines, chaînes et personnel.",
+    commands: [] as readonly Command['type'][],
+  },
+  // The interiors of the School, the Library and the Hospital.
+  serviceInterior: {
+    label: 'Intérieurs de service',
+    description: "Ouvre l'intérieur de l'école, de la bibliothèque et de l'hôpital : mobilier et personnel.",
+    commands: [] as readonly Command['type'][],
   },
   // Only the start is gated: a Replan already under way must always be finished or cancelled, whatever the flag says.
   replan: {
@@ -50,6 +63,16 @@ export function resolveFlags(raw: string | null, overridable: boolean): FlagValu
 }
 
 export const flagOfCommand = (type: Command['type']): FlagId | undefined => FLAG_IDS.find(id => FLAGS[id].commands.includes(type));
+
+const FAMILY_FLAG = { production: 'productionInterior', service: 'serviceInterior' } as const;
+
+// The flag a command depends on in a given city: the Staff of an interior depend on the flag of the family of the building they are hired in.
+export function flagOfCommandIn(command: Command, state: GameState): FlagId | undefined {
+  if (command.type !== 'HireInteriorStaff' && command.type !== 'ReleaseInteriorStaff') return flagOfCommand(command.type);
+  const building = state.buildings.find(candidate => candidate.id === command.buildingId);
+  const family = building && interiorFamilyOf(building.type);
+  return family ? FAMILY_FLAG[family] : undefined;
+}
 
 const readStored = (): string | null => {
   try {

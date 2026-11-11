@@ -16,7 +16,17 @@
       "kitchenAssistant": 26,
       "maitreD": 38,
       "waiter": 28,
-      "bartender": 30
+      "bartender": 30,
+      "miller": 34,
+      "baker": 36,
+      "seller": 30,
+      "cheesemaker": 38,
+      "creamMaker": 34,
+      "teacher": 40,
+      "librarian": 34,
+      "nurse": 36,
+      "doctor": 60,
+      "surgeon": 90
     },
     "hireFeeDays": 5,
     "managerYield": 1.1,

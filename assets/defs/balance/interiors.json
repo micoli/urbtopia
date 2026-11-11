@@ -1,0 +1,84 @@
+{
+  "$schema": "../schemas/balance-interiors.schema.json",
+  "buildings": {
+    "mill": {
+      "family": "production",
+      "roles": {
+        "miller": {
+          "part": "speed",
+          "posts": [0, 1, 1, 1, 2]
+        }
+      }
+    },
+    "bakery": {
+      "family": "production",
+      "roles": {
+        "baker": {
+          "part": "speed",
+          "posts": [0, 1, 1, 1, 2]
+        },
+        "seller": {
+          "part": "salesRate",
+          "posts": [0, 1, 1, 1, 2]
+        }
+      }
+    },
+    "dairy": {
+      "family": "production",
+      "roles": {
+        "cheesemaker": {
+          "part": "cheeseYield",
+          "posts": [0, 1, 1, 1, 2]
+        },
+        "creamMaker": {
+          "part": "creamYield",
+          "posts": [0, 1, 1, 1, 2]
+        }
+      }
+    },
+    "storehouse": {
+      "family": "production",
+      "roles": {
+        "stocker": {
+          "part": "capacity",
+          "posts": [0, 1, 1, 2, 2]
+        }
+      }
+    },
+    "school": {
+      "family": "service",
+      "roles": {
+        "teacher": {
+          "part": "schooling",
+          "posts": [1, 1, 2, 2, 3]
+        }
+      }
+    },
+    "library": {
+      "family": "service",
+      "roles": {
+        "librarian": {
+          "part": "knowledge",
+          "posts": [1, 1, 2, 2, 3]
+        }
+      }
+    },
+    "hospital": {
+      "family": "service",
+      "roles": {
+        "nurse": {
+          "part": "carePrimary",
+          "posts": [1, 2, 2, 3, 3]
+        },
+        "doctor": {
+          "part": "careDoctor",
+          "posts": [0, 1, 1, 2, 2]
+        },
+        "surgeon": {
+          "part": "careSurgeon",
+          "posts": [0, 0, 1, 1, 2]
+        }
+      }
+    }
+  }
+}
