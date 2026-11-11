@@ -59,7 +59,8 @@
           "tools": 4
         }
       },
-      "model": "buildings-windmill-2x2-t5"
+      "model": "buildings-windmill-2x2-t5",
+      "durationFactor": 0.5
     }
   ]
 }

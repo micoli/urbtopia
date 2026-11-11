@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding } from '../buildings/buildingSpecs';
 import { economicPower } from '../environment/ecology';
+import { tiersOf } from '../buildings/buildingDefinitions';
+import { productionTierOf } from './tiers';
 import { jobsOf, workplaceTypes } from '../traffic/jobs';
 import { INDUSTRY_TYPES, PRODUCTION_TYPES, compartmentProducedBy, industryEmissionsOf, industryWeightOf, isIndustryType, isProductionType, scalesRecipeWithYield } from './productionTypes';
 
@@ -36,5 +38,13 @@ describe('production family', () => {
     expect(PRODUCTION_TYPES.filter((type) => compartmentProducedBy(type) === 'materials').sort()).toEqual(['livestockFarm', 'mill', 'textileMill', 'workshop']);
     expect(PRODUCTION_TYPES.filter(scalesRecipeWithYield).sort()).toEqual(['bakery', 'dairy', 'livestockFarm', 'mill', 'textileMill']);
     expect(scalesRecipeWithYield('home')).toBe(false);
+  });
+
+  it('gives the last Tier of each production building a gain: a faster cycle, or one more Pen for the Livestock farm', () => {
+    for (const type of PRODUCTION_TYPES) {
+      const [before, last] = [4, 5].map((tier) => ({ ...productionTierOf({ type, tier }), pens: tiersOf(type)[tier - 1]?.penCount ?? 0 }));
+      const gained = type === 'livestockFarm' ? last!.pens > before!.pens : last!.durationFactor < before!.durationFactor;
+      expect(gained, type).toBe(true);
+    }
   });
 });
