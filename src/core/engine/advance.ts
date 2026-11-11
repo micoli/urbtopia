@@ -53,11 +53,18 @@ function advanceCity(state: GameState, now: number): AdvanceResult {
   const gap = effectiveNow - state.lastSeen;
   if (gap <= GAME_CONFIG.offlineCapMs) return replay(state, effectiveNow);
 
-  const forfeitedMs = gap - GAME_CONFIG.offlineCapMs;
   const replayed = replay(state, state.lastSeen + GAME_CONFIG.offlineCapMs);
+  const forfeited = forfeitOfflineTime(replayed.state, effectiveNow);
+  return { state: forfeited.state, events: [...replayed.events, ...forfeited.events] };
+}
+
+// The part of an absence beyond the offline cap is not replayed: the clock jumps over it and every running timer waits.
+export function forfeitOfflineTime(state: GameState, now: number): AdvanceResult {
+  const forfeitedMs = now - state.lastSeen;
+  if (forfeitedMs <= 0) return { state, events: [] };
   return {
-    state: forfeitPoliticsDays({ ...shiftRunningTimers(replayed.state, forfeitedMs), lastSeen: effectiveNow }),
-    events: [...replayed.events, { type: 'OfflineTimeCapped', forfeitedMs }],
+    state: forfeitPoliticsDays({ ...shiftRunningTimers(state, forfeitedMs), lastSeen: now }),
+    events: [{ type: 'OfflineTimeCapped', forfeitedMs }],
   };
 }
 

@@ -2,6 +2,7 @@ import { useStore } from 'zustand';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
+import { skipTimeInChunks } from '../../store/skipTimeInChunks';
 import { ActionButton } from '../common/ActionButton';
 import { useGame, useUi } from '../common/hooks';
 import { SwitchField } from '../common/SwitchField';
@@ -25,7 +26,7 @@ export function GameSettings() {
   const challengeRunning = useGame((store) => store.state.challenge !== undefined);
   const confirmSale = useStore(prefsStore, (store) => store.confirmSale);
   const skipTime = (hours: number) => {
-    gameStore.getState().send({ type: 'SkipTime', hours });
+    void skipTimeInChunks(hours);
     toggle();
   };
 

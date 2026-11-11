@@ -1,5 +1,6 @@
 import { cycleHourOf, cycleTimeOf } from '../core';
 import { gameStore } from '../store/gameStore';
+import { skipTimeInChunks } from '../store/skipTimeInChunks';
 
 declare global {
   interface Window {
@@ -16,11 +17,11 @@ const CYCLE_HOURS_PER_REAL_HOUR = 12;
 // `skipToCycleHour(23.5)` skips forward to 23:30 of the Day cycle.
 export function installSkipTime(): void {
   window.__gameStore = gameStore;
-  window.skipTime = (hours) => gameStore.getState().send({ type: 'SkipTime', hours });
+  window.skipTime = (hours) => void skipTimeInChunks(hours);
   window.skipToCycleHour = (cycleHour) => {
     const { state } = gameStore.getState();
     const ahead = (((cycleHour - cycleHourOf(cycleTimeOf(state, state.lastSeen))) % 24) + 24) % 24;
     if (ahead === 0) return;
-    gameStore.getState().send({ type: 'SkipTime', hours: ahead / CYCLE_HOURS_PER_REAL_HOUR });
+    void skipTimeInChunks(ahead / CYCLE_HOURS_PER_REAL_HOUR);
   };
 }

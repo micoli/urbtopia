@@ -1,5 +1,5 @@
-import { advance } from '../core';
 import { dialogStore } from '../store/dialogStore';
+import { catchUpInChunks } from '../store/catchUpInChunks';
 import { bootResult, gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
 import { createAutosave } from './autosave';
@@ -56,8 +56,9 @@ export function installPersistence(): () => void {
     onLost: () => readOnlyStore.getState().set(true),
     onRegained: () => {
       const loaded = saveSession.load();
-      if (loaded.kind === 'loaded') gameStore.getState().replaceState(advance(loaded.state, Date.now()).state, 'tick');
+      if (loaded.kind === 'loaded') gameStore.getState().replaceState(loaded.state, 'tick');
       readOnlyStore.getState().set(false);
+      void catchUpInChunks(Date.now());
     },
   });
   ownership.claim();
@@ -71,7 +72,7 @@ export function installPersistence(): () => void {
 
   const onVisibility = () => {
     if (document.visibilityState === 'hidden') return autosave.flush();
-    gameStore.getState().tick(Date.now());
+    void catchUpInChunks(Date.now());
   };
   const onStorage = (event: StorageEvent) => ownership.handleStorageChange(event.key);
   document.addEventListener('visibilitychange', onVisibility);

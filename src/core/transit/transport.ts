@@ -96,13 +96,7 @@ export function transitNetwork(state: GameState, now = state.lastSeen, speedFact
   return network;
 }
 
-function calculateNetwork(state: GameState, now: number, speedFactors?: SpeedFactors) {
-  const energy = energyStats(state, now);
-  const services = transitServices(state, now, energy.transitRatio, speedFactors);
-  const homes = state.buildings.filter(b => isHomeType(b.type)).sort((a, b) => a.id - b.id);
-  const workplaces = state.buildings.filter(b => workplaceTypes.includes(b.type));
-  const activities = state.buildings.filter(b => isIndustryType(b.type) || isShopType(b.type) || (workplaceTypes.includes(b.type) && hasBrtOnlyAccess(state, b)));
-  const stops = new Map(state.buildings.filter(b => isTransitStopType(b.type)).map(b => [b.id, b]));
+function buildStructure(services: Service[], homes: Building[], workplaces: Building[], activities: Building[], stops: Map<number, Building>): NetworkStructure {
   const optionsByStop = new Map<string, Itinerary[]>();
   const homeOptions = new Map<number, TransitOption[]>();
   const homeCitizens = new Map<number, number>();
@@ -143,6 +137,46 @@ function calculateNetwork(state: GameState, now: number, speedFactors?: SpeedFac
     homeCitizens.set(home.id, citizens);
     if (options.length) { covered += citizens; homeOptions.set(home.id, options); }
   }
+  return { homeOptions, homeCitizens, covered, coveredActivities, coveredWorkplaces };
+}
+
+interface NetworkStructure {
+  homeOptions: Map<number, TransitOption[]>;
+  homeCitizens: Map<number, number>;
+  covered: number;
+  coveredActivities: Set<number>;
+  coveredWorkplaces: Set<number>;
+}
+
+const STRUCTURES_KEPT = 6;
+const structures = new Map<string, NetworkStructure>();
+
+const placeOf = (b: Building) => `${b.id}:${b.type}:${b.x}:${b.y}:${b.rotation}:${b.tier}`;
+
+// Who is served by which itinerary depends only on the lines and on where the stops, Homes, workplaces and activities stand: a replay step that changes none of them reuses it.
+function networkStructureOf(services: Service[], homes: Building[], workplaces: Building[], activities: Building[], stops: Map<number, Building>): NetworkStructure {
+  const lines = services.map(l => `${l.id}:${l.active ? 1 : 0}:${l.mode}:${l.loop ? 1 : 0}:${l.headway}:${l.speed}:${l.stops.join(',')}:${l.offsets.join(',')}`);
+  const key = [lines.join('|'), [...stops.values()].map(placeOf).join('|'), homes.map(placeOf).join('|'), workplaces.map(placeOf).join('|'), activities.map(placeOf).join('|')].join('#');
+  const known = structures.get(key);
+  if (known) {
+    structures.delete(key);
+    structures.set(key, known);
+    return known;
+  }
+  const created = buildStructure(services, homes, workplaces, activities, stops);
+  structures.set(key, created);
+  if (structures.size > STRUCTURES_KEPT) structures.delete(structures.keys().next().value!);
+  return created;
+}
+
+function calculateNetwork(state: GameState, now: number, speedFactors?: SpeedFactors) {
+  const energy = energyStats(state, now);
+  const services = transitServices(state, now, energy.transitRatio, speedFactors);
+  const homes = state.buildings.filter(b => isHomeType(b.type)).sort((a, b) => a.id - b.id);
+  const workplaces = state.buildings.filter(b => workplaceTypes.includes(b.type));
+  const activities = state.buildings.filter(b => isIndustryType(b.type) || isShopType(b.type) || (workplaceTypes.includes(b.type) && hasBrtOnlyAccess(state, b)));
+  const stops = new Map(state.buildings.filter(b => isTransitStopType(b.type)).map(b => [b.id, b]));
+  const { homeOptions, homeCitizens, covered, coveredActivities, coveredWorkplaces } = networkStructureOf(services, homes, workplaces, activities, stops);
   return { services, homeOptions, homeCitizens, covered, coveredActivities, coveredWorkplaces,
     activeLines: services.filter(l => l.active).length,
     costPerHour: services.reduce((n, l) => n + l.costPerHour, 0), coalPerHour: services.reduce((n, l) => n + l.coalPerHour, 0),

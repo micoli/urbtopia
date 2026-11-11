@@ -1,6 +1,5 @@
 import { t } from '../../i18n/t';
 import type { Language } from '../../i18n/prefsStore';
-import { reloadApp } from '../../pwa/reloadApp';
 import { formatReleaseDate } from '../../releaseNotes/formatReleaseDate';
 import type { ReleaseNote } from '../../releaseNotes/releaseNote';
 import { ActionButton } from '../common/ActionButton';
@@ -13,11 +12,13 @@ interface ReleaseNotesDialogProps {
   notes: readonly ReleaseNote[];
   index: number;
   language: Language;
+  refreshing?: boolean;
   onSelect: (index: number) => void;
+  onRefresh: () => void;
   onClose: () => void;
 }
 
-export function ReleaseNotesDialog({ notes, index, language, onSelect, onClose }: ReleaseNotesDialogProps) {
+export function ReleaseNotesDialog({ notes, index, language, refreshing = false, onSelect, onRefresh, onClose }: ReleaseNotesDialogProps) {
   const note = notes[index];
   if (!note) return null;
 
@@ -40,9 +41,9 @@ export function ReleaseNotesDialog({ notes, index, language, onSelect, onClose }
         </div>
       </Dialog.Body>
       <Dialog.Actions>
-        <ActionButton size="sm" disabled={index >= notes.length - 1} onClick={() => onSelect(index + 1)}><Icon name="arrowLeft" /> {t('releaseNotes.older')}</ActionButton>
-        <ActionButton size="sm" disabled={index === 0} onClick={() => onSelect(index - 1)}>{t('releaseNotes.newer')} <Icon name="arrowRight" /></ActionButton>
-        <ActionButton size="sm" onClick={() => void reloadApp()}><Icon name="rotateRight" /> {t('settings.reload')}</ActionButton>
+        <ActionButton size="sm" disabled={index >= notes.length - 1} aria-label={t('releaseNotes.older')} onClick={() => onSelect(index + 1)}><Icon name="arrowLeft" /></ActionButton>
+        <ActionButton size="sm" disabled={index === 0} aria-label={t('releaseNotes.newer')} onClick={() => onSelect(index - 1)}><Icon name="arrowRight" /></ActionButton>
+        <ActionButton size="sm" disabled={refreshing} onClick={onRefresh}><Icon name="rotateRight" /> {t('releaseNotes.refresh')}</ActionButton>
         <ActionButton variant="primary" onClick={onClose}>{t('panel.close')}</ActionButton>
       </Dialog.Actions>
     </Dialog>

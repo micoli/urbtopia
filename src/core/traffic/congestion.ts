@@ -131,10 +131,32 @@ export function congestionStats(state: GameState, now = state.lastSeen): Congest
   return stats;
 }
 
+const routeKeys = new WeakMap<readonly Coord[], string>();
+
+function routeKeyOf(route: readonly Coord[]): string {
+  let key = routeKeys.get(route);
+  if (key === undefined) {
+    key = route.map(tileKey).join(';');
+    routeKeys.set(route, key);
+  }
+  return key;
+}
+
 function networkSignature(network: TransitNetwork): string {
-  const lines = network.services.map((line) => `${line.id}:${line.capacity.toFixed(2)}:${line.speed.toFixed(3)}:${line.headway.toFixed(2)}:${line.active ? 1 : 0}:${line.mode === 'bus' && line.active && line.route ? line.route.map(tileKey).join(';') : ''}`);
-  const options = [...network.homeOptions].map(([home, homeOptions]) => `${home}=${homeOptions.map((option) => `${option.lines.join('.')}${option.bike ? 'b' : ''}@${option.minutes.toFixed(2)}>${option.targets.join('.')}`).join(',')}`);
-  return [...lines, ...options].join('|');
+  const lines = network.services.map((line) => `${line.id}:${line.capacity.toFixed(2)}:${line.speed.toFixed(3)}:${line.headway.toFixed(2)}:${line.active ? 1 : 0}:${line.mode === 'bus' && line.active && line.route ? routeKeyOf(line.route) : ''}`);
+  return [...lines, optionsSignature(network.homeOptions)].join('|');
+}
+
+const optionSignatures = new WeakMap<TransitNetwork['homeOptions'], string>();
+
+// The Homes' itineraries are shared between the networks of equal layout, so their signature is written once.
+function optionsSignature(homeOptions: TransitNetwork['homeOptions']): string {
+  let signature = optionSignatures.get(homeOptions);
+  if (signature === undefined) {
+    signature = [...homeOptions].map(([home, options]) => `${home}=${options.map((option) => `${option.lines.join('.')}${option.bike ? 'b' : ''}@${option.minutes.toFixed(2)}>${option.targets.join('.')}`).join(',')}`).join('|');
+    optionSignatures.set(homeOptions, signature);
+  }
+  return signature;
 }
 
 function layoutSignature(state: GameState, now: number): string {

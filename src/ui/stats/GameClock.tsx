@@ -2,7 +2,7 @@ import type { MouseEvent } from 'react';
 import { cycleTimeOf } from '../../core';
 import { cycleClockOf } from './cycleClock';
 import { t } from '../../i18n/t';
-import { gameStore } from '../../store/gameStore';
+import { skipTimeInChunks } from '../../store/skipTimeInChunks';
 import { useGame } from '../common/hooks';
 import { Icon } from '../common/Icon';
 
@@ -11,7 +11,7 @@ const QUICK_SKIP_HOURS = 12;
 
 function skipOnQuadrupleClick(event: MouseEvent) {
   if (event.detail !== QUADRUPLE_CLICK) return;
-  gameStore.getState().send({ type: 'SkipTime', hours: QUICK_SKIP_HOURS });
+  void skipTimeInChunks(QUICK_SKIP_HOURS);
 }
 
 export function GameClock() {

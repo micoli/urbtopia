@@ -1507,6 +1507,7 @@ export const CATALOG = {
   'releaseNotes.title': ["What's new", 'Nouveautés'],
   'releaseNotes.older': ['Older', 'Plus ancienne'],
   'releaseNotes.newer': ['Newer', 'Plus récente'],
+  'releaseNotes.refresh': ['Refresh', 'Actualiser'],
   'releaseNotes.position': ['{index} of {total}', '{index} sur {total}'],
   'settings.releaseNotes': ["What's new", 'Nouveautés'],
   'settings.releaseNotes.description': ['The latest changes to the game.', 'Les derniers changements du jeu.'],

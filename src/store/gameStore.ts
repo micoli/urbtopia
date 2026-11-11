@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import { advance, newGame, type Command, type CommandError, type Difficulty, type GameState } from '../core';
+import { advance, forfeitOfflineTime, newGame, type Command, type CommandError, type Difficulty, type GameState } from '../core';
 import { saveSession } from '../persistence/instance';
 import type { LoadResult } from '../persistence/saveSession';
 import { isSimulationRequested } from '../sim/simulationFlag';
@@ -22,6 +22,7 @@ export interface GameStore {
   lastChange: Change;
   send: (command: Command) => void;
   tick: (now: number) => void;
+  forfeitOffline: (now: number) => void;
   replaceState: (state: GameState, change?: Change) => void;
   newGame: (now: number, difficulty?: Difficulty) => void;
 }
@@ -45,6 +46,12 @@ export function createGameStore(initial: GameState, gateway: CommandGateway = li
       const result = advance(get().state, tickNow);
       announceEvents(result.events, result.state);
       announceTutorialEnd(get().state, result.state);
+      set({ state: result.state, lastChange: 'tick' });
+    },
+    forfeitOffline: (tickNow) => {
+      if (readOnlyStore.getState().readOnly) return;
+      const result = forfeitOfflineTime(get().state, tickNow);
+      announceEvents(result.events, result.state);
       set({ state: result.state, lastChange: 'tick' });
     },
     replaceState: (state, change = 'reset') => set({ state, lastError: null, lastChange: change }),

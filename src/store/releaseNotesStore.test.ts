@@ -55,4 +55,17 @@ describe('releaseNotesStore', () => {
     await releaseNotesStore.getState().load(fetchImpl);
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
+
+  it('asks GitHub again on refresh and shows the new notes', async () => {
+    await releaseNotesStore.getState().load(github(['a']));
+    await releaseNotesStore.getState().refresh(github(['b', 'a']));
+    expect(releaseNotesStore.getState().releases.map(release => release.id)).toEqual(['b', 'a']);
+    expect(releaseNotesStore.getState().refreshing).toBe(false);
+  });
+
+  it('keeps the notes shown when the refresh fails', async () => {
+    await releaseNotesStore.getState().load(github(['a']));
+    await releaseNotesStore.getState().refresh((async () => { throw new Error('offline'); }) as unknown as typeof fetch);
+    expect(releaseNotesStore.getState().releases.map(release => release.id)).toEqual(['a']);
+  });
 });

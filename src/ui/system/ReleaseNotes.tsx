@@ -14,6 +14,7 @@ export function ReleaseNotes() {
   const signInPromptOpen = useSignInPromptOpen();
   const releases = useStore(releaseNotesStore, store => store.releases);
   const lastSeenId = useStore(releaseNotesStore, store => store.lastSeenId);
+  const refreshing = useStore(releaseNotesStore, store => store.refreshing);
   const reviewing = useStore(releaseNotesStore, store => store.reviewing);
   const language = useStore(prefsStore, store => store.language);
   const [index, setIndex] = useState(0);
@@ -30,11 +31,16 @@ export function ReleaseNotes() {
   const newest = notes[0];
   if (!newest || !(reviewing || automatic)) return null;
 
+  const refresh = () => {
+    setIndex(0);
+    void releaseNotesStore.getState().refresh();
+  };
+
   const close = () => {
     releaseNotesStore.getState().markSeen(newest.id);
     releaseNotesStore.getState().setReviewing(false);
     setIndex(0);
   };
 
-  return <ReleaseNotesDialog notes={notes} index={index} language={language} onSelect={setIndex} onClose={close} />;
+  return <ReleaseNotesDialog notes={notes} index={index} language={language} refreshing={refreshing} onSelect={setIndex} onRefresh={refresh} onClose={close} />;
 }

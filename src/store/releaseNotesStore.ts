@@ -39,7 +39,9 @@ export interface ReleaseNotesStore {
   // The tag of the newest release whose note the player has read. Null in a browser that never stored one.
   lastSeenId: string | null;
   reviewing: boolean;
+  refreshing: boolean;
   load: (fetchImpl?: typeof fetch) => Promise<void>;
+  refresh: (fetchImpl?: typeof fetch) => Promise<void>;
   markSeen: (id: string) => void;
   forgetLastSeen: () => void;
   setReviewing: (reviewing: boolean) => void;
@@ -50,6 +52,7 @@ export const releaseNotesStore = createStore<ReleaseNotesStore>((set, get) => ({
   loadStarted: false,
   lastSeenId: parseLastSeenId(readStored()),
   reviewing: false,
+  refreshing: false,
   load: async (fetchImpl) => {
     if (get().loadStarted) return;
     set({ loadStarted: true });
@@ -58,6 +61,13 @@ export const releaseNotesStore = createStore<ReleaseNotesStore>((set, get) => ({
     // A browser that never stored anything starts on the latest release: a new player is not told about what they never lacked.
     const latest = releases[0];
     if (get().lastSeenId === null && latest) get().markSeen(latest.id);
+  },
+  // Asks GitHub again for the releases. A failed request keeps the notes already shown.
+  refresh: async (fetchImpl) => {
+    if (get().refreshing) return;
+    set({ refreshing: true });
+    const releases = await fetchReleases(fetchImpl);
+    set({ refreshing: false, ...(releases.length > 0 ? { releases } : {}) });
   },
   markSeen: (id) => {
     set({ lastSeenId: id });

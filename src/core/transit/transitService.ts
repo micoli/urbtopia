@@ -26,12 +26,38 @@ export function routeFailure(state: GameState, line: BusLine | TransitLine): Rou
   return 'failure' in resolution ? resolution.failure : null;
 }
 
+interface RouteLayout {
+  roundabouts: GameState['roundabouts'];
+  byLine: Map<BusLine, { stops: string; resolution: Resolution }>;
+}
+
+// A route depends on the network it runs on and on where its stops stand; the buildings array changes at every replay step, the network does not.
+const routeLayouts = new WeakMap<object, RouteLayout>();
+
+const networkOf = (state: GameState, line: BusLine | TransitLine): object => {
+  const mode = 'mode' in line ? line.mode : 'bus';
+  return (mode === 'bus' ? state.roads : networkTiles(state, mode)) ?? state.roads;
+};
+
+const stopsKeyOf = (state: GameState, line: BusLine | TransitLine): string => line.stops.map(id => {
+  const stop = state.buildings.find(b => b.id === id);
+  return stop ? `${stop.type}:${stop.x}:${stop.y}:${stop.rotation}:${stop.tier}` : '-';
+}).join('|');
+
 function resolveCached(state: GameState, line: BusLine | TransitLine): Resolution {
   let cache = routeCache.get(state);
   if (!cache) { cache = new Map(); routeCache.set(state, cache); }
   const cached = cache.get(line);
   if (cached) return cached;
-  const result = resolveRoute(state, line); cache.set(line, result);
+  const owner = networkOf(state, line);
+  const known = routeLayouts.get(owner);
+  const layout = known?.roundabouts === state.roundabouts ? known : { roundabouts: state.roundabouts, byLine: new Map() };
+  routeLayouts.set(owner, layout);
+  const stops = stopsKeyOf(state, line);
+  const remembered = layout.byLine.get(line);
+  const result = remembered?.stops === stops ? remembered.resolution : resolveRoute(state, line);
+  layout.byLine.set(line, { stops, resolution: result });
+  cache.set(line, result);
   return result;
 }
 

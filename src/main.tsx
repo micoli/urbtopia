@@ -7,7 +7,8 @@ import { installPersistence } from './persistence/install';
 import { installErrorRecorder } from './bugReports/recentErrors';
 import { registerServiceWorker } from './pwa/registerServiceWorker';
 import { installStaleChunkReload } from './pwa/reloadOnStaleChunk';
-import { gameStore, isSimulation } from './store/gameStore';
+import { catchUpInChunks } from './store/catchUpInChunks';
+import { isSimulation } from './store/gameStore';
 import { installEventEffects } from './store/installEventEffects';
 import { liveCommandGateway } from './store/liveCommandGateway';
 import '@fontsource-variable/inter';
@@ -19,8 +20,8 @@ installStaleChunkReload();
 const TICK_INTERVAL_MS = 1000;
 installEventEffects(liveCommandGateway);
 if (!isSimulation) {
-  setInterval(() => gameStore.getState().tick(Date.now()), TICK_INTERVAL_MS);
-  gameStore.getState().tick(Date.now());
+  setInterval(() => void catchUpInChunks(Date.now()), TICK_INTERVAL_MS);
+  void catchUpInChunks(Date.now());
   installPersistence();
 }
 

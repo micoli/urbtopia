@@ -9,6 +9,7 @@ const meta = {
     language: 'en',
     index: 0,
     onSelect: () => {},
+    onRefresh: () => {},
     onClose: () => {},
     notes: [
       { id: '2026.11.08.02-softly-vivid-fox-1116', publishedAt: '2026-11-08T12:48:45Z', title: { en: '🍽️ Restaurants and rotating rooms', fr: '🍽️ Restaurants et salles pivotantes' }, items: { en: ['🍽️ A new **Restaurant** venue is ready to build.', '🔄 Two buttons rotate the room of a venue.'], fr: ['🍽️ Un nouveau lieu, le **restaurant**, est prêt à construire.', '🔄 Deux boutons font pivoter la salle d\'un lieu.'] } },
