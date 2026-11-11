@@ -5,7 +5,7 @@ import type { FixtureId, VenueType } from '../engine/state';
 import { modelFileOf } from '../models/modelFiles';
 import type { FixtureDefinition } from './fixtureSchema';
 import { VENUE_TYPES } from './profiles';
-import { FACTORY_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type PackSize } from './venueVocabulary';
+import { FACTORY_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, LINE_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, type PRODUCTION_INTERIOR_KINDS, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type PackSize } from './venueVocabulary';
 
 export type { FixtureCategory };
 
@@ -15,11 +15,14 @@ export const FIXTURE_CATEGORIES = {
   factory: FACTORY_FIXTURE_CATEGORIES,
   packhouse: PACKHOUSE_FIXTURE_CATEGORIES,
   mill: FACTORY_FIXTURE_CATEGORIES,
+  bakery: LINE_FIXTURE_CATEGORIES,
+  dairy: LINE_FIXTURE_CATEGORIES,
+  storehouse: LINE_FIXTURE_CATEGORIES,
   home: HOME_FIXTURE_CATEGORIES,
 } as Record<FixtureVenue, readonly FixtureCategory[]>;
 
 // What a Fixture can be placed in: a Venue, a Factory interior, a Packhouse interior or a Home interior.
-export type FixtureVenue = VenueType | 'factory' | 'packhouse' | 'mill' | 'home';
+export type FixtureVenue = VenueType | (typeof PRODUCTION_INTERIOR_KINDS)[number] | 'home';
 
 export interface FixtureSpec {
   venue: FixtureVenue;
@@ -67,6 +70,8 @@ export interface FixtureSpec {
   speed?: number;
   smoke?: readonly [number, number, number];
   yield?: number;
+  sales?: number;
+  capacity?: number;
   family?: string;
   coolant?: number;
   heat?: true;

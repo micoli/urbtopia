@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { pairSchema } from '../buildings/tierSchema.ts';
 import { count, filled, localizedText } from '../economy/itemSchemas.ts';
-import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_SIDES, HOME_FIXTURE_ROLES, PACK_SIZES } from './venueVocabulary.ts';
+import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_SIDES, HOME_FIXTURE_ROLES, PACK_SIZES, PRODUCTION_INTERIOR_KINDS } from './venueVocabulary.ts';
 
 const common = {
   $schema: z.string().optional(),
@@ -69,7 +69,7 @@ export const fixtureSchema = z
       wall: z.literal(true).optional(),
     }),
     z.strictObject({
-      venue: z.enum(['factory', 'packhouse', 'mill']),
+      venue: z.enum(PRODUCTION_INTERIOR_KINDS),
       ...common,
       // What the Fixture does on a Factory interior or a Packhouse interior: a Motor and a Pump are the sources of Drive and Flow, Gears, Shafts and Pipes carry them, a Machine uses them.
       role: z.enum(FACTORY_FIXTURE_ROLES).optional(),
@@ -85,6 +85,9 @@ export const fixtureSchema = z
       // Where smoke rises while the Machine runs, in the model's own space (x, up, z).
       smoke: z.tuple([z.number(), z.number(), z.number()]).optional(),
       yield: z.number().positive().optional(),
+      // An Exit of a Line: what it adds to the rate at which the building sells over its Counter, and to what the building holds.
+      sales: z.number().positive().optional(),
+      capacity: z.number().positive().optional(),
       // The kind of a Machine: the Factory interior pays for the variety of kinds that run, not for their number.
       family: z.string().min(1).optional(),
       // A Machine that cools the Motors beside it: the share it adds to the speed and the yield of each Machine they drive.

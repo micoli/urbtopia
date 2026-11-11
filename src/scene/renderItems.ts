@@ -90,12 +90,14 @@ const RAIL_MODELS = [RAIL_STRAIGHT_MODEL, RAIL_CORNER_MODEL];
 const shellOf = (type: VenueType) => definitionOf(type).shell!;
 
 // The interior of a Factory has the same pieces as the interior of a Venue.
-const floorShellOf = (type: 'factory' | 'mill' = 'factory') => definitionOf(type).floorShell!;
+type ProductionShellType = 'factory' | 'mill' | 'bakery' | 'dairy' | 'storehouse';
+
+const floorShellOf = (type: ProductionShellType = 'factory') => definitionOf(type).floorShell!;
 
 // A Home interior is drawn with the shell of the Hotel: full-height walls around a plain floor.
 const homeCornerOf = () => ({ x: shellOf('hotel').cornerX, z: shellOf('hotel').cornerZ, rotation: (shellOf('hotel').cornerRotation * Math.PI) / 180 });
 
-const interiorCornerOf = (type: 'factory' | 'mill' = 'factory') => ({ x: floorShellOf(type).cornerX, z: floorShellOf(type).cornerZ, rotation: (floorShellOf(type).cornerRotation * Math.PI) / 180 });
+const interiorCornerOf = (type: ProductionShellType = 'factory') => ({ x: floorShellOf(type).cornerX, z: floorShellOf(type).cornerZ, rotation: (floorShellOf(type).cornerRotation * Math.PI) / 180 });
 
 // Where the corner piece stands, by kind of Venue: the models of each kit are cut around different origins.
 export const VENUE_CORNER_PLACEMENT = {
@@ -105,6 +107,9 @@ export const VENUE_CORNER_PLACEMENT = {
   factory: interiorCornerOf(),
   packhouse: interiorCornerOf(),
   mill: interiorCornerOf('mill'),
+  bakery: interiorCornerOf('bakery'),
+  dairy: interiorCornerOf('dairy'),
+  storehouse: interiorCornerOf('storehouse'),
   home: homeCornerOf(),
 } as Record<FixtureVenue, { x: number; z: number; rotation: number }>;
 
@@ -115,6 +120,9 @@ export const VENUE_SHELL_MODELS = {
   factory: { floor: modelFileOf(floorShellOf().floor), wall: modelFileOf(floorShellOf().wall), corner: modelFileOf(floorShellOf().corner) },
   packhouse: { floor: modelFileOf(floorShellOf().floor), wall: modelFileOf(floorShellOf().wall), corner: modelFileOf(floorShellOf().corner) },
   mill: { floor: modelFileOf(floorShellOf('mill').floor), wall: modelFileOf(floorShellOf('mill').wall), corner: modelFileOf(floorShellOf('mill').corner) },
+  bakery: { floor: modelFileOf(floorShellOf('bakery').floor), wall: modelFileOf(floorShellOf('bakery').wall), corner: modelFileOf(floorShellOf('bakery').corner) },
+  dairy: { floor: modelFileOf(floorShellOf('dairy').floor), wall: modelFileOf(floorShellOf('dairy').wall), corner: modelFileOf(floorShellOf('dairy').corner) },
+  storehouse: { floor: modelFileOf(floorShellOf('storehouse').floor), wall: modelFileOf(floorShellOf('storehouse').wall), corner: modelFileOf(floorShellOf('storehouse').corner) },
   home: { floor: parquetModelOf(), wall: modelFileOf(shellOf('hotel').wall), corner: modelFileOf(shellOf('hotel').corner) },
 } as Record<FixtureVenue, { floor: string; wall: string; corner: string }>;
 

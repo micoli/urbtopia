@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "bakery",
+  "category": "plumbing",
+  "name": {
+    "en": "Tee pipe",
+    "fr": "Tuyau en té"
+  },
+  "model": "factory-floor-pipe-tee",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "wear": 0.04,
+  "role": "pipe",
+  "flow": ["front", "right", "left"]
+}

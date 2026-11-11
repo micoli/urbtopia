@@ -20,6 +20,14 @@ export const FACTORY_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 
 // The sections of the build menu of a Packhouse interior, in order.
 export const PACKHOUSE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'machines', 'line', 'walls'];
 
+// The sections of the build menu of a Production interior that runs a Line of crates, in order: the Bakery, the Dairy and the Storehouse.
+export const LINE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'plumbing', 'machines', 'line', 'walls'];
+
+// The Production interiors that share the engine of the Factory interior, by the kind of their Fixtures.
+export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse'] as const;
+
+export const isProductionInteriorKind = (kind: string): kind is (typeof PRODUCTION_INTERIOR_KINDS)[number] => (PRODUCTION_INTERIOR_KINDS as readonly string[]).includes(kind);
+
 // The sides of a Factory interior Fixture, seen from the Fixture itself: its front is the side its model faces.
 export const FIXTURE_SIDES = ['front', 'right', 'back', 'left'] as const;
 

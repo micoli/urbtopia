@@ -67,5 +67,13 @@
     "slots": 3,
     "sells": ["bread", "fougasse", "appleCake", "cherryClafoutis"],
     "saleIntervalFactor": 1
+  },
+  "floorShell": {
+    "floor": "bakery-interior-floor",
+    "wall": "bakery-interior-wall",
+    "corner": "bakery-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
   }
 }

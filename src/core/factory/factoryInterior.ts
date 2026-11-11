@@ -2,7 +2,7 @@ import interiorBalance from '../../../assets/defs/balance/factoryInterior.json' 
 import packhouseBalance from '../../../assets/defs/balance/packhouseInterior.json' with { type: 'json' };
 import { FIXTURES } from '../venues/fixtures';
 import { distanceBetween } from '../venues/layout';
-import type { FixtureSide, PackSize } from '../venues/venueVocabulary';
+import { PRODUCTION_INTERIOR_KINDS, type FixtureSide, type PackSize } from '../venues/venueVocabulary';
 import type { ItemId } from '../economy/items';
 import type { Building, BuildingType, VenueFixture } from '../engine/state';
 import { interiorDeclarationOf, interiorLayoutOf, interiorPartPresence } from '../interiors/interiorStaff';
@@ -31,6 +31,9 @@ export interface InteriorCaps {
 export interface InteriorBonus {
   speed: number;
   yield: number;
+  // The Line of a Bakery or a Storehouse: what its linked Exits add to the rate at which the building sells over its Counter, and to what it holds.
+  sales?: number;
+  capacity?: number;
   // What the Motors of the floor ask of the city's power.
   power: number;
 }
@@ -47,7 +50,7 @@ const keyOf = (x: number, y: number): string => `${x},${y}`;
 
 const flip = (turn: Turn): Turn => (turn === 'cw' ? 'ccw' : 'cw');
 
-const isFactoryFixture = (fixture: VenueFixture): boolean => (FIXTURES[fixture.type].venue === 'factory' || FIXTURES[fixture.type].venue === 'packhouse' || FIXTURES[fixture.type].venue === 'mill') && FIXTURES[fixture.type].role !== undefined;
+const isFactoryFixture = (fixture: VenueFixture): boolean => (PRODUCTION_INTERIOR_KINDS as readonly string[]).includes(FIXTURES[fixture.type].venue) && FIXTURES[fixture.type].role !== undefined;
 
 const roleOf = (fixture: VenueFixture) => FIXTURES[fixture.type].role;
 
@@ -673,6 +676,37 @@ export const interiorPowerOfBuilding = (building: Pick<Building, 'type' | 'tier'
   return building.type === 'packhouse' ? packhousePowerOf(building.interior.fixtures) : interiorBonusOf(building.interior.fixtures, building.tier, building.type).power;
 };
 
+const lineBonuses = new WeakMap<readonly VenueFixture[], Map<string, InteriorBonus>>();
+
+// What the Line of a Bakery, a Dairy or a Storehouse adds, from the Machines and the Exits that Packets reach: their speed and yield, and the sales and the capacity of the Exits,
+// each saturating towards the cap of its Tier. Nothing counts until the Line is unbroken from its first Machine to an Exit.
+export function lineBonusOf(allFixtures: readonly VenueFixture[], tier: number, type: BuildingType): InteriorBonus {
+  const perKey = lineBonuses.get(allFixtures) ?? new Map<string, InteriorBonus>();
+  lineBonuses.set(allFixtures, perKey);
+  const key = `${type}:${tier}`;
+  const cached = perKey.get(key);
+  if (cached) return cached;
+  const layout = interiorLayoutOf(type);
+  const { fixtures, links } = reportOf(allFixtures);
+  const lined = fixtures.filter(fixture => links.lined.has(fixture.id));
+  const exits = lined.filter(fixture => roleOf(fixture) === 'exit');
+  const power = bonusOf(allFixtures, tier, type).power;
+  let bonus: InteriorBonus = { speed: 0, yield: 0, sales: 0, capacity: 0, power };
+  if (layout && exits.length > 0) {
+    const machines = lined.filter(isMachine);
+    const total = (list: readonly VenueFixture[], key: 'speed' | 'yield' | 'sales' | 'capacity') => list.reduce((sum, fixture) => sum + (FIXTURES[fixture.type][key] ?? 0), 0);
+    bonus = {
+      speed: saturate(total(machines, 'speed'), capOf(layout.speedCaps, tier), interiorBalance.bonusKnee),
+      yield: saturate(total(machines, 'yield'), capOf(layout.yieldCaps, tier), interiorBalance.bonusKnee),
+      sales: layout.salesCaps ? saturate(total(exits, 'sales'), capOf(layout.salesCaps, tier), interiorBalance.bonusKnee) : 0,
+      capacity: layout.capacityCaps ? saturate(total(exits, 'capacity'), capOf(layout.capacityCaps, tier), interiorBalance.bonusKnee) : 0,
+      power,
+    };
+  }
+  perKey.set(key, bonus);
+  return bonus;
+}
+
 const packBonuses = new WeakMap<readonly VenueFixture[], Map<string, InteriorBonus>>();
 
 export const packSizeOf = (item: ItemId): PackSize | null => (['Crate', 'Box', 'Pallet'] as const).find(size => item.endsWith(size)) ?? null;
@@ -771,8 +805,14 @@ export const interiorFixturesOf = (building: Pick<Building, 'interior'>): readon
 export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'interior'>, item?: ItemId): InteriorBonus {
   if (!building.interior) return NO_BONUS;
   if (interiorDeclarationOf(building.type)) {
-    const bonus = interiorBonusOf(building.interior.fixtures, building.tier, building.type);
-    return { ...bonus, speed: bonus.speed * interiorPartPresence(building, 'speed') };
+    const layout = interiorLayoutOf(building.type);
+    const bonus = layout?.line ? lineBonusOf(building.interior.fixtures, building.tier, building.type) : interiorBonusOf(building.interior.fixtures, building.tier, building.type);
+    return {
+      ...bonus,
+      speed: bonus.speed * interiorPartPresence(building, 'speed'),
+      ...(bonus.sales === undefined ? {} : { sales: bonus.sales * interiorPartPresence(building, 'salesRate') }),
+      ...(bonus.capacity === undefined ? {} : { capacity: bonus.capacity * interiorPartPresence(building, 'capacity') }),
+    };
   }
   if (building.type === 'packhouse') return packhouseBonusOf(building.interior.fixtures, building.tier, item === undefined ? undefined : packSizeOf(item));
   return interiorBonusOf(building.interior.fixtures, building.tier, building.type);

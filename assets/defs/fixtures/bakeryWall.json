@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "bakery",
+  "category": "walls",
+  "name": {
+    "en": "Wall",
+    "fr": "Mur"
+  },
+  "model": "bakery-interior-partition",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "partition": true,
+  "joins": {
+    "elbow": "bakery-interior-partition-elbow",
+    "tee": "bakery-interior-partition-tee",
+    "cross": "bakery-interior-partition-cross"
+  }
+}

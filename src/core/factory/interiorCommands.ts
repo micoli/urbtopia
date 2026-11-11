@@ -7,6 +7,8 @@ import type { CommandError, CommandOutcome } from '../engine/commands';
 import type { Building, FixtureId, InteriorData, GameState, Rotation, VenueFixture, VenueType } from '../engine/state';
 import type { FixtureVenue } from '../venues/fixtures';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { PRODUCTION_INTERIOR_KINDS } from '../venues/venueVocabulary';
+import { interiorLayoutOf } from '../interiors/interiorStaff';
 import { PARQUETS, canHangOnWall, hangsOnWall, homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
 import { interiorGridSizeOf, interiorGridSizeOfType, packSizeOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factoryInterior';
 import { producibleItems, type GoodId } from '../economy/items';
@@ -27,17 +29,20 @@ export const isPackhouse = (building: Building): building is Packhouse => buildi
 export const isMill = (building: Building): boolean => building.type === 'mill';
 
 // The Production interiors, which share the engine of the Factory interior.
-export const hasProductionInterior = (building: Building): boolean => building.type === 'factory' || building.type === 'packhouse' || building.type === 'mill';
+export const hasProductionInterior = (building: Building): boolean => (PRODUCTION_INTERIOR_KINDS as readonly string[]).includes(building.type);
+
+// A Packhouse, a Bakery, a Dairy or a Storehouse: the interiors where a Line of crates runs from a Machine against the wall to an Exit.
+export const hasLineInterior = (building: Building): boolean => building.type === 'packhouse' || interiorLayoutOf(building.type)?.line === true;
 
 export const isInteriorBuilding = (building: Building): boolean => hasProductionInterior(building) || isHomeType(building.type);
 
 // What a floor building offers in its build menu: its kind of Fixtures.
-export const interiorKindOf = (building: Building): 'factory' | 'packhouse' | 'mill' | 'home' => (building.type === 'factory' ? 'factory' : building.type === 'packhouse' ? 'packhouse' : building.type === 'mill' ? 'mill' : 'home');
+export const interiorKindOf = (building: Building): (typeof PRODUCTION_INTERIOR_KINDS)[number] | 'home' => (hasProductionInterior(building) ? (building.type as (typeof PRODUCTION_INTERIOR_KINDS)[number]) : 'home');
 
 // The kind of Fixtures a building takes: those of its Venue, of a Factory interior or of a Home interior.
 export const fixtureVenueOf = (building: Building): FixtureVenue => (isInteriorBuilding(building) ? interiorKindOf(building) : (building.type as VenueType));
 
-export const interiorSizeOf = (building: Building): number => (building.type === 'factory' ? interiorGridSizeOf(building.tier) : building.type === 'packhouse' ? packhouseGridSizeOf(building.tier) : building.type === 'mill' ? interiorGridSizeOfType(building.type, building.tier) : homeGridSizeOf(building.tier));
+export const interiorSizeOf = (building: Building): number => (building.type === 'factory' ? interiorGridSizeOf(building.tier) : building.type === 'packhouse' ? packhouseGridSizeOf(building.tier) : hasProductionInterior(building) ? interiorGridSizeOfType(building.type, building.tier) : homeGridSizeOf(building.tier));
 
 const technicianHostOf = (state: GameState, buildingId: number): Building | undefined => {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
@@ -80,7 +85,7 @@ const needsAWall = (type: FixtureId): boolean => FIXTURES[type].role === 'exit' 
 
 export function canStandOnInterior(host: InteriorHost, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
   const size = gridSizeOf(host);
-  if (host.type === 'packhouse' && needsAWall(fixture.type) && !wallTurnsOf(fixture.type, fixture, size).includes(fixture.rotation)) return false;
+  if (hasLineInterior(host) && needsAWall(fixture.type) && !wallTurnsOf(fixture.type, fixture, size).includes(fixture.rotation)) return false;
   const entrance = entranceCell(host.tier);
   if (hangsOnWall(fixture.type)) return host.type !== 'factory' && canHangOnWall(interiorOf(host).fixtures, fixture, size, entrance.x, ignoreId);
   const occupied = new Set(interiorOf(host).fixtures.filter(other => other.id !== ignoreId && !hangsOnWall(other.type)).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
@@ -101,7 +106,7 @@ export function placeInteriorFixture(state: GameState, buildingId: number, type:
   if (factory.tier < FIXTURES[type].minTier) return { key: 'error.tierTooLow' };
   const fixture = { type, x, y, rotation };
   if (!canStandOnInterior(factory, fixture)) return { key: 'error.tilesOccupied' };
-  if (FIXTURES[type].role === 'exit' && interiorOf(factory).fixtures.filter(other => FIXTURES[other.type].packSize === FIXTURES[type].packSize).length >= packhouseExitLimitOf(factory.tier)) return { key: 'error.exitLimitReached' };
+  if (factory.type === 'packhouse' && FIXTURES[type].role === 'exit' && interiorOf(factory).fixtures.filter(other => FIXTURES[other.type].packSize === FIXTURES[type].packSize).length >= packhouseExitLimitOf(factory.tier)) return { key: 'error.exitLimitReached' };
   const price = FIXTURES[type].price;
   if (state.urbs < price) return { key: 'error.notEnoughUrbs' };
   const interior = interiorOf(factory);

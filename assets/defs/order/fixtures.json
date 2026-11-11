@@ -123,5 +123,22 @@
   "millBevel",
   "millBevelTee",
   "millstone",
-  "millWall"
+  "millWall",
+  "bakeryMotor",
+  "bakeryShaft",
+  "bakeryGear",
+  "bakeryBevel",
+  "bakeryBevelTee",
+  "bakeryPump",
+  "bakeryTank",
+  "bakeryPipe",
+  "bakeryPipeElbow",
+  "bakeryPipeTee",
+  "bakeryMixer",
+  "bakeryOven",
+  "bakeryConveyor",
+  "bakeryConveyorElbowLeft",
+  "bakeryConveyorElbowRight",
+  "bakeryCounter",
+  "bakeryWall"
 ]

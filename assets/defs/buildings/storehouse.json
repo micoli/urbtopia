@@ -120,5 +120,13 @@
     "output": 2,
     "unlockCitizens": 0
   },
-  "extraCopyCitizens": [150, 500]
+  "extraCopyCitizens": [150, 500],
+  "floorShell": {
+    "floor": "storehouse-interior-floor",
+    "wall": "storehouse-interior-wall",
+    "corner": "storehouse-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  }
 }

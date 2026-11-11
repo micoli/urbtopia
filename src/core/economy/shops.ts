@@ -1,6 +1,7 @@
 import { BUILDING_ENTRIES, definitionOf, tiersOf } from '../buildings/buildingDefinitions';
 import type { ShopType } from '../buildings/buildingTypes.generated';
 import type { Building } from '../engine/state';
+import { interiorBonusOfBuilding } from '../factory/factoryInterior';
 import { SHOP, SLOT_PRICES } from './economy';
 import { PACK_IDS, GOODS, type GoodId } from './items';
 
@@ -18,7 +19,7 @@ export const stackCountOf = (type: string): number => counterOf(type)?.slots ?? 
 
 type ShopGoodCategory = NonNullable<ReturnType<typeof definitionOf>['goodCategory']>;
 
-type ShopBuilding = Pick<Building, 'type' | 'tier'>;
+type ShopBuilding = Pick<Building, 'type' | 'tier'> & Partial<Pick<Building, 'interior'>>;
 
 export interface ShopTier {
   maxSlots: number;
@@ -33,7 +34,9 @@ export function shopTierOf(building: ShopBuilding): ShopTier {
   return { maxSlots: maxSlots!, sells: sells as GoodId[], saleIntervalFactor: saleIntervalFactor!, jobs: jobs! };
 }
 
-export const saleIntervalOf = (building: ShopBuilding): number => SHOP.saleIntervalMs * (counterOf(building.type)?.saleIntervalFactor ?? shopTierOf(building).saleIntervalFactor);
+// The seller of a Bakery sells faster over its Counter, in proportion to what its linked display counters add.
+export const saleIntervalOf = (building: ShopBuilding): number =>
+  (SHOP.saleIntervalMs * (counterOf(building.type)?.saleIntervalFactor ?? shopTierOf(building).saleIntervalFactor)) / (1 + (interiorBonusOfBuilding({ type: building.type, tier: building.tier, interior: building.interior }).sales ?? 0));
 
 // Packed Crops are Food Goods, always sold by a Shop that sells Food.
 export function sellableGoodsOf(building: ShopBuilding): readonly GoodId[] {

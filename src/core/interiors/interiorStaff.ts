@@ -11,6 +11,9 @@ export interface InteriorLayout {
   speedCaps: number[];
   yieldCaps: number[];
   technicianPosts: number[];
+  line?: true;
+  salesCaps?: number[];
+  capacityCaps?: number[];
 }
 
 interface InteriorDeclaration {

@@ -848,7 +848,10 @@
           "enum": [
             "factory",
             "packhouse",
-            "mill"
+            "mill",
+            "bakery",
+            "dairy",
+            "storehouse"
           ]
         },
         "$schema": {
@@ -1063,6 +1066,14 @@
           "maxItems": 3
         },
         "yield": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "sales": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "capacity": {
           "type": "number",
           "exclusiveMinimum": 0
         },

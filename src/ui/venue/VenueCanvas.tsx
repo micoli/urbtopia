@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, canStandOnInterior, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, hasProductionInterior, interiorBonusOfBuilding, interiorFixturesOf, lineFaultOf, linePathsOf, linkedExitsOf, interiorMotionOf, interiorOverloadedOf, interiorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isInteriorBuilding, isPackhouse, wallFacingOf, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type LinePath, type VenueFixture, type VenueType } from '../../core';
+import { canPlaceFixture, canStandOnInterior, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, hasLineInterior, hasProductionInterior, interiorBonusOfBuilding, interiorFixturesOf, lineFaultOf, linePathsOf, linkedExitsOf, interiorMotionOf, interiorOverloadedOf, interiorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isInteriorBuilding, isPackhouse, wallFacingOf, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type LinePath, type VenueFixture, type VenueType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
@@ -34,7 +34,7 @@ const targetOf = (type: FixtureId, cell: Coord, fixtures: readonly VenueFixture[
 
 const interiorSizeIn = (venueId: number): number => {
   const building = interiorOf(venueId)?.building;
-  return building && isPackhouse(building) ? interiorSizeOf(building) : 0;
+  return building && hasLineInterior(building) ? interiorSizeOf(building) : 0;
 };
 
 const moveCommandOf = (venueId: number): 'MoveFixture' | 'MoveInteriorFixture' => (interiorOf(venueId)?.interior ? 'MoveInteriorFixture' : 'MoveFixture');
@@ -93,7 +93,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       const hints = isVenue(interior.building) ? venuePerformance(gameStore.getState().state, interior.building).layout.hints : new Map<number, readonly string[]>();
       const { placedId, movingId } = venueStore.getState();
       const selected = interior.fixtures.find(fixture => fixture.id === (movingId ?? placedId));
-      const fault = isPackhouse(interior.building) && selected ? lineFaultOf(interior.fixtures, selected) : undefined;
+      const fault = hasLineInterior(interior.building) && selected ? lineFaultOf(interior.fixtures, selected) : undefined;
       const faulty = !fault ? [] : 'cell' in fault ? [fault.cell] : fixtureTiles(fault.fixture);
       scene.setWarnings([...interior.fixtures.filter(fixture => hints.has(fixture.id) && !isBroken(fixture)).flatMap(fixtureTiles), ...faulty]);
       const overloaded = hasProductionInterior(interior.building) ? interiorOverloadedOf(interior.fixtures) : new Set<number>();
@@ -122,7 +122,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
         if (venueType === 'home') scene.setFloorModel(parquetModelOf(interior.building.interior?.parquet));
         scene.setFixtures([...interior.fixtures]);
         scene.setTrucks(isPackhouse(interior.building) ? linkedExitsOf(interior.fixtures) : NO_EXITS);
-        scene.setLine(isPackhouse(interior.building) ? linePathsOf(interior.fixtures) : NO_PATHS, 1 + interiorBonusOfBuilding(interior.building).speed);
+        scene.setLine(hasLineInterior(interior.building) ? linePathsOf(interior.fixtures) : NO_PATHS, 1 + interiorBonusOfBuilding(interior.building).speed);
         scene.setMotion(hasProductionInterior(interior.building) ? interiorMotionOf(interior.fixtures) : new Map(), 1 + interiorBonusOfBuilding(interior.building).speed);
       }
       showCrowd();

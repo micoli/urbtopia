@@ -81,6 +81,9 @@ const counterSchema = z.strictObject({ slots: z.int().min(1), sells: z.array(fil
 // Where the animals of the Pens stand, as offsets from the center of the footprint in tiles; a Tier shows its first `penCount` Pens, each holding the animal of one production running or waiting to be collected.
 const pensSchema = z.array(z.strictObject({ x: z.number(), z: z.number() })).min(1);
 
+// The models of the interior of a building: its floor, its walls and its corner post.
+const interiorShell = z.strictObject({ floor: filled, wall: filled, corner: filled, cornerX: z.number(), cornerZ: z.number(), cornerRotation: z.number() });
+
 // Workshop, Factory, Packhouse: a higher Tier crafts faster, holds more Slots and yields more per cycle.
 const productionBuilding = z.strictObject({
   kind: z.literal('production'),
@@ -90,8 +93,8 @@ const productionBuilding = z.strictObject({
   ...repeatable,
   counter: counterSchema.optional(),
   pens: pensSchema.optional(),
-  // The interior of a Factory: the models of its floor, its walls and its corner post.
-  floorShell: z.strictObject({ floor: filled, wall: filled, corner: filled, cornerX: z.number(), cornerZ: z.number(), cornerRotation: z.number() }).optional(),
+  // The interior of a Production building: the models of its floor, its walls and its corner post.
+  floorShell: interiorShell.optional(),
   tiers: tiersOf({ ...homeLook, durationFactor: z.number().positive(), maxSlots: z.int().min(1), yield: z.int().min(1), penCount: count }, ['model', 'footprint', 'durationFactor', 'maxSlots', 'yield']),
 });
 
@@ -109,6 +112,7 @@ const farmBuilding = z.strictObject({
 const storageBuilding = z.strictObject({
   kind: z.literal('storage'),
   ...identity,
+  floorShell: interiorShell.optional(),
   ...sited,
   ...panelled,
   ...repeatable,

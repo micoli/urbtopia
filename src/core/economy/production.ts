@@ -173,8 +173,8 @@ export function taxDue(building: Building): number {
 }
 
 // The speed an interior adds is delivered by Staff that Citizens may not all fill: a running entry was counted with the Staff at full strength, so it is slowed by what is missing.
-function staffShortfallOf(building: Building, filledJobs: ReadonlyMap<number, number>): number {
-  const speed = interiorBonusOfBuilding(building).speed;
+function staffShortfallOf(building: Building, filledJobs: ReadonlyMap<number, number>, part: 'speed' | 'sales'): number {
+  const speed = part === 'speed' ? interiorBonusOfBuilding(building).speed : interiorBonusOfBuilding(building).sales ?? 0;
   if (speed === 0) return 0;
   const fill = interiorFillRateFrom(building, filledJobs, jobsOf(building));
   return fill >= 1 ? 0 : 1 - (1 + speed * fill) / (1 + speed);
@@ -185,11 +185,13 @@ export function advanceProduction(state: GameState, now: number, elapsedMs: numb
     const idle = idleShops.has(building.id);
     const drawsPower = building.type === 'packhouse' && interiorPowerOfBuilding(building) > 0;
     const ratio = isIndustryType(building.type) ? economicRatio * industrySpeed : economicRatio;
-    const delay = idle ? elapsedMs : elapsedMs * (1 - ratio * (1 - (staffAtFullStrength ? 0 : staffShortfallOf(building, filledJobs))));
+    const lacking = (part: 'speed' | 'sales') => (staffAtFullStrength ? 0 : staffShortfallOf(building, filledJobs, part));
+    const delay = idle ? elapsedMs : elapsedMs * (1 - ratio * (1 - lacking('speed')));
+    const stackDelay = idle ? elapsedMs : elapsedMs * (1 - ratio * (1 - lacking('sales')));
     const slowed = isIndustryType(building.type) || isShopType(building.type) || drawsPower ? {
       ...building,
       queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delay }),
-      stacks: building.stacks.map(stack => stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + delay }),
+      stacks: building.stacks.map(stack => stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + stackDelay }),
     } : building;
     const produced = advanceBuilding(slowed, now);
     const housed = advanceHome(idle ? produced.building : advanceShop(produced.building, now), elapsedMs * (homeRatios.get(building.id) ?? 1));

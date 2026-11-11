@@ -2,6 +2,7 @@ import interiorBalance from '../../../assets/defs/balance/factoryInterior.json' 
 import packhouseBalance from '../../../assets/defs/balance/packhouseInterior.json' with { type: 'json' };
 import { hashSeed } from '../engine/random';
 import { VENUE } from '../venues/shared';
+import { isProductionInteriorKind } from '../venues/venueVocabulary';
 import { STAFF } from '../venues/staff';
 import { drawBreakdowns, technicianRepairs, wearFixtures } from '../venues/wear';
 import { isVenuePowered } from '../venues/venues';
@@ -17,7 +18,7 @@ export const minTierOfTechnician = (type: BuildingType = 'factory'): number => t
 
 export const technicianPostsOf = (tier: number, type: BuildingType = 'factory'): number => tierValue(technicianPostsTable(type), tier);
 
-const hasInterior = (building: Building): building is Building & { interior: InteriorData } => (building.type === 'factory' || building.type === 'packhouse' || building.type === 'mill') && building.interior !== undefined && building.interior.fixtures.length > 0;
+const hasInterior = (building: Building): building is Building & { interior: InteriorData } => isProductionInteriorKind(building.type) && building.interior !== undefined && building.interior.fixtures.length > 0;
 
 export const restockerPostsOf = (tier: number): number => tierValue(packhouseBalance.restockerPosts, tier);
 
