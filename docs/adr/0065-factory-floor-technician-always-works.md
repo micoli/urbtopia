@@ -4,6 +4,8 @@ status: accepted
 
 # A hired Technician of a Factory floor always works
 
+> Renamed: what this ADR calls the Factory floor or the Packhouse floor is now the Factory interior or the Packhouse interior ([ADR 0070](0070-interiors-come-in-three-families-venue-production-and-service.md)).
+
 Amends [ADR 0064](0064-factory-floor-is-a-venue-style-interior-for-the-factory.md), which applied the Fill rate of [ADR 0061](0061-venue-staff-counts-in-proportion-to-its-fill-rate.md) to the Technician. It does not.
 
 **The rule.** The Technician is paid a daily wage and repairs at every hour boundary, whatever the Commute does. He is not one of the Factory's Jobs: the Jobs of a Factory are fixed by its Tier, and the Commute never looks for a Citizen to fill his post. With no Urbs left to pay the wage he does not work.

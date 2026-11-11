@@ -4,6 +4,8 @@ status: accepted
 
 # The Factory gets a Factory floor: a Venue-style interior that boosts production
 
+> Renamed: what this ADR calls the Factory floor or the Packhouse floor is now the Factory interior or the Packhouse interior ([ADR 0070](0070-interiors-come-in-three-families-venue-production-and-service.md)).
+
 Extends [ADR 0020](0020-venue-interior-scene-and-aggregate-simulation.md) to one Production building, the Factory. The Factory keeps its Slots, Tiers and Jobs. It gains an optional interior, the Factory floor, where the player places a Motor, Gears, Shafts, a Pump, Pipes and Machines to raise the speed and yield of its Slots.
 
 ## Decisions

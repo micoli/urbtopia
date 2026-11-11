@@ -4,6 +4,8 @@ status: accepted
 
 # The Packhouse gets a Packhouse floor: the Factory floor engine plus a Line network
 
+> Renamed: what this ADR calls the Factory floor or the Packhouse floor is now the Factory interior or the Packhouse interior ([ADR 0070](0070-interiors-come-in-three-families-venue-production-and-service.md)).
+
 Extends [ADR 0064](0064-factory-floor-is-a-venue-style-interior-for-the-factory.md), which left "every Production building gets a floor" as extensible by data. The Packhouse is the second building to get one. It keeps its Slots, Tiers and Jobs and gains an optional interior where the player places a Motor, Gears, Shafts, a Packer, Conveyors, Strappers, Scanners and Exits to raise the speed and yield of its Slots.
 
 ## Decisions

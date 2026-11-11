@@ -4,6 +4,8 @@ status: accepted
 
 # A Restocker restarts the production of an Exit's Line and stores it
 
+> Renamed: what this ADR calls the Factory floor or the Packhouse floor is now the Factory interior or the Packhouse interior ([ADR 0070](0070-interiors-come-in-three-families-venue-production-and-service.md)).
+
 Amends [ADR 0068](0068-packhouse-floor-reuses-the-factory-floor-engine-with-a-line-network.md) and follows [ADR 0065](0065-factory-floor-technician-always-works.md). The Packhouse floor gains a second worker, the Restocker, who spares the player the manual queueing and collecting of a Good they pack all the time.
 
 ## Decisions
