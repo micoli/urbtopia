@@ -45,6 +45,8 @@ export class VenueScene {
   private library = new ModelLibrary();
   private shell = new THREE.Group();
   private fixtureRoot = new THREE.Group();
+  private truckRoot = new THREE.Group();
+  private trucks: readonly VenueFixture[] = [];
   private ghostRoot = new THREE.Group();
   private selectionRoot = new THREE.Group();
   private warningRoot = new THREE.Group();
@@ -102,11 +104,12 @@ export class VenueScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 2.2);
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
-    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
-    this.ready = this.library.ensure([...Object.values(this.shellModels), ...(venueType === 'home' ? PARQUET_MODELS : []), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
+    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.truckRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
+    this.ready = this.library.ensure([...Object.values(this.shellModels), ...(venueType === 'home' ? PARQUET_MODELS : []), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...(FIXTURES[id].truck ? [FIXTURES[id].truck!] : []), ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
       this.rebuildFixtures();
+      this.rebuildTrucks();
       this.crowd.enable();
       this.dirty = true;
     });
@@ -152,6 +155,21 @@ export class VenueScene {
   setMotion(motion: ReadonlyMap<number, FixtureMotion>, speed = 1): void {
     this.motion.setMotion(motion);
     this.motion.setSpeed(speed);
+    this.dirty = true;
+  }
+
+  // The Exits of a Packhouse floor whose Line is linked: a truck waits outside each of them.
+  setTrucks(exits: readonly VenueFixture[]): void {
+    this.trucks = exits;
+    this.rebuildTrucks();
+  }
+
+  private rebuildTrucks(): void {
+    this.clear(this.truckRoot);
+    for (const exit of this.trucks) {
+      const truck = FIXTURES[exit.type].truck;
+      if (truck && this.library.has(truck)) this.place(this.truckRoot, truck, exit.x + 0.5, exit.y + 0.5, -exit.rotation * Math.PI / 2);
+    }
     this.dirty = true;
   }
 

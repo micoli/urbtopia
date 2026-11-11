@@ -42,3 +42,26 @@ describe('a saved Factory floor', () => {
     expect(checkGameState(withFloor({ fixtures: [{ id: 1, type: 'factoryMotor', x: 1, y: 1, rotation: 0 }], nextFixtureId: 2 })).ok).toBe(true);
   });
 });
+
+describe('a saved Packhouse floor', () => {
+  const start: GameState = {
+    ...newGame({ seed: 'packhouse-floor', now: 0 }), nextId: 100, urbs: 100_000, tutorial: null, adaptationUntil: 0, lastSeen: 0,
+    buildings: [{ ...createBuilding(1, 'packhouse', 55, 50, 0), tier: 3 }],
+  };
+  const withFloor = (floor: unknown) => JSON.parse(JSON.stringify({ ...start, buildings: [{ ...start.buildings[0], floor }] }));
+
+  it('keeps its Fixtures through a save', () => {
+    const placed = send(start, { type: 'PlaceFloorFixture', buildingId: 1, fixture: 'packhousePacker', x: 2, y: 0, rotation: 0 });
+    const check = checkGameState(JSON.parse(JSON.stringify(placed)));
+    expect(check.ok ? 'ok' : check.reason).toBe('ok');
+  });
+
+  it('loads a Packhouse saved before the floor existed', () => {
+    expect(checkGameState(JSON.parse(JSON.stringify(start))).ok).toBe(true);
+  });
+
+  it('refuses a Fixture of a Factory floor', () => {
+    expect(checkGameState(withFloor({ fixtures: [{ id: 1, type: 'factoryMotor', x: 1, y: 1, rotation: 0 }], nextFixtureId: 2 })).ok).toBe(false);
+    expect(checkGameState(withFloor({ fixtures: [{ id: 1, type: 'packhouseMotor', x: 1, y: 1, rotation: 0 }], nextFixtureId: 2 })).ok).toBe(true);
+  });
+});

@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 import type { Reference } from './collections.ts';
-import { economyBalanceSchema, factoryFloorBalanceSchema, homeInteriorBalanceSchema, knowledgeBalanceSchema, politicsBalanceSchema, sanctionsBalanceSchema, trafficBalanceSchema, transitReachBalanceSchema, venuesBalanceSchema, wasteBalanceSchema } from '../src/core/balance/balanceSchemas.ts';
+import { economyBalanceSchema, factoryFloorBalanceSchema, homeInteriorBalanceSchema, knowledgeBalanceSchema, packhouseFloorBalanceSchema, politicsBalanceSchema, sanctionsBalanceSchema, trafficBalanceSchema, transitReachBalanceSchema, venuesBalanceSchema, wasteBalanceSchema } from '../src/core/balance/balanceSchemas.ts';
 import { bridgeInfrastructureSchema, railsInfrastructureSchema, hedgesInfrastructureSchema, roadsInfrastructureSchema, sceneryInfrastructureSchema } from '../src/core/infrastructure/infrastructureSchemas.ts';
 import { natureDescriptionsSchema, NATURE_DESCRIPTION_VALUES } from '../src/core/descriptions/descriptionSchemas.ts';
 import { templateProblems } from '../src/core/descriptions/descriptionProblems.ts';
@@ -27,6 +27,7 @@ export const SINGLETONS = {
   venues: { file: 'assets/defs/balance/venues.json', title: 'Venues balance', schemaName: 'balance-venues', schema: venuesBalanceSchema },
   homeInterior: { file: 'assets/defs/balance/homeInterior.json', title: 'Home interior balance', schemaName: 'balance-home-interior', schema: homeInteriorBalanceSchema },
   factoryFloor: { file: 'assets/defs/balance/factoryFloor.json', title: 'Factory floor balance', schemaName: 'balance-factory-floor', schema: factoryFloorBalanceSchema },
+  packhouseFloor: { file: 'assets/defs/balance/packhouseFloor.json', title: 'Packhouse floor balance', schemaName: 'balance-packhouse-floor', schema: packhouseFloorBalanceSchema },
   traffic: { file: 'assets/defs/balance/traffic.json', title: 'Traffic balance', schemaName: 'balance-traffic', schema: trafficBalanceSchema },
   sanctions: { file: 'assets/defs/balance/sanctions.json', title: 'Sanctions balance', schemaName: 'balance-sanctions', schema: sanctionsBalanceSchema },
   politics: { file: 'assets/defs/balance/politics.json', title: 'Politics balance', schemaName: 'balance-politics', schema: politicsBalanceSchema },

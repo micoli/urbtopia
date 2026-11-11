@@ -8,9 +8,9 @@ interface FloorButtonProps {
   building: Building;
 }
 
-// Opens the Factory floor in the same view as the interior of a Venue.
+// Opens the Factory floor or the Packhouse floor in the same view as the interior of a Venue.
 export function FloorButton({ building }: FloorButtonProps) {
-  if (building.type !== 'factory') return null;
+  if (building.type !== 'factory' && building.type !== 'packhouse') return null;
   return (
     <ActionButton variant="primary" block onClick={() => venueStore.getState().open(building.id)}>
       <Icon name="build" /> {t('factory.floor.open')}

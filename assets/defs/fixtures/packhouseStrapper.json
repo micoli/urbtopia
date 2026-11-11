@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "packhouse",
+  "category": "machines",
+  "name": {
+    "en": "Strapper",
+    "fr": "Cercleuse"
+  },
+  "model": "packhouse-floor-strapper",
+  "footprint": [1, 1],
+  "price": 1200,
+  "minTier": 2,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["right"],
+  "speed": 0.1,
+  "yield": 0.05,
+  "family": "strapper",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

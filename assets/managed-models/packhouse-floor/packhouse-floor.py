@@ -33,6 +33,13 @@ def horizontal(ob, x=0.0, y=0.0, z=0.0):
     return ob
 
 
+def shifted(parts, dy):
+    """Move parts along y: a part drawn against a wall at y 0 is moved so that its back lies on the back edge of its tile (y 0.5)."""
+    for part in parts:
+        lpm.move(part, 0, dy, 0)
+    return parts
+
+
 def packet(name, x0, x1, y0, y1, z0, z1):
     """A kraft box closed by a strip of tape along its top."""
     middle = (x0 + x1) / 2
@@ -40,8 +47,9 @@ def packet(name, x0, x1, y0, y1, z0, z1):
 
 
 def packer(rng):
-    """Packer hung on the back wall (its back on y 0, its face toward -y): a cabinet with a hopper on top and a control panel, a mouth that pushes a packet
-    onto the belt stub at BELT_Z, which ends on the edge of the tile where the first Conveyor of the Line begins. A shaft stub on the right brings the Drive in."""
+    """Packer standing against the back wall of the room, on the tile along it (its back on the back edge of the tile, y 0.5, its face toward -y): a cabinet with a hopper
+    on top and a control panel, a mouth that pushes a packet onto the belt at BELT_Z, which ends on the front edge of the tile where the first Conveyor of the Line
+    begins. A shaft stub on the right brings the Drive in."""
     parts = [block("body", -0.4, 0.4, -0.36, 0.0, 0.26, 0.86, P["olive"]), block("body_band", -0.41, 0.41, -0.37, 0.0, 0.26, 0.3, P["olive_dark"]),
              block("body_top", -0.41, 0.41, -0.37, 0.0, 0.84, 0.88, P["olive_dark"]),
              block("hopper_base", -0.26, 0.26, -0.3, -0.04, 0.88, 0.96, P["steel_dark"]), block("hopper_lip", -0.3, 0.3, -0.34, 0.0, 0.96, 1.0, P["steel"]),
@@ -51,16 +59,16 @@ def packer(rng):
              block("panel", 0.0, 0.34, -0.375, -0.36, 0.66, 0.8, P["iron"]), block("screen", 0.03, 0.2, -0.38, -0.375, 0.7, 0.78, P["glass"]),
              block("button_red", 0.24, 0.28, -0.38, -0.375, 0.74, 0.78, P["red"]), block("button_green", 0.29, 0.33, -0.38, -0.375, 0.74, 0.78, P["green"]),
              block("lamp_stem", -0.3, -0.26, -0.2, -0.16, 1.0, 1.04, P["steel_dark"]), block("lamp", -0.31, -0.25, -0.21, -0.15, 1.04, 1.1, P["yellow"]),
-             block("belt_rail_l", -0.2, -0.17, -0.5, -0.36, 0.3, BELT_Z, P["steel"]), block("belt_rail_r", 0.17, 0.2, -0.5, -0.36, 0.3, BELT_Z, P["steel"]),
-             block("belt_bed", -0.17, 0.17, -0.5, -0.36, 0.3, 0.4, P["belt"]),
-             block("belt_leg_l", -0.2, -0.17, -0.5, -0.46, 0.0, 0.3, P["iron"]), block("belt_leg_r", 0.17, 0.2, -0.5, -0.46, 0.0, 0.3, P["iron"])]
+             block("belt_rail_l", -0.2, -0.17, -1.0, -0.36, 0.3, BELT_Z, P["steel"]), block("belt_rail_r", 0.17, 0.2, -1.0, -0.36, 0.3, BELT_Z, P["steel"]),
+             block("belt_bed", -0.17, 0.17, -1.0, -0.36, 0.3, 0.4, P["belt"]),
+             block("belt_leg_l", -0.2, -0.17, -0.98, -0.92, 0.0, 0.3, P["iron"]), block("belt_leg_r", 0.17, 0.2, -0.98, -0.92, 0.0, 0.3, P["iron"])]
     parts += packet("packet", -0.1, 0.1, -0.48, -0.3, 0.4, 0.56)
     parts += [block("bracket", 0.4, 0.46, -0.1, -0.02, 0.28, 0.4, P["iron"]),
               sideways(disc("stub", 0.04, 0.12, (0, 0, 0), P["steel"], 6), x=0.4, y=-0.06, z=DRIVE_Z)]
     pulley = [sideways(disc("pulley", 0.1, 0.04, (0, 0, 0), P["brass"], 10), x=0.46, y=-0.06, z=DRIVE_Z),
               sideways(disc("pulley_hub", 0.05, 0.08, (0, 0, 0), P["steel_dark"], 8), x=0.44, y=-0.06, z=DRIVE_Z),
               block("pulley_spoke", 0.46, 0.5, -0.06 - 0.09, -0.06 + 0.09, DRIVE_Z - 0.015, DRIVE_Z + 0.015, P["black"])]
-    return parts, {"spin-x": (pulley, (0.46, -0.06, DRIVE_Z))}
+    return shifted(parts, 0.5), {"spin-x": (shifted(pulley, 0.5), (0.46, 0.44, DRIVE_Z))}
 
 
 def arrow(name, x, y, turn=0, color="yellow", size=0.09):
@@ -133,12 +141,12 @@ def strapper(rng):
 
 
 def exit_conveyor(rng):
-    """Exit hung on a wall (its back on y 0, its face toward -y): the belt comes in from the room at BELT_Z, goes through a hatch of the wall under a rubber curtain and
-    ends outside on a roller, where the last packet leaves. The Packets travel toward +y. A lamp on the hatch lights when the Line is Linked."""
-    parts = [block("belt_rail_l", -0.2, -0.17, -0.5, 0.32, 0.3, BELT_Z, P["steel"]), block("belt_rail_r", 0.17, 0.2, -0.5, 0.32, 0.3, BELT_Z, P["steel"]),
-             block("belt_bed", -0.17, 0.17, -0.5, 0.32, 0.3, BELT_Z - 0.02, P["belt"])]
+    """Exit standing against a wall of the room, on the tile along it (its back on the back edge of the tile, y 0.5, its face toward -y): the belt comes in from the room at
+    BELT_Z, goes through a hatch of the wall under a rubber curtain and ends outside on a roller, where the last packet leaves. The Packets travel toward +y. A lamp on the hatch lights when the Line is Linked."""
+    parts = [block("belt_rail_l", -0.2, -0.17, -1.0, 0.32, 0.3, BELT_Z, P["steel"]), block("belt_rail_r", 0.17, 0.2, -1.0, 0.32, 0.3, BELT_Z, P["steel"]),
+             block("belt_bed", -0.17, 0.17, -1.0, 0.32, 0.3, BELT_Z - 0.02, P["belt"])]
     parts += [sideways(disc("end_roller", 0.04, 0.34, (0, 0, 0), P["steel_dark"], 8), x=-0.17, y=0.32, z=BELT_Z - 0.04)]
-    for k, y in enumerate((-0.42, -0.14, 0.26)):
+    for k, y in enumerate((-0.92, -0.5, -0.14, 0.26)):
         parts += [block(f"leg_l{k}", -0.2, -0.17, y - 0.03, y + 0.03, 0.0, 0.3, P["iron"]), block(f"leg_r{k}", 0.17, 0.2, y - 0.03, y + 0.03, 0.0, 0.3, P["iron"])]
     parts += [block("hatch_l", -0.3, -0.22, -0.06, 0.04, 0.3, 0.72, P["olive_dark"]), block("hatch_r", 0.22, 0.3, -0.06, 0.04, 0.3, 0.72, P["olive_dark"]),
               block("hatch_top", -0.3, 0.3, -0.06, 0.04, 0.6, 0.72, P["olive_dark"]), block("hatch_cap", -0.32, 0.32, -0.07, 0.05, 0.7, 0.74, P["olive"]),
@@ -146,7 +154,7 @@ def exit_conveyor(rng):
     parts += [block(f"hazard{k}", -0.28 + 0.1 * k, -0.28 + 0.1 * k + 0.05, -0.07, -0.065, 0.62, 0.68, P["yellow" if k % 2 == 0 else "black"]) for k in range(6)]
     parts += [block(f"curtain{k}", -0.22 + 0.088 * k, -0.22 + 0.088 * k + 0.08, -0.03, -0.01, 0.46, 0.6, P["belt"]) for k in range(5)]
     parts += packet("packet", -0.09, 0.09, 0.07, 0.25, 0.4, 0.55)[:1]
-    return parts + arrow("arrow", 0.0, -0.3, 180)
+    return shifted(parts + arrow("arrow", 0.0, -0.8, 180), 0.5)
 
 
 def scanner(rng):
@@ -169,7 +177,7 @@ def scanner(rng):
 
 
 def truck(rng):
-    """Delivery truck in the frame of an Exit, parked outside its wall: the open back of the cargo box faces the wall (toward -y) at y 0.36, its floor at BELT_Z, level with
+    """Delivery truck in the frame of an Exit, parked outside its wall: the open back of the cargo box faces the wall (toward -y) at y 0.86, its floor at BELT_Z, level with
     the roller of the Exit, and the cab points toward +y. It only drives in and out of the picture."""
     parts = [block("chassis", -0.2, 0.2, 0.36, 1.3, 0.2, 0.28, P["iron"]),
              block("cargo_floor", -0.25, 0.25, 0.36, 0.9, 0.28, 0.4, P["olive_dark"]),
@@ -188,7 +196,7 @@ def truck(rng):
         tire = sideways(disc(f"tire{k}", 0.1, 0.07, (0, 0, 0), P["black"], 10), x=x - 0.035, y=y, z=0.1)
         hub = sideways(disc(f"hub{k}", 0.05, 0.08, (0, 0, 0), P["steel_dark"], 8), x=x - 0.04, y=y, z=0.1)
         parts += [tire, hub]
-    return parts
+    return shifted(parts, 0.5)
 
 
 def elbow(side):

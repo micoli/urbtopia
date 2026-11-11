@@ -1,7 +1,9 @@
 import floorBalance from '../../../assets/defs/balance/factoryFloor.json' with { type: 'json' };
+import packhouseBalance from '../../../assets/defs/balance/packhouseFloor.json' with { type: 'json' };
 import { FIXTURES } from '../venues/fixtures';
 import { distanceBetween } from '../venues/layout';
-import type { FixtureSide } from '../venues/venueVocabulary';
+import type { FixtureSide, PackSize } from '../venues/venueVocabulary';
+import type { ItemId } from '../economy/items';
 import type { Building, VenueFixture } from '../engine/state';
 
 export type Turn = 'cw' | 'ccw';
@@ -16,6 +18,8 @@ export interface FloorLinks {
   jammed: boolean;
   // Why each Machine that is not linked is not, by id.
   problems: ReadonlyMap<number, readonly MachineProblem[]>;
+  // Packhouse floor: the Fixtures of a Line that carries Packets from a Packer, whose Drive is linked, to an Exit.
+  lined: ReadonlySet<number>;
 }
 
 export interface FloorCaps {
@@ -42,7 +46,7 @@ const keyOf = (x: number, y: number): string => `${x},${y}`;
 
 const flip = (turn: Turn): Turn => (turn === 'cw' ? 'ccw' : 'cw');
 
-const isFactoryFixture = (fixture: VenueFixture): boolean => FIXTURES[fixture.type].venue === 'factory' && FIXTURES[fixture.type].role !== undefined;
+const isFactoryFixture = (fixture: VenueFixture): boolean => (FIXTURES[fixture.type].venue === 'factory' || FIXTURES[fixture.type].venue === 'packhouse') && FIXTURES[fixture.type].role !== undefined;
 
 const roleOf = (fixture: VenueFixture) => FIXTURES[fixture.type].role;
 
@@ -228,6 +232,47 @@ function driveReceipts(fixtures: readonly VenueFixture[], at: ReadonlyMap<string
   return { received, jammed, jammedMachines, carried, served, overloaded };
 }
 
+interface LineReach {
+  // The Fixtures from which Packets can come to an Exit.
+  lined: Set<number>;
+  // For each Fixture the Fixtures that Packets go on to.
+  next: Map<number, number[]>;
+}
+
+// A Line: Packets come out of a Fixture by a side of its lineOut and go into the next one when that one takes them in on the side that faces back. They start from a Packer
+// whose Drive is linked and stop at a Strapper that is not linked; only what leads to an Exit counts.
+function lineReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, linked: ReadonlySet<number>): LineReach {
+  const sides = (fixture: VenueFixture, key: 'lineIn' | 'lineOut'): readonly FixtureSide[] => FIXTURES[fixture.type][key] ?? [];
+  const reached = new Set<number>();
+  const next = new Map<number, number[]>();
+  const queue = fixtures.filter(fixture => linked.has(fixture.id) && sides(fixture, 'lineOut').length > 0 && sides(fixture, 'lineIn').length === 0);
+  for (const source of queue) reached.add(source.id);
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    if (isMachine(current) && !linked.has(current.id)) continue;
+    for (const side of sides(current, 'lineOut')) {
+      const offset = turned(SIDE_OFFSETS[side], current.rotation);
+      const neighbour = at.get(keyOf(current.x + offset.x, current.y + offset.y));
+      const facing = neighbour && sideToward(neighbour, current);
+      if (!neighbour || !facing || !sides(neighbour, 'lineIn').includes(facing)) continue;
+      next.set(current.id, [...(next.get(current.id) ?? []), neighbour.id]);
+      if (reached.has(neighbour.id)) continue;
+      reached.add(neighbour.id);
+      queue.push(neighbour);
+    }
+  }
+  const lined = new Set(fixtures.filter(fixture => reached.has(fixture.id) && roleOf(fixture) === 'exit').map(fixture => fixture.id));
+  for (let grew = true; grew; ) {
+    grew = false;
+    for (const [id, targets] of next) {
+      if (lined.has(id) || !targets.some(target => lined.has(target))) continue;
+      lined.add(id);
+      grew = true;
+    }
+  }
+  return { lined, next };
+}
+
 // The Fixtures that Flow reaches. A Tank only gives its fluid to the Pipes, up to the back of a Pump; a Pump that is handed Drive pushes it on
 // out of its front, through Pipes and to the Machines, and to the back of the next Pump.
 interface FlowReach {
@@ -354,6 +399,7 @@ interface FloorReport {
   drive: DriveReceipts;
   powered: ReadonlySet<number>;
   flow: FlowReach;
+  line: LineReach;
   links: FloorLinks;
 }
 
@@ -381,7 +427,8 @@ const reportOf = memoized((allFixtures): FloorReport => {
     if (lacking.length === 0) linked.add(machine.id);
     else problems.set(machine.id, lacking);
   }
-  return { fixtures, at, drive, powered, flow, links: { linked, jammed: drive.jammed, problems } };
+  const line = lineReach(fixtures, at, linked);
+  return { fixtures, at, drive, powered, flow, line, links: { linked, jammed: drive.jammed, problems, lined: line.lined } };
 });
 
 export const floorLinksOf = (allFixtures: readonly VenueFixture[]): FloorLinks => reportOf(allFixtures).links;
@@ -403,12 +450,29 @@ export const floorUsageOf = memoized((allFixtures): ReadonlySet<number> => {
   const { fixtures, flow, links } = reportOf(allFixtures);
   const byId = new Map(fixtures.map(fixture => [fixture.id, fixture]));
   const used = new Set<number>(floorMotionOf(allFixtures).keys());
+  for (const id of links.lined) used.add(id);
   for (const [pump, output] of flow.outputs) {
     if (!pushesToLinked(pump, flow, links.linked)) continue;
     for (const id of output.nodes) if (links.linked.has(id) || !isMachine(byId.get(id)!)) used.add(id);
     for (const tank of fixtures.filter(fixture => roleOf(fixture) === 'tank')) if (flow.reached.has(tank.id)) used.add(tank.id);
   }
   return used;
+});
+
+// How much each Fixture that runs wears, as a share of the usual: what lies downstream of a Scanner wears less.
+export const floorUsageWeightsOf = memoized((allFixtures): ReadonlyMap<number, number> => {
+  const { fixtures, line } = reportOf(allFixtures);
+  const weights = new Map<number, number>([...floorUsageOf(allFixtures)].map(id => [id, 1]));
+  const scanned = new Set<number>();
+  const queue = fixtures.filter(fixture => roleOf(fixture) === 'scanner' && line.lined.has(fixture.id)).flatMap(fixture => line.next.get(fixture.id) ?? []);
+  while (queue.length > 0) {
+    const id = queue.shift()!;
+    if (scanned.has(id) || !line.lined.has(id)) continue;
+    scanned.add(id);
+    queue.push(...(line.next.get(id) ?? []));
+  }
+  for (const id of scanned) if (weights.has(id)) weights.set(id, packhouseBalance.scannerWearFactor);
+  return weights;
 });
 
 export const tierValue = (values: readonly number[], tier: number): number => values[Math.min(tier, values.length) - 1]!;
@@ -419,6 +483,11 @@ const capOf = (caps: readonly number[], tier: number): number => caps[Math.min(t
 export const floorCapsOf = (tier: number): FloorCaps => ({ speed: capOf(floorBalance.speedCaps, tier), yield: capOf(floorBalance.yieldCaps, tier) });
 
 export const floorGridSizeOf = (tier: number): number => capOf(floorBalance.gridSizes, tier);
+
+export const packhouseGridSizeOf = (tier: number): number => capOf(packhouseBalance.gridSizes, tier);
+
+// The most Exits a Packhouse floor can have at a Tier.
+export const packhouseExitLimitOf = (tier: number): number => capOf(packhouseBalance.exitLimits, tier);
 
 // The Machines that a circuit of Flow reaches from a Machine, through its Pipes and Pumps.
 function circuitOf(start: VenueFixture, at: ReadonlyMap<string, VenueFixture>): VenueFixture[] {
@@ -437,8 +506,8 @@ function circuitOf(start: VenueFixture, at: ReadonlyMap<string, VenueFixture>): 
 }
 
 // A bonus counts in full up to a share of the cap of the Factory's Tier, then grows with every Machine but less and less, and never reaches the cap.
-function saturate(total: number, cap: number): number {
-  const knee = cap * floorBalance.bonusKnee;
+function saturate(total: number, cap: number, kneeShare = floorBalance.bonusKnee): number {
+  const knee = cap * kneeShare;
   return total <= knee ? total : cap - (cap - knee) * Math.exp(-(total - knee) / (cap - knee));
 }
 
@@ -484,6 +553,44 @@ function bonusOf(allFixtures: readonly VenueFixture[], tier: number): FloorBonus
   };
 }
 
+// The Exits of a Packhouse floor that Packets reach.
+export const linkedExitsOf = (allFixtures: readonly VenueFixture[]): readonly VenueFixture[] => {
+  const { lined } = floorLinksOf(allFixtures);
+  return allFixtures.filter(fixture => lined.has(fixture.id) && roleOf(fixture) === 'exit');
+};
+
+const packBonuses = new WeakMap<readonly VenueFixture[], Map<string, FloorBonus>>();
+
+const packSizeOf = (item: ItemId): PackSize | null => (['Crate', 'Box', 'Pallet'] as const).find(size => item.endsWith(size)) ?? null;
+
+// What the Line of a Packhouse floor adds to the speed and the yield of the Slots that pack a size of Goods: only the Packers and Strappers that Packets leave through
+// an Exit of that size count, each Strapper beyond the first adds to the yield, and with no size asked it is the best that a size gets. A Packhouse draws no power for its Motors.
+export function packhouseBonusOf(allFixtures: readonly VenueFixture[], tier: number, size?: PackSize | null): FloorBonus {
+  const perKey = packBonuses.get(allFixtures) ?? new Map<string, FloorBonus>();
+  packBonuses.set(allFixtures, perKey);
+  const key = `${tier}:${size === undefined ? 'any' : size === null ? 'none' : size}`;
+  const cached = perKey.get(key);
+  if (cached) return cached;
+  const bonus = packhouseBonusUncached(allFixtures, tier, size);
+  perKey.set(key, bonus);
+  return bonus;
+}
+
+function packhouseBonusUncached(allFixtures: readonly VenueFixture[], tier: number, size?: PackSize | null): FloorBonus {
+  const { fixtures, links } = reportOf(allFixtures);
+  const lined = fixtures.filter(fixture => links.lined.has(fixture.id));
+  const served = new Set(lined.filter(fixture => roleOf(fixture) === 'exit').map(fixture => FIXTURES[fixture.type].packSize));
+  if (size === null || (size === undefined ? served.size === 0 : !served.has(size))) return NO_BONUS;
+  const machines = lined.filter(isMachine);
+  const strappers = machines.filter(fixture => FIXTURES[fixture.type].family === 'strapper').length;
+  const sum = (key: 'speed' | 'yield') => machines.reduce((total, fixture) => total + (FIXTURES[fixture.type][key] ?? 0), 0);
+  return {
+    speed: saturate(sum('speed'), capOf(packhouseBalance.speedCaps, tier), packhouseBalance.bonusKnee),
+    yield: saturate(sum('yield') + packhouseBalance.strapperSeriesYield * Math.max(0, strappers - 1), capOf(packhouseBalance.yieldCaps, tier), packhouseBalance.bonusKnee),
+    power: 0,
+  };
+}
+
 const kindsOf = (machines: readonly VenueFixture[]): number => new Set(machines.map(fixture => FIXTURES[fixture.type].family ?? fixture.type)).size;
 
 export interface FloorBenefits {
@@ -524,7 +631,7 @@ export function floorBenefitsOf(allFixtures: readonly VenueFixture[], fixture: V
     coolsMachines: new Set(vatMotors.flatMap(motor => [...(context.drive.served.get(motor.id)?.handed ?? [])].filter(id => context.linked.has(id)))).size,
     doubled: spec.coolant !== undefined && context.heated(fixture),
     heatsVats: circuit.length,
-    variety: floorBalance.varietyYield * Math.max(0, kindsOf(context.machines) - 1),
+    variety: spec.venue === 'packhouse' ? 0 : floorBalance.varietyYield * Math.max(0, kindsOf(context.machines) - 1),
     powerSaving: spec.heat ? floorBalance.boilerPowerSaving : 0,
   };
 }
@@ -545,4 +652,9 @@ const NO_FIXTURES: readonly VenueFixture[] = [];
 // The Fixtures of a Factory's floor, the same empty list each time when it has none, so what is cached on a list stays cached.
 export const floorFixturesOf = (building: Pick<Building, 'floor'>): readonly VenueFixture[] => building.floor?.fixtures ?? NO_FIXTURES;
 
-export const floorBonusOfBuilding = (building: Pick<Building, 'tier' | 'floor'>): FloorBonus => (building.floor ? floorBonusOf(building.floor.fixtures, building.tier) : NO_BONUS);
+// The bonus of a building's floor; for a Packhouse, the one that applies to the packed Goods `item` when it is given.
+export function floorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'floor'>, item?: ItemId): FloorBonus {
+  if (!building.floor) return NO_BONUS;
+  if (building.type === 'packhouse') return packhouseBonusOf(building.floor.fixtures, building.tier, item === undefined ? undefined : packSizeOf(item));
+  return floorBonusOf(building.floor.fixtures, building.tier);
+}

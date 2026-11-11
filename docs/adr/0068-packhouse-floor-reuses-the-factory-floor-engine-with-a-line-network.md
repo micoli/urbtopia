@@ -11,11 +11,12 @@ Extends [ADR 0064](0064-factory-floor-is-a-venue-style-interior-for-the-factory.
 - **Not a Venue.** Same as the Factory floor: no Takings, Visitors, Rank or events. The Packhouse stays a Production building.
 - **Same engine, a third network.** Drive (Motor, Gears, Shafts, Bevels) is the Factory floor's. The new **Line** carries Packets in one direction from a Packer, through Conveyors, Strappers and Scanners, to an Exit. Conveyors need no Drive; Packer and Strapper do. A Machine is Linked when its Drive arrives and its Line is unbroken.
 - **Conveyor T merges, elbows turn.** The T has two entries and one exit; there is no split. A separate elbow turns a Line a quarter turn, in a left and a right version because a rotation cannot turn one into the other.
-- **Walls.** The Packer hangs on the back wall only, an Exit on any wall; neither takes a floor tile. Placement reuses the wall mounting of the Home interior.
-- **Exits sort by size.** Each Exit serves Crate, Box or Pallet; a Slot's bonus counts only if an Exit of its size is Linked. Exits are limited by Tier (1, 1, 2, 2, 3).
+- **Walls.** The Packer stands on the tile along the back wall only, an Exit on the tile along the back wall or the left wall, each with its back to the wall. They are ordinary Fixtures with a placement rule, not wall-hung ones: their belts fill the tile, so the first Conveyor starts on the next one.
+- **Exits sort by size.** Each Exit serves Crate, Box or Pallet, as three Fixtures of their own told apart by a tint; a Slot's bonus counts only if an Exit of its size is Linked. Exits are limited by Tier (1, 1, 2, 2, 3).
 - **A bonus, not a requirement.** An empty floor leaves the Packhouse as it is. Speed and yield caps grow with the Tier; figures live in a balance file of their own beside `factoryFloor.json`.
 - **Scanner and variety.** A Scanner halves the wear downstream of it. Each Strapper beyond the first on a Line adds a small yield, within the Tier cap.
-- **Packets are a picture.** They are animated on the Line and never counted: there is no throughput. The truck at an Exit is visual and never saved.
+- **Packets are a picture.** There is no throughput. The truck at a Linked Exit is visual and never saved.
+- **No power.** The Motors of a Packhouse floor draw no power from the city, unlike a Factory's.
 - **Wear and Technician.** Wear, breakdowns downstream and the always-working Technician follow ADR 0064 and [ADR 0065](0065-factory-floor-technician-always-works.md), with the same posts by Tier. The Jobs of the Packhouse (5 per Tier) stay separate from the Technician.
 - **Saved state.** The Fixtures under the same `floor` field as the Factory and the Home. An older Packhouse loads with an empty floor.
 

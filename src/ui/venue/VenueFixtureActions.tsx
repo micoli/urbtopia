@@ -23,7 +23,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
     const building = store.state.buildings.find(candidate => candidate.id === venueId);
     return (building?.venue?.fixtures ?? building?.floor?.fixtures)?.find(candidate => candidate.id === (movingId ?? placedId));
   });
-  const floorOwner = useGame(store => store.state.buildings.find(candidate => candidate.id === venueId && candidate.type === 'factory'));
+  const floorOwner = useGame(store => store.state.buildings.find(candidate => candidate.id === venueId && (candidate.type === 'factory' || candidate.type === 'packhouse')));
   const onFloor = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isFloorBuilding(candidate)));
   const inHome = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isHomeType(candidate.type)));
   const performance = useVenuePerformance(venueId);

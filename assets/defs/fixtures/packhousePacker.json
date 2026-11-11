@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "packhouse",
+  "category": "machines",
+  "name": {
+    "en": "Packer",
+    "fr": "Emballeuse"
+  },
+  "model": "packhouse-floor-packer",
+  "footprint": [1, 1],
+  "price": 800,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["right"],
+  "speed": 0.15,
+  "yield": 0.05,
+  "family": "packer",
+  "lineOut": ["front"]
+}

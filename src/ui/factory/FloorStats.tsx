@@ -14,8 +14,8 @@ export function FloorStats({ factory }: FloorStatsProps) {
   const { machines, linked, bonus } = useMemo(() => ({
     machines: fixtures.filter(fixture => FIXTURES[fixture.type].role === 'machine').length,
     linked: floorLinksOf(fixtures).linked.size,
-    bonus: floorBonusOfBuilding({ tier: factory.tier, floor: factory.floor }),
-  }), [fixtures, factory.tier, factory.floor]);
+    bonus: floorBonusOfBuilding({ type: factory.type, tier: factory.tier, floor: factory.floor }),
+  }), [fixtures, factory.type, factory.tier, factory.floor]);
   return (
     <>
       <UrbsStat />

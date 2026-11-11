@@ -24198,6 +24198,96 @@
       "height": 2.5
     }
   },
+  "packhouse-floor-conveyor-elbow-left": {
+    "file": "packhouse-floor/conveyor-elbow-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-conveyor-elbow-right": {
+    "file": "packhouse-floor/conveyor-elbow-right",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-conveyor-straight": {
+    "file": "packhouse-floor/conveyor-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-conveyor-tee": {
+    "file": "packhouse-floor/conveyor-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-exit": {
+    "file": "packhouse-floor/exit",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-packer": {
+    "file": "packhouse-floor/packer",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-scanner": {
+    "file": "packhouse-floor/scanner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-strapper": {
+    "file": "packhouse-floor/strapper",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "packhouse-floor-truck": {
+    "file": "packhouse-floor/truck",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "pirate-grass": {
     "file": "pirate/grass",
     "source": "managed",

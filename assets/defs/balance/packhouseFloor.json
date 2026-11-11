@@ -1,0 +1,12 @@
+{
+  "$schema": "../schemas/balance-packhouse-floor.schema.json",
+  "gridSizes": [6, 7, 8, 9, 10],
+  "speedCaps": [0.1, 0.2, 0.3, 0.4, 0.5],
+  "yieldCaps": [0.05, 0.1, 0.15, 0.2, 0.25],
+  "usagePerHour": 60,
+  "technicianPosts": [0, 0, 1, 1, 2],
+  "bonusKnee": 0.5,
+  "exitLimits": [1, 1, 2, 2, 3],
+  "strapperSeriesYield": 0.03,
+  "scannerWearFactor": 0.5
+}

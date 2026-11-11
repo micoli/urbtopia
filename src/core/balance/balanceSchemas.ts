@@ -72,6 +72,27 @@ export const factoryFloorBalanceSchema = z
   })
   .meta({ title: 'Factory floor balance', description: 'assets/defs/balance/factoryFloor.json: the size of the Factory floor and the cap of the bonus its linked Machines add, by Factory Tier.' });
 
+// How big the interior of a Packhouse is by Tier, the most speed and yield its Line can add, and what its Strappers, Scanners and Exits do.
+export const packhouseFloorBalanceSchema = z
+  .strictObject({
+    ...schemaField,
+    gridSizes: z.array(z.int().min(1)).min(1),
+    speedCaps: z.array(positive).min(1),
+    yieldCaps: z.array(positive).min(1),
+    // Uses per hour of a Fixture that runs, which the wear is counted on, and the Technician posts by Tier.
+    usagePerHour: positive,
+    technicianPosts: z.array(count).min(1),
+    // The share of its cap at which a bonus stops counting in full and starts to flatten.
+    bonusKnee: z.number().gt(0).lt(1),
+    // How many Exits a floor can have, by Tier.
+    exitLimits: z.array(z.int().min(1)).min(1),
+    // The yield each Strapper beyond the first on the floor adds.
+    strapperSeriesYield: positive,
+    // The share of the wear that remains downstream of a Scanner.
+    scannerWearFactor: z.number().gt(0).lt(1),
+  })
+  .meta({ title: 'Packhouse floor balance', description: 'assets/defs/balance/packhouseFloor.json: the size of the Packhouse floor, the cap of the bonus its Line adds by Packhouse Tier, its Exits, Strappers and Scanners.' });
+
 // How big the interior of a Home is by Tier, how its Comfort is weighed, and the most Well-being it can add by Tier.
 export const homeInteriorBalanceSchema = z
   .strictObject({

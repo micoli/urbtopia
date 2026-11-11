@@ -5,7 +5,7 @@ import { STAFF } from '../venues/staff';
 import { drawBreakdowns, technicianRepairs, wearFixtures } from '../venues/wear';
 import { isVenuePowered } from '../venues/venues';
 import type { Building, FloorData, GameState } from '../engine/state';
-import { floorUsageOf, tierValue } from './factoryFloor';
+import { floorUsageOf, floorUsageWeightsOf, tierValue } from './factoryFloor';
 
 export { floorUsageOf };
 
@@ -13,7 +13,7 @@ export const minTierOfTechnician = (): number => floorBalance.technicianPosts.fi
 
 export const technicianPostsOf = (tier: number): number => tierValue(floorBalance.technicianPosts, tier);
 
-const hasFloor = (building: Building): building is Building & { floor: FloorData } => building.type === 'factory' && building.floor !== undefined && building.floor.fixtures.length > 0;
+const hasFloor = (building: Building): building is Building & { floor: FloorData } => (building.type === 'factory' || building.type === 'packhouse') && building.floor !== undefined && building.floor.fixtures.length > 0;
 
 export const technicianWagePerHour = (): number => STAFF.dailyWage.technician / STAFF.dayHours;
 
@@ -27,7 +27,7 @@ export function advanceFloors(state: GameState, from: number, to: number, suppli
   const buildings = state.buildings.map(building => {
     if (!hasFloor(building) || !isVenuePowered(state, building, supplied)) return building;
     const { floor } = building;
-    const usage = new Map([...floorUsageOf(floor.fixtures)].map(id => [id, floorBalance.usagePerHour]));
+    const usage = new Map([...floorUsageWeightsOf(floor.fixtures)].map(([id, weight]) => [id, floorBalance.usagePerHour * weight]));
     const hired = floor.technicians ?? 0;
     const due = hired * technicianWagePerHour() * hours;
     const wage = Math.min(urbs, due);

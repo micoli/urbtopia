@@ -17,7 +17,7 @@ import { floorBonusOfBuilding } from '../factory/factoryFloor';
 export const recipeMultiplierOf = (building: Building): number => (scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1);
 
 export const productionDurationOf = (building: Building, item: ItemId): number =>
-  Math.round(durationOf(item) * productionTierOf(building).durationFactor / (1 + floorBonusOfBuilding(building).speed));
+  Math.round(durationOf(item) * productionTierOf(building).durationFactor / (1 + floorBonusOfBuilding(building, item).speed));
 
 // Most units a cycle can bring: the yield of the Tier and the whole units a Factory floor can add to it.
 export const maxQuantityOf = (building: Pick<Building, 'type' | 'tier' | 'floor'>): number =>
@@ -29,7 +29,7 @@ const CARRY_EPSILON = 1e-9;
 // so a fair share comes out over many cycles with whole units only.
 export function newQueueEntry(building: Building, item: ItemId, now: number): { entry: QueueEntry; building: Building } {
   const base = productionTierOf(building).yield;
-  const bonus = floorBonusOfBuilding(building).yield;
+  const bonus = floorBonusOfBuilding(building, item).yield;
   const owed = bonus > 0 && building.floor ? base * bonus + (building.floor.carry ?? 0) : 0;
   const extra = Math.floor(owed + CARRY_EPSILON);
   const entry: QueueEntry = { item, duration: productionDurationOf(building, item), startedAt: isIdle(building) ? now : null, done: false, quantity: base + extra };

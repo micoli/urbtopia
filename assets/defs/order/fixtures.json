@@ -93,5 +93,21 @@
   "homePaintingAbstract",
   "homeWall",
   "homeLowWall",
-  "homeDoorWall"
+  "homeDoorWall",
+  "packhouseMotor",
+  "packhouseGear",
+  "packhouseShaft",
+  "packhouseBevel",
+  "packhouseBevelTee",
+  "packhouseWall",
+  "packhousePacker",
+  "packhouseStrapper",
+  "packhouseScanner",
+  "packhouseConveyor",
+  "packhouseConveyorTee",
+  "packhouseConveyorElbowLeft",
+  "packhouseConveyorElbowRight",
+  "packhouseExitCrate",
+  "packhouseExitBox",
+  "packhouseExitPallet"
 ]

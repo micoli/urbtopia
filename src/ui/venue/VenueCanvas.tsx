@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, floorBonusOfBuilding, floorFixturesOf, floorMotionOf, floorOverloadedOf, floorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isFactory, isFloorBuilding, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type VenueFixture, type VenueType } from '../../core';
+import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, floorBonusOfBuilding, floorFixturesOf, linkedExitsOf, floorMotionOf, floorOverloadedOf, floorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isFactory, isFloorBuilding, isPackhouse, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type VenueFixture, type VenueType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
@@ -79,9 +79,9 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       if (!interior) return;
       const hints = isVenue(interior.building) ? venuePerformance(gameStore.getState().state, interior.building).layout.hints : new Map<number, readonly string[]>();
       scene.setWarnings(interior.fixtures.filter(fixture => hints.has(fixture.id) && !isBroken(fixture)).flatMap(fixtureTiles));
-      const overloaded = isFactory(interior.building) ? floorOverloadedOf(interior.fixtures) : new Set<number>();
+      const overloaded = isFactory(interior.building) || isPackhouse(interior.building) ? floorOverloadedOf(interior.fixtures) : new Set<number>();
       scene.setBroken(interior.fixtures.filter(fixture => isBroken(fixture) || overloaded.has(fixture.id)).flatMap(fixtureTiles));
-      scene.setWear([...interior.fixtures], interior.floor && isFactory(interior.building));
+      scene.setWear([...interior.fixtures], interior.floor && (isFactory(interior.building) || isPackhouse(interior.building)));
     };
     const showCrowd = () => {
       const venue = interiorOf(venueId)?.building;
@@ -104,7 +104,8 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
         scene.setSize(sizeOf(interior, venueType));
         if (venueType === 'home') scene.setFloorModel(parquetModelOf(interior.building.floor?.parquet));
         scene.setFixtures([...interior.fixtures]);
-        scene.setMotion(isFactory(interior.building) ? floorMotionOf(interior.fixtures) : new Map(), 1 + floorBonusOfBuilding(interior.building).speed);
+        scene.setTrucks(isPackhouse(interior.building) ? linkedExitsOf(interior.fixtures) : []);
+        scene.setMotion(isFactory(interior.building) || isPackhouse(interior.building) ? floorMotionOf(interior.fixtures) : new Map(), 1 + floorBonusOfBuilding(interior.building).speed);
       }
       showCrowd();
       showSelection();
