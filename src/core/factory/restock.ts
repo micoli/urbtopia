@@ -6,6 +6,7 @@ import type { CommandOutcome } from '../engine/commands';
 import type { GameEvent } from '../engine/events';
 import type { Building, GameState, QueueEntry, VenueFixture } from '../engine/state';
 import { linkedExitsOf } from './factoryFloor';
+import { restockerWagePerHour } from './floorWear';
 
 // Queues one production of an item in a building, taking its ingredients from the Storehouse; an entry queued for an Exit's Restocker carries the Exit.
 export function queueItem(state: GameState, building: Building, item: string, now: number, exitId?: number): CommandOutcome {
@@ -38,8 +39,13 @@ const isError = (outcome: CommandOutcome): outcome is Extract<CommandOutcome, { 
 // The Packhouse keeps its last free Slot for the player.
 const RESERVED_SLOTS = 1;
 
-const workingExitsOf = (building: Building): VenueFixture[] =>
-  building.floor ? linkedExitsOf(building.floor.fixtures).filter((exit) => exit.restocker && exit.restock).sort((a, b) => a.id - b.id) : [];
+// The Exits whose Restocker is at work: a Restocker for each, a Restock and a Line that is Linked. The layout results are cached by layout, so the Exits are read from the floor itself.
+const workingExitsOf = (building: Building, urbs: number): VenueFixture[] => {
+  const hired = building.floor?.restockers ?? 0;
+  if (!building.floor || urbs < hired * restockerWagePerHour()) return [];
+  const linked = new Set(linkedExitsOf(building.floor.fixtures).map((exit) => exit.id));
+  return building.floor.fixtures.filter((fixture) => linked.has(fixture.id) && fixture.restocker && fixture.restock).sort((a, b) => a.id - b.id).slice(0, hired);
+};
 
 // Puts a finished entry into the Storehouse; false when there is no room for it.
 function store(state: GameState, entry: QueueEntry): GameState | null {
@@ -55,33 +61,39 @@ function store(state: GameState, entry: QueueEntry): GameState | null {
 
 const withBuilding = (state: GameState, building: Building): GameState => ({ ...state, buildings: state.buildings.map((candidate) => (candidate.id === building.id ? building : candidate)) });
 
-// One turn of the Restockers of a Packhouse: each Exit stores its finished production, then queues the next one.
+const withFixture = (state: GameState, buildingId: number, replacement: VenueFixture): GameState => {
+  const building = state.buildings.find((candidate) => candidate.id === buildingId)!;
+  return withBuilding(state, { ...building, floor: { ...building.floor!, fixtures: building.floor!.fixtures.map((fixture) => (fixture.id === replacement.id ? replacement : fixture)) } });
+};
+
+// One turn of the Restockers of a Packhouse: every Exit stores its finished production, then the Exits served longest ago queue the next ones in the Slots left.
 function restockTurn(state: GameState, buildingId: number): { state: GameState; changed: boolean; blocked: boolean } {
   let current = state;
   let changed = false;
   let blocked = false;
-  const exits = workingExitsOf(state.buildings.find((candidate) => candidate.id === buildingId)!);
+  let freedAt = state.lastSeen;
+  const exits = workingExitsOf(state.buildings.find((candidate) => candidate.id === buildingId)!, state.urbs);
   for (const exit of exits) {
     const building = current.buildings.find((candidate) => candidate.id === buildingId)!;
-    const owned = building.queue.filter((entry) => entry.exitId === exit.id && entry.item === exit.restock);
-    const finished = owned.find((entry) => entry.done);
-    let startAt = 0;
-    if (finished) {
-      const stored = store(current, finished);
-      if (!stored) {
-        blocked = true;
-        continue;
-      }
-      current = withBuilding(stored, { ...building, queue: building.queue.filter((entry) => entry !== finished) });
-      changed = true;
-      startAt = (finished.startedAt ?? 0) + finished.duration;
+    const finished = building.queue.find((entry) => entry.exitId === exit.id && entry.item === exit.restock && entry.done);
+    if (!finished) continue;
+    const stored = store(current, finished);
+    if (!stored) {
+      blocked = true;
+      continue;
     }
-    const refreshed = current.buildings.find((candidate) => candidate.id === buildingId)!;
-    if (owned.some((entry) => !entry.done)) continue;
-    if (refreshed.queue.length >= refreshed.slotCount - RESERVED_SLOTS) continue;
-    const queued = queueItem(current, refreshed, exit.restock!, finished ? startAt : current.lastSeen, exit.id);
+    current = withBuilding(stored, { ...building, queue: building.queue.filter((entry) => entry !== finished) });
+    freedAt = (finished.startedAt ?? 0) + finished.duration;
+    changed = true;
+  }
+  const turns = [...exits].sort((a, b) => (a.restockedAt ?? -Infinity) - (b.restockedAt ?? -Infinity) || a.id - b.id);
+  for (const exit of turns) {
+    const building = current.buildings.find((candidate) => candidate.id === buildingId)!;
+    if (building.queue.some((entry) => entry.exitId === exit.id && entry.item === exit.restock)) continue;
+    if (building.queue.length >= building.slotCount - RESERVED_SLOTS) continue;
+    const queued = queueItem(current, building, exit.restock!, freedAt, exit.id);
     if (isError(queued)) continue;
-    current = queued.state;
+    current = withFixture(queued.state, buildingId, { ...exit, restockedAt: freedAt });
     changed = true;
   }
   return { state: current, changed, blocked };
@@ -89,7 +101,7 @@ function restockTurn(state: GameState, buildingId: number): { state: GameState; 
 
 // Runs the Restockers of every Packhouse up to `now`, one production after the other, so that a long absence gives what the same time played would.
 export function advanceRestockers(state: GameState, now: number): { state: GameState; events: GameEvent[] } {
-  const ids = state.buildings.filter((building) => building.type === 'packhouse' && workingExitsOf(building).length > 0).map((building) => building.id);
+  const ids = state.buildings.filter((building) => building.type === 'packhouse' && workingExitsOf(building, state.urbs).length > 0).map((building) => building.id);
   if (ids.length === 0) return { state, events: [] };
   let current = state;
   const events: GameEvent[] = [];

@@ -18,6 +18,8 @@ const hasFloor = (building: Building): building is Building & { floor: FloorData
 
 export const restockerPostsOf = (tier: number): number => tierValue(packhouseBalance.restockerPosts, tier);
 
+export const restockerWagePerHour = (): number => STAFF.dailyWage.restocker / STAFF.dayHours;
+
 export const technicianWagePerHour = (): number => STAFF.dailyWage.technician / STAFF.dayHours;
 
 // What runs on a Factory floor wears by the hour; at each hour boundary a worn Fixture may break, drawn from the floor's own stream of the Seed, and a Technician
@@ -31,6 +33,8 @@ export function advanceFloors(state: GameState, from: number, to: number, suppli
     if (!hasFloor(building) || !isVenuePowered(state, building, supplied)) return building;
     const { floor } = building;
     const usage = new Map([...floorUsageWeightsOf(floor.fixtures)].map(([id, weight]) => [id, floorBalance.usagePerHour * weight]));
+    const owed = Math.min(urbs, (floor.restockers ?? 0) * restockerWagePerHour() * hours);
+    urbs -= owed;
     const hired = floor.technicians ?? 0;
     const due = hired * technicianWagePerHour() * hours;
     const wage = Math.min(urbs, due);

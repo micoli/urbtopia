@@ -66,6 +66,8 @@ export interface VenueFixture extends Coord {
   // Exit of a Packhouse floor: the packed Good its Line restarts, and whether a Restocker is assigned to it.
   restock?: GoodId;
   restocker?: true;
+  // The moment its Restocker last queued a production: the Exit served longest ago takes the next free Slot.
+  restockedAt?: number;
 }
 
 export interface VenueEvent {
