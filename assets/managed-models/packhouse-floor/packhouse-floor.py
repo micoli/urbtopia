@@ -47,28 +47,29 @@ def packet(name, x0, x1, y0, y1, z0, z1):
 
 
 def packer(rng):
-    """Packer standing against the back wall of the room, on the tile along it (its back on the back edge of the tile, y 0.5, its face toward -y): a cabinet with a hopper
-    on top and a control panel, a mouth that pushes a packet onto the belt at BELT_Z, which ends on the front edge of the tile where the first Conveyor of the Line
-    begins. A shaft stub on the right brings the Drive in."""
-    parts = [block("body", -0.4, 0.4, -0.36, 0.0, 0.26, 0.86, P["olive"]), block("body_band", -0.41, 0.41, -0.37, 0.0, 0.26, 0.3, P["olive_dark"]),
-             block("body_top", -0.41, 0.41, -0.37, 0.0, 0.84, 0.88, P["olive_dark"]),
-             block("hopper_base", -0.26, 0.26, -0.3, -0.04, 0.88, 0.96, P["steel_dark"]), block("hopper_lip", -0.3, 0.3, -0.34, 0.0, 0.96, 1.0, P["steel"]),
-             block("hopper_in", -0.24, 0.24, -0.28, -0.06, 0.99, 1.0, P["black"]),
-             block("mouth", -0.2, 0.2, -0.375, -0.36, 0.36, 0.6, P["black"]), block("mouth_frame_t", -0.22, 0.22, -0.38, -0.36, 0.6, 0.64, P["steel_dark"]),
-             block("mouth_frame_l", -0.22, -0.2, -0.38, -0.36, 0.36, 0.6, P["steel_dark"]), block("mouth_frame_r", 0.2, 0.22, -0.38, -0.36, 0.36, 0.6, P["steel_dark"]),
-             block("panel", 0.0, 0.34, -0.375, -0.36, 0.66, 0.8, P["iron"]), block("screen", 0.03, 0.2, -0.38, -0.375, 0.7, 0.78, P["glass"]),
-             block("button_red", 0.24, 0.28, -0.38, -0.375, 0.74, 0.78, P["red"]), block("button_green", 0.29, 0.33, -0.38, -0.375, 0.74, 0.78, P["green"]),
-             block("lamp_stem", -0.3, -0.26, -0.2, -0.16, 1.0, 1.04, P["steel_dark"]), block("lamp", -0.31, -0.25, -0.21, -0.15, 1.04, 1.1, P["yellow"]),
-             block("belt_rail_l", -0.2, -0.17, -1.0, -0.36, 0.3, BELT_Z, P["steel"]), block("belt_rail_r", 0.17, 0.2, -1.0, -0.36, 0.3, BELT_Z, P["steel"]),
-             block("belt_bed", -0.17, 0.17, -1.0, -0.36, 0.3, 0.4, P["belt"]),
+    """Packer standing against the back wall of the room, on the tile along it (its back on the back edge of the tile, y 0.5, its face toward -y): a deep cabinet with a hopper
+    on top and a control panel, a mouth that pushes a packet onto the belt at BELT_Z, which ends on the front edge of the tile where the first Conveyor of the Line begins.
+    The cabinet reaches the middle of the tile so that the shaft stub that brings the Drive in sticks out of its right side on the axis of the Shafts, in plain sight."""
+    front = -0.6
+    parts = [block("body", -0.4, 0.4, front, 0.0, 0.26, 0.86, P["olive"]), block("body_band", -0.41, 0.41, front - 0.01, 0.0, 0.26, 0.3, P["olive_dark"]),
+             block("body_top", -0.41, 0.41, front - 0.01, 0.0, 0.84, 0.88, P["olive_dark"]),
+             block("hopper_base", -0.26, 0.26, -0.5, -0.1, 0.88, 0.96, P["steel_dark"]), block("hopper_lip", -0.3, 0.3, -0.54, 0.0, 0.96, 1.0, P["steel"]),
+             block("hopper_in", -0.24, 0.24, -0.48, -0.12, 0.99, 1.0, P["black"]),
+             block("mouth", -0.2, 0.2, front - 0.015, front, 0.36, 0.6, P["black"]), block("mouth_frame_t", -0.22, 0.22, front - 0.02, front, 0.6, 0.64, P["steel_dark"]),
+             block("mouth_frame_l", -0.22, -0.2, front - 0.02, front, 0.36, 0.6, P["steel_dark"]), block("mouth_frame_r", 0.2, 0.22, front - 0.02, front, 0.36, 0.6, P["steel_dark"]),
+             block("panel", 0.0, 0.34, front - 0.015, front, 0.66, 0.8, P["iron"]), block("screen", 0.03, 0.2, front - 0.02, front - 0.015, 0.7, 0.78, P["glass"]),
+             block("button_red", 0.24, 0.28, front - 0.02, front - 0.015, 0.74, 0.78, P["red"]), block("button_green", 0.29, 0.33, front - 0.02, front - 0.015, 0.74, 0.78, P["green"]),
+             block("lamp_stem", -0.3, -0.26, -0.3, -0.26, 1.0, 1.04, P["steel_dark"]), block("lamp", -0.31, -0.25, -0.31, -0.25, 1.04, 1.1, P["yellow"]),
+             block("belt_rail_l", -0.2, -0.17, -1.0, front, 0.3, BELT_Z, P["steel"]), block("belt_rail_r", 0.17, 0.2, -1.0, front, 0.3, BELT_Z, P["steel"]),
+             block("belt_bed", -0.17, 0.17, -1.0, front, 0.3, 0.4, P["belt"]),
              block("belt_leg_l", -0.2, -0.17, -0.98, -0.92, 0.0, 0.3, P["iron"]), block("belt_leg_r", 0.17, 0.2, -0.98, -0.92, 0.0, 0.3, P["iron"])]
-    parts += packet("packet", -0.1, 0.1, -0.48, -0.3, 0.4, 0.56)
-    parts += [block("bracket", 0.4, 0.46, -0.1, -0.02, 0.28, 0.4, P["iron"]),
-              sideways(disc("stub", 0.04, 0.12, (0, 0, 0), P["steel"], 6), x=0.4, y=-0.06, z=DRIVE_Z)]
-    pulley = [sideways(disc("pulley", 0.1, 0.04, (0, 0, 0), P["brass"], 10), x=0.46, y=-0.06, z=DRIVE_Z),
-              sideways(disc("pulley_hub", 0.05, 0.08, (0, 0, 0), P["steel_dark"], 8), x=0.44, y=-0.06, z=DRIVE_Z),
-              block("pulley_spoke", 0.46, 0.5, -0.06 - 0.09, -0.06 + 0.09, DRIVE_Z - 0.015, DRIVE_Z + 0.015, P["black"])]
-    return shifted(parts, 0.5), {"spin-x": (shifted(pulley, 0.5), (0.46, 0.44, DRIVE_Z))}
+    parts += packet("packet", -0.1, 0.1, -0.74, -0.56, 0.4, 0.56)
+    parts += [block("gearbox", 0.4, 0.46, -0.58, -0.42, 0.26, 0.42, P["iron"]),
+              sideways(disc("stub", 0.04, 0.12, (0, 0, 0), P["steel"], 6), x=0.4, y=-0.5, z=DRIVE_Z)]
+    pulley = [sideways(disc("pulley", 0.1, 0.04, (0, 0, 0), P["brass"], 10), x=0.46, y=-0.5, z=DRIVE_Z),
+              sideways(disc("pulley_hub", 0.05, 0.08, (0, 0, 0), P["steel_dark"], 8), x=0.44, y=-0.5, z=DRIVE_Z),
+              block("pulley_spoke", 0.46, 0.5, -0.5 - 0.09, -0.5 + 0.09, DRIVE_Z - 0.015, DRIVE_Z + 0.015, P["black"])]
+    return shifted(parts, 0.5), {"spin-x": (shifted(pulley, 0.5), (0.46, 0.0, DRIVE_Z))}
 
 
 def arrow(name, x, y, turn=0, color="yellow", size=0.09):
