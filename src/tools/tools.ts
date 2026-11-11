@@ -83,7 +83,7 @@ export type Tool =
   | { kind: 'brush'; action: BrushAction; crop?: CropId; tiles: Coord[] }
   | { kind: 'replanBuilding'; buildingType: BuildingType }
   | { kind: 'replanPath'; layer: ReplanPathLayer; tier?: number; start: Coord | null; horizontalFirst: boolean }
-  | { kind: 'replanTile'; layer: 'pedestrianAccesses' | 'roundabouts' | 'roads'; crossing?: boolean }
+  | { kind: 'replanTile'; layer: 'pedestrianAccesses' | 'roundabouts' | 'roads'; crossing?: boolean; tier?: number }
   | { kind: 'replanBridge'; length: number; carrier?: 'road' | 'brt' | 'pedestrian' }
   | { kind: 'replanBoat'; family: BoatFamily }
   | { kind: 'replanArea'; start: Coord | null; horizontalFirst: boolean };
@@ -303,7 +303,7 @@ function evaluateReplanPath(state: GameState, tool: Extract<Tool, { kind: 'repla
 
 function evaluateReplanTile(state: GameState, tool: Extract<Tool, { kind: 'replanTile' }>, tile: Coord): Evaluation {
   const tiles = tool.layer === 'roundabouts' ? roundaboutTiles(tile) : [tile];
-  return evaluation(tiles, replan({ kind: 'placeTiles', layer: tool.layer, tiles: [tile], ...(tool.crossing ? { crossing: true } : {}) }), state);
+  return evaluation(tiles, replan({ kind: 'placeTiles', layer: tool.layer, tiles: [tile], ...(tool.crossing ? { crossing: true } : {}), ...(tool.tier ? { tier: tool.tier } : {}) }), state);
 }
 
 function evaluateReplanBridge(state: GameState, length: number, carrier: 'road' | 'brt' | 'pedestrian' | undefined, tile: Coord, rotation: Rotation | null): Evaluation {

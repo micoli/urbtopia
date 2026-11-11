@@ -71,7 +71,7 @@ The cost of the next copy of a building under a Build limit: its base cost multi
 _Avoid_: Repeat price, surcharge
 
 **Farm**:
-A building that holds the player's seed stock and is the entry point of cultivation. It does not produce anything itself. Several can be built, up to its Build limit; their seed capacities, Field caps and base Crop capacities add up, while Fields and the seed stock stay shared by the whole city.
+A building that holds the player's seed stock and is the entry point of cultivation. It does not produce anything itself, but employs Citizens like any workplace (10 Jobs per Tier). Several can be built, up to its Build limit; their seed capacities, Field caps and base Crop capacities add up, while Fields and the seed stock stay shared by the whole city.
 _Avoid_: Workshop, plantation
 
 **Field**:

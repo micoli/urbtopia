@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GameScene } from '../../scene/GameScene';
 import { prefsStore } from '../../i18n/prefsStore';
 import { gameStore } from '../../store/gameStore';
@@ -16,13 +16,23 @@ import { isAlwaysDayRequested, pinnedCycleHourOf } from '../../store/dayCycleFla
 import { hideSplash, setSplashProgress } from '../system/splash';
 
 const URL_UPDATE_DELAY_MS = 500;
+// How long a lost WebGL context may take to come back before the scene is built again on a new canvas.
+const CONTEXT_RESTORE_WAIT_MS = 2000;
 
 export function SceneCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [generation, setGeneration] = useState(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    let restoreTimer: number | undefined;
+    const onContextLost = () => {
+      restoreTimer = window.setTimeout(() => setGeneration((known) => known + 1), CONTEXT_RESTORE_WAIT_MS);
+    };
+    const onContextRestored = () => window.clearTimeout(restoreTimer);
+    canvas.addEventListener('webglcontextlost', onContextLost);
+    canvas.addEventListener('webglcontextrestored', onContextRestored);
     const scene = new GameScene(canvas);
     sceneHandle.current = scene;
     scene.camera.setView(readCameraView(window.location.search));
@@ -151,6 +161,9 @@ export function SceneCanvas() {
       if (prefs.showReach !== previous.showReach) showSelection();
     });
     return () => {
+      window.clearTimeout(restoreTimer);
+      canvas.removeEventListener('webglcontextlost', onContextLost);
+      canvas.removeEventListener('webglcontextrestored', onContextRestored);
       window.clearTimeout(urlTimer);
       window.removeEventListener('popstate', onPopState);
       unsubscribeLoading();
@@ -161,7 +174,7 @@ export function SceneCanvas() {
       sceneHandle.current = null;
       scene.dispose();
     };
-  }, []);
+  }, [generation]);
 
-  return <canvas ref={canvasRef} className="scene-canvas" />;
+  return <canvas key={generation} ref={canvasRef} className="scene-canvas" />;
 }

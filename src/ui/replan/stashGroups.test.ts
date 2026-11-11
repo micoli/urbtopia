@@ -8,7 +8,7 @@ function replanning(): GameState {
   const base = newGame({ seed: 'stash-groups', now: T0 });
   const city: GameState = {
     ...base, tutorial: null,
-    roads: [{ x: 60, y: 60, kind: 'road' }, { x: 61, y: 60, kind: 'road' }, { x: 62, y: 60, kind: 'road', tier: 2 }, { x: 63, y: 60, kind: 'crossing' }],
+    roads: [{ x: 60, y: 60, kind: 'road' }, { x: 61, y: 60, kind: 'road' }, { x: 62, y: 60, kind: 'road', tier: 2 }, { x: 63, y: 60, kind: 'crossing' }, { x: 64, y: 60, kind: 'crossing', tier: 2 }],
     buildings: [createBuilding(500, 'home', 56, 57, 0), createBuilding(501, 'home', 52, 57, 0), createBuilding(502, 'workshop', 56, 52, 0)],
     waterTiles: [{ x: 70, y: 70 }],
     walkways: [{ x: 50, y: 50 }],
@@ -27,6 +27,7 @@ describe('the groups of the Stash', () => {
     expect(byId['roads-1']).toMatchObject({ count: 2, tool: { kind: 'replanPath', layer: 'roads' } });
     expect(byId['roads-2']).toMatchObject({ count: 1, tool: { kind: 'replanPath', layer: 'roads', tier: 2 } });
     expect(byId['crossings']).toMatchObject({ count: 1, tool: { kind: 'replanTile', crossing: true } });
+    expect(byId['crossings-2']).toMatchObject({ count: 1, tool: { kind: 'replanTile', crossing: true, tier: 2 }, drop: { kind: 'tiles', layer: 'roads', crossing: true, tier: 2 } });
     expect(byId['water']).toMatchObject({ count: 1, tool: { kind: 'brush', action: 'replanWater' } });
     expect(byId['walkways']?.count).toBe(1);
   });
