@@ -5,6 +5,7 @@
   "yieldCaps": [0.05, 0.1, 0.15, 0.2, 0.25],
   "usagePerHour": 60,
   "technicianPosts": [0, 0, 1, 1, 2],
+  "restockerPosts": [0, 1, 1, 2, 3],
   "bonusKnee": 0.5,
   "exitLimits": [1, 1, 2, 2, 3],
   "strapperSeriesYield": 0.03,

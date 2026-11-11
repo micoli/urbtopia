@@ -9,6 +9,7 @@
       "security": 35,
       "cashier": 30,
       "stocker": 28,
+      "restocker": 28,
       "receptionist": 32,
       "housekeeper": 26,
       "cook": 40,

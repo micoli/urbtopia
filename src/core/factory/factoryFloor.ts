@@ -669,7 +669,7 @@ export const floorPowerOfBuilding = (building: Pick<Building, 'type' | 'tier' | 
 
 const packBonuses = new WeakMap<readonly VenueFixture[], Map<string, FloorBonus>>();
 
-const packSizeOf = (item: ItemId): PackSize | null => (['Crate', 'Box', 'Pallet'] as const).find(size => item.endsWith(size)) ?? null;
+export const packSizeOf = (item: ItemId): PackSize | null => (['Crate', 'Box', 'Pallet'] as const).find(size => item.endsWith(size)) ?? null;
 
 // What the Line of a Packhouse floor adds to the speed and the yield of the Slots that pack a size of Goods: only the Packers and Strappers that Packets leave through
 // an Exit of that size count, each Strapper beyond the first adds to the yield, and with no size asked it is the best that a size gets. The power its Motors draw is

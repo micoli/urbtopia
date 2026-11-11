@@ -29,6 +29,12 @@ type VenueMessageKey =
   | 'error.noStaffPost'
   | 'error.exitLimitReached'
   | 'error.noStaffToRelease'
+  | 'error.wrongPackSize'
+  | 'error.notAnExit'
+  | 'error.noRestock'
+  | 'error.restockerAlreadyAssigned'
+  | 'error.noFreeRestocker'
+  | 'error.noRestockerAssigned'
   | 'codex.fact.grid'
   | 'codex.fact.posts'
   | 'codex.fact.takingsCap'
@@ -63,6 +69,14 @@ type VenueMessageKey =
   | 'venue.priceLocked'
   | `venue.role.${StaffRole}`
   | `venue.roleEffect.${StaffRole}`
+  | 'venue.role.restocker'
+  | 'venue.roleEffect.restocker'
+  | 'venue.restock'
+  | 'venue.restockNone'
+  | 'venue.restockAssign'
+  | 'venue.restockRelease'
+  | 'venue.restockAtWork'
+  | 'venue.restockerFree'
   | 'venue.attractiveness'
   | 'venue.serviceRate'
   | 'venue.hint.counterFar'
@@ -270,6 +284,12 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.hireFee': ['Hiring fee', 'Frais d’embauche'],
   'error.noStaffPost': ['All the posts of this role are filled.', 'Tous les postes de ce rôle sont pourvus.'],
   'error.exitLimitReached': ['This floor has all the Exits of this size its Tier allows.', 'Cet étage a toutes les sorties de ce format que son niveau permet.'],
+  'error.wrongPackSize': ['This Good is not packed in the size of this Exit.', 'Ce produit n’est pas emballé au format de cette sortie.'],
+  'error.notAnExit': ['This Fixture is not an Exit.', 'Cet équipement n’est pas une sortie.'],
+  'error.noRestock': ['Choose a Restock for this Exit first.', 'Choisissez d’abord un réassort pour cette sortie.'],
+  'error.restockerAlreadyAssigned': ['A Restocker is already assigned to this Exit.', 'Un employé de réassort est déjà affecté à cette sortie.'],
+  'error.noFreeRestocker': ['No Restocker is free: hire one or release another Exit.', 'Aucun employé de réassort n’est libre : embauchez-en un ou libérez une autre sortie.'],
+  'error.noRestockerAssigned': ['No Restocker is assigned to this Exit.', 'Aucun employé de réassort n’est affecté à cette sortie.'],
   'error.noStaffToRelease': ['Nobody to release in this role.', 'Personne à licencier dans ce rôle.'],
   'codex.fact.grid': ['Interior', 'Intérieur'],
   'codex.fact.posts': ['Staff posts', 'Postes de personnel'],
@@ -306,6 +326,14 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.role.manager': ['Manager', 'Manager'],
   'venue.role.employee': ['Employee', 'Personnel de comptoir'],
   'venue.role.technician': ['Technician', 'Personnel technique'],
+  'venue.role.restocker': ['Restocker', 'Employé de réassort'],
+  'venue.roleEffect.restocker': ['Keeps the production of an Exit’s Restock going and stores it', 'Relance la production du réassort d’une sortie et la range à l’entrepôt'],
+  'venue.restock': ['Restock', 'Réassort'],
+  'venue.restockNone': ['No restock', 'Aucun réassort'],
+  'venue.restockAssign': ['Assign a Restocker', 'Affecter un employé de réassort'],
+  'venue.restockRelease': ['Free the Restocker', 'Libérer l’employé de réassort'],
+  'venue.restockAtWork': ['A Restocker works on this Line', 'Un employé de réassort travaille sur cette ligne'],
+  'venue.restockerFree': ['Free Restockers', 'Employés de réassort libres'],
   'venue.role.security': ['Security', 'Sécurité'],
   'venue.roleEffect.manager': ['Unlocks pricing and events, +10% yield', 'Débloque les prix et les événements, +10 % de rendement'],
   'venue.roleEffect.employee': ['Serves the counter: faster service', 'Tient le comptoir : service plus rapide'],

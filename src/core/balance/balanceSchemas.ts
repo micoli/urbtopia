@@ -82,6 +82,7 @@ export const packhouseFloorBalanceSchema = z
     // Uses per hour of a Fixture that runs, which the wear is counted on, and the Technician posts by Tier.
     usagePerHour: positive,
     technicianPosts: z.array(count).min(1),
+    restockerPosts: z.array(count).min(1),
     // The share of its cap at which a bonus stops counting in full and starts to flatten.
     bonusKnee: z.number().gt(0).lt(1),
     // How many Exits of each size a floor can have, by Tier.

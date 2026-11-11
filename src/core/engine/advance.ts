@@ -17,6 +17,7 @@ import { advanceProduction, shiftRunningTimers } from '../economy/production';
 import type { Building, GameState } from './state';
 import { advanceVenues, venueBoundaries } from '../venues/venues';
 import { advanceFloors } from '../factory/floorWear';
+import { advanceRestockers } from '../factory/restock';
 import { advanceAttractions } from '../tourism/takings';
 import { advanceClubs } from '../clubs/clubCommands';
 import { advanceChampionships, championshipBoundaries } from '../clubs/championship';
@@ -68,6 +69,11 @@ export function forfeitOfflineTime(state: GameState, now: number): AdvanceResult
   };
 }
 
+function withRestockers(produced: AdvanceResult, now: number): AdvanceResult {
+  const restocked = advanceRestockers(produced.state, now);
+  return { state: restocked.state, events: [...produced.events, ...restocked.events] };
+}
+
 function idleShopIds(state: GameState, now: number): ReadonlySet<number> {
   const brtOnlyShops = state.buildings.filter(b => isShopType(b.type) && hasBrtOnlyAccess(state, b));
   if (brtOnlyShops.length === 0) return new Set();
@@ -84,7 +90,7 @@ function replay(state: GameState, until: number): AdvanceResult {
     const idleShops = idleShopIds(current, now);
     const overdue = current.buildings.some(b => b.queue.some(q => !q.done && q.startedAt !== null && q.startedAt + q.duration <= now) || (!idleShops.has(b.id) && b.stacks.some(stack => stack.stock > 0 && stack.nextSaleAt !== null && stack.nextSaleAt <= now)));
     if (overdue) {
-      const caught = advanceProduction(current, now, 0, 1, new Map(), idleShops);
+      const caught = withRestockers(advanceProduction(current, now, 0, 1, new Map(), idleShops), now);
       current = caught.state;
       events.push(...caught.events);
     }
@@ -131,7 +137,7 @@ function replay(state: GameState, until: number): AdvanceResult {
     const coverage = serviceCoverage(current);
     const congestion = congestionStats(current, now);
     const homeRatios = new Map(current.buildings.filter(b => isHomeType(b.type)).map(b => [b.id, homeTaxMultiplier(current, b, { energy, coverage, poweredCasinos, congestion })]));
-    const produced = advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios, idleShops, congestion.filledJobs, industrySpeed);
+    const produced = withRestockers(advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios, idleShops, congestion.filledJobs, industrySpeed), end);
     events.push(...produced.events);
     const gathered = advanceGatherings(advanceAttractions(advanceFloors(advanceVenues(produced.state, now, end, energy.supplied), now, end, energy.supplied), now, end), now, end);
     events.push(...gathered.events);

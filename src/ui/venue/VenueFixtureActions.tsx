@@ -10,6 +10,7 @@ import { UrbsAmount } from '../common/UrbsAmount';
 import { VenueShelfStock } from './VenueShelfStock';
 import { useVenuePerformance } from './useVenuePerformance';
 import { Icon } from '../common/Icon';
+import { ExitRestock } from '../factory/ExitRestock';
 import { FloorMachineStatus } from '../factory/FloorMachineStatus';
 
 interface VenueFixtureActionsProps {
@@ -39,6 +40,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
       {partition ? null : <p><strong>{t('venue.condition')}</strong>: {Math.round(conditionOf(fixture))} %</p>}
       {partition ? null : isBroken(fixture) ? <p className="note note--danger">{t('venue.broken')}</p> : conditionOf(fixture) < WEAR.breakdownBelow ? <p className="note note--warn">{t('venue.worn')}</p> : null}
       {floorOwner ? <FloorMachineStatus factory={floorOwner} fixture={fixture} /> : null}
+      {floorOwner && movingId === null ? <ExitRestock packhouse={floorOwner} fixture={fixture} /> : null}
       {hints.map(hint => <p key={hint} className="note note--warn">{t(`venue.hint.${hint}`)}</p>)}
       {movingId === null ? <VenueShelfStock venueId={venueId} fixture={fixture} /> : null}
       {earnings !== undefined ? <p><strong>{t('venue.fixtureEarnings')}</strong>: <UrbsAmount value={earnings} /></p> : null}

@@ -19,7 +19,7 @@ import { HOME_TIERS, SHOP, TAX, SLOT_PRICES } from '../economy/economy';
 import { OFFICE, isOfficeType, officeUrbsDue } from '../economy/offices';
 import { canSell, hasCounter, isShopType, saleIntervalOf, sellsGoods, shopTierOf, slotPriceOf } from '../economy/shops';
 import { newOrchardQueue } from '../economy/orchards';
-import { GOODS, isGood, isMaterial, minTierOf, producibleItems, recipeOf, type GoodId, type ItemId } from '../economy/items';
+import { GOODS, isGood, isMaterial, type GoodId, type ItemId } from '../economy/items';
 import { marketQuote } from '../economy/market';
 import { donationQuote } from '../economy/solidarity';
 import { harvestFields, layFields, plantFields, removeFields } from '../farming/fields';
@@ -36,10 +36,10 @@ import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, sign
 import { cancelShow, scheduleShow } from '../tourism/gatherings';
 import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
-import { hireFloorTechnician, moveFloorFixture, placeFloorFixture, releaseFloorTechnician, removeFloorFixture, repairFloorFixture, setHomeParquet } from '../factory/floorCommands';
+import { queueItem } from '../factory/restock';
+import { assignFloorRestocker, hireFloorRestocker, setExitRestock, unassignFloorRestocker, hireFloorTechnician, releaseFloorRestocker, moveFloorFixture, placeFloorFixture, releaseFloorTechnician, removeFloorFixture, repairFloorFixture, setHomeParquet } from '../factory/floorCommands';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
-import { isItemUnlocked } from '../progression/unlocks';
 import { withStartingCity } from './newGame';
 import { tutorialAllows, tutorialSkipMs } from '../progression/tutorial';
 import { replayVenueTutorial, skipVenueTutorial, type VenueTutorialType } from '../progression/venueTutorial';
@@ -48,7 +48,7 @@ import { FACILITIES, isFacilityType } from '../services/facilities';
 import { missingServicesOf } from '../services/services';
 import { isInsideOwnedParcels, occupiedTiles, roadExits, roundaboutTiles } from '../map/occupancy';
 import { autoRotation, frontHasAccess, placementIssue, type PlacementIssue } from '../map/placement';
-import { newQueueEntry, recipeMultiplierOf, restartRunningProduction, runningEntry, rushPrice, rushRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
+import { restartRunningProduction, runningEntry, rushPrice, rushRunningProduction, shiftRunningTimers, taxDue } from '../economy/production';
 import { roadBuildCost, pedestrianWayBuildCost, missingRoadTiles, PEDESTRIAN_WAY_COST_FACTOR } from '../map/roadCost';
 import { roadPath } from '../map/roads';
 import { roadTierUpgradeCost } from '../traffic/roadTier';
@@ -161,6 +161,11 @@ export type Command =
   | { readonly type: 'SetHomeParquet'; readonly buildingId: number; readonly parquet: number }
   | { readonly type: 'HireFloorTechnician'; readonly buildingId: number }
   | { readonly type: 'ReleaseFloorTechnician'; readonly buildingId: number }
+  | { readonly type: 'HireFloorRestocker'; readonly buildingId: number }
+  | { readonly type: 'ReleaseFloorRestocker'; readonly buildingId: number }
+  | { readonly type: 'SetExitRestock'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId | null }
+  | { readonly type: 'AssignFloorRestocker'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'UnassignFloorRestocker'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
@@ -226,6 +231,12 @@ export type ErrorKey =
   | 'error.noStaffPost'
   | 'error.exitLimitReached'
   | 'error.noStaffToRelease'
+  | 'error.wrongPackSize'
+  | 'error.notAnExit'
+  | 'error.noRestock'
+  | 'error.restockerAlreadyAssigned'
+  | 'error.noFreeRestocker'
+  | 'error.noRestockerAssigned'
   | 'error.outsideOwnedParcels'
   | 'error.tilesOccupied'
   | 'error.homeExpansionBlocked'
@@ -513,6 +524,16 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return hireFloorTechnician(state, command.buildingId);
     case 'ReleaseFloorTechnician':
       return releaseFloorTechnician(state, command.buildingId);
+    case 'HireFloorRestocker':
+      return hireFloorRestocker(state, command.buildingId);
+    case 'ReleaseFloorRestocker':
+      return releaseFloorRestocker(state, command.buildingId);
+    case 'SetExitRestock':
+      return setExitRestock(state, command.buildingId, command.fixtureId, command.good);
+    case 'AssignFloorRestocker':
+      return assignFloorRestocker(state, command.buildingId, command.fixtureId);
+    case 'UnassignFloorRestocker':
+      return unassignFloorRestocker(state, command.buildingId, command.fixtureId);
     case 'PlaceFixture':
       return placeFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
     case 'StockShop':
@@ -885,27 +906,7 @@ function moveBuilding(state: GameState, id: number, x: number, y: number, reques
 function queueProduction(state: GameState, buildingId: number, item: string, now: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
-  if (!(isMaterial(item) || isGood(item)) || !producibleItems(building.type).includes(item)) return fail('error.cannotProduce');
-  if (!isItemUnlocked(state, item)) return fail('error.itemLocked');
-  if (building.tier < minTierOf(item)) return fail('error.tierTooLow');
-  if (building.queue.length >= building.slotCount) return fail('error.queueFull');
-  const materials = { ...state.storage.materials };
-  const recipeMultiplier = recipeMultiplierOf(building);
-  for (const [material, needed] of Object.entries(recipeOf(item))) {
-    const required = needed * recipeMultiplier;
-    const available = materials[material as keyof typeof materials] ?? 0;
-    if (available < required) return fail('error.missingMaterials');
-    materials[material as keyof typeof materials] = available - required;
-  }
-  const queued = newQueueEntry(building, item, now);
-  return {
-    state: {
-      ...state,
-      storage: { ...state.storage, materials },
-      buildings: state.buildings.map((candidate) => (candidate === building ? { ...queued.building, queue: [...building.queue, queued.entry] } : candidate)),
-    },
-    events: [],
-  };
+  return queueItem(state, building, item, now);
 }
 
 function rushProduction(state: GameState, buildingId: number, now: number): CommandOutcome {
