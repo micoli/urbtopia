@@ -14,11 +14,12 @@ export const FIXTURE_CATEGORIES = {
   ...(Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).fixtureCategories!])) as unknown as Record<VenueType, readonly FixtureCategory[]>),
   factory: FACTORY_FIXTURE_CATEGORIES,
   packhouse: PACKHOUSE_FIXTURE_CATEGORIES,
+  mill: FACTORY_FIXTURE_CATEGORIES,
   home: HOME_FIXTURE_CATEGORIES,
 } as Record<FixtureVenue, readonly FixtureCategory[]>;
 
 // What a Fixture can be placed in: a Venue, a Factory interior, a Packhouse interior or a Home interior.
-export type FixtureVenue = VenueType | 'factory' | 'packhouse' | 'home';
+export type FixtureVenue = VenueType | 'factory' | 'packhouse' | 'mill' | 'home';
 
 export interface FixtureSpec {
   venue: FixtureVenue;

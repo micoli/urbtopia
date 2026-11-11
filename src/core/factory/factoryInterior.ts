@@ -4,7 +4,8 @@ import { FIXTURES } from '../venues/fixtures';
 import { distanceBetween } from '../venues/layout';
 import type { FixtureSide, PackSize } from '../venues/venueVocabulary';
 import type { ItemId } from '../economy/items';
-import type { Building, VenueFixture } from '../engine/state';
+import type { Building, BuildingType, VenueFixture } from '../engine/state';
+import { interiorDeclarationOf, interiorLayoutOf, interiorPartPresence } from '../interiors/interiorStaff';
 
 export type Turn = 'cw' | 'ccw';
 
@@ -46,7 +47,7 @@ const keyOf = (x: number, y: number): string => `${x},${y}`;
 
 const flip = (turn: Turn): Turn => (turn === 'cw' ? 'ccw' : 'cw');
 
-const isFactoryFixture = (fixture: VenueFixture): boolean => (FIXTURES[fixture.type].venue === 'factory' || FIXTURES[fixture.type].venue === 'packhouse') && FIXTURES[fixture.type].role !== undefined;
+const isFactoryFixture = (fixture: VenueFixture): boolean => (FIXTURES[fixture.type].venue === 'factory' || FIXTURES[fixture.type].venue === 'packhouse' || FIXTURES[fixture.type].venue === 'mill') && FIXTURES[fixture.type].role !== undefined;
 
 const roleOf = (fixture: VenueFixture) => FIXTURES[fixture.type].role;
 
@@ -498,6 +499,9 @@ export const interiorCapsOf = (tier: number): InteriorCaps => ({ speed: capOf(in
 
 export const interiorGridSizeOf = (tier: number): number => capOf(interiorBalance.gridSizes, tier);
 
+// The room, the caps and the Technician posts of a Production interior other than the Factory's, by Tier.
+export const interiorGridSizeOfType = (type: BuildingType, tier: number): number => capOf(interiorLayoutOf(type)?.gridSizes ?? interiorBalance.gridSizes, tier);
+
 export const packhouseGridSizeOf = (tier: number): number => capOf(packhouseBalance.gridSizes, tier);
 
 // The most Exits of each size a Packhouse interior can have at a Tier.
@@ -542,27 +546,29 @@ const coolingOf = memoized(allFixtures => {
 
 // What the linked Machines add to the speed and to the yield of the Factory's Slots, each rising towards the cap of the Factory's Tier, and what the Motors draw, less what the Boilers that run save.
 // A Motor drives only so many Machines and Pumps, and the others stop; the kinds of Machine that run add to the yield, and a Cooling vat beside a Motor adds to the Machines that Motor drives.
-const bonuses = new WeakMap<readonly VenueFixture[], Map<number, InteriorBonus>>();
+const bonuses = new WeakMap<readonly VenueFixture[], Map<string, InteriorBonus>>();
 
-export function interiorBonusOf(allFixtures: readonly VenueFixture[], tier: number): InteriorBonus {
-  const perTier = bonuses.get(allFixtures) ?? new Map<number, InteriorBonus>();
+export function interiorBonusOf(allFixtures: readonly VenueFixture[], tier: number, type: BuildingType = 'factory'): InteriorBonus {
+  const perTier = bonuses.get(allFixtures) ?? new Map<string, InteriorBonus>();
   bonuses.set(allFixtures, perTier);
-  const cached = perTier.get(tier);
+  const key = `${type}:${tier}`;
+  const cached = perTier.get(key);
   if (cached) return cached;
-  const bonus = bonusOf(allFixtures, tier);
-  perTier.set(tier, bonus);
+  const bonus = bonusOf(allFixtures, tier, type);
+  perTier.set(key, bonus);
   return bonus;
 }
 
-function bonusOf(allFixtures: readonly VenueFixture[], tier: number): InteriorBonus {
+function bonusOf(allFixtures: readonly VenueFixture[], tier: number, type: BuildingType): InteriorBonus {
+  const layout = interiorLayoutOf(type);
   const { machines, motors, drive, coolantOf } = coolingOf(allFixtures);
   const saving = Math.min(interiorBalance.maxPowerSaving, interiorBalance.boilerPowerSaving * machines.filter(fixture => FIXTURES[fixture.type].heat).length);
   const busy = motors.length === 0 ? 0 : Math.min(1, drive.received.size / (motors.length * interiorBalance.motorCapacity));
   const sum = (key: 'speed' | 'yield') => machines.reduce((total, fixture) => total + (FIXTURES[fixture.type][key] ?? 0) * (1 + coolantOf(fixture)), 0);
   const variety = interiorBalance.varietyYield * Math.max(0, kindsOf(machines) - 1);
   return {
-    speed: saturate(sum('speed'), capOf(interiorBalance.speedCaps, tier)),
-    yield: saturate(sum('yield') + variety, capOf(interiorBalance.yieldCaps, tier)),
+    speed: saturate(sum('speed'), capOf(layout?.speedCaps ?? interiorBalance.speedCaps, tier)),
+    yield: saturate(sum('yield') + variety, capOf(layout?.yieldCaps ?? interiorBalance.yieldCaps, tier)),
     power: motors.length * interiorBalance.motorPower * (interiorBalance.idlePowerShare + (1 - interiorBalance.idlePowerShare) * busy) * (1 - saving),
   };
 }
@@ -664,7 +670,7 @@ function packhousePowerOf(allFixtures: readonly VenueFixture[]): number {
 // What the Motors of a building's floor ask of the city's power.
 export const interiorPowerOfBuilding = (building: Pick<Building, 'type' | 'tier' | 'interior'>): number => {
   if (!building.interior) return 0;
-  return building.type === 'packhouse' ? packhousePowerOf(building.interior.fixtures) : interiorBonusOf(building.interior.fixtures, building.tier).power;
+  return building.type === 'packhouse' ? packhousePowerOf(building.interior.fixtures) : interiorBonusOf(building.interior.fixtures, building.tier, building.type).power;
 };
 
 const packBonuses = new WeakMap<readonly VenueFixture[], Map<string, InteriorBonus>>();
@@ -764,6 +770,10 @@ export const interiorFixturesOf = (building: Pick<Building, 'interior'>): readon
 // The bonus of a building's floor; for a Packhouse, the one that applies to the packed Goods `item` when it is given.
 export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'interior'>, item?: ItemId): InteriorBonus {
   if (!building.interior) return NO_BONUS;
+  if (interiorDeclarationOf(building.type)) {
+    const bonus = interiorBonusOf(building.interior.fixtures, building.tier, building.type);
+    return { ...bonus, speed: bonus.speed * interiorPartPresence(building, 'speed') };
+  }
   if (building.type === 'packhouse') return packhouseBonusOf(building.interior.fixtures, building.tier, item === undefined ? undefined : packSizeOf(item));
-  return interiorBonusOf(building.interior.fixtures, building.tier);
+  return interiorBonusOf(building.interior.fixtures, building.tier, building.type);
 }

@@ -69,7 +69,7 @@ export const fixtureSchema = z
       wall: z.literal(true).optional(),
     }),
     z.strictObject({
-      venue: z.enum(['factory', 'packhouse']),
+      venue: z.enum(['factory', 'packhouse', 'mill']),
       ...common,
       // What the Fixture does on a Factory interior or a Packhouse interior: a Motor and a Pump are the sources of Drive and Flow, Gears, Shafts and Pipes carry them, a Machine uses them.
       role: z.enum(FACTORY_FIXTURE_ROLES).optional(),

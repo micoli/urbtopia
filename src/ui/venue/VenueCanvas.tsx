@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, canStandOnInterior, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, interiorBonusOfBuilding, interiorFixturesOf, lineFaultOf, linePathsOf, linkedExitsOf, interiorMotionOf, interiorOverloadedOf, interiorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isFactory, isInteriorBuilding, isPackhouse, wallFacingOf, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type LinePath, type VenueFixture, type VenueType } from '../../core';
+import { canPlaceFixture, canStandOnInterior, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, hasProductionInterior, interiorBonusOfBuilding, interiorFixturesOf, lineFaultOf, linePathsOf, linkedExitsOf, interiorMotionOf, interiorOverloadedOf, interiorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isInteriorBuilding, isPackhouse, wallFacingOf, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type LinePath, type VenueFixture, type VenueType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
@@ -96,9 +96,9 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       const fault = isPackhouse(interior.building) && selected ? lineFaultOf(interior.fixtures, selected) : undefined;
       const faulty = !fault ? [] : 'cell' in fault ? [fault.cell] : fixtureTiles(fault.fixture);
       scene.setWarnings([...interior.fixtures.filter(fixture => hints.has(fixture.id) && !isBroken(fixture)).flatMap(fixtureTiles), ...faulty]);
-      const overloaded = isFactory(interior.building) || isPackhouse(interior.building) ? interiorOverloadedOf(interior.fixtures) : new Set<number>();
+      const overloaded = hasProductionInterior(interior.building) ? interiorOverloadedOf(interior.fixtures) : new Set<number>();
       scene.setBroken(interior.fixtures.filter(fixture => isBroken(fixture) || overloaded.has(fixture.id)).flatMap(fixtureTiles));
-      scene.setWear([...interior.fixtures], interior.interior && (isFactory(interior.building) || isPackhouse(interior.building)));
+      scene.setWear([...interior.fixtures], interior.interior && (hasProductionInterior(interior.building)));
     };
     const showCrowd = () => {
       const venue = interiorOf(venueId)?.building;
@@ -123,7 +123,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
         scene.setFixtures([...interior.fixtures]);
         scene.setTrucks(isPackhouse(interior.building) ? linkedExitsOf(interior.fixtures) : NO_EXITS);
         scene.setLine(isPackhouse(interior.building) ? linePathsOf(interior.fixtures) : NO_PATHS, 1 + interiorBonusOfBuilding(interior.building).speed);
-        scene.setMotion(isFactory(interior.building) || isPackhouse(interior.building) ? interiorMotionOf(interior.fixtures) : new Map(), 1 + interiorBonusOfBuilding(interior.building).speed);
+        scene.setMotion(hasProductionInterior(interior.building) ? interiorMotionOf(interior.fixtures) : new Map(), 1 + interiorBonusOfBuilding(interior.building).speed);
       }
       showCrowd();
       showSelection();

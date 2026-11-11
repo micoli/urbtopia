@@ -36,4 +36,14 @@ describe('the Staff of a saved interior', () => {
     expect(valid(withInterior({ fixtures: [], nextFixtureId: 1, staff: { baker: 21 } }))).not.toBe('ok');
     expect(valid(withInterior({ fixtures: [], nextFixtureId: 1, staff: { baker: 1 } }, 3))).not.toBe('ok');
   });
+
+  it('keeps the Fixtures of a Mill interior, and refuses those of another kind', () => {
+    const mill = { ...createBuilding(4, 'mill', 70, 50, 0), tier: 3 };
+    const fitted = [{ type: 'PlaceInteriorFixture', buildingId: 4, fixture: 'millMotor', x: 2, y: 2, rotation: 0 }, { type: 'PlaceInteriorFixture', buildingId: 4, fixture: 'millstone', x: 2, y: 4, rotation: 2 }] as Command[];
+    const loaded = JSON.parse(JSON.stringify(fitted.reduce(send, { ...start, buildings: [...start.buildings, mill] })));
+    expect(valid(loaded)).toBe('ok');
+    expect(loaded.buildings[3].interior.fixtures).toHaveLength(2);
+    loaded.buildings[3].interior.fixtures[0].type = 'factoryMotor';
+    expect(valid(loaded)).not.toBe('ok');
+  });
 });

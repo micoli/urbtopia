@@ -116,5 +116,12 @@
   "packhouseConveyorElbowRight",
   "packhouseExitCrate",
   "packhouseExitBox",
-  "packhouseExitPallet"
+  "packhouseExitPallet",
+  "millMotor",
+  "millShaft",
+  "millGear",
+  "millBevel",
+  "millBevelTee",
+  "millstone",
+  "millWall"
 ]

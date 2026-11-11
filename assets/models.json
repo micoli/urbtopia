@@ -22185,6 +22185,86 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "mill-interior-floor": {
+    "file": "mill-interior/floor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mill-interior-millstone": {
+    "file": "mill-interior/millstone",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mill-interior-partition": {
+    "file": "mill-interior/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mill-interior-partition-cross": {
+    "file": "mill-interior/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mill-interior-partition-elbow": {
+    "file": "mill-interior/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mill-interior-partition-tee": {
+    "file": "mill-interior/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mill-interior-wall": {
+    "file": "mill-interior/wall",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mill-interior-wall-corner": {
+    "file": "mill-interior/wall-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "mini-arcade-air-hockey": {
     "file": "mini-arcade/air-hockey",
     "source": "managed",

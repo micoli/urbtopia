@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, isBroken, isInteriorBuilding, isHomeType, repairCost, WEAR } from '../../core';
+import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, hasProductionInterior, isBroken, isInteriorBuilding, isHomeType, repairCost, WEAR } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -24,7 +24,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
     const building = store.state.buildings.find(candidate => candidate.id === venueId);
     return (building?.venue?.fixtures ?? building?.interior?.fixtures)?.find(candidate => candidate.id === (movingId ?? placedId));
   });
-  const interiorOwner = useGame(store => store.state.buildings.find(candidate => candidate.id === venueId && (candidate.type === 'factory' || candidate.type === 'packhouse')));
+  const interiorOwner = useGame(store => store.state.buildings.find(candidate => candidate.id === venueId && hasProductionInterior(candidate)));
   const onFloor = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isInteriorBuilding(candidate)));
   const inHome = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isHomeType(candidate.type)));
   const performance = useVenuePerformance(venueId);

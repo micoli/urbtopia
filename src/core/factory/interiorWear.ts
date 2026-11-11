@@ -5,16 +5,19 @@ import { VENUE } from '../venues/shared';
 import { STAFF } from '../venues/staff';
 import { drawBreakdowns, technicianRepairs, wearFixtures } from '../venues/wear';
 import { isVenuePowered } from '../venues/venues';
-import type { Building, InteriorData, GameState } from '../engine/state';
+import type { Building, BuildingType, InteriorData, GameState } from '../engine/state';
+import { interiorLayoutOf } from '../interiors/interiorStaff';
 import { interiorUsageOf, interiorUsageWeightsOf, tierValue } from './factoryInterior';
 
 export { interiorUsageOf };
 
-export const minTierOfTechnician = (): number => interiorBalance.technicianPosts.findIndex(posts => posts > 0) + 1;
+const technicianPostsTable = (type: BuildingType): readonly number[] => interiorLayoutOf(type)?.technicianPosts ?? interiorBalance.technicianPosts;
 
-export const technicianPostsOf = (tier: number): number => tierValue(interiorBalance.technicianPosts, tier);
+export const minTierOfTechnician = (type: BuildingType = 'factory'): number => technicianPostsTable(type).findIndex(posts => posts > 0) + 1;
 
-const hasInterior = (building: Building): building is Building & { interior: InteriorData } => (building.type === 'factory' || building.type === 'packhouse') && building.interior !== undefined && building.interior.fixtures.length > 0;
+export const technicianPostsOf = (tier: number, type: BuildingType = 'factory'): number => tierValue(technicianPostsTable(type), tier);
+
+const hasInterior = (building: Building): building is Building & { interior: InteriorData } => (building.type === 'factory' || building.type === 'packhouse' || building.type === 'mill') && building.interior !== undefined && building.interior.fixtures.length > 0;
 
 export const restockerPostsOf = (tier: number): number => tierValue(packhouseBalance.restockerPosts, tier);
 

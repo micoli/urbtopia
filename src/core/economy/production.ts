@@ -12,6 +12,8 @@ import type { Building, GameState, QueueEntry, ShopStack } from '../engine/state
 import { productionTierOf } from './tiers';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/factoryInterior';
+import { interiorFillRateFrom } from '../interiors/interiorStaff';
+import { jobsOf } from '../traffic/jobs';
 
 // A Mill or a Bakery consumes as many recipes as its yield per cycle.
 export const recipeMultiplierOf = (building: Building): number => (scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1);
@@ -170,12 +172,20 @@ export function taxDue(building: Building): number {
   return Math.floor((building.taxCitizenMs * TAX.urbsPerCitizenPerHour) / TAX.hourMs);
 }
 
-export function advanceProduction(state: GameState, now: number, elapsedMs: number, economicRatio = 1, homeRatios: ReadonlyMap<number, number> = new Map(), idleShops: ReadonlySet<number> = new Set(), filledJobs: ReadonlyMap<number, number> = new Map(), industrySpeed = 1): { state: GameState; events: GameEvent[] } {
+// The speed an interior adds is delivered by Staff that Citizens may not all fill: a running entry was counted with the Staff at full strength, so it is slowed by what is missing.
+function staffShortfallOf(building: Building, filledJobs: ReadonlyMap<number, number>): number {
+  const speed = interiorBonusOfBuilding(building).speed;
+  if (speed === 0) return 0;
+  const fill = interiorFillRateFrom(building, filledJobs, jobsOf(building));
+  return fill >= 1 ? 0 : 1 - (1 + speed * fill) / (1 + speed);
+}
+
+export function advanceProduction(state: GameState, now: number, elapsedMs: number, economicRatio = 1, homeRatios: ReadonlyMap<number, number> = new Map(), idleShops: ReadonlySet<number> = new Set(), filledJobs: ReadonlyMap<number, number> = new Map(), industrySpeed = 1, staffAtFullStrength = false): { state: GameState; events: GameEvent[] } {
   const results = state.buildings.map((building) => {
     const idle = idleShops.has(building.id);
     const drawsPower = building.type === 'packhouse' && interiorPowerOfBuilding(building) > 0;
     const ratio = isIndustryType(building.type) ? economicRatio * industrySpeed : economicRatio;
-    const delay = idle ? elapsedMs : elapsedMs * (1 - ratio);
+    const delay = idle ? elapsedMs : elapsedMs * (1 - ratio * (1 - (staffAtFullStrength ? 0 : staffShortfallOf(building, filledJobs))));
     const slowed = isIndustryType(building.type) || isShopType(building.type) || drawsPower ? {
       ...building,
       queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delay }),

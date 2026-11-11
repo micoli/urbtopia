@@ -1,4 +1,4 @@
-import type { FixtureId, StaffRole, VenueType } from '../core/engine/state';
+import type { FixtureId, InteriorRole, StaffRole, VenueType } from '../core/engine/state';
 import { FIXTURE_ENTRIES, type FixtureCategory } from '../core/venues/fixtures';
 
 type VenueMessageKey =
@@ -69,6 +69,8 @@ type VenueMessageKey =
   | 'venue.priceLocked'
   | `venue.role.${StaffRole}`
   | `venue.roleEffect.${StaffRole}`
+  | `interior.role.${InteriorRole}`
+  | `interior.roleEffect.${InteriorRole}`
   | 'venue.role.restocker'
   | 'venue.roleEffect.restocker'
   | 'venue.restock'
@@ -325,6 +327,28 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.priceLocked': ['Only a manager can change the price.', 'Seul un manager peut changer le prix.'],
   'venue.role.manager': ['Manager', 'Manager'],
   'venue.role.employee': ['Employee', 'Personnel de comptoir'],
+  'interior.role.miller': ['Miller', 'Meunier'],
+  'interior.roleEffect.miller': ['Turns the grain into flour faster: the speed bonus of the millstones', "Moud plus vite : le bonus de vitesse des meules"],
+  'interior.role.baker': ['Baker', 'Boulanger'],
+  'interior.roleEffect.baker': ['Bakes faster: the speed bonus of the machines', "Cuit plus vite : le bonus de vitesse des machines"],
+  'interior.role.seller': ['Seller', 'Vendeur'],
+  'interior.roleEffect.seller': ['Sells the loaves over the Counter faster', "Vend les pains au comptoir plus vite"],
+  'interior.role.cheesemaker': ['Cheesemaker', 'Fromager'],
+  'interior.roleEffect.cheesemaker': ['Makes more Cheese from the Milk', "Tire plus de fromage du lait"],
+  'interior.role.creamMaker': ['Cream maker', 'Crémier'],
+  'interior.roleEffect.creamMaker': ['Makes more Cream from the Milk', "Tire plus de crème du lait"],
+  'interior.role.stocker': ['Stocker', 'Magasinier'],
+  'interior.roleEffect.stocker': ['Puts the crates away: more room in the Storehouse', "Range les caisses : plus de place dans l’entrepôt"],
+  'interior.role.teacher': ['Teacher', 'Enseignant'],
+  'interior.roleEffect.teacher': ['Teaches better: more Knowledge from this School', "Enseigne mieux : plus de Savoir pour cette école"],
+  'interior.role.librarian': ['Librarian', 'Bibliothécaire'],
+  'interior.roleEffect.librarian': ['Spreads more Knowledge from this Library', "Diffuse plus de Savoir depuis cette bibliothèque"],
+  'interior.role.nurse': ['Nurse', 'Infirmier'],
+  'interior.roleEffect.nurse': ['Cares for the patients: Well-being of the covered Homes', "Soigne les patients : bien-être des logements couverts"],
+  'interior.role.doctor': ['Doctor', 'Médecin'],
+  'interior.roleEffect.doctor': ['Treats more serious cases: more Well-being', "Traite les cas graves : plus de bien-être"],
+  'interior.role.surgeon': ['Surgeon', 'Chirurgien'],
+  'interior.roleEffect.surgeon': ['Operates: the most Well-being a Hospital can give', "Opère : le plus de bien-être qu’un hôpital puisse donner"],
   'venue.role.technician': ['Technician', 'Personnel technique'],
   'venue.role.restocker': ['Restocker', 'Employé de réassort'],
   'venue.roleEffect.restocker': ['Keeps the production of an Exit’s Restock going and stores it', 'Relance la production du réassort d’une sortie et la range à l’entrepôt'],

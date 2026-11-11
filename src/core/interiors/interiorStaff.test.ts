@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, interiorFamilyOf, interiorPostsOf, jobsOf, newGame, type Building, type Command, type GameState } from '../index';
 import { flagOfCommandIn } from '../../featureFlags/featureFlags';
-import { interiorRoleShare } from './interiorParts';
-import { interiorRolesOf, interiorWagesPerHour, partOfRole, totalInteriorStaff } from './interiorStaff';
+import { interiorRoleShare, interiorRolesOf, interiorWagesPerHour, partOfRole, totalInteriorStaff } from './interiorStaff';
 import { payInteriorStaff } from './interiorStaffCommands';
 import { STAFF, hireFeeOf } from '../venues/staff';
 

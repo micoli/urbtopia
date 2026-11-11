@@ -847,7 +847,8 @@
           "type": "string",
           "enum": [
             "factory",
-            "packhouse"
+            "packhouse",
+            "mill"
           ]
         },
         "$schema": {

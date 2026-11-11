@@ -138,7 +138,7 @@ function replay(state: GameState, until: number): AdvanceResult {
     const coverage = serviceCoverage(current);
     const congestion = congestionStats(current, now);
     const homeRatios = new Map(current.buildings.filter(b => isHomeType(b.type)).map(b => [b.id, homeTaxMultiplier(current, b, { energy, coverage, poweredCasinos, congestion })]));
-    const produced = withRestockers(advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios, idleShops, congestion.filledJobs, industrySpeed), end);
+    const produced = withRestockers(advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios, idleShops, congestion.filledJobs, industrySpeed, adapting), end);
     events.push(...produced.events);
     const gathered = advanceGatherings(advanceAttractions(payInteriorStaff(advanceInteriors(advanceVenues(produced.state, now, end, energy.supplied), now, end, energy.supplied), now, end), now, end), now, end);
     events.push(...gathered.events);

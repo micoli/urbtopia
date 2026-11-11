@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "mill",
+  "category": "power",
+  "name": {
+    "en": "Motor",
+    "fr": "Moteur"
+  },
+  "model": "factory-floor-motor",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "motor",
+  "drive": ["front"]
+}

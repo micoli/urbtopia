@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "mill",
+  "category": "machines",
+  "name": {
+    "en": "Millstone",
+    "fr": "Meule"
+  },
+  "model": "mill-interior-millstone",
+  "footprint": [1, 1],
+  "price": 450,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "machine",
+  "drive": ["front"],
+  "speed": 0.25,
+  "family": "millstone"
+}
