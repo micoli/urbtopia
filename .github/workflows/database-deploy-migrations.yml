@@ -1,4 +1,4 @@
-name: Deploy database migrations
+name: Deploy database migrations to production
 
 on:
   push:
@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   migrate:
+    name: Push the migrations to the production project
     runs-on: ubuntu-latest
     environment: production
     steps:

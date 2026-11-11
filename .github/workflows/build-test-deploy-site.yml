@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Build, test and deploy the site to GitHub Pages
 
 on:
   push:
@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   typecheck:
+    name: Type-check
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -32,6 +33,7 @@ jobs:
         run: npm run typecheck
 
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -48,7 +50,8 @@ jobs:
       - name: Lint the code
         run: npm run lint
 
-  test:
+  unit-tests:
+    name: Unit tests
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -68,6 +71,7 @@ jobs:
         run: npm test
 
   build:
+    name: Build the site and check it
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.64.1-noble@sha256:2f05f8a734509a7b3f26a912639488ee08f58a7b292d14d62271bcff9038768f
@@ -100,6 +104,8 @@ jobs:
           RELEASE_NAME: ${{ steps.release-name.outputs.name }}
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      - name: Fail if a server-side key reached the bundle or supabase-js left its lazy chunk
+        run: node scripts/checkBundle.ts dist
       - name: Check the Codex images
         run: npm run test:codex:images
       - name: Check the Avatar images
@@ -110,8 +116,9 @@ jobs:
           path: dist
 
   deploy:
+    name: Deploy to GitHub Pages
     if: github.event_name != 'pull_request'
-    needs: [typecheck, lint, test, build]
+    needs: [typecheck, lint, unit-tests, build]
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -125,6 +132,7 @@ jobs:
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
 
   release:
+    name: Create the GitHub release
     needs: [build, deploy]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest

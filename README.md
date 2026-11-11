@@ -93,7 +93,7 @@ Open http://localhost:5170 (served by the compose from [`dev/index/index.html`](
 
 ## Deployment
 
-Every push to `main` runs the checks (type-check, lint, tests), builds, and deploys `dist/` to GitHub Pages with [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). The site is served at `https://micoli.github.io/urbtopia/`; the build uses relative paths, so any sub-path works. GitHub Pages must be set to the **GitHub Actions** source in the repository settings (Settings, Pages, Build and deployment).
+Every push to `main` runs the checks (type-check, lint, tests), builds, and deploys `dist/` to GitHub Pages with [`.github/workflows/build-test-deploy-site.yml`](.github/workflows/build-test-deploy-site.yml). The site is served at `https://micoli.github.io/urbtopia/`; the build uses relative paths, so any sub-path works. GitHub Pages must be set to the **GitHub Actions** source in the repository settings (Settings, Pages, Build and deployment).
 
 ## How it is built
 
