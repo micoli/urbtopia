@@ -345,7 +345,7 @@ The page that opens from a Venue's side panel and shows its interior, where the 
 _Avoid_: Interior, editor, back office
 
 **Fixture**:
-An item the player places inside a Venue's interior or a Factory floor: a counter, a table, a chair, a game machine, a billiard table, an air hockey table; on a Factory floor, a Motor, Gear, Shaft, Pump, Pipe or Machine; on a Packhouse floor, a Motor, Gear, Shaft, Packer, Conveyor, Strapper, Scanner or Exit. Its position relative to the other Fixtures affects the Venue's performance.
+An item the player places inside a Venue's interior or a Factory floor: a counter, a table, a chair, a game machine, a billiard table, an air hockey table; on a Factory floor, a Motor, Gear, Shaft, Pump, Pipe or Machine; on a Packhouse floor, a Motor, Gear, Shaft, Packer, Conveyor, Strapper, Scanner or Exit (a Restocker is Staff, not a Fixture). Its position relative to the other Fixtures affects the Venue's performance.
 _Avoid_: Furniture, equipment, decoration
 
 **Staff**:
@@ -401,7 +401,7 @@ The interior of a Factory, opened from its side panel in the same Management vie
 _Avoid_: Venue (earns Urbs from Visitors), workshop floor, plant
 
 **Packhouse floor**:
-The interior of a Packhouse, opened from its side panel in the same Management view as a Venue and built on the same engine as the Factory floor: a 3D room whose grid grows with the Packhouse's Tier, where the player places Fixtures. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. A Packhouse with an empty floor packs as it always did; the floor only adds a bonus to speed and yield, capped by the Packhouse's Tier, and only for the packed Goods whose Line is Linked. Its Machines wear like those of a Factory floor, and a Technician repairs them.
+The interior of a Packhouse, opened from its side panel in the same Management view as a Venue and built on the same engine as the Factory floor: a 3D room whose grid grows with the Packhouse's Tier, where the player places Fixtures. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. A Packhouse with an empty floor packs as it always did; the floor only adds a bonus to speed and yield, capped by the Packhouse's Tier, and only for the packed Goods whose Line is Linked. Its Machines wear like those of a Factory floor, and a Technician repairs them. A Restocker hired for it keeps the production of a Line's Good going on its own.
 _Avoid_: Venue, Factory floor (a Factory's interior), packing line
 
 **Line**:
@@ -421,8 +421,16 @@ A Machine that a Line passes through, taking Packets in on one side and giving t
 _Avoid_: Binder, wrapper
 
 **Exit**:
-The end of a Line: a Conveyor standing against any edge of a Packhouse floor, on the tile along it with its back to the edge, turned by itself to face away from the room, that delivers the Packets through a hatch. Each Exit serves one size of packed Goods (Crate, Box or Pallet), told apart by its colour; a Slot's bonus counts only if an Exit of its size is Linked, and a Packhouse floor has as many Exits of each size as its Tier allows. A truck waits outside each Exit that is Linked.
+The end of a Line: a Conveyor standing against any edge of a Packhouse floor, on the tile along it with its back to the edge, turned by itself to face away from the room, that delivers the Packets through a hatch. Each Exit serves one size of packed Goods (Crate, Box or Pallet), told apart by its colour; a Slot's bonus counts only if an Exit of its size is Linked, and a Packhouse floor has as many Exits of each size as its Tier allows. A truck waits outside each Exit that is Linked. An Exit carries a Restock and, once the player assigns one, a Restocker.
 _Avoid_: Output, outlet, door
+
+**Restocker**:
+A worker of a Packhouse floor, hired from it like a Technician (a one-off fee of five days of wages, then a daily wage in Urbs, a number of posts set by the Packhouse's Tier) and assigned by hand to one Exit. While its Line is Linked and its Exit has a Restock, it keeps one production of that Good in the Packhouse's queue and sends each finished one to the Storehouse. It always works, whatever the Commute does, unless the wage cannot be paid, and is not one of the Packhouse's Jobs. An unassigned Restocker is paid all the same.
+_Avoid_: Stocker (a Supermarket role), Technician, auto-production
+
+**Restock**:
+The packed Good that the player chooses on an Exit, of the size of that Exit, for its Restocker to keep producing. It only drives the Restocker; the Slots stay free for manual productions.
+_Avoid_: Recipe, repeat
 
 **Scanner**:
 A Fixture a Line passes through, like a Strapper, that checks Packets and lowers the wear of the Fixtures downstream of it.
