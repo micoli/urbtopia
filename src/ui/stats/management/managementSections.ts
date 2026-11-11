@@ -14,6 +14,7 @@ export const MANAGEMENT_SECTIONS = {
   'eco-production': { icon: 'production', label: 'eco.production', group: 'production' },
   'eco-energy': { icon: 'power', label: 'eco.energy', group: 'production' },
   'eco-water': { icon: 'water', label: 'stat.water', group: 'production' },
+  'eco-budget': { icon: 'money', label: 'eco.budgetSection', group: 'city' },
   'eco-services': { icon: 'services', label: 'stats.services', group: 'city' },
   'eco-jobs': { icon: 'jobs', label: 'eco.jobsSection', group: 'city' },
   'eco-nature': { icon: 'nature', label: 'build.greenSpaces', group: 'city' },

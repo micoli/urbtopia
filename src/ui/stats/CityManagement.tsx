@@ -13,6 +13,7 @@ import {readRegistry} from '../../persistence/cities';
 import {rawSaveStore} from '../../persistence/instance';
 import {CloseButton} from '../common/CloseButton';
 import {ServicesSection} from '../buildings/ServicesSection';
+import {BudgetSection} from './management/BudgetSection';
 import {CityOverview} from './management/CityOverview';
 import {EmissionsSection} from './management/EmissionsSection';
 import {EnergySection} from './management/EnergySection';
@@ -89,13 +90,14 @@ function CityManagementDialog() {
         setGroup(target);
         requestAnimationFrame(() => scrollToSection(panel.current, id));
     };
-    const overviewSection = <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')} onShowEnergy={() => showSection('eco-energy')} onShowNeeds={() => showSection('eco-needs')} onShowTemperature={() => showSection('eco-temperature')} onShowWaste={() => showSection('eco-waste')} onShowTourism={() => showSection('eco-tourism')}/>;
+    const overviewSection = <CityOverview state={state} energy={energy} green={green} climate={climate} transport={transport} congestion={congestion} onShowTransport={() => showSection('eco-transport')} onShowTraffic={() => showSection('eco-traffic')} onShowEnergy={() => showSection('eco-energy')} onShowNeeds={() => showSection('eco-needs')} onShowTemperature={() => showSection('eco-temperature')} onShowWaste={() => showSection('eco-waste')} onShowTourism={() => showSection('eco-tourism')} onShowBudget={() => showSection('eco-budget')}/>;
     const needsSection = <NeedsSection key="needs" state={state} onShowSection={showSection}/>;
     const objectivesSection = <ObjectivesSection key="objectives" state={state} energy={energy} green={green} transport={transport}/>;
     const nextUnlockSection = <NextUnlockSection key="nextUnlock"/>;
     const productionSection = <ProductionSection key="production" state={state} energy={energy}/>;
     const energySection = <EnergySection key="energy" state={state} energy={energy} green={green} transport={transport}/>;
     const waterSection = <WaterSection key="water" state={state}/>;
+    const budgetSection = <BudgetSection key="budget" state={state} energy={energy} transport={transport} congestion={congestion}/>;
     const servicesSection = <ServicesSection key="services" state={state}/>;
     const wellbeingSection = <WellbeingSection key="wellbeing" green={green}/>;
     const natureSection = <NatureSection key="nature" state={state} green={green}/>;
@@ -120,6 +122,7 @@ function CityManagementDialog() {
             waterSection,
         ],
         city: [
+            budgetSection,
             servicesSection,
             jobsSection,
             wellbeingSection,

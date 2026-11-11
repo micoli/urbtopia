@@ -117,6 +117,8 @@ export { FARM_TIERS, PRODUCTION_UPGRADE_COSTS, HOME_FOOTPRINTS, HOME_TIERS, HOME
 export { SHOP_TYPES, canSell, goodCategoryOf, hasCounter, newGoodsAtNextTier, isShopType, sellsGoods, stackCountOf, saleIntervalOf, sellableGoodsOf, shopTierOf, slotPriceOf } from './economy/shops';
 export { ORCHARD_BUILDINGS, isOrchard } from './economy/orchards';
 export { ANIMAL_MODEL_FILES, penAnimalsOf, type PenAnimal } from './economy/pens';
+export { BUDGET_HOURS, cityBudget } from './economy/cityBudget';
+export type { CityBudget } from './economy/cityBudget';
 export { OFFICE, OFFICE_TYPES, isOfficeType, officeFillRatio, officeTierOf, officeUrbsDue } from './economy/offices';
 export type { ShopTier } from './economy/shops';
 export { INDUSTRY_TYPES, PRODUCTION_TYPES, compartmentProducedBy, industryEmissionsOf, industryWeightOf, scalesRecipeWithYield, isIndustryType, isProductionType } from './economy/productionTypes';

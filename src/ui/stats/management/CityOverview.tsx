@@ -1,9 +1,10 @@
-import {climateStats, cityAttractiveness, cityBenefits, energyStats, isAttraction, modeShares, touristsPerDay, totalCitizens, transportStats, wasteSituation, type CongestionStats, type GameState} from '../../../core';
+import {climateStats, cityAttractiveness, cityBenefits, cityBudget, energyStats, isAttraction, modeShares, touristsPerDay, totalCitizens, transportStats, wasteSituation, type CongestionStats, type GameState} from '../../../core';
 import {t} from '../../../i18n/t';
 import {OverviewTile} from './OverviewTile';
 import { Icon } from '../../common/Icon';
 import { CountBadge } from '../../common/CountBadge';
 import { useSanctionedHomes } from '../../common/useSanctionedHomes';
+import {UrbsAmount} from "../../common/UrbsAmount.tsx";
 
 interface CityOverviewProps {
     state: GameState;
@@ -19,18 +20,28 @@ interface CityOverviewProps {
     onShowTemperature: () => void;
     onShowWaste: () => void;
     onShowTourism: () => void;
+    onShowBudget: () => void;
 }
 
-export function CityOverview({state, energy, green, climate, transport, congestion, onShowTransport, onShowTraffic, onShowEnergy, onShowNeeds, onShowTemperature, onShowWaste, onShowTourism}: CityOverviewProps) {
+export function CityOverview({state, energy, green, climate, transport, congestion, onShowTransport, onShowTraffic, onShowEnergy, onShowNeeds, onShowTemperature, onShowWaste, onShowTourism, onShowBudget}: CityOverviewProps) {
     const sanctionedCount = useSanctionedHomes().length;
     const waste = wasteSituation(state);
     const attractiveness = cityAttractiveness(state);
     const tourists = state.buildings.filter(isAttraction).reduce((total, building) => total + touristsPerDay(building, attractiveness), 0);
+    const budget = cityBudget(state, {energy, congestion, transport});
     const produced = energy.solar + energy.wind + energy.hydro + energy.geothermal + energy.coal + energy.backup;
     return <div className="eco-overview">
         <OverviewTile icon="citizens">
             <span>{t('stat.citizens')}</span><strong>{totalCitizens(state)}</strong>
         </OverviewTile>
+        <button type="button" aria-controls="eco-budget" data-warning={budget.net < 0} title={t('eco.budgetHelp')} onClick={onShowBudget}>
+            <Icon name="money" />
+            <span className="eco-overview-value">
+                <span>{t('eco.budget')}</span>
+                <strong>{budget.net > 0 ? '+' : ''}<UrbsAmount value={Math.round(budget.net)} thousandSeparator={" "}/></strong>
+                <small>{t('eco.budgetRevenues')} <UrbsAmount value={Math.round(budget.revenues.total)} thousandSeparator={" "}/> · {t('eco.budgetExpenses')} <UrbsAmount value={Math.round(budget.expenses.total)} thousandSeparator={" "}/></small>
+            </span>
+        </button>
         <button type="button" aria-controls="eco-energy" data-warning={energy.unmet > 0} onClick={onShowEnergy}>
             <Icon name="power" />
             <span className="eco-overview-value">
