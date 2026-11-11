@@ -44,7 +44,11 @@
         "speedCaps": [0.05, 0.1, 0.15, 0.2, 0.25],
         "yieldCaps": [0.1, 0.2, 0.3, 0.4, 0.5],
         "technicianPosts": [0, 0, 1, 1, 2],
-        "line": true
+        "line": true,
+        "yieldGroups": {
+          "cheese": ["cheese", "goatCheese"],
+          "cream": ["cream"]
+        }
       },
       "roles": {
         "cheesemaker": {

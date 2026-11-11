@@ -14,6 +14,7 @@ export interface InteriorLayout {
   line?: true;
   salesCaps?: number[];
   capacityCaps?: number[];
+  yieldGroups?: Record<string, string[]>;
 }
 
 interface InteriorDeclaration {
@@ -25,6 +26,9 @@ interface InteriorDeclaration {
 const DECLARATIONS = interiors.buildings as Record<string, InteriorDeclaration>;
 
 export const interiorDeclarationOf = (type: BuildingType): InteriorDeclaration | undefined => DECLARATIONS[type];
+
+// The group of Goods that an item belongs to in a building that splits its yield, if it does.
+export const yieldGroupOf = (type: BuildingType, item: string): string | undefined => Object.entries(DECLARATIONS[type]?.layout?.yieldGroups ?? {}).find(([, items]) => items.includes(item))?.[0];
 
 export const interiorLayoutOf = (type: BuildingType): InteriorLayout | undefined => DECLARATIONS[type]?.layout;
 

@@ -71,6 +71,7 @@ export interface FixtureSpec {
   smoke?: readonly [number, number, number];
   yield?: number;
   sales?: number;
+  yieldGroup?: string;
   capacity?: number;
   family?: string;
   coolant?: number;

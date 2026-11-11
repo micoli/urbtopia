@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "dairy",
+  "category": "line",
+  "name": {
+    "en": "Conveyor",
+    "fr": "Tapis roulant"
+  },
+  "model": "packhouse-floor-conveyor-straight",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "conveyor",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

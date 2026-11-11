@@ -77,6 +77,21 @@
                   "type": "number",
                   "exclusiveMinimum": 0
                 }
+              },
+              "yieldGroups": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "additionalProperties": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
               }
             },
             "required": [

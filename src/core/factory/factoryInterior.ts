@@ -5,7 +5,7 @@ import { distanceBetween } from '../venues/layout';
 import { PRODUCTION_INTERIOR_KINDS, type FixtureSide, type PackSize } from '../venues/venueVocabulary';
 import type { ItemId } from '../economy/items';
 import type { Building, BuildingType, VenueFixture } from '../engine/state';
-import { interiorDeclarationOf, interiorLayoutOf, interiorPartPresence } from '../interiors/interiorStaff';
+import { interiorDeclarationOf, interiorLayoutOf, interiorPartPresence, yieldGroupOf, type InteriorPart } from '../interiors/interiorStaff';
 
 export type Turn = 'cw' | 'ccw';
 
@@ -680,10 +680,10 @@ const lineBonuses = new WeakMap<readonly VenueFixture[], Map<string, InteriorBon
 
 // What the Line of a Bakery, a Dairy or a Storehouse adds, from the Machines and the Exits that Packets reach: their speed and yield, and the sales and the capacity of the Exits,
 // each saturating towards the cap of its Tier. Nothing counts until the Line is unbroken from its first Machine to an Exit.
-export function lineBonusOf(allFixtures: readonly VenueFixture[], tier: number, type: BuildingType): InteriorBonus {
+export function lineBonusOf(allFixtures: readonly VenueFixture[], tier: number, type: BuildingType, group?: string): InteriorBonus {
   const perKey = lineBonuses.get(allFixtures) ?? new Map<string, InteriorBonus>();
   lineBonuses.set(allFixtures, perKey);
-  const key = `${type}:${tier}`;
+  const key = `${type}:${tier}:${group ?? ''}`;
   const cached = perKey.get(key);
   if (cached) return cached;
   const layout = interiorLayoutOf(type);
@@ -697,7 +697,7 @@ export function lineBonusOf(allFixtures: readonly VenueFixture[], tier: number, 
     const total = (list: readonly VenueFixture[], key: 'speed' | 'yield' | 'sales' | 'capacity') => list.reduce((sum, fixture) => sum + (FIXTURES[fixture.type][key] ?? 0), 0);
     bonus = {
       speed: saturate(total(machines, 'speed'), capOf(layout.speedCaps, tier), interiorBalance.bonusKnee),
-      yield: saturate(total(machines, 'yield'), capOf(layout.yieldCaps, tier), interiorBalance.bonusKnee),
+      yield: saturate(total(machines.filter(fixture => group === undefined || FIXTURES[fixture.type].yieldGroup === undefined || FIXTURES[fixture.type].yieldGroup === group), 'yield'), capOf(layout.yieldCaps, tier), interiorBalance.bonusKnee),
       sales: layout.salesCaps ? saturate(total(exits, 'sales'), capOf(layout.salesCaps, tier), interiorBalance.bonusKnee) : 0,
       capacity: layout.capacityCaps ? saturate(total(exits, 'capacity'), capOf(layout.capacityCaps, tier), interiorBalance.bonusKnee) : 0,
       power,
@@ -806,9 +806,15 @@ export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier'
   if (!building.interior) return NO_BONUS;
   if (interiorDeclarationOf(building.type)) {
     const layout = interiorLayoutOf(building.type);
-    const bonus = layout?.line ? lineBonusOf(building.interior.fixtures, building.tier, building.type) : interiorBonusOf(building.interior.fixtures, building.tier, building.type);
+    const groups = Object.keys(layout?.yieldGroups ?? {});
+    const group = item === undefined ? undefined : yieldGroupOf(building.type, item);
+    const bonus = layout?.line ? lineBonusOf(building.interior.fixtures, building.tier, building.type, group) : interiorBonusOf(building.interior.fixtures, building.tier, building.type);
+    // A building that splits its yield in groups of Goods delivers each group through its own role; asked about none, it is the best of them.
+    const delivered = (name: string) => bonus.yield * interiorPartPresence(building, `${name}Yield` as InteriorPart);
+    const yieldShare = groups.length === 0 ? bonus.yield : group !== undefined ? delivered(group) : item !== undefined ? 0 : Math.max(...groups.map(delivered));
     return {
       ...bonus,
+      yield: yieldShare,
       speed: bonus.speed * interiorPartPresence(building, 'speed'),
       ...(bonus.sales === undefined ? {} : { sales: bonus.sales * interiorPartPresence(building, 'salesRate') }),
       ...(bonus.capacity === undefined ? {} : { capacity: bonus.capacity * interiorPartPresence(building, 'capacity') }),

@@ -87,6 +87,8 @@ export const fixtureSchema = z
       yield: z.number().positive().optional(),
       // An Exit of a Line: what it adds to the rate at which the building sells over its Counter, and to what the building holds.
       sales: z.number().positive().optional(),
+      // A Machine whose yield only raises one group of the Goods of its building (the Dairy: cheese, cream); it raises them all when left out.
+      yieldGroup: z.string().min(1).optional(),
       capacity: z.number().positive().optional(),
       // The kind of a Machine: the Factory interior pays for the variety of kinds that run, not for their number.
       family: z.string().min(1).optional(),

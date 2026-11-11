@@ -1073,6 +1073,10 @@
           "type": "number",
           "exclusiveMinimum": 0
         },
+        "yieldGroup": {
+          "type": "string",
+          "minLength": 1
+        },
         "capacity": {
           "type": "number",
           "exclusiveMinimum": 0

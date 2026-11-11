@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "dairy",
+  "category": "machines",
+  "name": {
+    "en": "Cheese cellar (cooling on the left)",
+    "fr": "Cave d'affinage (froid à gauche)"
+  },
+  "model": "dairy-interior-cheese-cellar",
+  "footprint": [1, 1],
+  "price": 1000,
+  "minTier": 2,
+  "wear": 0.08,
+  "role": "machine",
+  "flow": ["left"],
+  "yield": 0.2,
+  "yieldGroup": "cheese",
+  "family": "cellar",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

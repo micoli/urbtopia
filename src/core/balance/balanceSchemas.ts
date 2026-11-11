@@ -80,8 +80,8 @@ export const interiorsBalanceSchema = z
       z.string().min(1),
       z.strictObject({
         family: z.enum(INTERIOR_FAMILIES_ALL),
-        // Production interiors: the size of the room, the caps of the bonus its linked Machines add and the Technician posts, by Tier. A building with a Line also has the caps of what its Exits add to the sales over its Counter and to what it holds. The Factory and the Packhouse keep theirs in their own files.
-        layout: z.strictObject({ gridSizes: z.array(z.int().min(1)).min(1), speedCaps: z.array(positive).min(1), yieldCaps: z.array(positive).min(1), technicianPosts: z.array(count).min(1), line: z.literal(true).optional(), salesCaps: z.array(positive).min(1).optional(), capacityCaps: z.array(positive).min(1).optional() }).optional(),
+        // Production interiors: the size of the room, the caps of the bonus its linked Machines add and the Technician posts, by Tier. A building with a Line also has the caps of what its Exits add to the sales over its Counter and to what it holds. The Dairy splits its yield into groups of Goods, each delivered by its own role. The Factory and the Packhouse keep theirs in their own files.
+        layout: z.strictObject({ gridSizes: z.array(z.int().min(1)).min(1), speedCaps: z.array(positive).min(1), yieldCaps: z.array(positive).min(1), technicianPosts: z.array(count).min(1), line: z.literal(true).optional(), salesCaps: z.array(positive).min(1).optional(), capacityCaps: z.array(positive).min(1).optional(), yieldGroups: z.record(z.string().min(1), z.array(z.string().min(1)).min(1)).optional() }).optional(),
         roles: z.partialRecord(z.enum(INTERIOR_ROLES_ALL), z.strictObject({ part: z.enum(INTERIOR_PARTS_ALL), posts: z.array(count).min(1) })),
       }),
     ),
