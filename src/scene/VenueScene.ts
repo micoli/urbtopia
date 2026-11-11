@@ -240,6 +240,8 @@ export class VenueScene {
     this.crowd.dispose();
     this.shelfStock.dispose();
     this.renderer.dispose();
+    // A disposed renderer keeps its WebGL context until the garbage collector runs; browsers drop the oldest context, the Map's, past a limit.
+    this.renderer.forceContextLoss();
   }
 
   private buildShell(): void {

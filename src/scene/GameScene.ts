@@ -227,8 +227,15 @@ export class GameScene {
       this.hidden = hidden;
       this.restartLoop();
     });
+    this.canvas.addEventListener('webglcontextrestored', this.handleContextRestored);
     this.restartLoop();
   }
+
+  // Three.js rebuilds its GPU state on its own; the canvas was cleared, so the size and the loop must be set again.
+  private handleContextRestored = (): void => {
+    this.resize();
+    this.restartLoop();
+  };
 
   get camera(): CameraController {
     return this.controller;
@@ -461,6 +468,7 @@ export class GameScene {
     this.streetView.dispose();
     cancelAnimationFrame(this.frameHandle);
     this.stopWatchingHidden();
+    this.canvas.removeEventListener('webglcontextrestored', this.handleContextRestored);
     this.resizeObserver.disconnect();
     this.controller.dispose();
     this.ghostLayer.dispose();
@@ -756,12 +764,19 @@ export class GameScene {
     this.handlers.onCenterTileChange(tile);
   }
 
+  // The next frame is booked before drawing, so an error in one frame cannot stop the loop and leave the canvas blank.
   private frame = (now: number): void => {
-    const elapsed = now - this.lastFrame;
-    if (!shouldRenderFrame(elapsed)) {
-      this.frameHandle = requestAnimationFrame(this.frame);
-      return;
+    this.frameHandle = requestAnimationFrame(this.frame);
+    try {
+      this.draw(now);
+    } catch (error) {
+      console.error('Frame failed', error);
     }
+  };
+
+  private draw(now: number): void {
+    const elapsed = now - this.lastFrame;
+    if (!shouldRenderFrame(elapsed)) return;
     const delta = Math.max(0, Math.min(0.1, elapsed / 1000));
     this.lastFrame = now;
     this.refreshLighting(now);
@@ -790,6 +805,5 @@ export class GameScene {
     this.stationGlow.update(delta);
     this.accessGlow.update(delta);
     this.renderer.render(this.scene, this.activeCamera);
-    this.frameHandle = requestAnimationFrame(this.frame);
-  };
+  }
 }
