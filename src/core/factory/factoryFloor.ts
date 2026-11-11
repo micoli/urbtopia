@@ -403,13 +403,26 @@ interface FloorReport {
   links: FloorLinks;
 }
 
+// What a result depends on is the layout of the Fixtures (what, where, turned how, broken or not), never their Condition. The wear of a floor that runs replaces its list at every
+// tick, so a result is looked up by list first, then by layout, and worked out again only when the layout changed.
+const layoutOf = (fixtures: readonly VenueFixture[]): string => fixtures.reduce((key, fixture) => `${key}${fixture.id},${fixture.type},${fixture.x},${fixture.y},${fixture.rotation},${fixture.broken === true ? 1 : 0};`, '');
+
+const LAYOUTS_KEPT = 64;
+
 const memoized = <Result>(compute: (fixtures: readonly VenueFixture[]) => Result): ((fixtures: readonly VenueFixture[]) => Result) => {
-  const cache = new WeakMap<readonly VenueFixture[], Result>();
+  const byList = new WeakMap<readonly VenueFixture[], Result>();
+  const byLayout = new Map<string, Result>();
   return fixtures => {
-    const cached = cache.get(fixtures);
+    const cached = byList.get(fixtures);
     if (cached !== undefined) return cached;
-    const result = compute(fixtures);
-    cache.set(fixtures, result);
+    const layout = layoutOf(fixtures);
+    let result = byLayout.get(layout);
+    if (result === undefined) {
+      result = compute(fixtures);
+      if (byLayout.size >= LAYOUTS_KEPT) byLayout.clear();
+      byLayout.set(layout, result);
+    }
+    byList.set(fixtures, result);
     return result;
   };
 };
@@ -564,7 +577,7 @@ export interface LinePath {
 const MOUTH = 0.15;
 const HATCH = 0.8;
 
-export function linePathsOf(allFixtures: readonly VenueFixture[]): readonly LinePath[] {
+export const linePathsOf = memoized((allFixtures): readonly LinePath[] => {
   const { fixtures, line } = reportOf(allFixtures);
   const byId = new Map(fixtures.map(fixture => [fixture.id, fixture]));
   const centre = (fixture: VenueFixture) => ({ x: fixture.x + 0.5, y: fixture.y + 0.5 });
@@ -587,7 +600,7 @@ export function linePathsOf(allFixtures: readonly VenueFixture[]): readonly Line
   };
   for (const source of sources) walk(source, source, [toward(source, 'front', MOUTH)], new Set([source.id]));
   return paths;
-}
+});
 
 // Why a Fixture of a Line carries no Packets: following what should feed it backwards, where the chain stops.
 export type LineFault =
@@ -634,10 +647,10 @@ export function lineFaultOf(allFixtures: readonly VenueFixture[], start: VenueFi
 }
 
 // The Exits of a Packhouse floor that Packets reach.
-export const linkedExitsOf = (allFixtures: readonly VenueFixture[]): readonly VenueFixture[] => {
+export const linkedExitsOf = memoized((allFixtures): readonly VenueFixture[] => {
   const { lined } = floorLinksOf(allFixtures);
   return allFixtures.filter(fixture => lined.has(fixture.id) && roleOf(fixture) === 'exit');
-};
+});
 
 // What the Motors of a Packhouse floor ask of the city's power, as those of a Factory floor do: all of it when the Machines they drive run, a share of it at rest.
 function packhousePowerOf(allFixtures: readonly VenueFixture[]): number {

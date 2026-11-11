@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, floorBonusOfBuilding, floorFixturesOf, lineFaultOf, linePathsOf, linkedExitsOf, floorMotionOf, floorOverloadedOf, floorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isFactory, isFloorBuilding, isPackhouse, wallFacingOf, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type VenueFixture, type VenueType } from '../../core';
+import { canPlaceFixture, canStandOnFloor, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, floorBonusOfBuilding, floorFixturesOf, lineFaultOf, linePathsOf, linkedExitsOf, floorMotionOf, floorOverloadedOf, floorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isFactory, isFloorBuilding, isPackhouse, wallFacingOf, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type LinePath, type VenueFixture, type VenueType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
@@ -20,6 +20,10 @@ const interiorOf = (venueId: number): Interior | undefined => {
   if (isFloorBuilding(building)) return { building, fixtures: floorFixturesOf(building), floor: true };
   return isVenue(building) ? { building, fixtures: building.venue.fixtures, floor: false } : undefined;
 };
+
+// The same empty lists each time, so that the scene sees nothing change.
+const NO_EXITS: readonly VenueFixture[] = [];
+const NO_PATHS: readonly LinePath[] = [];
 
 // A wall Fixture goes where the cell leads on a back wall; the others go on the cell.
 const targetOf = (type: FixtureId, cell: Coord, fixtures: readonly VenueFixture[], size = 0): { x: number; y: number; rotation?: 0 | 1 | 2 | 3 } => {
@@ -117,8 +121,8 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
         scene.setSize(sizeOf(interior, venueType));
         if (venueType === 'home') scene.setFloorModel(parquetModelOf(interior.building.floor?.parquet));
         scene.setFixtures([...interior.fixtures]);
-        scene.setTrucks(isPackhouse(interior.building) ? linkedExitsOf(interior.fixtures) : []);
-        scene.setLine(isPackhouse(interior.building) ? linePathsOf(interior.fixtures) : [], 1 + floorBonusOfBuilding(interior.building).speed);
+        scene.setTrucks(isPackhouse(interior.building) ? linkedExitsOf(interior.fixtures) : NO_EXITS);
+        scene.setLine(isPackhouse(interior.building) ? linePathsOf(interior.fixtures) : NO_PATHS, 1 + floorBonusOfBuilding(interior.building).speed);
         scene.setMotion(isFactory(interior.building) || isPackhouse(interior.building) ? floorMotionOf(interior.fixtures) : new Map(), 1 + floorBonusOfBuilding(interior.building).speed);
       }
       showCrowd();

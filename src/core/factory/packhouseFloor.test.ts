@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type Rotation, type VenueFixture } from '../index';
 import { productionDurationOf } from '../economy/production';
-import { floorBonusOfBuilding, floorLinksOf, floorMotionOf, floorPowerOfBuilding, floorUsageWeightsOf, lineFaultOf, linePathsOf, packhouseBonusOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factoryFloor';
+import { floorBonusOfBuilding, floorLinksOf, floorMotionOf, floorPowerOfBuilding, floorUsageWeightsOf, lineFaultOf, linePathsOf, linkedExitsOf, packhouseBonusOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factoryFloor';
 import { wallFacingOf } from './floorCommands';
 import { economicPower } from '../environment/ecology';
 import packhouseBalance from '../../../assets/defs/balance/packhouseFloor.json' with { type: 'json' };
@@ -225,6 +225,31 @@ describe('the bonus of a Packhouse floor', () => {
     expect(floorBonusOfBuilding(building, 'wheatBox').speed).toBe(0);
     expect(productionDurationOf(building, 'wheatCrate')).toBeLessThan(productionDurationOf(bare, 'wheatCrate'));
     expect(productionDurationOf(building, 'wheatBox')).toBe(productionDurationOf(bare, 'wheatBox'));
+  });
+});
+
+describe('what is worked out about a floor', () => {
+  const line = () => [...simpleLine('Crate', [put('packhouseConveyor', 2, 2)])];
+
+  it('is worked out once for a list, and once for a layout however the Condition of the Fixtures wears', () => {
+    const fixtures = line();
+    expect(floorLinksOf(fixtures)).toBe(floorLinksOf(fixtures));
+    expect(linePathsOf(fixtures)).toBe(linePathsOf(fixtures));
+    const worn = fixtures.map(fixture => ({ ...fixture, condition: 80 }));
+    expect(worn).not.toBe(fixtures);
+    expect(floorLinksOf(worn)).toBe(floorLinksOf(fixtures));
+    expect(linePathsOf(worn)).toBe(linePathsOf(fixtures));
+    expect(linkedExitsOf(worn)).toBe(linkedExitsOf(fixtures));
+    expect(floorMotionOf(worn)).toBe(floorMotionOf(fixtures));
+  });
+
+  it('is worked out again when a Fixture breaks, moves or turns', () => {
+    const fixtures = line();
+    const broken = fixtures.map(fixture => (fixture.type === 'packhouseConveyor' ? { ...fixture, broken: true as const } : fixture));
+    expect(floorLinksOf(broken)).not.toBe(floorLinksOf(fixtures));
+    expect(floorLinksOf(broken).lined.size).toBeLessThan(floorLinksOf(fixtures).lined.size);
+    const turned = fixtures.map(fixture => (fixture.type === 'packhouseExitCrate' ? { ...fixture, rotation: 0 as const } : fixture));
+    expect(linePathsOf(turned)).not.toBe(linePathsOf(fixtures));
   });
 });
 

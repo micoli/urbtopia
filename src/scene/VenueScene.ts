@@ -48,6 +48,7 @@ export class VenueScene {
   private fixtureRoot = new THREE.Group();
   private truckRoot = new THREE.Group();
   private trucks: readonly VenueFixture[] = [];
+  private linePaths: readonly LinePath[] | null = null;
   private ghostRoot = new THREE.Group();
   private selectionRoot = new THREE.Group();
   private warningRoot = new THREE.Group();
@@ -164,13 +165,17 @@ export class VenueScene {
 
   // The ways that Packets take on a Packhouse floor, and the pace they ride at.
   setLine(paths: readonly LinePath[], speed = 1): void {
-    this.line.setPaths(paths);
+    if (paths !== this.linePaths) {
+      this.linePaths = paths;
+      this.line.setPaths(paths);
+    }
     this.line.setSpeed(speed);
     this.dirty = true;
   }
 
   // The Exits of a Packhouse floor whose Line is linked: a truck waits outside each of them.
   setTrucks(exits: readonly VenueFixture[]): void {
+    if (exits === this.trucks) return;
     this.trucks = exits;
     this.rebuildTrucks();
   }
