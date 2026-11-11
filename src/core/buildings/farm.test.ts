@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PRODUCTION_UPGRADE_COSTS, createBuilding, dispatch, farmTier, maxTierOf, newGame, upgradeCostOf, type Command, type GameState } from '../index';
+import { PRODUCTION_UPGRADE_COSTS, createBuilding, dispatch, farmTier, jobsOf, maxTierOf, newGame, upgradeCostOf, workplaceTypes, type Command, type GameState } from '../index';
 
 const T0 = 1_700_000_000_000;
 
@@ -47,6 +47,11 @@ describe('Farm building', () => {
   it('reuses the production upgrade costs up to Tier 5', () => {
     expect(maxTierOf('farm')).toBe(5);
     for (const tier of [2, 3, 4, 5]) expect(upgradeCostOf('farm', tier)).toEqual(PRODUCTION_UPGRADE_COSTS[tier]);
+  });
+
+  it('offers Jobs per Tier and counts as a workplace', () => {
+    expect(workplaceTypes).toContain('farm');
+    expect([1, 2, 3, 4, 5].map(tier => jobsOf({ ...createBuilding(1, 'farm', 0, 0, 0), tier }))).toEqual([10, 20, 30, 40, 50]);
   });
 
   it('starts a new game with an empty seed stock', () => {

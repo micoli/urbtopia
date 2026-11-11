@@ -52,7 +52,7 @@ export function jobsSummary(state: GameState, congestion: CongestionStats): Jobs
 
 export function jobKindOf(building: Building): JobKind | null {
   if (building.type === 'casino') return 'casino';
-  if ((INDUSTRY_TYPES as readonly string[]).includes(building.type)) return 'industry';
+  if (building.type === 'farm' || (INDUSTRY_TYPES as readonly string[]).includes(building.type)) return 'industry';
   if (isShopType(building.type)) return 'shops';
   if (isOfficeType(building.type)) return 'offices';
   if (isVenueType(building.type)) return 'venues';
