@@ -5,8 +5,8 @@ import { isItemUnlocked } from '../progression/unlocks';
 import type { CommandOutcome } from '../engine/commands';
 import type { GameEvent } from '../engine/events';
 import type { Building, GameState, QueueEntry, VenueFixture } from '../engine/state';
-import { linkedExitsOf } from './factoryFloor';
-import { restockerWagePerHour } from './floorWear';
+import { linkedExitsOf } from './factoryInterior';
+import { restockerWagePerHour } from './interiorWear';
 
 // Queues one production of an item in a building, taking its ingredients from the Storehouse; an entry queued for an Exit's Restocker carries the Exit.
 export function queueItem(state: GameState, building: Building, item: string, now: number, exitId?: number): CommandOutcome {
@@ -41,10 +41,10 @@ const RESERVED_SLOTS = 1;
 
 // The Exits whose Restocker is at work: a Restocker for each, a Restock and a Line that is Linked. The layout results are cached by layout, so the Exits are read from the floor itself.
 const workingExitsOf = (building: Building, urbs: number): VenueFixture[] => {
-  const hired = building.floor?.restockers ?? 0;
-  if (!building.floor || urbs < hired * restockerWagePerHour()) return [];
-  const linked = new Set(linkedExitsOf(building.floor.fixtures).map((exit) => exit.id));
-  return building.floor.fixtures.filter((fixture) => linked.has(fixture.id) && fixture.restocker && fixture.restock).sort((a, b) => a.id - b.id).slice(0, hired);
+  const hired = building.interior?.restockers ?? 0;
+  if (!building.interior || urbs < hired * restockerWagePerHour()) return [];
+  const linked = new Set(linkedExitsOf(building.interior.fixtures).map((exit) => exit.id));
+  return building.interior.fixtures.filter((fixture) => linked.has(fixture.id) && fixture.restocker && fixture.restock).sort((a, b) => a.id - b.id).slice(0, hired);
 };
 
 // Puts a finished entry into the Storehouse; false when there is no room for it.
@@ -63,7 +63,7 @@ const withBuilding = (state: GameState, building: Building): GameState => ({ ...
 
 const withFixture = (state: GameState, buildingId: number, replacement: VenueFixture): GameState => {
   const building = state.buildings.find((candidate) => candidate.id === buildingId)!;
-  return withBuilding(state, { ...building, floor: { ...building.floor!, fixtures: building.floor!.fixtures.map((fixture) => (fixture.id === replacement.id ? replacement : fixture)) } });
+  return withBuilding(state, { ...building, interior: { ...building.interior!, fixtures: building.interior!.fixtures.map((fixture) => (fixture.id === replacement.id ? replacement : fixture)) } });
 };
 
 // One turn of the Restockers of a Packhouse: every Exit stores its finished production, then the Exits served longest ago queue the next ones in the Slots left.

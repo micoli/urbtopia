@@ -102,12 +102,12 @@ describe('Skip and replay', () => {
   });
 });
 
-describe('Factory floor tutorial', () => {
-  const factory = (fixtures: NonNullable<Building['floor']>['fixtures'] = []): Building => ({ ...createBuilding(1, 'factory', 55, 50, 0), floor: { fixtures, nextFixtureId: 100 } });
+describe('Factory interior tutorial', () => {
+  const factory = (fixtures: NonNullable<Building['interior']>['fixtures'] = []): Building => ({ ...createBuilding(1, 'factory', 55, 50, 0), interior: { fixtures, nextFixtureId: 100 } });
   const fixture = (id: number, type: 'factoryMotor' | 'factoryShaft' | 'factoryPress', x: number, y: number, rotation: 0 | 2 = 0) => ({ id, type, x, y, rotation });
   const started = (building: Building) => send(city([building]), { type: 'SkipTutorial' }).venueTutorials?.factory;
 
-  it('starts at the Motor once the floor of a Factory is in use, and not before', () => {
+  it('starts at the Motor once the interior of a Factory is in use, and not before', () => {
     expect(started(factory())).toBe('motor');
     expect(started({ ...createBuilding(1, 'factory', 55, 50, 0) })).toBeUndefined();
   });

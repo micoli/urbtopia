@@ -17,7 +17,7 @@ export const FIXTURE_CATEGORIES = {
   home: HOME_FIXTURE_CATEGORIES,
 } as Record<FixtureVenue, readonly FixtureCategory[]>;
 
-// What a Fixture can be placed in: a Venue, a Factory floor, a Packhouse floor or a Home interior.
+// What a Fixture can be placed in: a Venue, a Factory interior, a Packhouse interior or a Home interior.
 export type FixtureVenue = VenueType | 'factory' | 'packhouse' | 'home';
 
 export interface FixtureSpec {
@@ -54,7 +54,7 @@ export interface FixtureSpec {
   waiting?: number;
   // Decoration: attractiveness it adds.
   attract?: number;
-  // Factory floor: what the Fixture does, the sides through which Drive and Flow pass, the direction a Machine needs its Drive to turn,
+  // Factory interior: what the Fixture does, the sides through which Drive and Flow pass, the direction a Machine needs its Drive to turn,
   // and what a linked Machine adds to the speed and the yield of the Factory's Slots.
   role?: FactoryFixtureRole | HomeFixtureRole;
   // Home interior: the Fixture hangs on a wall segment.
@@ -69,7 +69,7 @@ export interface FixtureSpec {
   family?: string;
   coolant?: number;
   heat?: true;
-  // Packhouse floor: the sides through which Packets come into a Line Fixture and leave it, and the size of packed Goods an Exit serves.
+  // Packhouse interior: the sides through which Packets come into a Line Fixture and leave it, and the size of packed Goods an Exit serves.
   lineIn?: readonly FixtureSide[];
   lineOut?: readonly FixtureSide[];
   packSize?: PackSize;

@@ -9,7 +9,7 @@ const versions = Array.from({ length: CURRENT_VERSION }, (_, index) => index + 1
 
 // Update this snapshot together with CURRENT_VERSION: a schema change needs a migration and a new frozen fixture.
 const SCHEMA_SNAPSHOT = {
-  version: 18,
+  version: 19,
   keys: [
     'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'dayCycleOffset', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
     'ownedParcels', 'rails', 'rngState', 'roads', 'roundabouts', 'seed', 'seedStock', 'storage', 'tradeLedger', 'transitFleet', 'transitLines', 'tutorial', 'urbs',
@@ -79,6 +79,17 @@ describe('save migration contract', () => {
     expect(damaged({ confirmed: 'yes' })).toMatchObject({ ok: false, reason: 'invalid-state' });
     expect(damaged({ urbs: -1 })).toMatchObject({ ok: false, reason: 'invalid-state' });
     expect(parseEnvelope(JSON.stringify({ ...v14, state: { ...v14.state, tradeLedger: 'nope' } }))).toMatchObject({ ok: false, reason: 'invalid-state' });
+  });
+
+  it('moves the floor of a version-18 Factory to its interior and changes nothing else', () => {
+    const v18 = JSON.parse(fixtureText(18));
+    const interior = { fixtures: [], nextFixtureId: 1, technicians: 1 };
+    const factory = { id: 99, type: 'factory', x: 20, y: 20, rotation: 0, slotCount: 2, queue: [], stacks: [], tier: 1, taxCitizenMs: 0, floor: interior };
+    const migrated = migrate({ ...v18.state, buildings: [...v18.state.buildings, factory] }, 18, 19) as { buildings: Record<string, unknown>[] };
+    const moved = migrated.buildings.find(building => building.id === 99);
+    expect(moved).toEqual({ ...factory, floor: undefined, interior });
+    expect('floor' in (moved as object)).toBe(false);
+    expect(migrated.buildings.slice(0, -1)).toEqual(v18.state.buildings);
   });
 
   it('has one migration step per released version', () => {

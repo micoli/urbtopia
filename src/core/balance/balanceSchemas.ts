@@ -46,7 +46,7 @@ export const venuesBalanceSchema = z
   .meta({ title: 'Venues balance', description: 'assets/defs/balance/venues.json: Staff wages and yields, shared Venue constants, events.' });
 
 // How big the interior of a Factory is by Tier, and the most speed and yield its Machines can add.
-export const factoryFloorBalanceSchema = z
+export const factoryInteriorBalanceSchema = z
   .strictObject({
     ...schemaField,
     gridSizes: z.array(z.int().min(1)).min(1),
@@ -70,10 +70,10 @@ export const factoryFloorBalanceSchema = z
     boilerPowerSaving: positive,
     maxPowerSaving: positive,
   })
-  .meta({ title: 'Factory floor balance', description: 'assets/defs/balance/factoryFloor.json: the size of the Factory floor and the cap of the bonus its linked Machines add, by Factory Tier.' });
+  .meta({ title: 'Factory interior balance', description: 'assets/defs/balance/factoryInterior.json: the size of the Factory interior and the cap of the bonus its linked Machines add, by Factory Tier.' });
 
 // How big the interior of a Packhouse is by Tier, the most speed and yield its Line can add, and what its Strappers, Scanners and Exits do.
-export const packhouseFloorBalanceSchema = z
+export const packhouseInteriorBalanceSchema = z
   .strictObject({
     ...schemaField,
     gridSizes: z.array(z.int().min(1)).min(1),
@@ -92,7 +92,7 @@ export const packhouseFloorBalanceSchema = z
     // The share of the wear that remains downstream of a Scanner.
     scannerWearFactor: z.number().gt(0).lt(1),
   })
-  .meta({ title: 'Packhouse floor balance', description: 'assets/defs/balance/packhouseFloor.json: the size of the Packhouse floor, the cap of the bonus its Line adds by Packhouse Tier, its Exits, Strappers and Scanners.' });
+  .meta({ title: 'Packhouse interior balance', description: 'assets/defs/balance/packhouseInterior.json: the size of the Packhouse interior, the cap of the bonus its Line adds by Packhouse Tier, its Exits, Strappers and Scanners.' });
 
 // How big the interior of a Home is by Tier, how its Comfort is weighed, and the most Well-being it can add by Tier.
 export const homeInteriorBalanceSchema = z

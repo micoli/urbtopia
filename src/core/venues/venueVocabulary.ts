@@ -6,18 +6,18 @@ export const FIXTURE_CATEGORIES_ALL = ['games', 'service', 'furniture', 'shelves
 
 export type FixtureCategory = (typeof FIXTURE_CATEGORIES_ALL)[number];
 
-// The sections of the build menu of a Factory floor, in order.
+// The sections of the build menu of a Factory interior, in order.
 export const FACTORY_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'plumbing', 'machines', 'walls'];
 
-// The sections of the build menu of a Packhouse floor, in order.
+// The sections of the build menu of a Packhouse interior, in order.
 export const PACKHOUSE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'machines', 'line', 'walls'];
 
-// The sides of a Factory floor Fixture, seen from the Fixture itself: its front is the side its model faces.
+// The sides of a Factory interior Fixture, seen from the Fixture itself: its front is the side its model faces.
 export const FIXTURE_SIDES = ['front', 'right', 'back', 'left'] as const;
 
 export type FixtureSide = (typeof FIXTURE_SIDES)[number];
 
-// A Conveyor, a Scanner and an Exit belong to the Line of a Packhouse floor.
+// A Conveyor, a Scanner and an Exit belong to the Line of a Packhouse interior.
 export const FACTORY_FIXTURE_ROLES = ['motor', 'gear', 'shaft', 'bevel', 'pump', 'tank', 'pipe', 'machine', 'conveyor', 'scanner', 'exit'] as const;
 
 // The sizes of packed Goods an Exit serves.

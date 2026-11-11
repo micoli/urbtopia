@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type Rotation, type VenueFixture } from '../index';
 import { productionDurationOf } from '../economy/production';
-import { floorBonusOfBuilding, floorLinksOf, floorMotionOf, floorPowerOfBuilding, floorUsageWeightsOf, lineFaultOf, linePathsOf, linkedExitsOf, packhouseBonusOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factoryFloor';
-import { wallFacingOf } from './floorCommands';
+import { interiorBonusOfBuilding, interiorLinksOf, interiorMotionOf, interiorPowerOfBuilding, interiorUsageWeightsOf, lineFaultOf, linePathsOf, linkedExitsOf, packhouseBonusOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factoryInterior';
+import { wallFacingOf } from './interiorCommands';
 import { economicPower } from '../environment/ecology';
-import packhouseBalance from '../../../assets/defs/balance/packhouseFloor.json' with { type: 'json' };
+import packhouseBalance from '../../../assets/defs/balance/packhouseInterior.json' with { type: 'json' };
 
 let nextId = 1;
 const put = (type: FixtureId, x: number, y: number, rotation: Rotation = 0, broken = false): VenueFixture => ({ id: nextId++, type, x, y, rotation, ...(broken ? { broken: true as const } : {}) });
@@ -17,9 +17,9 @@ const simpleLine = (size: 'Crate' | 'Box' | 'Pallet' = 'Crate', extra: VenueFixt
   put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), ...extra, put(`packhouseExit${size}`, 2, 3, 2),
 ];
 const withMiddle = (middle: VenueFixture[], size: 'Crate' | 'Box' | 'Pallet' = 'Crate'): VenueFixture[] => [put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), ...middle, put(`packhouseExit${size}`, 2, 4, 2)];
-const lined = (fixtures: VenueFixture[]): string[] => fixtures.filter(fixture => floorLinksOf(fixtures).lined.has(fixture.id)).map(fixture => fixture.type);
+const lined = (fixtures: VenueFixture[]): string[] => fixtures.filter(fixture => interiorLinksOf(fixtures).lined.has(fixture.id)).map(fixture => fixture.type);
 
-describe('the Line of a Packhouse floor', () => {
+describe('the Line of a Packhouse interior', () => {
   it('carries Packets from a Packer whose Drive is linked to an Exit', () => {
     const fixtures = [...simpleLine(), put('packhouseConveyor', 2, 2)];
     expect(lined(fixtures).sort()).toEqual(['packhouseConveyor', 'packhouseConveyor', 'packhouseExitCrate', 'packhousePacker']);
@@ -27,39 +27,39 @@ describe('the Line of a Packhouse floor', () => {
 
   it('starts nothing when the Packer has no Drive', () => {
     const fixtures = [put('packhousePacker', 2, 0), put('packhouseConveyor', 2, 1), put('packhouseConveyor', 2, 2), put('packhouseExitCrate', 2, 3, 2)];
-    expect(floorLinksOf(fixtures).lined.size).toBe(0);
+    expect(interiorLinksOf(fixtures).lined.size).toBe(0);
   });
 
   it('stops at a gap, at a Conveyor turned the wrong way and at a broken Fixture', () => {
     const gap = [put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), put('packhouseExitCrate', 2, 3, 2)];
-    expect(floorLinksOf(gap).lined.size).toBe(0);
+    expect(interiorLinksOf(gap).lined.size).toBe(0);
     const wrongWay = [put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), put('packhouseConveyor', 2, 2, 2), put('packhouseExitCrate', 2, 3, 2)];
-    expect(floorLinksOf(wrongWay).lined.size).toBe(0);
+    expect(interiorLinksOf(wrongWay).lined.size).toBe(0);
     const broken = [put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), put('packhouseConveyor', 2, 2, 0, true), put('packhouseExitCrate', 2, 3, 2)];
-    expect(floorLinksOf(broken).lined.size).toBe(0);
+    expect(interiorLinksOf(broken).lined.size).toBe(0);
   });
 
   it('turns a corner with an elbow, to the left or to the right of the Packets', () => {
     const left = [put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), put('packhouseConveyorElbowLeft', 2, 2), put('packhouseExitCrate', 3, 2, 1)];
-    expect(floorLinksOf(left).lined.size).toBe(4);
+    expect(interiorLinksOf(left).lined.size).toBe(4);
     const right = [put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), put('packhouseConveyorElbowRight', 2, 2), put('packhouseExitCrate', 1, 2, 3)];
-    expect(floorLinksOf(right).lined.size).toBe(4);
+    expect(interiorLinksOf(right).lined.size).toBe(4);
     const wrongSide = [put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), put('packhouseConveyorElbowRight', 2, 2), put('packhouseExitCrate', 3, 2, 1)];
-    expect(floorLinksOf(wrongSide).lined.size).toBe(0);
+    expect(interiorLinksOf(wrongSide).lined.size).toBe(0);
   });
 
   it('merges two entries of a T into one exit, and a T fed from its back takes nothing', () => {
     const merged = [put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), put('packhouseConveyorElbowLeft', 2, 2), put('packhouseConveyorTee', 3, 2, 0), put('packhouseExitCrate', 3, 3, 2)];
-    expect(floorLinksOf(merged).lined.size).toBe(5);
+    expect(interiorLinksOf(merged).lined.size).toBe(5);
     const fromBack = [put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), put('packhouseConveyorTee', 2, 2), put('packhouseExitCrate', 2, 3, 2)];
-    expect(floorLinksOf(fromBack).lined.size).toBe(0);
+    expect(interiorLinksOf(fromBack).lined.size).toBe(0);
   });
 
   it('passes a Scanner, but not a Strapper that has no Drive', () => {
     const scanned = withMiddle([put('packhouseScanner', 2, 2), put('packhouseConveyor', 2, 3)]);
     expect(lined(scanned)).toContain('packhouseScanner');
     const undriven = withMiddle([put('packhouseStrapper', 2, 2), put('packhouseConveyor', 2, 3)]);
-    expect(floorLinksOf(undriven).lined.size).toBe(0);
+    expect(interiorLinksOf(undriven).lined.size).toBe(0);
   });
 
   it('passes a Strapper once the Drive reaches it, and adds its speed and yield to the Packer', () => {
@@ -74,7 +74,7 @@ describe('the Line of a Packhouse floor', () => {
     const fixtures = withMiddle([put('packhouseStrapperLeft', 2, 2), ...leftDriven, put('packhouseConveyor', 2, 3)]);
     expect(lined(fixtures)).toContain('packhouseStrapperLeft');
     const fromTheRight = withMiddle([put('packhouseStrapperLeft', 2, 2), ...driven(2, 2), put('packhouseConveyor', 2, 3)]);
-    expect(floorLinksOf(fromTheRight).lined.size).toBe(0);
+    expect(interiorLinksOf(fromTheRight).lined.size).toBe(0);
   });
 
   it('adds a little yield for each Strapper beyond the first', () => {
@@ -121,9 +121,9 @@ describe('why a Line carries no Packets', () => {
 describe('a left-handed Packer', () => {
   it('takes its Drive on the left and starts a Line like the other one', () => {
     const fixtures = [put('packhousePackerLeft', 4, 0), put('packhouseShaft', 3, 0, 1), put('packhouseMotor', 2, 0, 3), put('packhouseConveyor', 4, 1), put('packhouseConveyor', 4, 2), put('packhouseExitCrate', 4, 3, 2)];
-    expect(floorLinksOf(fixtures).lined.size).toBe(4);
+    expect(interiorLinksOf(fixtures).lined.size).toBe(4);
     const fromTheRight = [put('packhousePackerLeft', 4, 0), ...driven(4, 0), put('packhouseConveyor', 4, 1), put('packhouseConveyor', 4, 2), put('packhouseExitCrate', 4, 3, 2)];
-    expect(floorLinksOf(fromTheRight).lined.size).toBe(0);
+    expect(interiorLinksOf(fromTheRight).lined.size).toBe(0);
   });
 
   it('stands against the back wall only, as the other one does', () => {
@@ -185,12 +185,12 @@ describe('the Packets of a Line', () => {
 
   it('make a Scanner and the Fixtures of a Line run, so that they move', () => {
     const fixtures = withMiddle([put('packhouseScanner', 2, 2), put('packhouseConveyor', 2, 3)]);
-    const motion = floorMotionOf(fixtures);
-    for (const fixture of fixtures.filter(fixture => floorLinksOf(fixtures).lined.has(fixture.id))) expect(motion.has(fixture.id)).toBe(true);
+    const motion = interiorMotionOf(fixtures);
+    for (const fixture of fixtures.filter(fixture => interiorLinksOf(fixtures).lined.has(fixture.id))) expect(motion.has(fixture.id)).toBe(true);
   });
 });
 
-describe('the bonus of a Packhouse floor', () => {
+describe('the bonus of a Packhouse interior', () => {
   it('counts only for the sizes of an Exit that is linked', () => {
     const fixtures = simpleLine('Crate', [put('packhouseConveyor', 2, 2)]);
     expect(packhouseBonusOf(fixtures, 5, 'Crate').speed).toBeGreaterThan(0);
@@ -219,10 +219,10 @@ describe('the bonus of a Packhouse floor', () => {
   });
 
   it('is told per Slot by the building: a Packhouse packs Crates faster than Boxes when only a Crate Exit is linked', () => {
-    const building: Building = { ...createBuilding(1, 'packhouse', 50, 50, 0), tier: 3, floor: { fixtures: simpleLine('Crate', [put('packhouseConveyor', 2, 2)]), nextFixtureId: 100 } };
-    const bare: Building = { ...building, floor: undefined };
-    expect(floorBonusOfBuilding(building, 'wheatCrate').speed).toBeGreaterThan(0);
-    expect(floorBonusOfBuilding(building, 'wheatBox').speed).toBe(0);
+    const building: Building = { ...createBuilding(1, 'packhouse', 50, 50, 0), tier: 3, interior: { fixtures: simpleLine('Crate', [put('packhouseConveyor', 2, 2)]), nextFixtureId: 100 } };
+    const bare: Building = { ...building, interior: undefined };
+    expect(interiorBonusOfBuilding(building, 'wheatCrate').speed).toBeGreaterThan(0);
+    expect(interiorBonusOfBuilding(building, 'wheatBox').speed).toBe(0);
     expect(productionDurationOf(building, 'wheatCrate')).toBeLessThan(productionDurationOf(bare, 'wheatCrate'));
     expect(productionDurationOf(building, 'wheatBox')).toBe(productionDurationOf(bare, 'wheatBox'));
   });
@@ -233,48 +233,48 @@ describe('what is worked out about a floor', () => {
 
   it('is worked out once for a list, and once for a layout however the Condition of the Fixtures wears', () => {
     const fixtures = line();
-    expect(floorLinksOf(fixtures)).toBe(floorLinksOf(fixtures));
+    expect(interiorLinksOf(fixtures)).toBe(interiorLinksOf(fixtures));
     expect(linePathsOf(fixtures)).toBe(linePathsOf(fixtures));
     const worn = fixtures.map(fixture => ({ ...fixture, condition: 80 }));
     expect(worn).not.toBe(fixtures);
-    expect(floorLinksOf(worn)).toBe(floorLinksOf(fixtures));
+    expect(interiorLinksOf(worn)).toBe(interiorLinksOf(fixtures));
     expect(linePathsOf(worn)).toBe(linePathsOf(fixtures));
     expect(linkedExitsOf(worn)).toBe(linkedExitsOf(fixtures));
-    expect(floorMotionOf(worn)).toBe(floorMotionOf(fixtures));
+    expect(interiorMotionOf(worn)).toBe(interiorMotionOf(fixtures));
   });
 
   it('is worked out again when a Fixture breaks, moves or turns', () => {
     const fixtures = line();
     const broken = fixtures.map(fixture => (fixture.type === 'packhouseConveyor' ? { ...fixture, broken: true as const } : fixture));
-    expect(floorLinksOf(broken)).not.toBe(floorLinksOf(fixtures));
-    expect(floorLinksOf(broken).lined.size).toBeLessThan(floorLinksOf(fixtures).lined.size);
+    expect(interiorLinksOf(broken)).not.toBe(interiorLinksOf(fixtures));
+    expect(interiorLinksOf(broken).lined.size).toBeLessThan(interiorLinksOf(fixtures).lined.size);
     const turned = fixtures.map(fixture => (fixture.type === 'packhouseExitCrate' ? { ...fixture, rotation: 0 as const } : fixture));
     expect(linePathsOf(turned)).not.toBe(linePathsOf(fixtures));
   });
 });
 
-describe('the power of a Packhouse floor', () => {
+describe('the power of a Packhouse interior', () => {
   it('is what its Motors ask, and nothing for a Packhouse with no Motor', () => {
     const bare: Building = { ...createBuilding(1, 'packhouse', 50, 50, 0), tier: 3 };
     expect(economicPower(bare)).toBe(0);
-    const motored: Building = { ...bare, floor: { fixtures: simpleLine('Crate', [put('packhouseConveyor', 2, 2)]), nextFixtureId: 100 } };
-    expect(floorPowerOfBuilding(motored)).toBeGreaterThan(0);
-    expect(economicPower(motored)).toBe(floorPowerOfBuilding(motored));
-    const unmotored: Building = { ...bare, floor: { fixtures: [put('packhouseConveyor', 2, 2)], nextFixtureId: 100 } };
+    const motored: Building = { ...bare, interior: { fixtures: simpleLine('Crate', [put('packhouseConveyor', 2, 2)]), nextFixtureId: 100 } };
+    expect(interiorPowerOfBuilding(motored)).toBeGreaterThan(0);
+    expect(economicPower(motored)).toBe(interiorPowerOfBuilding(motored));
+    const unmotored: Building = { ...bare, interior: { fixtures: [put('packhouseConveyor', 2, 2)], nextFixtureId: 100 } };
     expect(economicPower(unmotored)).toBe(0);
   });
 
   it('is asked even when no Exit is linked, since the Motors turn all the same', () => {
-    const building: Building = { ...createBuilding(1, 'packhouse', 50, 50, 0), tier: 3, floor: { fixtures: [put('packhouseMotor', 2, 2)], nextFixtureId: 100 } };
-    expect(floorPowerOfBuilding(building)).toBeGreaterThan(0);
-    expect(floorBonusOfBuilding(building, 'wheatCrate').speed).toBe(0);
+    const building: Building = { ...createBuilding(1, 'packhouse', 50, 50, 0), tier: 3, interior: { fixtures: [put('packhouseMotor', 2, 2)], nextFixtureId: 100 } };
+    expect(interiorPowerOfBuilding(building)).toBeGreaterThan(0);
+    expect(interiorBonusOfBuilding(building, 'wheatCrate').speed).toBe(0);
   });
 });
 
-describe('the wear of a Packhouse floor', () => {
+describe('the wear of a Packhouse interior', () => {
   it('makes what lies downstream of a Scanner wear by a share of the rest', () => {
     const fixtures = withMiddle([put('packhouseScanner', 2, 2), put('packhouseConveyor', 2, 3)]);
-    const weights = floorUsageWeightsOf(fixtures);
+    const weights = interiorUsageWeightsOf(fixtures);
     const weightOf = (type: FixtureId) => weights.get(fixtures.find(fixture => fixture.type === type)!.id);
     expect(weightOf('packhousePacker')).toBe(1);
     expect(weightOf('packhouseExitCrate')).toBe(packhouseBalance.scannerWearFactor);
@@ -297,11 +297,11 @@ const failure = (state: GameState, command: Command) => {
   const result = dispatch(state, command, 0);
   return result.ok ? null : result.error.key;
 };
-const place = (fixture: FixtureId, x: number, y: number, rotation: Rotation = 0): Command => ({ type: 'PlaceFloorFixture', buildingId: 1, fixture, x, y, rotation });
+const place = (fixture: FixtureId, x: number, y: number, rotation: Rotation = 0): Command => ({ type: 'PlaceInteriorFixture', buildingId: 1, fixture, x, y, rotation });
 
-describe('placing Fixtures on a Packhouse floor', () => {
-  it('takes Fixtures of its own, and none of a Factory floor', () => {
-    expect(send(city(), place('packhouseMotor', 2, 2)).buildings[0]!.floor?.fixtures).toHaveLength(1);
+describe('placing Fixtures on a Packhouse interior', () => {
+  it('takes Fixtures of its own, and none of a Factory interior', () => {
+    expect(send(city(), place('packhouseMotor', 2, 2)).buildings[0]!.interior?.fixtures).toHaveLength(1);
     expect(failure(city(), place('factoryMotor', 2, 2))).toBe('error.unknownCommand');
   });
 
@@ -347,8 +347,8 @@ describe('placing Fixtures on a Packhouse floor', () => {
     expect(failure(city(2), place('packhouseScanner', 2, 2))).toBe('error.tierTooLow');
   });
 
-  it('hires a Technician like a Factory floor does', () => {
-    expect(failure(city(3), { type: 'HireFloorTechnician', buildingId: 1 })).toBeNull();
-    expect(failure(city(1), { type: 'HireFloorTechnician', buildingId: 1 })).toBe('error.tierTooLow');
+  it('hires a Technician like a Factory interior does', () => {
+    expect(failure(city(3), { type: 'HireInteriorTechnician', buildingId: 1 })).toBeNull();
+    expect(failure(city(1), { type: 'HireInteriorTechnician', buildingId: 1 })).toBe('error.tierTooLow');
   });
 });

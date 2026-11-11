@@ -24,7 +24,7 @@ export function StorageRules({ state }: StorageRulesProps) {
       <p>{t('codex.storage.intro')}</p>
       <ul>
         <li>{t('codex.storage.farm').replace('{capacity}', String(FARM_CROP_CAPACITY))}</li>
-        <li>{t('codex.storage.floor')}</li>
+        <li>{t('codex.storage.interior')}</li>
         <li>{t('codex.storage.limit')}</li>
       </ul>
       <h4>{t('codex.storage.city')}</h4>

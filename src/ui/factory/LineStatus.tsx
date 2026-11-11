@@ -15,8 +15,8 @@ export function LineStatus({ lined, fixture, fixtures }: LineStatusProps) {
   const named = fault && 'fixture' in fault ? fault.fixture : fault?.of;
   return (
     <>
-      {size && <p className="note">{t('packhouse.floor.exitSize').replace('{size}', t(`packhouse.floor.size.${size}`))}</p>}
-      {fault && named ? <p className="note note--warn">{t(`packhouse.floor.fault.${fault.kind}`).replace('{name}', t(`venue.fixture.${named.type}`))}</p> : <p className={lined ? 'note' : 'note note--warn'}>{t(lined ? 'packhouse.floor.lined' : 'packhouse.floor.idle')}</p>}
+      {size && <p className="note">{t('packhouse.interior.exitSize').replace('{size}', t(`packhouse.interior.size.${size}`))}</p>}
+      {fault && named ? <p className="note note--warn">{t(`packhouse.interior.fault.${fault.kind}`).replace('{name}', t(`venue.fixture.${named.type}`))}</p> : <p className={lined ? 'note' : 'note note--warn'}>{t(lined ? 'packhouse.interior.lined' : 'packhouse.interior.idle')}</p>}
     </>
   );
 }

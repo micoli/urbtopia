@@ -12,7 +12,7 @@ export const staffRolesOf = (venue: VenueType): readonly StaffRole[] => STAFF_RO
 // The role that serves the front desk of each kind of Venue.
 export const FRONT_ROLE = Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).frontRole!])) as Record<VenueType, StaffRole>;
 
-// The Restocker of a Packhouse floor is paid like Staff but belongs to no Venue.
+// The Restocker of a Packhouse interior is paid like Staff but belongs to no Venue.
 export type WagedRole = StaffRole | 'restocker';
 
 export const STAFF = venues.staff as Omit<typeof venues.staff, 'dailyWage'> & { dailyWage: Record<WagedRole, number> };

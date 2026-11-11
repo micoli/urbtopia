@@ -39,9 +39,9 @@ type VenueMessageKey =
   | 'codex.fact.posts'
   | 'codex.fact.takingsCap'
   | 'codex.fact.fixtures'
-  | 'codex.fact.floorGrid'
-  | 'codex.fact.floorSpeedCap'
-  | 'codex.fact.floorYieldCap'
+  | 'codex.fact.interiorGrid'
+  | 'codex.fact.interiorSpeedCap'
+  | 'codex.fact.interiorYieldCap'
   | 'codex.fact.technicianPosts'
   | 'error.invalidEventStart'
   | 'error.eventBusy'
@@ -91,44 +91,44 @@ type VenueMessageKey =
   | 'home.interior.comfort'
   | 'home.interior.wellbeing'
   | 'home.interior.wellbeingShort'
-  | 'factory.floor.open'
-  | 'factory.floor.linked'
-  | 'factory.floor.speed'
-  | 'factory.floor.yield'
-  | 'factory.floor.power'
-  | 'factory.floor.motorLoad'
-  | 'factory.floor.benefit.own'
-  | 'factory.floor.benefit.cooled'
-  | 'factory.floor.benefit.vat'
-  | 'factory.floor.benefit.vatIdle'
-  | 'factory.floor.benefit.doubled'
-  | 'factory.floor.benefit.boiler'
-  | 'factory.floor.benefit.boilerIdle'
-  | 'factory.floor.benefit.boilerPower'
-  | 'factory.floor.benefit.motorCooled'
-  | 'factory.floor.benefit.motorIdle'
-  | 'factory.floor.benefit.variety'
-  | 'factory.floor.hint'
-  | 'factory.floor.optional'
-  | 'factory.floor.linkedMachine'
-  | 'packhouse.floor.lined'
-  | 'packhouse.floor.idle'
-  | 'packhouse.floor.fault.broken'
-  | 'packhouse.floor.fault.noDrive'
-  | 'packhouse.floor.fault.misfacing'
-  | 'packhouse.floor.fault.deadEnd'
-  | 'packhouse.floor.noExit'
-  | 'packhouse.floor.exitSize'
-  | 'packhouse.floor.size.Crate'
-  | 'packhouse.floor.size.Box'
-  | 'packhouse.floor.size.Pallet'
-  | 'factory.floor.problem.noDrive'
-  | 'factory.floor.problem.wrongTurn'
-  | 'factory.floor.problem.jammed'
-  | 'factory.floor.problem.noFlow'
-  | 'factory.floor.problem.overloaded'
-  | 'factory.floor.problem.tankFull'
-  | 'factory.floor.motorOverloaded'
+  | 'factory.interior.open'
+  | 'factory.interior.linked'
+  | 'factory.interior.speed'
+  | 'factory.interior.yield'
+  | 'factory.interior.power'
+  | 'factory.interior.motorLoad'
+  | 'factory.interior.benefit.own'
+  | 'factory.interior.benefit.cooled'
+  | 'factory.interior.benefit.vat'
+  | 'factory.interior.benefit.vatIdle'
+  | 'factory.interior.benefit.doubled'
+  | 'factory.interior.benefit.boiler'
+  | 'factory.interior.benefit.boilerIdle'
+  | 'factory.interior.benefit.boilerPower'
+  | 'factory.interior.benefit.motorCooled'
+  | 'factory.interior.benefit.motorIdle'
+  | 'factory.interior.benefit.variety'
+  | 'factory.interior.hint'
+  | 'factory.interior.optional'
+  | 'factory.interior.linkedMachine'
+  | 'packhouse.interior.lined'
+  | 'packhouse.interior.idle'
+  | 'packhouse.interior.fault.broken'
+  | 'packhouse.interior.fault.noDrive'
+  | 'packhouse.interior.fault.misfacing'
+  | 'packhouse.interior.fault.deadEnd'
+  | 'packhouse.interior.noExit'
+  | 'packhouse.interior.exitSize'
+  | 'packhouse.interior.size.Crate'
+  | 'packhouse.interior.size.Box'
+  | 'packhouse.interior.size.Pallet'
+  | 'factory.interior.problem.noDrive'
+  | 'factory.interior.problem.wrongTurn'
+  | 'factory.interior.problem.jammed'
+  | 'factory.interior.problem.noFlow'
+  | 'factory.interior.problem.overloaded'
+  | 'factory.interior.problem.tankFull'
+  | 'factory.interior.motorOverloaded'
   | 'venue.cancel'
   | 'venue.menu.back'
   | 'venue.fixture.panel'
@@ -283,7 +283,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.eventNeedsRank': ['Events open at Rank 2: keep trading to earn it.', 'Les événements s’ouvrent au rang 2 : continuez d’exploiter pour l’atteindre.'],
   'venue.hireFee': ['Hiring fee', 'Frais d’embauche'],
   'error.noStaffPost': ['All the posts of this role are filled.', 'Tous les postes de ce rôle sont pourvus.'],
-  'error.exitLimitReached': ['This floor has all the Exits of this size its Tier allows.', 'Cet étage a toutes les sorties de ce format que son niveau permet.'],
+  'error.exitLimitReached': ['This interior has all the Exits of this size its Tier allows.', 'Cet intérieur a toutes les sorties de ce format que son niveau permet.'],
   'error.wrongPackSize': ['This Good is not packed in the size of this Exit.', 'Ce produit n’est pas emballé au format de cette sortie.'],
   'error.notAnExit': ['This Fixture is not an Exit.', 'Cet équipement n’est pas une sortie.'],
   'error.noRestock': ['Choose a Restock for this Exit first.', 'Choisissez d’abord un réassort pour cette sortie.'],
@@ -294,9 +294,9 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'codex.fact.grid': ['Interior', 'Intérieur'],
   'codex.fact.posts': ['Staff posts', 'Postes de personnel'],
   'codex.fact.takingsCap': ['Takings cap', 'Plafond des recettes'],
-  'codex.fact.floorGrid': ['Factory floor', 'Atelier'],
-  'codex.fact.floorSpeedCap': ['Floor speed bonus, up to', 'Bonus de vitesse de l’atelier, jusqu’à'],
-  'codex.fact.floorYieldCap': ['Floor yield bonus, up to', 'Bonus de rendement de l’atelier, jusqu’à'],
+  'codex.fact.interiorGrid': ['Factory interior', 'Atelier'],
+  'codex.fact.interiorSpeedCap': ['Interior speed bonus, up to', 'Bonus de vitesse de l’intérieur, jusqu’à'],
+  'codex.fact.interiorYieldCap': ['Interior yield bonus, up to', 'Bonus de rendement de l’intérieur, jusqu’à'],
   'codex.fact.technicianPosts': ['Technician posts', 'Postes de technicien'],
   'codex.fact.fixtures': ['Fixtures available', 'Équipements disponibles'],
   'error.invalidEventStart': ['This start time is not allowed.', 'Cette heure de début n’est pas autorisée.'],
@@ -370,44 +370,44 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'home.interior.comfort': ['Comfort', 'Confort'],
   'home.interior.wellbeing': ['Well-being', 'Bien-être'],
   'home.interior.wellbeingShort': ['Well-being', 'bien-être'],
-  'factory.floor.open': ['Open the Factory floor', "Ouvrir l'atelier de l'usine"],
-  'factory.floor.linked': ['Machines linked', 'Machines reliées'],
-  'factory.floor.speed': ['Speed', 'Vitesse'],
-  'factory.floor.yield': ['Yield', 'Rendement'],
-  'factory.floor.problem.tankFull': ['Its Tank already feeds three Cooling vats: add a Tank, or take a vat off this one.', 'Son réservoir alimente déjà trois cuves réfrigérantes : ajoutez un réservoir, ou retirez une cuve de celui-ci.'],
-  'factory.floor.problem.overloaded': ['Its Motor drives too many Machines and Pumps, so it is stopped: add a Motor or take one off.', 'Son moteur entraîne trop de machines et de pompes, elle est donc arrêtée : ajoutez un moteur ou retirez-en une.'],
-  'factory.floor.motorOverloaded': ['{count} stopped: the Motor cannot drive them.', '{count} à l’arrêt : le moteur ne peut pas les entraîner.'],
-  'factory.floor.benefit.own': ['Brings to the Factory: {bonus}.', 'Apporte à l’usine : {bonus}.'],
-  'factory.floor.benefit.cooled': ['Cooled: its Motor stands beside a Cooling vat, which adds {share} to its bonus.', 'Refroidie : son moteur est à côté d’une cuve réfrigérante, qui ajoute {share} à son bonus.'],
-  'factory.floor.benefit.vat': ['Cools {motors} Motor(s) beside it: {share} more speed and yield on the {machines} Machine(s) they drive.', 'Refroidit {motors} moteur(s) voisin(s) : {share} de vitesse et de rendement en plus sur les {machines} machine(s) qu’ils entraînent.'],
-  'factory.floor.benefit.vatIdle': ['No Motor beside it: put it next to a Motor to cool the Machines it drives.', 'Aucun moteur à côté : placez-la contre un moteur pour refroidir les machines qu’il entraîne.'],
-  'factory.floor.benefit.doubled': ['Doubled by the Boiler on its circuit of Flow.', 'Doublée par la chaudière de son circuit de fluide.'],
-  'factory.floor.benefit.boiler': ['Doubles the cooling of {count} Cooling vat(s) on its circuit of Flow.', 'Double le refroidissement de {count} cuve(s) réfrigérante(s) de son circuit de fluide.'],
-  'factory.floor.benefit.boilerPower': ['Its steam saves {share} of the Motors’ electricity.', 'Sa vapeur économise {share} de l’électricité des moteurs.'],
-  'factory.floor.benefit.boilerIdle': ['Put a Cooling vat on its circuit of Flow to double its cooling.', 'Placez une cuve réfrigérante sur son circuit de fluide pour doubler son refroidissement.'],
-  'factory.floor.benefit.motorCooled': ['Cooled by the Cooling vat beside it: {share} more speed and yield on the {machines} Machine(s) it drives.', 'Refroidi par la cuve réfrigérante voisine : {share} de vitesse et de rendement en plus sur les {machines} machine(s) qu’il entraîne.'],
-  'factory.floor.benefit.motorIdle': ['A Cooling vat beside it would add to the speed and the yield of the Machines it drives.', 'Une cuve réfrigérante à côté ajouterait de la vitesse et du rendement aux machines qu’il entraîne.'],
-  'factory.floor.benefit.variety': ['The kinds of Machine that run add {share} yield to the Factory.', 'La variété des machines qui tournent ajoute {share} de rendement à l’usine.'],
-  'factory.floor.motorLoad': ['Machines driven: {driven} / {capacity}', 'Machines entraînées : {driven} / {capacity}'],
-  'factory.floor.power': ['Power drawn by the Motors', 'Électricité des moteurs'],
-  'factory.floor.hint': ['Link each Machine to a Motor through Shafts and Gears, or to a Tank through Pipes and a Pump that a Motor drives. Linked Machines speed the Factory up and raise its yield.', 'Reliez chaque machine à un moteur par des arbres et des engrenages, ou à un réservoir par des tuyaux et une pompe entraînée par un moteur. Les machines reliées accélèrent l’usine et augmentent son rendement.'],
-  'factory.floor.linkedMachine': ['Linked: it adds its bonus.', 'Reliée : elle apporte son bonus.'],
-  'packhouse.floor.lined': ['On a Line that reaches an Exit.', 'Sur une ligne qui atteint une sortie.'],
-  'packhouse.floor.idle': ['Carries no Packets: no Packer with Drive sends any here, or this does not lead to an Exit.', 'Ne porte aucun paquet : aucune emballeuse alimentée n’en envoie ici, ou cela ne mène pas à une sortie.'],
-  'packhouse.floor.fault.broken': ['The Line is cut: {name} is broken (marked on the floor). Repair it.', 'La ligne est coupée : {name} est en panne (marqué au sol). Réparez-le.'],
-  'packhouse.floor.fault.noDrive': ['{name} gets no Drive (marked on the floor): its input must face a Shaft or a Gear that a Motor turns.', '{name} ne reçoit aucune force (marqué au sol) : son entrée doit faire face à un arbre ou un engrenage que tourne un moteur.'],
-  'packhouse.floor.fault.misfacing': ['{name} next to it (marked on the floor) does not carry Packets toward it: turn it or replace it.', '{name} à côté (marqué au sol) ne porte pas les paquets vers lui : pivotez-le ou remplacez-le.'],
-  'packhouse.floor.fault.deadEnd': ['Nothing brings Packets to {name}: the cell in front of its entry (marked on the floor) is empty, lay a Conveyor there that carries toward it.', 'Rien n’apporte de paquets à {name} : la case devant son entrée (marquée au sol) est vide, posez-y un tapis qui porte vers lui.'],
-  'packhouse.floor.noExit': ['Its Packets reach no Exit: it adds no bonus.', 'Ses paquets n’atteignent aucune sortie : elle n’apporte aucun bonus.'],
-  'packhouse.floor.exitSize': ['Serves {size} of packed Goods.', 'Dessert les {size} de produits emballés.'],
-  'packhouse.floor.size.Crate': ['crates', 'caisses'],
-  'packhouse.floor.size.Box': ['boxes', 'cartons'],
-  'packhouse.floor.size.Pallet': ['pallets', 'palettes'],
-  'factory.floor.problem.noDrive': ['No Drive reaches it: feed it from a Motor through Shafts and Gears, the input facing the line.', 'Aucune force ne l’atteint : alimentez-la depuis un moteur par des arbres et des engrenages, son entrée face à la ligne.'],
-  'factory.floor.problem.wrongTurn': ['Its Drive turns the wrong way: add or remove a Gear meshed on the rim.', 'Sa force tourne dans le mauvais sens : ajoutez ou retirez un engrenage engrené par la jante.'],
-  'factory.floor.problem.jammed': ['Its Gears are jammed: they are fed in two opposite directions.', 'Ses engrenages sont bloqués : ils sont alimentés dans deux sens opposés.'],
-  'factory.floor.problem.noFlow': ['No Flow reaches it: a Tank gives Flow only through a Pump that is handed Drive, then Pipes joined end to end, its inlet facing the line.', 'Aucun fluide ne l’atteint : un réservoir n’en donne que par une pompe alimentée en force, puis des tuyaux bout à bout, son entrée face à la ligne.'],
-  'factory.floor.optional': ['The Factory works without a floor; the Machines only add a bonus, capped by its Tier.', "L'usine fonctionne sans atelier ; les machines ajoutent seulement un bonus, plafonné par son niveau."],
+  'factory.interior.open': ['Open the Factory interior', "Ouvrir l'atelier de l'usine"],
+  'factory.interior.linked': ['Machines linked', 'Machines reliées'],
+  'factory.interior.speed': ['Speed', 'Vitesse'],
+  'factory.interior.yield': ['Yield', 'Rendement'],
+  'factory.interior.problem.tankFull': ['Its Tank already feeds three Cooling vats: add a Tank, or take a vat off this one.', 'Son réservoir alimente déjà trois cuves réfrigérantes : ajoutez un réservoir, ou retirez une cuve de celui-ci.'],
+  'factory.interior.problem.overloaded': ['Its Motor drives too many Machines and Pumps, so it is stopped: add a Motor or take one off.', 'Son moteur entraîne trop de machines et de pompes, elle est donc arrêtée : ajoutez un moteur ou retirez-en une.'],
+  'factory.interior.motorOverloaded': ['{count} stopped: the Motor cannot drive them.', '{count} à l’arrêt : le moteur ne peut pas les entraîner.'],
+  'factory.interior.benefit.own': ['Brings to the Factory: {bonus}.', 'Apporte à l’usine : {bonus}.'],
+  'factory.interior.benefit.cooled': ['Cooled: its Motor stands beside a Cooling vat, which adds {share} to its bonus.', 'Refroidie : son moteur est à côté d’une cuve réfrigérante, qui ajoute {share} à son bonus.'],
+  'factory.interior.benefit.vat': ['Cools {motors} Motor(s) beside it: {share} more speed and yield on the {machines} Machine(s) they drive.', 'Refroidit {motors} moteur(s) voisin(s) : {share} de vitesse et de rendement en plus sur les {machines} machine(s) qu’ils entraînent.'],
+  'factory.interior.benefit.vatIdle': ['No Motor beside it: put it next to a Motor to cool the Machines it drives.', 'Aucun moteur à côté : placez-la contre un moteur pour refroidir les machines qu’il entraîne.'],
+  'factory.interior.benefit.doubled': ['Doubled by the Boiler on its circuit of Flow.', 'Doublée par la chaudière de son circuit de fluide.'],
+  'factory.interior.benefit.boiler': ['Doubles the cooling of {count} Cooling vat(s) on its circuit of Flow.', 'Double le refroidissement de {count} cuve(s) réfrigérante(s) de son circuit de fluide.'],
+  'factory.interior.benefit.boilerPower': ['Its steam saves {share} of the Motors’ electricity.', 'Sa vapeur économise {share} de l’électricité des moteurs.'],
+  'factory.interior.benefit.boilerIdle': ['Put a Cooling vat on its circuit of Flow to double its cooling.', 'Placez une cuve réfrigérante sur son circuit de fluide pour doubler son refroidissement.'],
+  'factory.interior.benefit.motorCooled': ['Cooled by the Cooling vat beside it: {share} more speed and yield on the {machines} Machine(s) it drives.', 'Refroidi par la cuve réfrigérante voisine : {share} de vitesse et de rendement en plus sur les {machines} machine(s) qu’il entraîne.'],
+  'factory.interior.benefit.motorIdle': ['A Cooling vat beside it would add to the speed and the yield of the Machines it drives.', 'Une cuve réfrigérante à côté ajouterait de la vitesse et du rendement aux machines qu’il entraîne.'],
+  'factory.interior.benefit.variety': ['The kinds of Machine that run add {share} yield to the Factory.', 'La variété des machines qui tournent ajoute {share} de rendement à l’usine.'],
+  'factory.interior.motorLoad': ['Machines driven: {driven} / {capacity}', 'Machines entraînées : {driven} / {capacity}'],
+  'factory.interior.power': ['Power drawn by the Motors', 'Électricité des moteurs'],
+  'factory.interior.hint': ['Link each Machine to a Motor through Shafts and Gears, or to a Tank through Pipes and a Pump that a Motor drives. Linked Machines speed the Factory up and raise its yield.', 'Reliez chaque machine à un moteur par des arbres et des engrenages, ou à un réservoir par des tuyaux et une pompe entraînée par un moteur. Les machines reliées accélèrent l’usine et augmentent son rendement.'],
+  'factory.interior.linkedMachine': ['Linked: it adds its bonus.', 'Reliée : elle apporte son bonus.'],
+  'packhouse.interior.lined': ['On a Line that reaches an Exit.', 'Sur une ligne qui atteint une sortie.'],
+  'packhouse.interior.idle': ['Carries no Packets: no Packer with Drive sends any here, or this does not lead to an Exit.', 'Ne porte aucun paquet : aucune emballeuse alimentée n’en envoie ici, ou cela ne mène pas à une sortie.'],
+  'packhouse.interior.fault.broken': ['The Line is cut: {name} is broken (marked on the floor). Repair it.', 'La ligne est coupée : {name} est en panne (marqué au sol). Réparez-le.'],
+  'packhouse.interior.fault.noDrive': ['{name} gets no Drive (marked on the floor): its input must face a Shaft or a Gear that a Motor turns.', '{name} ne reçoit aucune force (marqué au sol) : son entrée doit faire face à un arbre ou un engrenage que tourne un moteur.'],
+  'packhouse.interior.fault.misfacing': ['{name} next to it (marked on the floor) does not carry Packets toward it: turn it or replace it.', '{name} à côté (marqué au sol) ne porte pas les paquets vers lui : pivotez-le ou remplacez-le.'],
+  'packhouse.interior.fault.deadEnd': ['Nothing brings Packets to {name}: the cell in front of its entry (marked on the floor) is empty, lay a Conveyor there that carries toward it.', 'Rien n’apporte de paquets à {name} : la case devant son entrée (marquée au sol) est vide, posez-y un tapis qui porte vers lui.'],
+  'packhouse.interior.noExit': ['Its Packets reach no Exit: it adds no bonus.', 'Ses paquets n’atteignent aucune sortie : elle n’apporte aucun bonus.'],
+  'packhouse.interior.exitSize': ['Serves {size} of packed Goods.', 'Dessert les {size} de produits emballés.'],
+  'packhouse.interior.size.Crate': ['crates', 'caisses'],
+  'packhouse.interior.size.Box': ['boxes', 'cartons'],
+  'packhouse.interior.size.Pallet': ['pallets', 'palettes'],
+  'factory.interior.problem.noDrive': ['No Drive reaches it: feed it from a Motor through Shafts and Gears, the input facing the line.', 'Aucune force ne l’atteint : alimentez-la depuis un moteur par des arbres et des engrenages, son entrée face à la ligne.'],
+  'factory.interior.problem.wrongTurn': ['Its Drive turns the wrong way: add or remove a Gear meshed on the rim.', 'Sa force tourne dans le mauvais sens : ajoutez ou retirez un engrenage engrené par la jante.'],
+  'factory.interior.problem.jammed': ['Its Gears are jammed: they are fed in two opposite directions.', 'Ses engrenages sont bloqués : ils sont alimentés dans deux sens opposés.'],
+  'factory.interior.problem.noFlow': ['No Flow reaches it: a Tank gives Flow only through a Pump that is handed Drive, then Pipes joined end to end, its inlet facing the line.', 'Aucun fluide ne l’atteint : un réservoir n’en donne que par une pompe alimentée en force, puis des tuyaux bout à bout, son entrée face à la ligne.'],
+  'factory.interior.optional': ['The Factory works without an interior; the Machines only add a bonus, capped by its Tier.', "L'usine fonctionne sans intérieur ; les machines ajoutent seulement un bonus, plafonné par son niveau."],
   'venue.back': ['Back to the city', 'Retour à la ville'],
   'venue.build': ['Build', 'Construire'],
   'venue.takings': ['Takings', 'Recettes'],

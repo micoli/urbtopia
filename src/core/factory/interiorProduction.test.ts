@@ -13,7 +13,7 @@ const pumped = (x: number, y: number, rotation: 0 | 2 = 0): VenueFixture[] => (r
 const factory = (tier: number, fixtures: VenueFixture[] = []): Building => ({
   ...createBuilding(1, 'factory', 55, 50, 0),
   tier,
-  ...(fixtures.length > 0 ? { floor: { fixtures, nextFixtureId: nextId } } : {}),
+  ...(fixtures.length > 0 ? { interior: { fixtures, nextFixtureId: nextId } } : {}),
 });
 const ITEM = 'planks';
 const pressLine = () => [put('factoryMotor', 2, 2), put('factoryShaft', 2, 3), put('factoryPress', 2, 4, 2)];
@@ -23,7 +23,7 @@ describe('a Factory with a floor', () => {
   it('produces as before with no floor, an empty floor or no linked Machine', () => {
     const base = Math.round(durationOf(ITEM) * productionTierOf(factory(5)).durationFactor);
     expect(productionDurationOf(factory(5), ITEM)).toBe(base);
-    expect(productionDurationOf({ ...factory(5), floor: { fixtures: [], nextFixtureId: 1 } }, ITEM)).toBe(base);
+    expect(productionDurationOf({ ...factory(5), interior: { fixtures: [], nextFixtureId: 1 } }, ITEM)).toBe(base);
     expect(productionDurationOf(factory(5, [put('factoryPress', 2, 4, 2)]), ITEM)).toBe(base);
     expect(newQueueEntry(factory(5), ITEM, 0).entry.quantity).toBe(productionTierOf(factory(5)).yield);
   });
@@ -57,7 +57,7 @@ describe('a Factory with a floor', () => {
     if (!result.ok) throw new Error(result.error.key);
     const queued = result.state.buildings[0]!;
     expect(queued.queue[0]).toMatchObject({ duration: productionDurationOf(building, ITEM) });
-    expect(queued.floor?.carry).toBeGreaterThan(0);
+    expect(queued.interior?.carry).toBeGreaterThan(0);
   });
 
   it('leaves the Factory untouched when no yield is added', () => {

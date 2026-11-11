@@ -61,9 +61,9 @@ interface Smoke {
   origin: THREE.Vector3;
 }
 
-// Moves the parts of the Fixtures of a Factory floor that run: what turns, what slides, and the smoke of a Boiler. A picture only, never saved,
+// Moves the parts of the Fixtures of a Factory interior that run: what turns, what slides, and the smoke of a Boiler. A picture only, never saved,
 // off under reduced motion. Its pace follows the speed bonus of the floor.
-export class FloorMotionLayer {
+export class InteriorMotionLayer {
   private spinners: Spinner[] = [];
   private sliders: Slider[] = [];
   private smokes: Smoke[] = [];

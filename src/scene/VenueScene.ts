@@ -4,8 +4,8 @@ import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, 
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
-import { FloorLineLayer } from './FloorLineLayer';
-import { FloorMotionLayer, type FixtureMotion } from './FloorMotionLayer';
+import { InteriorLineLayer } from './InteriorLineLayer';
+import { InteriorMotionLayer, type FixtureMotion } from './InteriorMotionLayer';
 import { VenueCrowdLayer } from './VenueCrowdLayer';
 import { ShelfStockLayer } from './ShelfStockLayer';
 import type { Figure } from './venueCrowd';
@@ -53,8 +53,8 @@ export class VenueScene {
   private selectionRoot = new THREE.Group();
   private warningRoot = new THREE.Group();
   private crowd: VenueCrowdLayer;
-  private motion = new FloorMotionLayer();
-  private line = new FloorLineLayer();
+  private motion = new InteriorMotionLayer();
+  private line = new InteriorLineLayer();
   private lastFrame = performance.now();
   private fixturesSignature = '';
   private zoom = 1;
@@ -156,14 +156,14 @@ export class VenueScene {
     this.rebuildFixtures();
   }
 
-  // The Fixtures of a Factory floor that run, and the way they turn.
+  // The Fixtures of a Factory interior that run, and the way they turn.
   setMotion(motion: ReadonlyMap<number, FixtureMotion>, speed = 1): void {
     this.motion.setMotion(motion);
     this.motion.setSpeed(speed);
     this.dirty = true;
   }
 
-  // The ways that Packets take on a Packhouse floor, and the pace they ride at.
+  // The ways that Packets take on a Packhouse interior, and the pace they ride at.
   setLine(paths: readonly LinePath[], speed = 1): void {
     if (paths !== this.linePaths) {
       this.linePaths = paths;
@@ -173,7 +173,7 @@ export class VenueScene {
     this.dirty = true;
   }
 
-  // The Exits of a Packhouse floor whose Line is linked: a truck waits outside each of them.
+  // The Exits of a Packhouse interior whose Line is linked: a truck waits outside each of them.
   setTrucks(exits: readonly VenueFixture[]): void {
     if (exits === this.trucks) return;
     this.trucks = exits;
@@ -217,7 +217,7 @@ export class VenueScene {
     this.markTiles(this.warningRoot, tiles, WARNING_COLOR);
   }
 
-  // A bar shows once a Fixture is worn: its Condition has fallen to 90 %. A Factory floor reads it as what is left, a Venue as what is lost.
+  // A bar shows once a Fixture is worn: its Condition has fallen to 90 %. A Factory interior reads it as what is left, a Venue as what is lost.
   setWear(fixtures: readonly VenueFixture[], remaining = false): void {
     this.clear(this.wearRoot, true);
     for (const fixture of fixtures) {

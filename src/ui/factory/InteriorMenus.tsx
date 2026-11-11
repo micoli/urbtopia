@@ -7,14 +7,14 @@ import type { NavAction } from '../layout/useNavActions';
 import { VenueFlyout } from '../venue/VenueFlyout';
 import { VenuePlacementHint } from '../venue/VenuePlacementHint';
 import { VenueSidePanel } from '../venue/VenueSidePanel';
-import { FloorStats } from './FloorStats';
+import { InteriorStats } from './InteriorStats';
 
-interface FloorMenusProps {
+interface InteriorMenusProps {
   factory: Building;
 }
 
-// The menus of a Factory floor: the build menu, the selected Fixture, and the way back to the city. A floor has no Staff, Takings or events.
-export function FloorMenus({ factory }: FloorMenusProps) {
+// The menus of a Factory interior: the build menu, the selected Fixture, and the way back to the city. An interior has no Takings or events.
+export function InteriorMenus({ factory }: InteriorMenusProps) {
   const panel = useStore(venueStore, store => store.panel);
   const { togglePanel, close } = venueStore.getState();
   const actions: NavAction[] = [
@@ -25,7 +25,7 @@ export function FloorMenus({ factory }: FloorMenusProps) {
   return (
     <>
       <VenuePlacementHint />
-      <Dock actions={actions} header={<FloorStats factory={factory} />} bottomId="back" />
+      <Dock actions={actions} header={<InteriorStats factory={factory} />} bottomId="back" />
       <VenueFlyout venue={factory} />
       <VenueSidePanel venue={factory} />
     </>

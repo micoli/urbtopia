@@ -46,7 +46,7 @@ export const AGENTS = {
   errandSeconds: [2, 4] as const,
   waitPatience: 0.035,
   playRecovery: 0.05,
-  floor: 0.04,
+  interior: 0.04,
   jitter: 0.18,
 };
 
@@ -207,8 +207,8 @@ export function stepAgent(agent: Agent, world: World, dt: number, dice: Dice, mo
     return timer <= 0 ? leave(world, { ...current, satisfaction }) : { ...current, timer, satisfaction };
   }
   if (current.mode === 'waiting') {
-    const satisfaction = Math.max(AGENTS.floor, current.satisfaction - AGENTS.waitPatience * dt);
-    return satisfaction <= AGENTS.floor + 1e-9 ? leave(world, { ...current, satisfaction }) : { ...current, satisfaction };
+    const satisfaction = Math.max(AGENTS.interior, current.satisfaction - AGENTS.waitPatience * dt);
+    return satisfaction <= AGENTS.interior + 1e-9 ? leave(world, { ...current, satisfaction }) : { ...current, satisfaction };
   }
   if (current.mode === 'idle' && current.slot) {
     if (timer > 0) return { ...current, timer };

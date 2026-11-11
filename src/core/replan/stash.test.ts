@@ -27,7 +27,7 @@ const withBuildings = (...buildings: Building[]): GameState => {
 
 describe('lifting a Building into the Stash', () => {
   it('takes the Building off the map and keeps it whole in the Stash', () => {
-    const home = { ...createBuilding(900, 'home', 56, 57, 0), tier: 2, floor: { fixtures: [], nextFixtureId: 3, parquet: 2 } };
+    const home = { ...createBuilding(900, 'home', 56, 57, 0), tier: 2, interior: { fixtures: [], nextFixtureId: 3, parquet: 2 } };
     const state = liftedState(withBuildings(home), 900);
     expect(state.buildings.some((building) => building.id === 900)).toBe(false);
     expect(stashedBuildings(state)).toEqual([home]);
@@ -40,16 +40,16 @@ describe('lifting a Building into the Stash', () => {
 
 describe('placing a Building of the Stash', () => {
   it('brings a Home with its Home interior back unchanged elsewhere, with no Road', () => {
-    const home = { ...createBuilding(900, 'home', 56, 57, 0), tier: 3, floor: { fixtures: [], nextFixtureId: 5, parquet: 1 } };
+    const home = { ...createBuilding(900, 'home', 56, 57, 0), tier: 3, interior: { fixtures: [], nextFixtureId: 5, parquet: 1 } };
     const state = placed(liftedState(withBuildings(home), 900), 900, 60, 60, 2);
     expect(state.buildings.find((building) => building.id === 900)).toEqual({ ...home, x: 60, y: 60, rotation: 2 });
     expect(stashedBuildings(state)).toEqual([]);
   });
 
-  it('brings a Venue with its Fixtures and a Factory with its Factory floor back unchanged', () => {
+  it('brings a Venue with its Fixtures and a Factory with its Factory interior back unchanged', () => {
     const supermarket = createBuilding(901, 'supermarket', 56, 57, 0);
     const venue = { ...supermarket, venue: { fixtures: [{ id: 1, type: 'shelfBags' as const, x: 1, y: 1, rotation: 0 as const, stock: 4 }], nextFixtureId: 2, takings: 37 } } as Building;
-    const factory = { ...createBuilding(902, 'factory', 52, 52, 0), floor: { fixtures: [], nextFixtureId: 9, rng: 77 } };
+    const factory = { ...createBuilding(902, 'factory', 52, 52, 0), interior: { fixtures: [], nextFixtureId: 9, rng: 77 } };
     let state = withBuildings(venue, factory);
     state = liftedState(liftedState(state, 901), 902);
     state = placed(placed(state, 901, 64, 64, 1), 902, 70, 64, 3);

@@ -11,30 +11,30 @@ import { durationOf, valueOf, type ItemId } from './items';
 import type { Building, GameState, QueueEntry, ShopStack } from '../engine/state';
 import { productionTierOf } from './tiers';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { floorBonusOfBuilding, floorPowerOfBuilding } from '../factory/factoryFloor';
+import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/factoryInterior';
 
 // A Mill or a Bakery consumes as many recipes as its yield per cycle.
 export const recipeMultiplierOf = (building: Building): number => (scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1);
 
 export const productionDurationOf = (building: Building, item: ItemId): number =>
-  Math.round(durationOf(item) * productionTierOf(building).durationFactor / (1 + floorBonusOfBuilding(building, item).speed));
+  Math.round(durationOf(item) * productionTierOf(building).durationFactor / (1 + interiorBonusOfBuilding(building, item).speed));
 
-// Most units a cycle can bring: the yield of the Tier and the whole units a Factory floor can add to it.
-export const maxQuantityOf = (building: Pick<Building, 'type' | 'tier' | 'floor'>): number =>
-  Math.ceil(productionTierOf(building).yield * (1 + floorBonusOfBuilding(building).yield) - CARRY_EPSILON);
+// Most units a cycle can bring: the yield of the Tier and the whole units a Factory interior can add to it.
+export const maxQuantityOf = (building: Pick<Building, 'type' | 'tier' | 'interior'>): number =>
+  Math.ceil(productionTierOf(building).yield * (1 + interiorBonusOfBuilding(building).yield) - CARRY_EPSILON);
 
 const CARRY_EPSILON = 1e-9;
 
-// A Factory floor adds a fraction of the yield to each cycle: the whole units are paid at once and the rest is carried to the next cycle,
+// A Factory interior adds a fraction of the yield to each cycle: the whole units are paid at once and the rest is carried to the next cycle,
 // so a fair share comes out over many cycles with whole units only.
 export function newQueueEntry(building: Building, item: ItemId, now: number): { entry: QueueEntry; building: Building } {
   const base = productionTierOf(building).yield;
-  const bonus = floorBonusOfBuilding(building, item).yield;
-  const owed = bonus > 0 && building.floor ? base * bonus + (building.floor.carry ?? 0) : 0;
+  const bonus = interiorBonusOfBuilding(building, item).yield;
+  const owed = bonus > 0 && building.interior ? base * bonus + (building.interior.carry ?? 0) : 0;
   const extra = Math.floor(owed + CARRY_EPSILON);
   const entry: QueueEntry = { item, duration: productionDurationOf(building, item), startedAt: isIdle(building) ? now : null, done: false, quantity: base + extra };
-  if (owed === 0 || !building.floor) return { entry, building };
-  return { entry, building: { ...building, floor: { ...building.floor, carry: Math.max(0, owed - extra) } } };
+  if (owed === 0 || !building.interior) return { entry, building };
+  return { entry, building: { ...building, interior: { ...building.interior, carry: Math.max(0, owed - extra) } } };
 }
 
 export function runningEntry(building: Building): QueueEntry | undefined {
@@ -173,7 +173,7 @@ export function taxDue(building: Building): number {
 export function advanceProduction(state: GameState, now: number, elapsedMs: number, economicRatio = 1, homeRatios: ReadonlyMap<number, number> = new Map(), idleShops: ReadonlySet<number> = new Set(), filledJobs: ReadonlyMap<number, number> = new Map(), industrySpeed = 1): { state: GameState; events: GameEvent[] } {
   const results = state.buildings.map((building) => {
     const idle = idleShops.has(building.id);
-    const drawsPower = building.type === 'packhouse' && floorPowerOfBuilding(building) > 0;
+    const drawsPower = building.type === 'packhouse' && interiorPowerOfBuilding(building) > 0;
     const ratio = isIndustryType(building.type) ? economicRatio * industrySpeed : economicRatio;
     const delay = idle ? elapsedMs : elapsedMs * (1 - ratio);
     const slowed = isIndustryType(building.type) || isShopType(building.type) || drawsPower ? {

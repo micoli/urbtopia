@@ -1,4 +1,4 @@
-import { floorBenefitsOf, floorLinksOf } from '../factory/factoryFloor';
+import { interiorBenefitsOf, interiorLinksOf } from '../factory/factoryInterior';
 import { FIXTURES } from '../venues/fixtures';
 import { hasStock } from '../venues/supermarket';
 import { hiredOf } from '../venues/staff';
@@ -23,13 +23,13 @@ export const stepsOfVenueTutorial = (type: VenueTutorialType): readonly VenueTut
 export const isVenueTutorialStep = (type: string, step: unknown): boolean =>
   hasVenueTutorial(type) && (stepsOfVenueTutorial(type) as readonly unknown[]).includes(step);
 
-// The Buildings a tutorial follows: the Venues of its type, or the Factories whose floor has been used.
+// The Buildings a tutorial follows: the Venues of its type, or the Factories whose interior has been used.
 const sitesOf = (state: GameState, type: VenueTutorialType): Building[] =>
-  state.buildings.filter(building => building.type === type && (type === 'factory' ? building.floor !== undefined : building.venue !== undefined));
+  state.buildings.filter(building => building.type === type && (type === 'factory' ? building.interior !== undefined : building.venue !== undefined));
 
-function isDoneInFloor(building: Building, step: VenueTutorialStep): boolean {
-  const fixtures = building.floor?.fixtures ?? [];
-  const linked = floorLinksOf(fixtures).linked;
+function isDoneInInterior(building: Building, step: VenueTutorialStep): boolean {
+  const fixtures = building.interior?.fixtures ?? [];
+  const linked = interiorLinksOf(fixtures).linked;
   const linkedMachines = fixtures.filter(fixture => linked.has(fixture.id));
   switch (step) {
     case 'motor':
@@ -39,14 +39,14 @@ function isDoneInFloor(building: Building, step: VenueTutorialStep): boolean {
     case 'flow':
       return linkedMachines.some(fixture => FIXTURES[fixture.type].flow !== undefined);
     case 'cooling':
-      return fixtures.some(fixture => FIXTURES[fixture.type].role === 'motor' && floorBenefitsOf(fixtures, fixture).cooling > 0);
+      return fixtures.some(fixture => FIXTURES[fixture.type].role === 'motor' && interiorBenefitsOf(fixtures, fixture).cooling > 0);
     default:
       return false;
   }
 }
 
 const isDoneIn = (building: Building, step: VenueTutorialStep): boolean => {
-  if (building.type === 'factory') return isDoneInFloor(building, step);
+  if (building.type === 'factory') return isDoneInInterior(building, step);
   const venue = building.venue!;
   switch (step) {
     case 'place':

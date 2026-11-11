@@ -37,7 +37,7 @@ import { cancelShow, scheduleShow } from '../tourism/gatherings';
 import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { queueItem } from '../factory/restock';
-import { assignFloorRestocker, hireFloorRestocker, setExitRestock, unassignFloorRestocker, hireFloorTechnician, releaseFloorRestocker, moveFloorFixture, placeFloorFixture, releaseFloorTechnician, removeFloorFixture, repairFloorFixture, setHomeParquet } from '../factory/floorCommands';
+import { assignInteriorRestocker, hireInteriorRestocker, setExitRestock, unassignInteriorRestocker, hireInteriorTechnician, releaseInteriorRestocker, moveInteriorFixture, placeInteriorFixture, releaseInteriorTechnician, removeInteriorFixture, repairInteriorFixture, setHomeParquet } from '../factory/interiorCommands';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { withStartingCity } from './newGame';
@@ -154,18 +154,18 @@ export type Command =
   | { readonly type: 'SetShelfGood'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId }
   | { readonly type: 'SetMenu'; readonly buildingId: number; readonly menu: readonly ItemId[] }
   | { readonly type: 'RepairFixture'; readonly buildingId: number; readonly fixtureId: number }
-  | { readonly type: 'PlaceFloorFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
-  | { readonly type: 'MoveFloorFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
-  | { readonly type: 'RemoveFloorFixture'; readonly buildingId: number; readonly fixtureId: number }
-  | { readonly type: 'RepairFloorFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'PlaceInteriorFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'MoveInteriorFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'RemoveInteriorFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'RepairInteriorFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'SetHomeParquet'; readonly buildingId: number; readonly parquet: number }
-  | { readonly type: 'HireFloorTechnician'; readonly buildingId: number }
-  | { readonly type: 'ReleaseFloorTechnician'; readonly buildingId: number }
-  | { readonly type: 'HireFloorRestocker'; readonly buildingId: number }
-  | { readonly type: 'ReleaseFloorRestocker'; readonly buildingId: number }
+  | { readonly type: 'HireInteriorTechnician'; readonly buildingId: number }
+  | { readonly type: 'ReleaseInteriorTechnician'; readonly buildingId: number }
+  | { readonly type: 'HireInteriorRestocker'; readonly buildingId: number }
+  | { readonly type: 'ReleaseInteriorRestocker'; readonly buildingId: number }
   | { readonly type: 'SetExitRestock'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId | null }
-  | { readonly type: 'AssignFloorRestocker'; readonly buildingId: number; readonly fixtureId: number }
-  | { readonly type: 'UnassignFloorRestocker'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'AssignInteriorRestocker'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'UnassignInteriorRestocker'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
@@ -510,30 +510,30 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return repairFixture(state, command.buildingId, command.fixtureId);
     case 'RemoveFixture':
       return removeFixture(state, command.buildingId, command.fixtureId);
-    case 'PlaceFloorFixture':
-      return placeFloorFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
-    case 'MoveFloorFixture':
-      return moveFloorFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
-    case 'RemoveFloorFixture':
-      return removeFloorFixture(state, command.buildingId, command.fixtureId);
-    case 'RepairFloorFixture':
-      return repairFloorFixture(state, command.buildingId, command.fixtureId);
+    case 'PlaceInteriorFixture':
+      return placeInteriorFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
+    case 'MoveInteriorFixture':
+      return moveInteriorFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
+    case 'RemoveInteriorFixture':
+      return removeInteriorFixture(state, command.buildingId, command.fixtureId);
+    case 'RepairInteriorFixture':
+      return repairInteriorFixture(state, command.buildingId, command.fixtureId);
     case 'SetHomeParquet':
       return setHomeParquet(state, command.buildingId, command.parquet);
-    case 'HireFloorTechnician':
-      return hireFloorTechnician(state, command.buildingId);
-    case 'ReleaseFloorTechnician':
-      return releaseFloorTechnician(state, command.buildingId);
-    case 'HireFloorRestocker':
-      return hireFloorRestocker(state, command.buildingId);
-    case 'ReleaseFloorRestocker':
-      return releaseFloorRestocker(state, command.buildingId);
+    case 'HireInteriorTechnician':
+      return hireInteriorTechnician(state, command.buildingId);
+    case 'ReleaseInteriorTechnician':
+      return releaseInteriorTechnician(state, command.buildingId);
+    case 'HireInteriorRestocker':
+      return hireInteriorRestocker(state, command.buildingId);
+    case 'ReleaseInteriorRestocker':
+      return releaseInteriorRestocker(state, command.buildingId);
     case 'SetExitRestock':
       return setExitRestock(state, command.buildingId, command.fixtureId, command.good);
-    case 'AssignFloorRestocker':
-      return assignFloorRestocker(state, command.buildingId, command.fixtureId);
-    case 'UnassignFloorRestocker':
-      return unassignFloorRestocker(state, command.buildingId, command.fixtureId);
+    case 'AssignInteriorRestocker':
+      return assignInteriorRestocker(state, command.buildingId, command.fixtureId);
+    case 'UnassignInteriorRestocker':
+      return unassignInteriorRestocker(state, command.buildingId, command.fixtureId);
     case 'PlaceFixture':
       return placeFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
     case 'StockShop':

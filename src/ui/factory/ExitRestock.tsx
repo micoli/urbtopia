@@ -20,7 +20,7 @@ export function ExitRestock({ packhouse, fixture }: ExitRestockProps) {
   const size = FIXTURES[fixture.type].packSize;
   const goods = producibleItems('packhouse').filter(item => packSizeOf(item) === size) as GoodId[];
   const options = [{ value: NONE, label: t('venue.restockNone') }, ...goods.map(good => ({ value: good as string, label: itemName(good), disabled: !isItemUnlocked(state, good) }))];
-  const free = (packhouse.floor?.restockers ?? 0) - (packhouse.floor?.fixtures.filter(other => other.restocker).length ?? 0);
+  const free = (packhouse.interior?.restockers ?? 0) - (packhouse.interior?.fixtures.filter(other => other.restocker).length ?? 0);
   return (
     <div className="venue-stock">
       <div className="venue-stock-good">
@@ -34,8 +34,8 @@ export function ExitRestock({ packhouse, fixture }: ExitRestockProps) {
       </div>
       {fixture.restocker ? <p className="note note--muted">{t('venue.restockAtWork')}</p> : null}
       {fixture.restocker
-        ? <ActionButton onClick={() => send({ type: 'UnassignFloorRestocker', buildingId: packhouse.id, fixtureId: fixture.id })}>{t('venue.restockRelease')}</ActionButton>
-        : <ActionButton disabled={!fixture.restock || free <= 0} onClick={() => send({ type: 'AssignFloorRestocker', buildingId: packhouse.id, fixtureId: fixture.id })}>{t('venue.restockAssign')}</ActionButton>}
+        ? <ActionButton onClick={() => send({ type: 'UnassignInteriorRestocker', buildingId: packhouse.id, fixtureId: fixture.id })}>{t('venue.restockRelease')}</ActionButton>
+        : <ActionButton disabled={!fixture.restock || free <= 0} onClick={() => send({ type: 'AssignInteriorRestocker', buildingId: packhouse.id, fixtureId: fixture.id })}>{t('venue.restockAssign')}</ActionButton>}
     </div>
   );
 }

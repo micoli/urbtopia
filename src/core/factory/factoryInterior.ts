@@ -1,5 +1,5 @@
-import floorBalance from '../../../assets/defs/balance/factoryFloor.json' with { type: 'json' };
-import packhouseBalance from '../../../assets/defs/balance/packhouseFloor.json' with { type: 'json' };
+import interiorBalance from '../../../assets/defs/balance/factoryInterior.json' with { type: 'json' };
+import packhouseBalance from '../../../assets/defs/balance/packhouseInterior.json' with { type: 'json' };
 import { FIXTURES } from '../venues/fixtures';
 import { distanceBetween } from '../venues/layout';
 import type { FixtureSide, PackSize } from '../venues/venueVocabulary';
@@ -11,23 +11,23 @@ export type Turn = 'cw' | 'ccw';
 // What a Machine that is not linked lacks.
 export type MachineProblem = 'noDrive' | 'wrongTurn' | 'jammed' | 'noFlow' | 'overloaded' | 'tankFull';
 
-export interface FloorLinks {
+export interface InteriorLinks {
   // The Machines that receive every Drive and every Flow they need.
   linked: ReadonlySet<number>;
   // A group of Gears fed in two opposite directions: nothing in it turns.
   jammed: boolean;
   // Why each Machine that is not linked is not, by id.
   problems: ReadonlyMap<number, readonly MachineProblem[]>;
-  // Packhouse floor: the Fixtures of a Line that carries Packets from a Packer, whose Drive is linked, to an Exit.
+  // Packhouse interior: the Fixtures of a Line that carries Packets from a Packer, whose Drive is linked, to an Exit.
   lined: ReadonlySet<number>;
 }
 
-export interface FloorCaps {
+export interface InteriorCaps {
   speed: number;
   yield: number;
 }
 
-export interface FloorBonus {
+export interface InteriorBonus {
   speed: number;
   yield: number;
   // What the Motors of the floor ask of the city's power.
@@ -115,7 +115,7 @@ function driveGroups(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, 
 }
 
 // What a Fixture carries of the Drive: the turn it turns with, or, for a bevel gear, the turn of each of its cones.
-export type FloorMotion = Turn | Readonly<Partial<Record<FixtureSide, Turn>>>;
+export type InteriorMotion = Turn | Readonly<Partial<Record<FixtureSide, Turn>>>;
 
 interface DriveReceipts {
   // The directions each Machine is handed, by id.
@@ -124,7 +124,7 @@ interface DriveReceipts {
   // The Machines next to a jammed group.
   jammedMachines: Set<number>;
   // The way each Fixture that passes Drive turns, in the groups that are not jammed.
-  carried: Map<number, FloorMotion>;
+  carried: Map<number, InteriorMotion>;
   // The Machines each Motor's group hands Drive to, and the Motors in that group.
   served: Map<number, { handed: Set<number>; motors: number; overloaded: number }>;
   // The Machines and Pumps that a group of Motors has no strength left to drive: the highest ids, past what the Motors can drive.
@@ -186,7 +186,7 @@ function stepsFrom(node: Node, at: ReadonlyMap<string, VenueFixture>): Step[] {
 function driveReceipts(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>): DriveReceipts {
   const received = new Map<number, Set<Turn>>();
   const jammedMachines = new Set<number>();
-  const carried = new Map<number, FloorMotion>();
+  const carried = new Map<number, InteriorMotion>();
   const served = new Map<number, { handed: Set<number>; motors: number; overloaded: number }>();
   const overloaded = new Set<number>();
   let jammed = false;
@@ -219,7 +219,7 @@ function driveReceipts(fixtures: readonly VenueFixture[], at: ReadonlyMap<string
     }
     const motors = group.filter(fixture => roleOf(fixture) === 'motor');
     const ids = [...new Set(handed.map(([id]) => id))].sort((a, b) => a - b);
-    const capacity = motors.length * floorBalance.motorCapacity;
+    const capacity = motors.length * interiorBalance.motorCapacity;
     const share = { handed: new Set(ids.slice(0, capacity)), motors: motors.length, overloaded: Math.max(0, ids.length - capacity) };
     for (const id of ids.slice(capacity)) overloaded.add(id);
     for (const motor of motors) served.set(motor.id, share);
@@ -351,7 +351,7 @@ function starvedVats(fixtures: readonly VenueFixture[], fedByTank: ReadonlyMap<n
     }
     const sorted = [...vats].sort((a, b) => a - b);
     sorted.forEach(id => wanted.add(id));
-    sorted.slice(0, floorBalance.tankCoolingVats).forEach(id => fed.add(id));
+    sorted.slice(0, interiorBalance.tankCoolingVats).forEach(id => fed.add(id));
   }
   const starved = new Set([...wanted].filter(id => !fed.has(id)));
   for (const id of starved) reached.delete(id);
@@ -393,14 +393,14 @@ function problemsOf(machine: VenueFixture, drive: DriveReceipts, flowing: Readon
 
 // What is worked out once for a list of Fixtures: Drive, Flow and Links. A floor's list is replaced, never changed, when the player edits it,
 // so each list is read once however many panels, bonuses and scenes ask.
-interface FloorReport {
+interface InteriorReport {
   fixtures: readonly VenueFixture[];
   at: ReadonlyMap<string, VenueFixture>;
   drive: DriveReceipts;
   powered: ReadonlySet<number>;
   flow: FlowReach;
   line: LineReach;
-  links: FloorLinks;
+  links: InteriorLinks;
 }
 
 // What a result depends on is the layout of the Fixtures (what, where, turned how, broken or not), never their Condition. The wear of a floor that runs replaces its list at every
@@ -427,7 +427,7 @@ const memoized = <Result>(compute: (fixtures: readonly VenueFixture[]) => Result
   };
 };
 
-const reportOf = memoized((allFixtures): FloorReport => {
+const reportOf = memoized((allFixtures): InteriorReport => {
   const fixtures = allFixtures.filter(fixture => isFactoryFixture(fixture) && fixture.broken !== true);
   const at = placedOn(fixtures);
   const drive = driveReceipts(fixtures, at);
@@ -444,12 +444,12 @@ const reportOf = memoized((allFixtures): FloorReport => {
   return { fixtures, at, drive, powered, flow, line, links: { linked, jammed: drive.jammed, problems, lined: line.lined } };
 });
 
-export const floorLinksOf = (allFixtures: readonly VenueFixture[]): FloorLinks => reportOf(allFixtures).links;
+export const interiorLinksOf = (allFixtures: readonly VenueFixture[]): InteriorLinks => reportOf(allFixtures).links;
 
 // The Fixtures that turn, and the way they turn: whatever passes Drive in a group that is not jammed, and the Machines that are linked.
-export const floorMotionOf = memoized((allFixtures): ReadonlyMap<number, FloorMotion> => {
+export const interiorMotionOf = memoized((allFixtures): ReadonlyMap<number, InteriorMotion> => {
   const { fixtures, drive, powered, flow, links } = reportOf(allFixtures);
-  const motion = new Map<number, FloorMotion>(drive.carried);
+  const motion = new Map<number, InteriorMotion>(drive.carried);
   for (const id of links.lined) motion.set(id, 'cw');
   for (const id of powered) if (pushesToLinked(id, flow, links.linked)) motion.set(id, 'cw');
   for (const machine of fixtures.filter(fixture => links.linked.has(fixture.id))) {
@@ -460,10 +460,10 @@ export const floorMotionOf = memoized((allFixtures): ReadonlyMap<number, FloorMo
 });
 
 // The Fixtures that run: what carries Drive, the linked Machines, and the Pumps and Pipes whose Flow reaches a linked Machine. Only they wear.
-export const floorUsageOf = memoized((allFixtures): ReadonlySet<number> => {
+export const interiorUsageOf = memoized((allFixtures): ReadonlySet<number> => {
   const { fixtures, flow, links } = reportOf(allFixtures);
   const byId = new Map(fixtures.map(fixture => [fixture.id, fixture]));
-  const used = new Set<number>(floorMotionOf(allFixtures).keys());
+  const used = new Set<number>(interiorMotionOf(allFixtures).keys());
   for (const id of links.lined) used.add(id);
   for (const [pump, output] of flow.outputs) {
     if (!pushesToLinked(pump, flow, links.linked)) continue;
@@ -474,9 +474,9 @@ export const floorUsageOf = memoized((allFixtures): ReadonlySet<number> => {
 });
 
 // How much each Fixture that runs wears, as a share of the usual: what lies downstream of a Scanner wears less.
-export const floorUsageWeightsOf = memoized((allFixtures): ReadonlyMap<number, number> => {
+export const interiorUsageWeightsOf = memoized((allFixtures): ReadonlyMap<number, number> => {
   const { fixtures, line } = reportOf(allFixtures);
-  const weights = new Map<number, number>([...floorUsageOf(allFixtures)].map(id => [id, 1]));
+  const weights = new Map<number, number>([...interiorUsageOf(allFixtures)].map(id => [id, 1]));
   const scanned = new Set<number>();
   const queue = fixtures.filter(fixture => roleOf(fixture) === 'scanner' && line.lined.has(fixture.id)).flatMap(fixture => line.next.get(fixture.id) ?? []);
   while (queue.length > 0) {
@@ -494,13 +494,13 @@ export const tierValue = (values: readonly number[], tier: number): number => va
 const capOf = (caps: readonly number[], tier: number): number => caps[Math.min(tier, caps.length) - 1]!;
 
 // The highest speed and yield bonus a floor can approach at a Tier.
-export const floorCapsOf = (tier: number): FloorCaps => ({ speed: capOf(floorBalance.speedCaps, tier), yield: capOf(floorBalance.yieldCaps, tier) });
+export const interiorCapsOf = (tier: number): InteriorCaps => ({ speed: capOf(interiorBalance.speedCaps, tier), yield: capOf(interiorBalance.yieldCaps, tier) });
 
-export const floorGridSizeOf = (tier: number): number => capOf(floorBalance.gridSizes, tier);
+export const interiorGridSizeOf = (tier: number): number => capOf(interiorBalance.gridSizes, tier);
 
 export const packhouseGridSizeOf = (tier: number): number => capOf(packhouseBalance.gridSizes, tier);
 
-// The most Exits of each size a Packhouse floor can have at a Tier.
+// The most Exits of each size a Packhouse interior can have at a Tier.
 export const packhouseExitLimitOf = (tier: number): number => capOf(packhouseBalance.exitLimits, tier);
 
 // The Machines that a circuit of Flow reaches from a Machine, through its Pipes and Pumps.
@@ -520,7 +520,7 @@ function circuitOf(start: VenueFixture, at: ReadonlyMap<string, VenueFixture>): 
 }
 
 // A bonus counts in full up to a share of the cap of the Factory's Tier, then grows with every Machine but less and less, and never reaches the cap.
-function saturate(total: number, cap: number, kneeShare = floorBalance.bonusKnee): number {
+function saturate(total: number, cap: number, kneeShare = interiorBalance.bonusKnee): number {
   const knee = cap * kneeShare;
   return total <= knee ? total : cap - (cap - knee) * Math.exp(-(total - knee) / (cap - knee));
 }
@@ -533,7 +533,7 @@ const coolingOf = memoized(allFixtures => {
   const motors = fixtures.filter(fixture => roleOf(fixture) === 'motor');
   const coolants = machines.filter(fixture => FIXTURES[fixture.type].coolant !== undefined);
   const heated = (coolant: VenueFixture): boolean => circuitOf(coolant, at).some(next => linked.has(next.id) && FIXTURES[next.type].heat);
-  const cooled = (coolant: VenueFixture): number => FIXTURES[coolant.type].coolant! * (heated(coolant) ? floorBalance.coolingLoopFactor : 1);
+  const cooled = (coolant: VenueFixture): number => FIXTURES[coolant.type].coolant! * (heated(coolant) ? interiorBalance.coolingLoopFactor : 1);
   const besideMotor = (coolant: VenueFixture): VenueFixture[] => motors.filter(motor => distanceBetween(coolant, motor) === 1);
   const coolingOfMotor = (motor: VenueFixture): number => Math.max(0, ...coolants.filter(coolant => distanceBetween(coolant, motor) === 1).map(cooled));
   const coolantOf = (machine: VenueFixture): number => Math.max(0, ...motors.filter(motor => drive.served.get(motor.id)?.handed.has(machine.id)).map(coolingOfMotor));
@@ -542,10 +542,10 @@ const coolingOf = memoized(allFixtures => {
 
 // What the linked Machines add to the speed and to the yield of the Factory's Slots, each rising towards the cap of the Factory's Tier, and what the Motors draw, less what the Boilers that run save.
 // A Motor drives only so many Machines and Pumps, and the others stop; the kinds of Machine that run add to the yield, and a Cooling vat beside a Motor adds to the Machines that Motor drives.
-const bonuses = new WeakMap<readonly VenueFixture[], Map<number, FloorBonus>>();
+const bonuses = new WeakMap<readonly VenueFixture[], Map<number, InteriorBonus>>();
 
-export function floorBonusOf(allFixtures: readonly VenueFixture[], tier: number): FloorBonus {
-  const perTier = bonuses.get(allFixtures) ?? new Map<number, FloorBonus>();
+export function interiorBonusOf(allFixtures: readonly VenueFixture[], tier: number): InteriorBonus {
+  const perTier = bonuses.get(allFixtures) ?? new Map<number, InteriorBonus>();
   bonuses.set(allFixtures, perTier);
   const cached = perTier.get(tier);
   if (cached) return cached;
@@ -554,20 +554,20 @@ export function floorBonusOf(allFixtures: readonly VenueFixture[], tier: number)
   return bonus;
 }
 
-function bonusOf(allFixtures: readonly VenueFixture[], tier: number): FloorBonus {
+function bonusOf(allFixtures: readonly VenueFixture[], tier: number): InteriorBonus {
   const { machines, motors, drive, coolantOf } = coolingOf(allFixtures);
-  const saving = Math.min(floorBalance.maxPowerSaving, floorBalance.boilerPowerSaving * machines.filter(fixture => FIXTURES[fixture.type].heat).length);
-  const busy = motors.length === 0 ? 0 : Math.min(1, drive.received.size / (motors.length * floorBalance.motorCapacity));
+  const saving = Math.min(interiorBalance.maxPowerSaving, interiorBalance.boilerPowerSaving * machines.filter(fixture => FIXTURES[fixture.type].heat).length);
+  const busy = motors.length === 0 ? 0 : Math.min(1, drive.received.size / (motors.length * interiorBalance.motorCapacity));
   const sum = (key: 'speed' | 'yield') => machines.reduce((total, fixture) => total + (FIXTURES[fixture.type][key] ?? 0) * (1 + coolantOf(fixture)), 0);
-  const variety = floorBalance.varietyYield * Math.max(0, kindsOf(machines) - 1);
+  const variety = interiorBalance.varietyYield * Math.max(0, kindsOf(machines) - 1);
   return {
-    speed: saturate(sum('speed'), capOf(floorBalance.speedCaps, tier)),
-    yield: saturate(sum('yield') + variety, capOf(floorBalance.yieldCaps, tier)),
-    power: motors.length * floorBalance.motorPower * (floorBalance.idlePowerShare + (1 - floorBalance.idlePowerShare) * busy) * (1 - saving),
+    speed: saturate(sum('speed'), capOf(interiorBalance.speedCaps, tier)),
+    yield: saturate(sum('yield') + variety, capOf(interiorBalance.yieldCaps, tier)),
+    power: motors.length * interiorBalance.motorPower * (interiorBalance.idlePowerShare + (1 - interiorBalance.idlePowerShare) * busy) * (1 - saving),
   };
 }
 
-// A way that Packets take on a Packhouse floor, as the points of the floor they go through, in cell units: from the mouth of a Packer, through the middle of each Fixture
+// A way that Packets take on a Packhouse interior, as the points of the floor they go through, in cell units: from the mouth of a Packer, through the middle of each Fixture
 // of its Line, to the hatch of an Exit. A Line that splits has a way for each Exit, which share their start, and Packets take them in turn.
 export interface LinePath {
   source: number;
@@ -646,36 +646,36 @@ export function lineFaultOf(allFixtures: readonly VenueFixture[], start: VenueFi
   }
 }
 
-// The Exits of a Packhouse floor that Packets reach.
+// The Exits of a Packhouse interior that Packets reach.
 export const linkedExitsOf = memoized((allFixtures): readonly VenueFixture[] => {
-  const { lined } = floorLinksOf(allFixtures);
+  const { lined } = interiorLinksOf(allFixtures);
   return allFixtures.filter(fixture => lined.has(fixture.id) && roleOf(fixture) === 'exit');
 });
 
-// What the Motors of a Packhouse floor ask of the city's power, as those of a Factory floor do: all of it when the Machines they drive run, a share of it at rest.
+// What the Motors of a Packhouse interior ask of the city's power, as those of a Factory interior do: all of it when the Machines they drive run, a share of it at rest.
 function packhousePowerOf(allFixtures: readonly VenueFixture[]): number {
   const { fixtures, drive } = reportOf(allFixtures);
   const motors = fixtures.filter(fixture => roleOf(fixture) === 'motor');
   if (motors.length === 0) return 0;
-  const busy = Math.min(1, drive.received.size / (motors.length * floorBalance.motorCapacity));
-  return motors.length * floorBalance.motorPower * (floorBalance.idlePowerShare + (1 - floorBalance.idlePowerShare) * busy);
+  const busy = Math.min(1, drive.received.size / (motors.length * interiorBalance.motorCapacity));
+  return motors.length * interiorBalance.motorPower * (interiorBalance.idlePowerShare + (1 - interiorBalance.idlePowerShare) * busy);
 }
 
 // What the Motors of a building's floor ask of the city's power.
-export const floorPowerOfBuilding = (building: Pick<Building, 'type' | 'tier' | 'floor'>): number => {
-  if (!building.floor) return 0;
-  return building.type === 'packhouse' ? packhousePowerOf(building.floor.fixtures) : floorBonusOf(building.floor.fixtures, building.tier).power;
+export const interiorPowerOfBuilding = (building: Pick<Building, 'type' | 'tier' | 'interior'>): number => {
+  if (!building.interior) return 0;
+  return building.type === 'packhouse' ? packhousePowerOf(building.interior.fixtures) : interiorBonusOf(building.interior.fixtures, building.tier).power;
 };
 
-const packBonuses = new WeakMap<readonly VenueFixture[], Map<string, FloorBonus>>();
+const packBonuses = new WeakMap<readonly VenueFixture[], Map<string, InteriorBonus>>();
 
 export const packSizeOf = (item: ItemId): PackSize | null => (['Crate', 'Box', 'Pallet'] as const).find(size => item.endsWith(size)) ?? null;
 
-// What the Line of a Packhouse floor adds to the speed and the yield of the Slots that pack a size of Goods: only the Packers and Strappers that Packets leave through
+// What the Line of a Packhouse interior adds to the speed and the yield of the Slots that pack a size of Goods: only the Packers and Strappers that Packets leave through
 // an Exit of that size count, each Strapper beyond the first adds to the yield, and with no size asked it is the best that a size gets. The power its Motors draw is
-// told apart, by `floorPowerOfBuilding`.
-export function packhouseBonusOf(allFixtures: readonly VenueFixture[], tier: number, size?: PackSize | null): FloorBonus {
-  const perKey = packBonuses.get(allFixtures) ?? new Map<string, FloorBonus>();
+// told apart, by `interiorPowerOfBuilding`.
+export function packhouseBonusOf(allFixtures: readonly VenueFixture[], tier: number, size?: PackSize | null): InteriorBonus {
+  const perKey = packBonuses.get(allFixtures) ?? new Map<string, InteriorBonus>();
   packBonuses.set(allFixtures, perKey);
   const key = `${tier}:${size === undefined ? 'any' : size === null ? 'none' : size}`;
   const cached = perKey.get(key);
@@ -685,7 +685,7 @@ export function packhouseBonusOf(allFixtures: readonly VenueFixture[], tier: num
   return bonus;
 }
 
-function packhouseBonusUncached(allFixtures: readonly VenueFixture[], tier: number, size?: PackSize | null): FloorBonus {
+function packhouseBonusUncached(allFixtures: readonly VenueFixture[], tier: number, size?: PackSize | null): InteriorBonus {
   const { fixtures, links } = reportOf(allFixtures);
   const lined = fixtures.filter(fixture => links.lined.has(fixture.id));
   const served = new Set(lined.filter(fixture => roleOf(fixture) === 'exit').map(fixture => FIXTURES[fixture.type].packSize));
@@ -702,7 +702,7 @@ function packhouseBonusUncached(allFixtures: readonly VenueFixture[], tier: numb
 
 const kindsOf = (machines: readonly VenueFixture[]): number => new Set(machines.map(fixture => FIXTURES[fixture.type].family ?? fixture.type)).size;
 
-export interface FloorBenefits {
+export interface InteriorBenefits {
   // What a linked Machine adds to the speed and to the yield, cooling included.
   speed: number;
   yield: number;
@@ -721,12 +721,12 @@ export interface FloorBenefits {
   powerSaving: number;
 }
 
-// What a Fixture of a Factory floor brings to the floor, beyond the Drive and the Flow it passes on.
-export function floorBenefitsOf(allFixtures: readonly VenueFixture[], fixture: VenueFixture): FloorBenefits {
+// What a Fixture of a Factory interior brings to the floor, beyond the Drive and the Flow it passes on.
+export function interiorBenefitsOf(allFixtures: readonly VenueFixture[], fixture: VenueFixture): InteriorBenefits {
   const context = coolingOf(allFixtures);
   const spec = FIXTURES[fixture.type];
   const isLinked = context.linked.has(fixture.id);
-  const none: FloorBenefits = { speed: 0, yield: 0, cooling: 0, coolsMotors: 0, coolsMachines: 0, doubled: false, heatsVats: 0, variety: 0, powerSaving: 0 };
+  const none: InteriorBenefits = { speed: 0, yield: 0, cooling: 0, coolsMotors: 0, coolsMachines: 0, doubled: false, heatsVats: 0, variety: 0, powerSaving: 0 };
   if (roleOf(fixture) === 'motor') return { ...none, cooling: context.coolingOfMotor(fixture), coolsMachines: [...(context.drive.served.get(fixture.id)?.handed ?? [])].filter(id => context.linked.has(id)).length };
   if (!isLinked) return none;
   const cooling = context.coolantOf(fixture);
@@ -740,30 +740,30 @@ export function floorBenefitsOf(allFixtures: readonly VenueFixture[], fixture: V
     coolsMachines: new Set(vatMotors.flatMap(motor => [...(context.drive.served.get(motor.id)?.handed ?? [])].filter(id => context.linked.has(id)))).size,
     doubled: spec.coolant !== undefined && context.heated(fixture),
     heatsVats: circuit.length,
-    variety: spec.venue === 'packhouse' ? 0 : floorBalance.varietyYield * Math.max(0, kindsOf(context.machines) - 1),
-    powerSaving: spec.heat ? floorBalance.boilerPowerSaving : 0,
+    variety: spec.venue === 'packhouse' ? 0 : interiorBalance.varietyYield * Math.max(0, kindsOf(context.machines) - 1),
+    powerSaving: spec.heat ? interiorBalance.boilerPowerSaving : 0,
   };
 }
 
 // How many Machines and Pumps the Motor's group drives, how many its Motors can drive, and how many are left stopped past that.
-export function floorMotorLoadOf(allFixtures: readonly VenueFixture[], motor: VenueFixture): { driven: number; capacity: number; overloaded: number } {
+export function interiorMotorLoadOf(allFixtures: readonly VenueFixture[], motor: VenueFixture): { driven: number; capacity: number; overloaded: number } {
   const share = reportOf(allFixtures).drive.served.get(motor.id);
-  return { driven: share?.handed.size ?? 0, capacity: (share?.motors ?? 1) * floorBalance.motorCapacity, overloaded: share?.overloaded ?? 0 };
+  return { driven: share?.handed.size ?? 0, capacity: (share?.motors ?? 1) * interiorBalance.motorCapacity, overloaded: share?.overloaded ?? 0 };
 }
 
 // The Machines and Pumps that no Motor has the strength to drive.
-export const floorOverloadedOf = (allFixtures: readonly VenueFixture[]): ReadonlySet<number> => reportOf(allFixtures).drive.overloaded;
+export const interiorOverloadedOf = (allFixtures: readonly VenueFixture[]): ReadonlySet<number> => reportOf(allFixtures).drive.overloaded;
 
-const NO_BONUS: FloorBonus = { speed: 0, yield: 0, power: 0 };
+const NO_BONUS: InteriorBonus = { speed: 0, yield: 0, power: 0 };
 
 const NO_FIXTURES: readonly VenueFixture[] = [];
 
 // The Fixtures of a Factory's floor, the same empty list each time when it has none, so what is cached on a list stays cached.
-export const floorFixturesOf = (building: Pick<Building, 'floor'>): readonly VenueFixture[] => building.floor?.fixtures ?? NO_FIXTURES;
+export const interiorFixturesOf = (building: Pick<Building, 'interior'>): readonly VenueFixture[] => building.interior?.fixtures ?? NO_FIXTURES;
 
 // The bonus of a building's floor; for a Packhouse, the one that applies to the packed Goods `item` when it is given.
-export function floorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'floor'>, item?: ItemId): FloorBonus {
-  if (!building.floor) return NO_BONUS;
-  if (building.type === 'packhouse') return packhouseBonusOf(building.floor.fixtures, building.tier, item === undefined ? undefined : packSizeOf(item));
-  return floorBonusOf(building.floor.fixtures, building.tier);
+export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'interior'>, item?: ItemId): InteriorBonus {
+  if (!building.interior) return NO_BONUS;
+  if (building.type === 'packhouse') return packhouseBonusOf(building.interior.fixtures, building.tier, item === undefined ? undefined : packSizeOf(item));
+  return interiorBonusOf(building.interior.fixtures, building.tier);
 }

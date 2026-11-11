@@ -9,5 +9,5 @@ export { VENUE_CUSTOMER_MODELS };
 // The staff of a Venue is the character shipped with its own pack. The Hotel is built from the furniture kit, which has none.
 export const VENUE_STAFF_MODELS = Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).staffModels!.map(modelFileOf)])) as unknown as Record<VenueType, readonly string[]>;
 
-// A Factory floor and a Home interior have no crowd.
+// A Factory interior and a Home interior have no crowd.
 export const venueCrowdModelsOf = (venue: FixtureVenue): readonly string[] => (venue === 'factory' || venue === 'packhouse' || venue === 'home' ? [] : [...new Set([...VENUE_CUSTOMER_MODELS, ...VENUE_STAFF_MODELS[venue]])]);

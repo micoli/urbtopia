@@ -71,7 +71,7 @@ export const fixtureSchema = z
     z.strictObject({
       venue: z.enum(['factory', 'packhouse']),
       ...common,
-      // What the Fixture does on a Factory floor or a Packhouse floor: a Motor and a Pump are the sources of Drive and Flow, Gears, Shafts and Pipes carry them, a Machine uses them.
+      // What the Fixture does on a Factory interior or a Packhouse interior: a Motor and a Pump are the sources of Drive and Flow, Gears, Shafts and Pipes carry them, a Machine uses them.
       role: z.enum(FACTORY_FIXTURE_ROLES).optional(),
       // The sides through which Drive passes or enters, and those through which Flow does.
       drive: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
@@ -85,13 +85,13 @@ export const fixtureSchema = z
       // Where smoke rises while the Machine runs, in the model's own space (x, up, z).
       smoke: z.tuple([z.number(), z.number(), z.number()]).optional(),
       yield: z.number().positive().optional(),
-      // The kind of a Machine: the Factory floor pays for the variety of kinds that run, not for their number.
+      // The kind of a Machine: the Factory interior pays for the variety of kinds that run, not for their number.
       family: z.string().min(1).optional(),
       // A Machine that cools the Motors beside it: the share it adds to the speed and the yield of each Machine they drive.
       coolant: z.number().positive().optional(),
       // A Machine that heats its circuit of Flow, which a coolant on the same circuit then cools twice as well.
       heat: z.literal(true).optional(),
-      // Packhouse floor: the sides through which Packets come into a Line Fixture and leave it.
+      // Packhouse interior: the sides through which Packets come into a Line Fixture and leave it.
       lineIn: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
       lineOut: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
       // An Exit: the size of packed Goods it serves.

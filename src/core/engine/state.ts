@@ -63,7 +63,7 @@ export interface VenueFixture extends Coord {
   broken?: boolean;
   good?: GoodId;
   stock?: number;
-  // Exit of a Packhouse floor: the packed Good its Line restarts, and whether a Restocker is assigned to it.
+  // Exit of a Packhouse interior: the packed Good its Line restarts, and whether a Restocker is assigned to it.
   restock?: GoodId;
   restocker?: true;
   // The moment its Restocker last queued a production: the Exit served longest ago takes the next free Slot.
@@ -79,7 +79,7 @@ export interface VenueEvent {
 export type StaffRole = 'manager' | 'employee' | 'technician' | 'security' | 'cashier' | 'stocker' | 'receptionist' | 'housekeeper' | 'cook' | 'kitchenAssistant' | 'maitreD' | 'waiter' | 'bartender';
 
 // The interior of a Factory: the Fixtures the player placed, like a Venue's, without Takings or Visitors.
-export interface FloorData {
+export interface InteriorData {
   fixtures: VenueFixture[];
   nextFixtureId: number;
   // The part of a unit of yield that the Machines added and no cycle has paid out yet, from 0 to 1 excluded.
@@ -88,7 +88,7 @@ export interface FloorData {
   parquet?: number;
   // Technicians hired for the floor; they repair worn Fixtures by the hour and slow their wear.
   technicians?: number;
-  // Restockers hired for a Packhouse floor; each is assigned by hand to an Exit.
+  // Restockers hired for a Packhouse interior; each is assigned by hand to an Exit.
   restockers?: number;
   // The floor's own stream of the game's Seed, for its breakdowns.
   rng?: number;
@@ -173,7 +173,7 @@ export interface Building extends Coord {
   coalEnabled?: boolean;
   name?: string;
   venue?: VenueData;
-  floor?: FloorData;
+  interior?: InteriorData;
   attraction?: AttractionData;
   club?: ClubData;
   // Stands only: the Pirate cove they belong to.

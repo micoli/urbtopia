@@ -1,6 +1,6 @@
 import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, seatCapOf, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
-  FIXTURES, floorCapsOf, floorGridSizeOf, technicianPostsOf, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
+  FIXTURES, interiorCapsOf, interiorGridSizeOf, technicianPostsOf, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
   type StorageType, type UtilityType, type ProductionType, type ShopType, type BuildingKind, isStorageType, kindOf, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf, isProductionType, isOfficeType, officeTierOf, industryEmissionsOf,
 } from '../core';
@@ -102,14 +102,14 @@ function impactFact(perTier: number, level: number): LevelFact {
   return { ...fact, value: t('codex.impact.perHour').replace('{amount}', fact.value) };
 }
 
-// What the Factory floor of a Tier offers: its size, the bonuses it can approach, the Technician posts and the Fixtures it unlocks.
-function floorFacts(level: number): LevelFact[] {
-  const gridText = (tier: number) => `${floorGridSizeOf(tier)}×${floorGridSizeOf(tier)}`;
+// What the Factory interior of a Tier offers: its size, the bonuses it can approach, the Technician posts and the Fixtures it unlocks.
+function interiorFacts(level: number): LevelFact[] {
+  const gridText = (tier: number) => `${interiorGridSizeOf(tier)}×${interiorGridSizeOf(tier)}`;
   const fixturesText = (tier: number) => fixtureIdsOf('factory').filter(id => !FIXTURES[id].partition && FIXTURES[id].minTier <= tier).map(id => t(`venue.fixture.${id}`)).join(', ');
   return [
-    textFact('codex.fact.floorGrid', gridText, level),
-    numericFact('codex.fact.floorSpeedCap', tier => floorCapsOf(tier).speed, level, percent),
-    numericFact('codex.fact.floorYieldCap', tier => floorCapsOf(tier).yield, level, percent),
+    textFact('codex.fact.interiorGrid', gridText, level),
+    numericFact('codex.fact.interiorSpeedCap', tier => interiorCapsOf(tier).speed, level, percent),
+    numericFact('codex.fact.interiorYieldCap', tier => interiorCapsOf(tier).yield, level, percent),
     numericFact('codex.fact.technicianPosts', technicianPostsOf, level),
     textFact('codex.fact.fixtures', fixturesText, level),
   ];
@@ -122,7 +122,7 @@ function productionFacts(id: ProductionType, level: number): LevelFact[] {
     numericFact('codex.fact.slots', tier => productionTierOf({ type: id, tier }).maxSlots, level),
     numericFact('codex.fact.yield', tier => productionTierOf({ type: id, tier }).yield, level),
     ...(emissions > 0 ? [impactFact(emissions, level)] : []),
-    ...(id === 'factory' ? floorFacts(level) : []),
+    ...(id === 'factory' ? interiorFacts(level) : []),
   ];
 }
 

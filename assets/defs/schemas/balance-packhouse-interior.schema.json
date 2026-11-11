@@ -89,6 +89,6 @@
     "scannerWearFactor"
   ],
   "additionalProperties": false,
-  "title": "Packhouse floor balance",
-  "description": "assets/defs/balance/packhouseFloor.json: the size of the Packhouse floor, the cap of the bonus its Line adds by Packhouse Tier, its Exits, Strappers and Scanners."
+  "title": "Packhouse interior balance",
+  "description": "assets/defs/balance/packhouseInterior.json: the size of the Packhouse interior, the cap of the bonus its Line adds by Packhouse Tier, its Exits, Strappers and Scanners."
 }

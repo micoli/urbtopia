@@ -38,9 +38,9 @@ function pointAt(points: readonly THREE.Vector2[], distance: number): { at: THRE
   return { at: points[0]!.clone(), angle: 0 };
 }
 
-// The Packets that ride the Line of a Packhouse floor, from the mouth of each Packer to the hatch of its Exit, one every so often. A picture only, never counted
+// The Packets that ride the Line of a Packhouse interior, from the mouth of each Packer to the hatch of its Exit, one every so often. A picture only, never counted
 // nor saved, still under reduced motion. Its pace follows the speed bonus of the floor.
-export class FloorLineLayer {
+export class InteriorLineLayer {
   readonly root = new THREE.Group();
   private ways: Way[] = [];
   private speed = 1;

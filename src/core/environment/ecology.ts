@@ -8,7 +8,7 @@ import { FACILITIES, isFacilityType } from '../services/facilities';
 import { HOME_TIERS } from '../economy/economy';
 import { casinoPower } from '../leisure/casino';
 import { isVenueType, venuePower } from '../venues/profiles';
-import { floorBonusOfBuilding, floorPowerOfBuilding } from '../factory/factoryFloor';
+import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/factoryInterior';
 import type { Building, BuildingType, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 
@@ -59,8 +59,8 @@ export function economicPower(b: Building, saving = 0): number {
 }
 
 function basePower(b: Building): number {
-  if (b.type === 'packhouse') return floorPowerOfBuilding(b);
-  if (isIndustryType(b.type)) return industryWeightOf(b.type) * b.tier + floorBonusOfBuilding(b).power;
+  if (b.type === 'packhouse') return interiorPowerOfBuilding(b);
+  if (isIndustryType(b.type)) return industryWeightOf(b.type) * b.tier + interiorBonusOfBuilding(b).power;
   if (isShopType(b.type)) return 0.5;
   if (isOfficeType(b.type)) return officeTierOf(b).power;
   if (isFacilityType(b.type)) return tiersOf(b.type)[b.tier - 1]?.power ?? FACILITIES[b.type].power;

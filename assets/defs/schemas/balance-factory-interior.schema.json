@@ -99,6 +99,6 @@
     "maxPowerSaving"
   ],
   "additionalProperties": false,
-  "title": "Factory floor balance",
-  "description": "assets/defs/balance/factoryFloor.json: the size of the Factory floor and the cap of the bonus its linked Machines add, by Factory Tier."
+  "title": "Factory interior balance",
+  "description": "assets/defs/balance/factoryInterior.json: the size of the Factory interior and the cap of the bonus its linked Machines add, by Factory Tier."
 }

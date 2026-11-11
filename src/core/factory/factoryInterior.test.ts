@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { FixtureId, Rotation, VenueFixture } from '../engine/state';
-import { floorBenefitsOf, floorBonusOf, floorLinksOf, floorMotionOf, floorMotorLoadOf, floorOverloadedOf } from './factoryFloor';
+import { interiorBenefitsOf, interiorBonusOf, interiorLinksOf, interiorMotionOf, interiorMotorLoadOf, interiorOverloadedOf } from './factoryInterior';
 
 let nextId = 1;
 const put = (type: FixtureId, x: number, y: number, rotation: Rotation = 0, broken = false): VenueFixture => ({ id: nextId++, type, x, y, rotation, ...(broken ? { broken: true as const } : {}) });
@@ -9,7 +9,7 @@ const put = (type: FixtureId, x: number, y: number, rotation: Rotation = 0, brok
 const pumped = (x: number, y: number, rotation: 0 | 2 = 0): VenueFixture[] => (rotation === 0
   ? [put('factoryTank', x, y - 1), put('factoryPump', x, y), put('factoryMotor', x + 1, y, 1)]
   : [put('factoryTank', x, y + 1, 2), put('factoryPump', x, y, 2), put('factoryMotor', x - 1, y, 3)]);
-const linkedTypes = (fixtures: VenueFixture[]) => fixtures.filter(fixture => floorLinksOf(fixtures).linked.has(fixture.id)).map(fixture => fixture.type);
+const linkedTypes = (fixtures: VenueFixture[]) => fixtures.filter(fixture => interiorLinksOf(fixtures).linked.has(fixture.id)).map(fixture => fixture.type);
 
 describe('Drive', () => {
   it('reaches a Machine through a Shaft', () => {
@@ -50,7 +50,7 @@ describe('Drive', () => {
 
   it('jams a chain that is fed in two opposite directions', () => {
     const fixtures = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryGear', 3, 5), put('factoryMotor', 4, 5, 1), put('factoryPress', 3, 6, 2)];
-    const links = floorLinksOf(fixtures);
+    const links = interiorLinksOf(fixtures);
     expect(links.linked.size).toBe(0);
     expect(links.jammed).toBe(true);
   });
@@ -70,34 +70,34 @@ describe('what is read once for a list of Fixtures', () => {
 
   it('is shared by every question asked of the same list, and of a list with the same layout, and worked out again for another layout', () => {
     const list = fixtures();
-    expect(floorLinksOf(list)).toBe(floorLinksOf(list));
-    expect(floorMotionOf(list)).toBe(floorMotionOf(list));
-    expect(floorBonusOf(list, 5)).toBe(floorBonusOf(list, 5));
-    expect(floorBonusOf(list, 5)).not.toBe(floorBonusOf(list, 1));
-    expect(floorLinksOf([...list])).toBe(floorLinksOf(list));
-    expect(floorLinksOf(list.slice(0, 2))).not.toBe(floorLinksOf(list));
+    expect(interiorLinksOf(list)).toBe(interiorLinksOf(list));
+    expect(interiorMotionOf(list)).toBe(interiorMotionOf(list));
+    expect(interiorBonusOf(list, 5)).toBe(interiorBonusOf(list, 5));
+    expect(interiorBonusOf(list, 5)).not.toBe(interiorBonusOf(list, 1));
+    expect(interiorLinksOf([...list])).toBe(interiorLinksOf(list));
+    expect(interiorLinksOf(list.slice(0, 2))).not.toBe(interiorLinksOf(list));
   });
 
   it('follows an edit: a new list without the Shaft has no linked Machine', () => {
     const list = fixtures();
-    expect(floorLinksOf(list).linked.size).toBe(1);
-    expect(floorLinksOf(list.filter(fixture => fixture.type !== 'factoryShaft')).linked.size).toBe(0);
+    expect(interiorLinksOf(list).linked.size).toBe(1);
+    expect(interiorLinksOf(list.filter(fixture => fixture.type !== 'factoryShaft')).linked.size).toBe(0);
   });
 });
 
-describe('floorMotorLoadOf', () => {
+describe('interiorMotorLoadOf', () => {
   it('counts the linked Machines a Motor drives out of the ones it can', () => {
     const motor = put('factoryMotor', 3, 3);
     const fixtures = [motor, put('factoryBevelTee', 3, 4, 2), put('factoryPress', 2, 4, 3), put('factoryPress', 4, 4, 1)];
-    expect(floorMotorLoadOf(fixtures, motor)).toEqual({ driven: 2, capacity: 3, overloaded: 0 });
-    expect(floorMotorLoadOf([motor], motor)).toEqual({ driven: 0, capacity: 3, overloaded: 0 });
+    expect(interiorMotorLoadOf(fixtures, motor)).toEqual({ driven: 2, capacity: 3, overloaded: 0 });
+    expect(interiorMotorLoadOf([motor], motor)).toEqual({ driven: 0, capacity: 3, overloaded: 0 });
   });
 
   it('counts a Pump and a Boiler that are handed Drive, linked or not', () => {
     const [tank, pump, motor] = pumped(3, 3);
-    expect(floorMotorLoadOf([tank!, pump!, motor!], motor!)).toEqual({ driven: 1, capacity: 3, overloaded: 0 });
+    expect(interiorMotorLoadOf([tank!, pump!, motor!], motor!)).toEqual({ driven: 1, capacity: 3, overloaded: 0 });
     const boilerLine = [put('factoryMotor', 6, 3), put('factoryShaft', 6, 4), put('factoryBoiler', 6, 5, 0)];
-    expect(floorMotorLoadOf(boilerLine, boilerLine[0]!)).toEqual({ driven: 1, capacity: 3, overloaded: 0 });
+    expect(interiorMotorLoadOf(boilerLine, boilerLine[0]!)).toEqual({ driven: 1, capacity: 3, overloaded: 0 });
   });
 });
 
@@ -135,37 +135,37 @@ describe('Machines that need both', () => {
   });
 });
 
-describe('floorBonusOf', () => {
+describe('interiorBonusOf', () => {
   const lathe = () => [put('factoryMotor', 3, 3), put('factoryShaft', 3, 4), put('factoryLatheCw', 3, 5, 2)];
 
   it('is nothing on an empty floor', () => {
-    expect(floorBonusOf([], 5)).toEqual({ speed: 0, yield: 0, power: 0 });
+    expect(interiorBonusOf([], 5)).toEqual({ speed: 0, yield: 0, power: 0 });
   });
 
   it('adds what each linked Machine brings', () => {
-    expect(floorBonusOf(lathe(), 5)).toMatchObject({ speed: 0.15, yield: 0.05 });
+    expect(interiorBonusOf(lathe(), 5)).toMatchObject({ speed: 0.15, yield: 0.05 });
   });
 
   it('leaves out a Machine that is not linked', () => {
-    expect(floorBonusOf([put('factoryPress', 3, 5, 2)], 5)).toEqual({ speed: 0, yield: 0, power: 0 });
+    expect(interiorBonusOf([put('factoryPress', 3, 5, 2)], 5)).toEqual({ speed: 0, yield: 0, power: 0 });
   });
 
   it('keeps growing with every Machine, less and less, below the cap of the Tier', () => {
     const presses = (count: number) => Array.from({ length: count }, (_, index) => put('factoryPress', 3 + 3 * index, 5, 2)).flatMap(press => [put('factoryMotor', press.x, 3), put('factoryShaft', press.x, 4), press]);
-    const speeds = [1, 2, 3, 4, 5, 6].map(count => floorBonusOf(presses(count), 5).speed);
+    const speeds = [1, 2, 3, 4, 5, 6].map(count => interiorBonusOf(presses(count), 5).speed);
     speeds.slice(1).forEach((speed, index) => expect(speed).toBeGreaterThan(speeds[index]!));
     expect(speeds[5]!).toBeLessThan(0.5);
   });
 
   it('stays under the cap of the Tier of the Factory', () => {
     const fixtures = [put('factoryMotor', 3, 3), put('factoryShaft', 3, 4), put('factoryPress', 3, 5, 2)];
-    expect(floorBonusOf(fixtures, 1).speed).toBeLessThan(0.1);
-    expect(floorBonusOf(fixtures, 5).speed).toBeCloseTo(0.2);
+    expect(interiorBonusOf(fixtures, 1).speed).toBeLessThan(0.1);
+    expect(interiorBonusOf(fixtures, 5).speed).toBeCloseTo(0.2);
   });
 });
 
 describe('why a Machine is not linked', () => {
-  const problemsOf = (fixtures: VenueFixture[], machine: VenueFixture) => floorLinksOf(fixtures).problems.get(machine.id);
+  const problemsOf = (fixtures: VenueFixture[], machine: VenueFixture) => interiorLinksOf(fixtures).problems.get(machine.id);
 
   it('has no problem when it is linked', () => {
     const press = put('factoryPress', 3, 5, 2);
@@ -213,7 +213,7 @@ describe('Bevel gears', () => {
   it('shares one Motor between several Machines with a tee', () => {
     const fixtures = [put('factoryMotor', 3, 3), put('factoryBevelTee', 3, 4, 2), put('factoryPress', 2, 4, 3), put('factoryPress', 4, 4, 1)];
     expect(linkedTypes(fixtures)).toEqual(['factoryPress', 'factoryPress']);
-    expect(floorBonusOf(fixtures, 5).speed).toBeCloseTo(0.5 - 0.25 * Math.exp(-0.6));
+    expect(interiorBonusOf(fixtures, 5).speed).toBeCloseTo(0.5 - 0.25 * Math.exp(-0.6));
   });
 
   it('turns the two cones of an elbow the same way about the axes of the floor when they point toward opposite axes', () => {
@@ -237,7 +237,7 @@ describe('Bevel gears', () => {
 
   it('gives the cones of a tee the turns of its sides', () => {
     const tee = put('factoryBevelTee', 3, 4, 2);
-    const motion = floorMotionOf([put('factoryMotor', 3, 3), tee]);
+    const motion = interiorMotionOf([put('factoryMotor', 3, 3), tee]);
     const { left, right } = motion.get(tee.id) as Record<string, string>;
     expect(left).not.toBe(right);
   });
@@ -254,31 +254,31 @@ describe('what a floor costs and brings', () => {
   const vat = () => [...pumped(3, 3), put('factoryPipe', 3, 4), put('factoryMixingVat', 3, 5, 2)];
 
   it('draws the power of its Motors, little when they drive nothing', () => {
-    expect(floorBonusOf([put('factoryMotor', 3, 3), put('factoryMotor', 6, 3)], 5).power).toBeCloseTo(0.4);
-    expect(floorBonusOf(pressLine(3, 5), 5).power).toBeCloseTo(0.2 + 0.8 / 3);
+    expect(interiorBonusOf([put('factoryMotor', 3, 3), put('factoryMotor', 6, 3)], 5).power).toBeCloseTo(0.4);
+    expect(interiorBonusOf(pressLine(3, 5), 5).power).toBeCloseTo(0.2 + 0.8 / 3);
   });
 
   it('stops what a Motor has no strength left to drive, the highest ids first', () => {
     const floor = [put('factoryMotor', 3, 3), put('factoryBevelTee', 3, 4, 2), put('factoryShaft', 4, 4, 1), put('factoryBevelTee', 5, 4, 1), put('factoryPress', 5, 5, 2), put('factoryPress', 5, 3, 0),
       put('factoryShaft', 2, 4, 3), put('factoryBevelTee', 1, 4, 3), put('factoryPress', 1, 3, 0), put('factoryPress', 1, 5, 2)];
     const presses = floor.filter(fixture => fixture.type === 'factoryPress');
-    const { linked, problems } = floorLinksOf(floor);
+    const { linked, problems } = interiorLinksOf(floor);
     expect(linked.size).toBe(3);
     expect(problems.get(presses[3]!.id)).toEqual(['overloaded']);
-    expect(floorMotorLoadOf(floor, floor[0]!)).toEqual({ driven: 3, capacity: 3, overloaded: 1 });
-    expect(floorOverloadedOf(floor)).toEqual(new Set([presses[3]!.id]));
+    expect(interiorMotorLoadOf(floor, floor[0]!)).toEqual({ driven: 3, capacity: 3, overloaded: 1 });
+    expect(interiorOverloadedOf(floor)).toEqual(new Set([presses[3]!.id]));
   });
 
   it('pays for the kinds of Machine that run, not for their number', () => {
     const alike = [...pressLine(6, 5), ...pressLine(8, 5)];
-    expect(floorBonusOf([...pressLine(6, 5), ...vat()], 5).yield).toBeCloseTo(0.1 + 0.03);
-    expect(floorBonusOf(alike, 5).yield).toBe(0);
+    expect(interiorBonusOf([...pressLine(6, 5), ...vat()], 5).yield).toBeCloseTo(0.1 + 0.03);
+    expect(interiorBonusOf(alike, 5).yield).toBe(0);
   });
 
   it('adds to the Machines of a Motor that stands beside a Cooling vat that runs', () => {
     const cooled = (motorX: number) => [...vat(), put('factoryMotor', motorX, 5), put('factoryShaft', motorX, 6), put('factoryPress', motorX, 7, 2)];
-    expect(floorBonusOf(cooled(4), 5).speed).toBeCloseTo(0.2 * 1.25);
-    expect(floorBonusOf(cooled(7), 5).speed).toBeCloseTo(0.2);
+    expect(interiorBonusOf(cooled(4), 5).speed).toBeCloseTo(0.2 * 1.25);
+    expect(interiorBonusOf(cooled(7), 5).speed).toBeCloseTo(0.2);
   });
 
   it('cools twice as well when a Boiler sits on the same circuit of Flow', () => {
@@ -286,7 +286,7 @@ describe('what a floor costs and brings', () => {
       ...(boiler ? [put('factoryBoiler', 4, 4, 1), put('factoryMotor', 5, 4, 1)] : [])];
     const press = (boiler: boolean) => {
       const fixtures = circuit(boiler);
-      return floorBenefitsOf(fixtures, fixtures.find(fixture => fixture.type === 'factoryPress')!).speed;
+      return interiorBenefitsOf(fixtures, fixtures.find(fixture => fixture.type === 'factoryPress')!).speed;
     };
     expect(press(false)).toBeCloseTo(0.2 * 1.25);
     expect(press(true)).toBeCloseTo(0.2 * 1.5);
@@ -295,11 +295,11 @@ describe('what a floor costs and brings', () => {
   it('saves a share of the Motors\' electricity for every Boiler that runs', () => {
     const fixtures = [...pumped(3, 3), put('factoryPipeTee', 3, 4, 2), put('factoryMixingVat', 2, 4, 3), put('factoryBoiler', 4, 4, 1), put('factoryMotor', 5, 4, 1)];
     const boiler = fixtures.find(fixture => fixture.type === 'factoryBoiler')!;
-    expect(floorLinksOf(fixtures).linked.has(boiler.id)).toBe(true);
+    expect(interiorLinksOf(fixtures).linked.has(boiler.id)).toBe(true);
     const motors = 2;
     const busy = 2 / (motors * 3);
-    expect(floorBonusOf(fixtures, 5).power).toBeCloseTo(motors * (0.2 + 0.8 * busy) * 0.75);
-    expect(floorBenefitsOf(fixtures, boiler).powerSaving).toBe(0.25);
+    expect(interiorBonusOf(fixtures, 5).power).toBeCloseTo(motors * (0.2 + 0.8 * busy) * 0.75);
+    expect(interiorBenefitsOf(fixtures, boiler).powerSaving).toBe(0.25);
   });
 });
 
@@ -333,34 +333,34 @@ describe('a Tank and its Cooling vats', () => {
   it('feeds three of them and leaves the one with the highest id without Flow', () => {
     const fixtures = circuit();
     const vats = fixtures.filter(fixture => fixture.type === 'factoryMixingVat');
-    const { linked, problems } = floorLinksOf(fixtures);
+    const { linked, problems } = interiorLinksOf(fixtures);
     expect(vats.filter(vat => linked.has(vat.id))).toHaveLength(3);
     expect(problems.get(vats[3]!.id)).toEqual(['tankFull']);
   });
 
   it('feeds them all with a second Tank', () => {
     const fixtures = [...circuit(), ...pumped(8, 6)];
-    expect(floorLinksOf(fixtures).linked.size).toBe(3);
+    expect(interiorLinksOf(fixtures).linked.size).toBe(3);
   });
 });
 
-describe('floorMotionOf', () => {
+describe('interiorMotionOf', () => {
   it('gives each cone of a bevel gear the turn of its own side', () => {
     const elbow = put('factoryBevel', 3, 4, 3);
-    const motion = floorMotionOf([put('factoryMotor', 3, 3), elbow]);
+    const motion = interiorMotionOf([put('factoryMotor', 3, 3), elbow]);
     expect(motion.get(elbow.id)).toEqual({ right: 'cw', front: 'cw' });
   });
 
   it('turns what carries Drive, each Gear the other way, and the linked Machines', () => {
     const [motor, gearA, gearB, lathe] = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryGear', 3, 5), put('factoryLatheCcw', 3, 6, 2)];
-    const motion = floorMotionOf([motor, gearA, gearB, lathe]);
+    const motion = interiorMotionOf([motor, gearA, gearB, lathe]);
     expect([motor, gearA, gearB, lathe].map(fixture => motion.get(fixture.id))).toEqual(['cw', 'cw', 'ccw', 'ccw']);
   });
 
   it('turns a Machine that only needs Flow once it is linked', () => {
     const vat = put('factoryMixingVat', 3, 5, 2);
-    expect(floorMotionOf([...pumped(3, 3), put('factoryPipe', 3, 4), vat]).get(vat.id)).toBe('cw');
-    expect(floorMotionOf([vat]).has(vat.id)).toBe(false);
+    expect(interiorMotionOf([...pumped(3, 3), put('factoryPipe', 3, 4), vat]).get(vat.id)).toBe('cw');
+    expect(interiorMotionOf([vat]).has(vat.id)).toBe(false);
   });
 
   it('turns a Pump whose Flow reaches a linked Machine, and not one that serves none', () => {
@@ -369,14 +369,14 @@ describe('floorMotionOf', () => {
     const served = pumped(3, 3);
     const pump = served.find(fixture => fixture.type === 'factoryPump')!;
     const vat = put('factoryMixingVat', 3, 5, 2);
-    const motion = floorMotionOf([...served, put('factoryPipe', 3, 4), vat, ...idle]);
+    const motion = interiorMotionOf([...served, put('factoryPipe', 3, 4), vat, ...idle]);
     expect(motion.has(pump.id)).toBe(true);
     expect(motion.has(lone.id)).toBe(false);
   });
 
   it('turns nothing in a jammed group, nor a Machine that is not linked', () => {
     const press = put('factoryPress', 3, 6, 2);
-    const motion = floorMotionOf([put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryGear', 3, 5), put('factoryMotor', 4, 5, 1), press]);
+    const motion = interiorMotionOf([put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryGear', 3, 5), put('factoryMotor', 4, 5, 1), press]);
     expect(motion.size).toBe(0);
   });
 });

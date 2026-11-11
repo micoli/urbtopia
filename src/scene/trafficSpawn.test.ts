@@ -3,13 +3,13 @@ import { SPAWN, cumulativeWeights, pickByWeight, spawnWeight, turnWeight } from 
 
 describe('spawnWeight', () => {
   it('keeps the floor weight on roads that are not saturated', () => {
-    expect(spawnWeight(0)).toBe(SPAWN.floor);
-    expect(spawnWeight(1)).toBe(SPAWN.floor);
+    expect(spawnWeight(0)).toBe(SPAWN.interior);
+    expect(spawnWeight(1)).toBe(SPAWN.interior);
   });
 
   it('grows with the saturation and stops at the maximum ratio', () => {
     expect(spawnWeight(1.5)).toBeGreaterThan(spawnWeight(1.2));
-    expect(spawnWeight(2)).toBe(SPAWN.floor + SPAWN.saturatedBonus);
+    expect(spawnWeight(2)).toBe(SPAWN.interior + SPAWN.saturatedBonus);
     expect(spawnWeight(5)).toBe(spawnWeight(2));
   });
 });

@@ -95,15 +95,15 @@ const floorShellOf = () => definitionOf('factory').floorShell!;
 // A Home interior is drawn with the shell of the Hotel: full-height walls around a plain floor.
 const homeCornerOf = () => ({ x: shellOf('hotel').cornerX, z: shellOf('hotel').cornerZ, rotation: (shellOf('hotel').cornerRotation * Math.PI) / 180 });
 
-const floorCornerOf = () => ({ x: floorShellOf().cornerX, z: floorShellOf().cornerZ, rotation: (floorShellOf().cornerRotation * Math.PI) / 180 });
+const interiorCornerOf = () => ({ x: floorShellOf().cornerX, z: floorShellOf().cornerZ, rotation: (floorShellOf().cornerRotation * Math.PI) / 180 });
 
 // Where the corner piece stands, by kind of Venue: the models of each kit are cut around different origins.
 export const VENUE_CORNER_PLACEMENT = {
   ...(Object.fromEntries(
     VENUE_TYPES.map(type => [type, { x: shellOf(type).cornerX, z: shellOf(type).cornerZ, rotation: (shellOf(type).cornerRotation * Math.PI) / 180 }]),
   ) as Record<VenueType, { x: number; z: number; rotation: number }>),
-  factory: floorCornerOf(),
-  packhouse: floorCornerOf(),
+  factory: interiorCornerOf(),
+  packhouse: interiorCornerOf(),
   home: homeCornerOf(),
 } as Record<FixtureVenue, { x: number; z: number; rotation: number }>;
 
