@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "packhouse",
+  "category": "machines",
+  "name": {
+    "en": "Strapper (Drive on the left)",
+    "fr": "Cercleuse (prise à gauche)"
+  },
+  "model": "packhouse-floor-strapper-left",
+  "footprint": [1, 1],
+  "price": 1200,
+  "minTier": 2,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["left"],
+  "speed": 0.1,
+  "yield": 0.05,
+  "family": "strapper",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

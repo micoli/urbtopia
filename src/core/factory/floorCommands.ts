@@ -8,7 +8,7 @@ import type { Building, FixtureId, FloorData, GameState, Rotation, VenueFixture,
 import type { FixtureVenue } from '../venues/fixtures';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { PARQUETS, canHangOnWall, hangsOnWall, homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
-import { floorGridSizeOf } from './factoryFloor';
+import { floorGridSizeOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factoryFloor';
 import { technicianPostsOf } from './floorWear';
 
 export type Factory = Building & { type: 'factory' };
@@ -17,39 +17,63 @@ const EMPTY_FLOOR: FloorData = { fixtures: [], nextFixtureId: 1 };
 
 export const isFactory = (building: Building): building is Factory => building.type === 'factory';
 
-// A Factory or a Home: the buildings that have a floor to fit out.
-export const isFloorBuilding = (building: Building): boolean => building.type === 'factory' || isHomeType(building.type);
+export type Packhouse = Building & { type: 'packhouse' };
+
+export const isPackhouse = (building: Building): building is Packhouse => building.type === 'packhouse';
+
+// A Factory, a Packhouse or a Home: the buildings that have a floor to fit out.
+export const isFloorBuilding = (building: Building): boolean => building.type === 'factory' || building.type === 'packhouse' || isHomeType(building.type);
 
 // What a floor building offers in its build menu: its kind of Fixtures.
-export const floorKindOf = (building: Building): 'factory' | 'home' => (building.type === 'factory' ? 'factory' : 'home');
+export const floorKindOf = (building: Building): 'factory' | 'packhouse' | 'home' => (building.type === 'factory' ? 'factory' : building.type === 'packhouse' ? 'packhouse' : 'home');
 
 // The kind of Fixtures a building takes: those of its Venue, of a Factory floor or of a Home interior.
 export const fixtureVenueOf = (building: Building): FixtureVenue => (isFloorBuilding(building) ? floorKindOf(building) : (building.type as VenueType));
 
-export const floorSizeOf = (building: Building): number => (building.type === 'factory' ? floorGridSizeOf(building.tier) : homeGridSizeOf(building.tier));
+export const floorSizeOf = (building: Building): number => (building.type === 'factory' ? floorGridSizeOf(building.tier) : building.type === 'packhouse' ? packhouseGridSizeOf(building.tier) : homeGridSizeOf(building.tier));
 
-const factoryOf = (state: GameState, buildingId: number): Factory | undefined => {
+const technicianHostOf = (state: GameState, buildingId: number): Building | undefined => {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
-  return building?.type === 'factory' ? (building as Factory) : undefined;
+  return building?.type === 'factory' || building?.type === 'packhouse' ? building : undefined;
 };
 
 type FloorHost = Building;
 
 const hostOf = (state: GameState, buildingId: number): FloorHost | undefined => {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
-  return building && (building.type === 'factory' || isHomeType(building.type)) ? building : undefined;
+  return building && (building.type === 'factory' || building.type === 'packhouse' || isHomeType(building.type)) ? building : undefined;
 };
 
 const kindOf = floorKindOf;
 
 const gridSizeOf = floorSizeOf;
 
-const refundOf = (host: FloorHost, type: FixtureId): number => (host.type === 'factory' ? fixtureRefund(type) : homeFixtureRefund(type));
+const refundOf = (host: FloorHost, type: FixtureId): number => (host.type === 'factory' || host.type === 'packhouse' ? fixtureRefund(type) : homeFixtureRefund(type));
 
 const floorOf = (host: FloorHost): FloorData => host.floor ?? EMPTY_FLOOR;
 
+const startsALine = (type: FixtureId): boolean => FIXTURES[type].role === 'machine' && FIXTURES[type].lineOut !== undefined && FIXTURES[type].lineIn === undefined;
+
+// The turns a Fixture of a Packhouse floor can take on a cell of the edge of a floor of a given size, with its back to that edge: a Packer stands against the back wall
+// only, an Exit against any of the four edges. None for a Fixture that stands anywhere, and none for a cell where it cannot stand.
+const wallTurnsOf = (type: FixtureId, cell: { x: number; y: number }, size: number): readonly Rotation[] => {
+  if (FIXTURES[type].role !== 'exit' && !startsALine(type)) return [];
+  const turns: Rotation[] = [];
+  if (cell.y === 0) turns.push(0);
+  if (cell.x === 0 && FIXTURES[type].role === 'exit') turns.push(3);
+  if (cell.y === size - 1 && FIXTURES[type].role === 'exit') turns.push(2);
+  if (cell.x === size - 1 && FIXTURES[type].role === 'exit') turns.push(1);
+  return turns;
+};
+
+// The turn a Packer or an Exit takes when put on a cell, if it can stand there.
+export const wallFacingOf = (type: FixtureId, cell: { x: number; y: number }, size: number): Rotation | undefined => wallTurnsOf(type, cell, size)[0];
+
+const needsAWall = (type: FixtureId): boolean => FIXTURES[type].role === 'exit' || startsALine(type);
+
 export function canStandOnFloor(host: FloorHost, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
   const size = gridSizeOf(host);
+  if (host.type === 'packhouse' && needsAWall(fixture.type) && !wallTurnsOf(fixture.type, fixture, size).includes(fixture.rotation)) return false;
   const entrance = entranceCell(host.tier);
   if (hangsOnWall(fixture.type)) return host.type !== 'factory' && canHangOnWall(floorOf(host).fixtures, fixture, size, entrance.x, ignoreId);
   const occupied = new Set(floorOf(host).fixtures.filter(other => other.id !== ignoreId && !hangsOnWall(other.type)).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
@@ -66,10 +90,11 @@ export function placeFloorFixture(state: GameState, buildingId: number, type: Fi
   const factory = hostOf(state, buildingId);
   if (!factory) return { key: 'error.unknownBuilding' };
   if (!(type in FIXTURES) || FIXTURES[type].venue !== kindOf(factory)) return { key: 'error.unknownCommand' };
-  if (factory.type !== 'factory' && !isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
+  if (isHomeType(factory.type) && !isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
   if (factory.tier < FIXTURES[type].minTier) return { key: 'error.tierTooLow' };
   const fixture = { type, x, y, rotation };
   if (!canStandOnFloor(factory, fixture)) return { key: 'error.tilesOccupied' };
+  if (FIXTURES[type].role === 'exit' && floorOf(factory).fixtures.filter(other => FIXTURES[other.type].packSize === FIXTURES[type].packSize).length >= packhouseExitLimitOf(factory.tier)) return { key: 'error.exitLimitReached' };
   const price = FIXTURES[type].price;
   if (state.urbs < price) return { key: 'error.notEnoughUrbs' };
   const floor = floorOf(factory);
@@ -143,7 +168,7 @@ export function repairFloorFixture(state: GameState, buildingId: number, fixture
 }
 
 export function hireFloorTechnician(state: GameState, buildingId: number): CommandOutcome {
-  const factory = factoryOf(state, buildingId);
+  const factory = technicianHostOf(state, buildingId);
   if (!factory) return { key: 'error.unknownBuilding' };
   const floor = floorOf(factory);
   const hired = floor.technicians ?? 0;
@@ -156,7 +181,7 @@ export function hireFloorTechnician(state: GameState, buildingId: number): Comma
 }
 
 export function releaseFloorTechnician(state: GameState, buildingId: number): CommandOutcome {
-  const factory = factoryOf(state, buildingId);
+  const factory = technicianHostOf(state, buildingId);
   if (!factory) return { key: 'error.unknownBuilding' };
   const floor = floorOf(factory);
   const hired = floor.technicians ?? 0;

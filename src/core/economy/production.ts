@@ -11,13 +11,13 @@ import { durationOf, valueOf, type ItemId } from './items';
 import type { Building, GameState, QueueEntry, ShopStack } from '../engine/state';
 import { productionTierOf } from './tiers';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { floorBonusOfBuilding } from '../factory/factoryFloor';
+import { floorBonusOfBuilding, floorPowerOfBuilding } from '../factory/factoryFloor';
 
 // A Mill or a Bakery consumes as many recipes as its yield per cycle.
 export const recipeMultiplierOf = (building: Building): number => (scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1);
 
 export const productionDurationOf = (building: Building, item: ItemId): number =>
-  Math.round(durationOf(item) * productionTierOf(building).durationFactor / (1 + floorBonusOfBuilding(building).speed));
+  Math.round(durationOf(item) * productionTierOf(building).durationFactor / (1 + floorBonusOfBuilding(building, item).speed));
 
 // Most units a cycle can bring: the yield of the Tier and the whole units a Factory floor can add to it.
 export const maxQuantityOf = (building: Pick<Building, 'type' | 'tier' | 'floor'>): number =>
@@ -29,7 +29,7 @@ const CARRY_EPSILON = 1e-9;
 // so a fair share comes out over many cycles with whole units only.
 export function newQueueEntry(building: Building, item: ItemId, now: number): { entry: QueueEntry; building: Building } {
   const base = productionTierOf(building).yield;
-  const bonus = floorBonusOfBuilding(building).yield;
+  const bonus = floorBonusOfBuilding(building, item).yield;
   const owed = bonus > 0 && building.floor ? base * bonus + (building.floor.carry ?? 0) : 0;
   const extra = Math.floor(owed + CARRY_EPSILON);
   const entry: QueueEntry = { item, duration: productionDurationOf(building, item), startedAt: isIdle(building) ? now : null, done: false, quantity: base + extra };
@@ -173,9 +173,10 @@ export function taxDue(building: Building): number {
 export function advanceProduction(state: GameState, now: number, elapsedMs: number, economicRatio = 1, homeRatios: ReadonlyMap<number, number> = new Map(), idleShops: ReadonlySet<number> = new Set(), filledJobs: ReadonlyMap<number, number> = new Map(), industrySpeed = 1): { state: GameState; events: GameEvent[] } {
   const results = state.buildings.map((building) => {
     const idle = idleShops.has(building.id);
+    const drawsPower = building.type === 'packhouse' && floorPowerOfBuilding(building) > 0;
     const ratio = isIndustryType(building.type) ? economicRatio * industrySpeed : economicRatio;
     const delay = idle ? elapsedMs : elapsedMs * (1 - ratio);
-    const slowed = isIndustryType(building.type) || isShopType(building.type) ? {
+    const slowed = isIndustryType(building.type) || isShopType(building.type) || drawsPower ? {
       ...building,
       queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delay }),
       stacks: building.stacks.map(stack => stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + delay }),

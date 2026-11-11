@@ -5,7 +5,7 @@ import type { FixtureId, VenueType } from '../engine/state';
 import { modelFileOf } from '../models/modelFiles';
 import type { FixtureDefinition } from './fixtureSchema';
 import { VENUE_TYPES } from './profiles';
-import { FACTORY_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide } from './venueVocabulary';
+import { FACTORY_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type PackSize } from './venueVocabulary';
 
 export type { FixtureCategory };
 
@@ -13,11 +13,12 @@ export type { FixtureCategory };
 export const FIXTURE_CATEGORIES = {
   ...(Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).fixtureCategories!])) as unknown as Record<VenueType, readonly FixtureCategory[]>),
   factory: FACTORY_FIXTURE_CATEGORIES,
+  packhouse: PACKHOUSE_FIXTURE_CATEGORIES,
   home: HOME_FIXTURE_CATEGORIES,
 } as Record<FixtureVenue, readonly FixtureCategory[]>;
 
-// What a Fixture can be placed in: a Venue, a Factory floor or a Home interior.
-export type FixtureVenue = VenueType | 'factory' | 'home';
+// What a Fixture can be placed in: a Venue, a Factory floor, a Packhouse floor or a Home interior.
+export type FixtureVenue = VenueType | 'factory' | 'packhouse' | 'home';
 
 export interface FixtureSpec {
   venue: FixtureVenue;
@@ -68,6 +69,11 @@ export interface FixtureSpec {
   family?: string;
   coolant?: number;
   heat?: true;
+  // Packhouse floor: the sides through which Packets come into a Line Fixture and leave it, and the size of packed Goods an Exit serves.
+  lineIn?: readonly FixtureSide[];
+  lineOut?: readonly FixtureSide[];
+  packSize?: PackSize;
+  truck?: string;
   // A wall: it only divides the room, and earns, serves and wears nothing.
   partition?: true;
   joins?: { elbow: string; tee: string; cross: string };
@@ -80,6 +86,7 @@ const specOf = ({ id: _id, kind: _kind, name: _name, model, tint, footprint, joi
   playsPerHour: 0,
   ...fixture,
   model: modelFileOf(model),
+  ...('truck' in fixture && fixture.truck ? { truck: modelFileOf(fixture.truck) } : {}),
   footprint: [footprint[0], footprint[1]],
   ...(joins ? { joins: { elbow: modelFileOf(joins.elbow), tee: modelFileOf(joins.tee), cross: modelFileOf(joins.cross) } } : {}),
   ...(tint ? { tint: Number.parseInt(tint.slice(1), 16) } : {}),
@@ -95,4 +102,4 @@ export const fixtureIdsOf = (venue: FixtureVenue): FixtureId[] => FIXTURE_IDS.fi
 
 export const fixtureIdsInCategory = (venue: FixtureVenue, category: FixtureCategory): FixtureId[] => fixtureIdsOf(venue).filter(id => FIXTURES[id].category === category);
 
-export const FIXTURE_MODELS: readonly string[] = [...new Set(Object.values(FIXTURES).flatMap(spec => [spec.model, ...(spec.joins ? Object.values(spec.joins) : [])]))];
+export const FIXTURE_MODELS: readonly string[] = [...new Set(Object.values(FIXTURES).flatMap(spec => [spec.model, ...(spec.truck ? [spec.truck] : []), ...(spec.joins ? Object.values(spec.joins) : [])]))];

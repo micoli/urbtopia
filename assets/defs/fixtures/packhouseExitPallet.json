@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "packhouse",
+  "category": "line",
+  "name": {
+    "en": "Pallet exit",
+    "fr": "Sortie palettes"
+  },
+  "model": "packhouse-floor-exit",
+  "footprint": [1, 1],
+  "price": 200,
+  "minTier": 1,
+  "wear": 0.03,
+  "tint": "#d86a5a",
+  "role": "exit",
+  "lineIn": ["front"],
+  "packSize": "Pallet",
+  "truck": "packhouse-floor-truck"
+}

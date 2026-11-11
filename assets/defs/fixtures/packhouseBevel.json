@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "packhouse",
+  "category": "power",
+  "name": {
+    "en": "Bevel gear elbow",
+    "fr": "Renvoi d'angle conique"
+  },
+  "model": "factory-floor-bevel",
+  "footprint": [1, 1],
+  "price": 120,
+  "minTier": 2,
+  "wear": 0.05,
+  "role": "bevel",
+  "drive": ["front", "right"]
+}

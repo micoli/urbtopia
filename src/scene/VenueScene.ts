@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, hostWallOf, partitionPieceOf, type Coord, type FixtureVenue, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, hostWallOf, partitionPieceOf, type Coord, type FixtureVenue, type LinePath, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { venueCrowdModelsOf } from './venueCrowdModels';
+import { FloorLineLayer } from './FloorLineLayer';
 import { FloorMotionLayer, type FixtureMotion } from './FloorMotionLayer';
 import { VenueCrowdLayer } from './VenueCrowdLayer';
 import { ShelfStockLayer } from './ShelfStockLayer';
@@ -45,17 +46,23 @@ export class VenueScene {
   private library = new ModelLibrary();
   private shell = new THREE.Group();
   private fixtureRoot = new THREE.Group();
+  private truckRoot = new THREE.Group();
+  private trucks: readonly VenueFixture[] = [];
+  private linePaths: readonly LinePath[] | null = null;
   private ghostRoot = new THREE.Group();
   private selectionRoot = new THREE.Group();
   private warningRoot = new THREE.Group();
   private crowd: VenueCrowdLayer;
   private motion = new FloorMotionLayer();
+  private line = new FloorLineLayer();
   private lastFrame = performance.now();
   private fixturesSignature = '';
   private zoom = 1;
   private pan = { x: 0, z: 0 };
   private yaw = Math.PI / 4;
   private yawTarget = Math.PI / 4;
+  // Where the pointer last was over the canvas, to find the cell under it again when the room turns without the pointer moving.
+  private lastPointer: { x: number; y: number } | null = null;
   private northWalls = new THREE.Group();
   private westWalls = new THREE.Group();
   private cornerPost = new THREE.Group();
@@ -102,11 +109,12 @@ export class VenueScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 2.2);
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
-    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
-    this.ready = this.library.ensure([...Object.values(this.shellModels), ...(venueType === 'home' ? PARQUET_MODELS : []), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
+    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.truckRoot, this.line.root, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
+    this.ready = this.library.ensure([...Object.values(this.shellModels), ...(venueType === 'home' ? PARQUET_MODELS : []), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...(FIXTURES[id].truck ? [FIXTURES[id].truck!] : []), ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
       this.rebuildFixtures();
+      this.rebuildTrucks();
       this.crowd.enable();
       this.dirty = true;
     });
@@ -152,6 +160,32 @@ export class VenueScene {
   setMotion(motion: ReadonlyMap<number, FixtureMotion>, speed = 1): void {
     this.motion.setMotion(motion);
     this.motion.setSpeed(speed);
+    this.dirty = true;
+  }
+
+  // The ways that Packets take on a Packhouse floor, and the pace they ride at.
+  setLine(paths: readonly LinePath[], speed = 1): void {
+    if (paths !== this.linePaths) {
+      this.linePaths = paths;
+      this.line.setPaths(paths);
+    }
+    this.line.setSpeed(speed);
+    this.dirty = true;
+  }
+
+  // The Exits of a Packhouse floor whose Line is linked: a truck waits outside each of them.
+  setTrucks(exits: readonly VenueFixture[]): void {
+    if (exits === this.trucks) return;
+    this.trucks = exits;
+    this.rebuildTrucks();
+  }
+
+  private rebuildTrucks(): void {
+    this.clear(this.truckRoot);
+    for (const exit of this.trucks) {
+      const truck = FIXTURES[exit.type].truck;
+      if (truck && this.library.has(truck)) this.place(this.truckRoot, truck, exit.x + 0.5, exit.y + 0.5, -exit.rotation * Math.PI / 2);
+    }
     this.dirty = true;
   }
 
@@ -402,6 +436,7 @@ export class VenueScene {
 
   // Dragging with the button down moves the room under the pointer, as in the city.
   private handlePointerMove = (event: PointerEvent): void => {
+    this.lastPointer = { x: event.clientX, y: event.clientY };
     if (this.pointers.has(event.pointerId)) this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     if (this.pointers.size >= 2) {
       this.handlePinch();
@@ -456,6 +491,7 @@ export class VenueScene {
   };
 
   private handlePointerLeave = (): void => {
+    this.lastPointer = null;
     this.onHoverCell(null);
   };
 
@@ -521,6 +557,8 @@ export class VenueScene {
     const step = (this.yawTarget - this.yaw) * Math.min(1, delta * 10);
     this.yaw = Math.abs(this.yawTarget - this.yaw) < 0.002 ? this.yawTarget : this.yaw + step;
     this.placeCamera();
+    this.camera.updateMatrixWorld();
+    if (this.lastPointer && !this.pointerDown) this.onHoverCell(this.cellAt(this.lastPointer.x, this.lastPointer.y));
     this.dirty = true;
   }
 
@@ -535,7 +573,8 @@ export class VenueScene {
     this.turnTowardTarget(delta);
     this.crowd.update(delta, this.camera);
     this.motion.update(delta);
-    if (this.crowd.active || this.motion.active) this.dirty = true;
+    this.line.update(delta);
+    if (this.crowd.active || this.motion.active || this.line.active) this.dirty = true;
     if (this.dirty) {
       this.dirty = false;
       this.renderer.render(this.scene, this.camera);

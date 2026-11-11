@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "packhouse",
+  "category": "power",
+  "name": {
+    "en": "Shaft",
+    "fr": "Arbre"
+  },
+  "model": "factory-floor-shaft",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "wear": 0.04,
+  "role": "shaft",
+  "drive": ["front", "back"]
+}

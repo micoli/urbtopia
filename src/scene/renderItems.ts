@@ -103,6 +103,7 @@ export const VENUE_CORNER_PLACEMENT = {
     VENUE_TYPES.map(type => [type, { x: shellOf(type).cornerX, z: shellOf(type).cornerZ, rotation: (shellOf(type).cornerRotation * Math.PI) / 180 }]),
   ) as Record<VenueType, { x: number; z: number; rotation: number }>),
   factory: floorCornerOf(),
+  packhouse: floorCornerOf(),
   home: homeCornerOf(),
 } as Record<FixtureVenue, { x: number; z: number; rotation: number }>;
 
@@ -111,6 +112,7 @@ export const VENUE_SHELL_MODELS = {
     VENUE_TYPES.map(type => [type, { floor: modelFileOf(shellOf(type).floor), wall: modelFileOf(shellOf(type).wall), corner: modelFileOf(shellOf(type).corner) }]),
   ) as Record<VenueType, { floor: string; wall: string; corner: string }>),
   factory: { floor: modelFileOf(floorShellOf().floor), wall: modelFileOf(floorShellOf().wall), corner: modelFileOf(floorShellOf().corner) },
+  packhouse: { floor: modelFileOf(floorShellOf().floor), wall: modelFileOf(floorShellOf().wall), corner: modelFileOf(floorShellOf().corner) },
   home: { floor: parquetModelOf(), wall: modelFileOf(shellOf('hotel').wall), corner: modelFileOf(shellOf('hotel').corner) },
 } as Record<FixtureVenue, { floor: string; wall: string; corner: string }>;
 

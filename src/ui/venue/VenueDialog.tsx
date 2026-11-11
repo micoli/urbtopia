@@ -47,7 +47,7 @@ export function VenueDialog() {
     <div className="venue-view" role="dialog" aria-modal="true" aria-label={t('venue.manage')}>
       <VenueCanvas venueId={venueId} venueType={fixtureVenueOf(venue)} />
       <h2 className="venue-view__title">{t(`building.${venue.type}`)}</h2>
-      {venue.type === 'factory' ? <FloorMenus factory={venue} /> : isHomeType(venue.type) ? <HomeMenus home={venue} /> : <VenueMenus venue={venue} />}
+      {venue.type === 'factory' || venue.type === 'packhouse' ? <FloorMenus factory={venue} /> : isHomeType(venue.type) ? <HomeMenus home={venue} /> : <VenueMenus venue={venue} />}
       <VenueRotateButtons />
     </div>
   );

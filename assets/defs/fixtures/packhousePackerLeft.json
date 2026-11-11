@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "packhouse",
+  "category": "machines",
+  "name": {
+    "en": "Packer (Drive on the left)",
+    "fr": "Emballeuse (prise à gauche)"
+  },
+  "model": "packhouse-floor-packer-left",
+  "footprint": [1, 1],
+  "price": 800,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["left"],
+  "speed": 0.2,
+  "yield": 0.08,
+  "family": "packer",
+  "lineOut": ["front"]
+}

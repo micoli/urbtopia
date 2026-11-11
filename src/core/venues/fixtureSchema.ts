@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { pairSchema } from '../buildings/tierSchema.ts';
 import { count, filled, localizedText } from '../economy/itemSchemas.ts';
-import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_SIDES, HOME_FIXTURE_ROLES } from './venueVocabulary.ts';
+import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_SIDES, HOME_FIXTURE_ROLES, PACK_SIZES } from './venueVocabulary.ts';
 
 const common = {
   $schema: z.string().optional(),
@@ -69,9 +69,9 @@ export const fixtureSchema = z
       wall: z.literal(true).optional(),
     }),
     z.strictObject({
-      venue: z.literal('factory'),
+      venue: z.enum(['factory', 'packhouse']),
       ...common,
-      // What the Fixture does on a Factory floor: a Motor and a Pump are the sources of Drive and Flow, Gears, Shafts and Pipes carry them, a Machine uses them.
+      // What the Fixture does on a Factory floor or a Packhouse floor: a Motor and a Pump are the sources of Drive and Flow, Gears, Shafts and Pipes carry them, a Machine uses them.
       role: z.enum(FACTORY_FIXTURE_ROLES).optional(),
       // The sides through which Drive passes or enters, and those through which Flow does.
       drive: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
@@ -91,6 +91,13 @@ export const fixtureSchema = z
       coolant: z.number().positive().optional(),
       // A Machine that heats its circuit of Flow, which a coolant on the same circuit then cools twice as well.
       heat: z.literal(true).optional(),
+      // Packhouse floor: the sides through which Packets come into a Line Fixture and leave it.
+      lineIn: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
+      lineOut: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
+      // An Exit: the size of packed Goods it serves.
+      packSize: z.enum(PACK_SIZES).optional(),
+      // An Exit: the Model of the truck that waits outside it while its Line is linked.
+      truck: filled.optional(),
     }),
   ])
   .meta({ title: 'Fixture', description: 'An item placed inside a Venue, one file per Fixture id in assets/defs/fixtures.' });

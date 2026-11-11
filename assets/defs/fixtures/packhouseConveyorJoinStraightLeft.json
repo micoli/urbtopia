@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "packhouse",
+  "category": "line",
+  "name": {
+    "en": "Straight joining conveyor (left)",
+    "fr": "Tapis joigneur droit (gauche)"
+  },
+  "model": "packhouse-floor-conveyor-join-straight-left",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "conveyor",
+  "lineIn": ["back", "left"],
+  "lineOut": ["front"]
+}

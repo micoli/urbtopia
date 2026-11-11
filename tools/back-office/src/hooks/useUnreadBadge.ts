@@ -13,7 +13,7 @@ function faviconLink(): HTMLLinkElement {
   return link
 }
 
-function badgeFavicon(unread: number): string | null {
+function drawFavicon(unread: number): string | null {
   const canvas = document.createElement('canvas')
   canvas.width = FAVICON_SIZE
   canvas.height = FAVICON_SIZE
@@ -23,6 +23,7 @@ function badgeFavicon(unread: number): string | null {
   context.beginPath()
   context.arc(32, 32, 30, 0, Math.PI * 2)
   context.fill()
+  if (unread <= 0) return canvas.toDataURL('image/png')
   context.fillStyle = '#dc2626'
   context.beginPath()
   context.arc(44, 20, 20, 0, Math.PI * 2)
@@ -38,16 +39,11 @@ function badgeFavicon(unread: number): string | null {
 export function useUnreadBadge(unread: number): void {
   useEffect(() => {
     const link = faviconLink()
-    const original = link.href
     document.title = badgedTitle(BASE_TITLE, unread)
-    if (unread > 0) {
-      const badge = badgeFavicon(unread)
-      if (badge) link.href = badge
-    }
+    const icon = drawFavicon(unread)
+    if (icon) link.href = icon
     return () => {
       document.title = BASE_TITLE
-      if (original) link.href = original
-      else link.removeAttribute('href')
     }
   }, [unread])
 }

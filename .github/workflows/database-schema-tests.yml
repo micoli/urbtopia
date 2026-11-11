@@ -1,4 +1,4 @@
-name: Database
+name: Test the database schema
 
 on:
   pull_request:
@@ -6,14 +6,14 @@ on:
       - supabase/**
       - src/persistence/cloud/database.types.ts
       - package.json
-      - .github/workflows/database.yml
+      - .github/workflows/database-schema-tests.yml
   push:
     branches: [main]
     paths:
       - supabase/**
       - src/persistence/cloud/database.types.ts
       - package.json
-      - .github/workflows/database.yml
+      - .github/workflows/database-schema-tests.yml
 
 permissions:
   contents: read
@@ -24,6 +24,7 @@ concurrency:
 
 jobs:
   database:
+    name: Start Supabase, run the database tests and lint the schema
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository

@@ -11,7 +11,7 @@ describe('Playwright container image of the workflows', () => {
     .flatMap((file) => [...readFileSync(join(workflows, file), 'utf8').matchAll(/mcr\.microsoft\.com\/playwright:v([\d.]+)-\S+/g)].map((match) => ({ file, version: match[1], reference: match[0] })));
 
   it('is used by the workflows that drive a browser', () => {
-    expect(images.map(({ file }) => file).sort()).toEqual(['deploy.yml', 'storybook.yml', 'visual.yml']);
+    expect(images.map(({ file }) => file).sort()).toEqual(['build-test-deploy-site.yml', 'storybook-smoke-test.yml', 'visual-regression-tests.yml']);
   });
 
   it.each(images)('$file runs the version of Playwright that is installed', ({ version }) => {

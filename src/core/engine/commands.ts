@@ -224,6 +224,7 @@ export type ErrorKey =
   | 'error.eventStarted'
   | 'error.noEvent'
   | 'error.noStaffPost'
+  | 'error.exitLimitReached'
   | 'error.noStaffToRelease'
   | 'error.outsideOwnedParcels'
   | 'error.tilesOccupied'

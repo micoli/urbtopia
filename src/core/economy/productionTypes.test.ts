@@ -23,14 +23,14 @@ describe('production family', () => {
     expect(['workshop', 'mill', 'factory', 'bakery', 'packhouse', 'home'].map(industryWeightOf)).toEqual([1, 1, 2, 2, 0, 0]);
   });
 
-  it('feeds economic power and workplaces from the same family', () => {
+  it('feeds economic power and workplaces from the same family, the Packhouse employing 5 Jobs per Tier', () => {
     const at = (type: Parameters<typeof createBuilding>[1], tier: number) => ({ ...createBuilding(1, type, 50, 50, 0), tier });
     expect(economicPower(at('workshop', 3))).toBe(3);
     expect(economicPower(at('bakery', 3))).toBe(6);
     expect(economicPower(at('packhouse', 3))).toBe(0);
     for (const type of INDUSTRY_TYPES) expect(workplaceTypes).toContain(type);
-    expect(workplaceTypes).not.toContain('packhouse');
-    expect(jobsOf(at('packhouse', 3))).toBe(0);
+    expect(workplaceTypes).toContain('packhouse');
+    expect(jobsOf(at('packhouse', 3))).toBe(15);
   });
 
   it('gives each production building its emissions, its compartment and its recipe rule', () => {
