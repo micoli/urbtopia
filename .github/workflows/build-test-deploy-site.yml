@@ -181,7 +181,7 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    if: github.event_name != 'pull_request'
+    if: ${{ !cancelled() && !failure() && github.event_name != 'pull_request' }}
     needs: [typecheck, lint, unit-tests, package-site]
     runs-on: ubuntu-latest
     permissions:
@@ -198,7 +198,7 @@ jobs:
   release:
     name: Create the GitHub release
     needs: [package-site, deploy]
-    if: github.ref == 'refs/heads/main'
+    if: ${{ !cancelled() && !failure() && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
