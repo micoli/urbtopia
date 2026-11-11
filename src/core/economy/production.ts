@@ -93,7 +93,7 @@ interface Advanced {
   events: GameEvent[];
 }
 
-function advanceBuilding(building: Building, now: number): Advanced {
+export function advanceBuilding(building: Building, now: number): Advanced {
   if (building.queue.length === 0) return { building, events: [] };
   const queue = building.queue.map((entry) => ({ ...entry }));
   const events: GameEvent[] = [];

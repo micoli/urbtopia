@@ -36,6 +36,7 @@ import { foundClub, recordMatchDecisions, releaseClubPlayer, setClubLineup, sign
 import { cancelShow, scheduleShow } from '../tourism/gatherings';
 import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
+import { queueItem } from '../factory/restock';
 import { assignFloorRestocker, hireFloorRestocker, setExitRestock, unassignFloorRestocker, hireFloorTechnician, releaseFloorRestocker, moveFloorFixture, placeFloorFixture, releaseFloorTechnician, removeFloorFixture, repairFloorFixture, setHomeParquet } from '../factory/floorCommands';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
@@ -906,27 +907,7 @@ function moveBuilding(state: GameState, id: number, x: number, y: number, reques
 function queueProduction(state: GameState, buildingId: number, item: string, now: number): CommandOutcome {
   const building = state.buildings.find((candidate) => candidate.id === buildingId);
   if (!building) return fail('error.unknownBuilding');
-  if (!(isMaterial(item) || isGood(item)) || !producibleItems(building.type).includes(item)) return fail('error.cannotProduce');
-  if (!isItemUnlocked(state, item)) return fail('error.itemLocked');
-  if (building.tier < minTierOf(item)) return fail('error.tierTooLow');
-  if (building.queue.length >= building.slotCount) return fail('error.queueFull');
-  const materials = { ...state.storage.materials };
-  const recipeMultiplier = recipeMultiplierOf(building);
-  for (const [material, needed] of Object.entries(recipeOf(item))) {
-    const required = needed * recipeMultiplier;
-    const available = materials[material as keyof typeof materials] ?? 0;
-    if (available < required) return fail('error.missingMaterials');
-    materials[material as keyof typeof materials] = available - required;
-  }
-  const queued = newQueueEntry(building, item, now);
-  return {
-    state: {
-      ...state,
-      storage: { ...state.storage, materials },
-      buildings: state.buildings.map((candidate) => (candidate === building ? { ...queued.building, queue: [...building.queue, queued.entry] } : candidate)),
-    },
-    events: [],
-  };
+  return queueItem(state, building, item, now);
 }
 
 function rushProduction(state: GameState, buildingId: number, now: number): CommandOutcome {

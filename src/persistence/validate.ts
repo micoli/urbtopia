@@ -34,7 +34,8 @@ function isQueueEntry(value: unknown): boolean {
     isNonNegative(value.duration) &&
     (value.startedAt === null || isNumber(value.startedAt)) &&
     typeof value.done === 'boolean' &&
-    isInt(value.quantity, 1)
+    isInt(value.quantity, 1) &&
+    (value.exitId === undefined || isInt(value.exitId, 1))
   );
 }
 

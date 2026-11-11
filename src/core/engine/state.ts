@@ -35,6 +35,8 @@ export interface QueueEntry {
   startedAt: number | null;
   done: boolean;
   quantity: number;
+  // Packhouse: the Exit whose Restocker queued this production.
+  exitId?: number;
 }
 
 export interface ShopStack {
