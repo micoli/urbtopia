@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "school",
+  "category": "decor",
+  "name": {
+    "en": "Globe",
+    "fr": "Globe terrestre"
+  },
+  "model": "school-interior-globe",
+  "footprint": [1, 1],
+  "price": 90,
+  "minTier": 2,
+  "quality": 0.07
+}

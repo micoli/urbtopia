@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "school",
+  "category": "shelves",
+  "name": {
+    "en": "Lockers",
+    "fr": "Casiers"
+  },
+  "model": "school-interior-lockers",
+  "footprint": [1, 1],
+  "price": 120,
+  "minTier": 1,
+  "quality": 0.05
+}

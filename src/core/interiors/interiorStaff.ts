@@ -17,8 +17,15 @@ export interface InteriorLayout {
   yieldGroups?: Record<string, string[]>;
 }
 
+export interface ServiceLayout {
+  gridSizes: number[];
+  qualityCaps: number[];
+}
+
 interface InteriorDeclaration {
   family: InteriorFamily;
+  unlockCitizens?: number;
+  service?: ServiceLayout;
   layout?: InteriorLayout;
   roles: Partial<Record<InteriorRole, { part: InteriorPart; posts: number[] }>>;
 }
@@ -31,6 +38,10 @@ export const interiorDeclarationOf = (type: BuildingType): InteriorDeclaration |
 export const yieldGroupOf = (type: BuildingType, item: string): string | undefined => Object.entries(DECLARATIONS[type]?.layout?.yieldGroups ?? {}).find(([, items]) => items.includes(item))?.[0];
 
 export const interiorLayoutOf = (type: BuildingType): InteriorLayout | undefined => DECLARATIONS[type]?.layout;
+
+export const interiorUnlockCitizensOf = (type: BuildingType): number => DECLARATIONS[type]?.unlockCitizens ?? 0;
+
+export const serviceLayoutOf = (type: BuildingType): ServiceLayout | undefined => DECLARATIONS[type]?.service;
 
 export const interiorFamilyOf = (type: BuildingType): InteriorFamily | undefined => DECLARATIONS[type]?.family;
 

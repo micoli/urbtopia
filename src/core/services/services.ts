@@ -16,10 +16,14 @@ export type TransitReachLinks = ReadonlyMap<number, ReadonlyMap<FacilityType, Tr
 // For each Home, the best Tier among the facilities of each type that serve it.
 export type ServingTiers = ReadonlyMap<number, ReadonlyMap<FacilityType, number>>;
 
+// For each Home, the facilities of each type that serve it.
+export type ServingFacilities = ReadonlyMap<number, ReadonlyMap<FacilityType, readonly number[]>>;
+
 interface Coverage {
   coverage: ServiceCoverage;
   viaTransit: TransitReachLinks;
   tiers: ServingTiers;
+  servers: ServingFacilities;
 }
 
 // Fast public transport joins Homes to facilities, so the lines, their vehicles and the networks they run on count in the key besides the buildings.
@@ -57,6 +61,7 @@ interface TypeCoverage {
   covered: Set<number>;
   links: Map<number, TransitLink & { facilityId: number }>;
   tiers: Map<number, number>;
+  servers: Map<number, number[]>;
 }
 
 function coveredHomes(type: FacilityType, facilities: Building[], homes: Building[], transit: TransitReach | null): TypeCoverage {
@@ -64,18 +69,25 @@ function coveredHomes(type: FacilityType, facilities: Building[], homes: Buildin
   const covered = new Set<number>();
   const links = new Map<number, TransitLink & { facilityId: number }>();
   const tiers = new Map<number, number>();
-  const bestTier = (facility: Building) => (home: Building) => tiers.set(home.id, Math.max(tiers.get(home.id) ?? 0, facility.tier));
+  const servers = new Map<number, number[]>();
+  const bestTier = (facility: Building) => (home: Building) => {
+    tiers.set(home.id, Math.max(tiers.get(home.id) ?? 0, facility.tier));
+    servers.set(home.id, [...(servers.get(home.id) ?? []), facility.id]);
+  };
   if (FACILITIES[type].radius === null) {
     const nearest = new Map(homes.map(home => [home.id, Math.min(...facilities.map(facility => distance(facility, home)))]));
-    serve(covered, homes, facilities.reduce((total, facility) => total + capacityOf(facility), 0), nearest, home => tiers.set(home.id, Math.max(...facilities.map(facility => facility.tier))));
-    return { covered, links, tiers };
+    serve(covered, homes, facilities.reduce((total, facility) => total + capacityOf(facility), 0), nearest, home => {
+      tiers.set(home.id, Math.max(...facilities.map(facility => facility.tier)));
+      servers.set(home.id, facilities.map(facility => facility.id));
+    });
+    return { covered, links, tiers, servers };
   }
   const remaining = new Map<Building, number>();
   for (const facility of facilities) {
     const reachable = homes.filter(home => isHomeInReach(facility, home, reachOf(facility)));
     remaining.set(facility, serve(covered, reachable, capacityOf(facility), new Map(reachable.map(home => [home.id, distance(facility, home)])), bestTier(facility)));
   }
-  if (!transit) return { covered, links, tiers };
+  if (!transit) return { covered, links, tiers, servers };
   for (const facility of facilities) {
     const beyond = homes.filter(home => !covered.has(home.id) && !isHomeInReach(facility, home, reachOf(facility)));
     const reached = transit.linksOf(facility, beyond);
@@ -85,7 +97,7 @@ function coveredHomes(type: FacilityType, facilities: Building[], homes: Buildin
       bestTier(facility)(home);
     });
   }
-  return { covered, links, tiers };
+  return { covered, links, tiers, servers };
 }
 
 function computeCoverage(state: GameState): Coverage {
@@ -93,18 +105,20 @@ function computeCoverage(state: GameState): Coverage {
   const result = new Map<number, Set<FacilityType>>(homes.map(home => [home.id, new Set()]));
   const viaTransit = new Map<number, Map<FacilityType, TransitLink & { facilityId: number }>>();
   const servingTiers = new Map<number, Map<FacilityType, number>>();
+  const serving = new Map<number, Map<FacilityType, readonly number[]>>();
   const transit = transitReachOf(state);
   for (const type of FACILITY_TYPES) {
     if (FACILITIES[type].category === 'waste') continue;
     // The highest Tier serves first, so a Home reached by several keeps the best.
     const facilities = [...buildingsOfType(state.buildings, type)].sort((a, b) => b.tier - a.tier || a.id - b.id);
     if (!facilities.length) continue;
-    const { covered, links, tiers } = coveredHomes(type, facilities, homes, transit);
+    const { covered, links, tiers, servers } = coveredHomes(type, facilities, homes, transit);
     for (const id of covered) result.get(id)?.add(type);
     for (const [id, tier] of tiers) servingTiers.set(id, (servingTiers.get(id) ?? new Map()).set(type, tier));
+    for (const [id, ids] of servers) serving.set(id, (serving.get(id) ?? new Map()).set(type, ids));
     for (const [id, link] of links) viaTransit.set(id, (viaTransit.get(id) ?? new Map()).set(type, link));
   }
-  return { coverage: result, viaTransit, tiers: servingTiers };
+  return { coverage: result, viaTransit, tiers: servingTiers, servers: serving };
 }
 
 function coverageOf(state: GameState): Coverage {
@@ -120,6 +134,8 @@ function coverageOf(state: GameState): Coverage {
 export const serviceCoverage = (state: GameState): ServiceCoverage => coverageOf(state).coverage;
 
 export const servingTiersOf = (state: GameState): ServingTiers => coverageOf(state).tiers;
+
+export const servingFacilitiesOf = (state: GameState): ServingFacilities => coverageOf(state).servers;
 
 // For each Home, the facilities that cover it only through Transit reach and the link that does.
 export const transitReachLinks = (state: GameState): TransitReachLinks => coverageOf(state).viaTransit;

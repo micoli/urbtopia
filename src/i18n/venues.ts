@@ -92,6 +92,8 @@ type VenueMessageKey =
   | 'home.interior.parquet'
   | `home.interior.parquet.${string}`
   | 'blocked.furnish'
+  | 'blocked.interior'
+  | 'service.interior.quality'
   | 'home.interior.comfort'
   | 'home.interior.wellbeing'
   | 'home.interior.wellbeingShort'
@@ -388,6 +390,8 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.fixture.panel': ['Fixture', 'Équipement'],
   'venue.cancel': ['Cancel', 'Annuler'],
   'venue.manage': ['Manage', 'Gérer'],
+  'service.interior.quality': ['Quality', 'Qualité'],
+  'blocked.interior': ['Its interior opens at {citizens} Citizens.', "Son intérieur s'ouvre à {citizens} habitants."],
   'blocked.furnish': ['Furnishing opens at {citizens} Citizens.', "L'aménagement s'ouvre à {citizens} habitants."],
   'home.interior.parquet': ['Floor', 'Parquet'],
   'home.interior.parquet.light': ['Light oak', 'Chêne clair'],

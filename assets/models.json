@@ -22217,6 +22217,126 @@
     "license": "Own work",
     "flush": true
   },
+  "hospital-interior-bed": {
+    "file": "hospital-interior/bed",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-floor": {
+    "file": "hospital-interior/floor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-medicine-cabinet": {
+    "file": "hospital-interior/medicine-cabinet",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-operating-table": {
+    "file": "hospital-interior/operating-table",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-partition": {
+    "file": "hospital-interior/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-partition-cross": {
+    "file": "hospital-interior/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-partition-elbow": {
+    "file": "hospital-interior/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-partition-tee": {
+    "file": "hospital-interior/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-vitals-monitor": {
+    "file": "hospital-interior/vitals-monitor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-waiting-chair": {
+    "file": "hospital-interior/waiting-chair",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-wall": {
+    "file": "hospital-interior/wall",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-wall-corner": {
+    "file": "hospital-interior/wall-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "industrial-solar-panel-flat": {
     "file": "industrial/solar-panel-flat",
     "source": "managed",
@@ -22235,6 +22355,136 @@
     "license": "Own work",
     "footprint": [
       2,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-armchair": {
+    "file": "library-interior/armchair",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-bookshelf": {
+    "file": "library-interior/bookshelf",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-card-catalog": {
+    "file": "library-interior/card-catalog",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-chair": {
+    "file": "library-interior/chair",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-floor": {
+    "file": "library-interior/floor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-lending-desk": {
+    "file": "library-interior/lending-desk",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-partition": {
+    "file": "library-interior/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-partition-cross": {
+    "file": "library-interior/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-partition-elbow": {
+    "file": "library-interior/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-partition-tee": {
+    "file": "library-interior/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-reading-table": {
+    "file": "library-interior/reading-table",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-wall": {
+    "file": "library-interior/wall",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "library-interior-wall-corner": {
+    "file": "library-interior/wall-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
       1
     ],
     "flush": true
@@ -25052,6 +25302,126 @@
   },
   "roads-road-straight": {
     "file": "streets/road-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-blackboard": {
+    "file": "school-interior/blackboard",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-desk": {
+    "file": "school-interior/desk",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-floor": {
+    "file": "school-interior/floor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-globe": {
+    "file": "school-interior/globe",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-lockers": {
+    "file": "school-interior/lockers",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-partition": {
+    "file": "school-interior/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-partition-cross": {
+    "file": "school-interior/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-partition-elbow": {
+    "file": "school-interior/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-partition-tee": {
+    "file": "school-interior/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-teacher-desk": {
+    "file": "school-interior/teacher-desk",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-wall": {
+    "file": "school-interior/wall",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "school-interior-wall-corner": {
+    "file": "school-interior/wall-corner",
     "source": "managed",
     "license": "Own work",
     "footprint": [

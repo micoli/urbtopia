@@ -91,6 +91,14 @@
       }
     ]
   },
+  "floorShell": {
+    "floor": "school-interior-floor",
+    "wall": "school-interior-wall",
+    "corner": "school-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  },
   "category": "education",
   "drawnToScale": true,
   "power": 2,

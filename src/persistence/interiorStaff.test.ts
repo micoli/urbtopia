@@ -39,11 +39,27 @@ describe('the Staff of a saved interior', () => {
 
   it('keeps the Fixtures of a Mill interior, and refuses those of another kind', () => {
     const mill = { ...createBuilding(4, 'mill', 70, 50, 0), tier: 3 };
+    const homes = [11, 12].map(id => ({ ...createBuilding(id, 'home', 20 + id, 20, 0), tier: 6 }));
     const fitted = [{ type: 'PlaceInteriorFixture', buildingId: 4, fixture: 'millMotor', x: 2, y: 2, rotation: 0 }, { type: 'PlaceInteriorFixture', buildingId: 4, fixture: 'millstone', x: 2, y: 4, rotation: 2 }] as Command[];
-    const loaded = JSON.parse(JSON.stringify(fitted.reduce(send, { ...start, buildings: [...start.buildings, mill] })));
+    const loaded = JSON.parse(JSON.stringify(fitted.reduce(send, { ...start, buildings: [...start.buildings, ...homes, mill] })));
     expect(valid(loaded)).toBe('ok');
-    expect(loaded.buildings[3].interior.fixtures).toHaveLength(2);
-    loaded.buildings[3].interior.fixtures[0].type = 'factoryMotor';
+    const saved = loaded.buildings.find((building: { id: number }) => building.id === 4);
+    expect(saved.interior.fixtures).toHaveLength(2);
+    saved.interior.fixtures[0].type = 'factoryMotor';
+    expect(valid(loaded)).not.toBe('ok');
+  });
+
+  it('keeps the furniture and the teacher of a School interior, and refuses the furniture of another kind', () => {
+    const homes = [11, 12, 13].map(id => ({ ...createBuilding(id, 'home', 20 + id, 20, 0), tier: 6 }));
+    const school = { ...createBuilding(5, 'school', 75, 50, 0), tier: 3 };
+    const fitted = [{ type: 'PlaceInteriorFixture', buildingId: 5, fixture: 'schoolDesk', x: 1, y: 1, rotation: 0 }, { type: 'PlaceInteriorFixture', buildingId: 5, fixture: 'schoolBlackboard', x: 2, y: 0, rotation: 0 },
+      { type: 'HireInteriorStaff', buildingId: 5, role: 'teacher' }] as Command[];
+    const loaded = JSON.parse(JSON.stringify(fitted.reduce(send, { ...start, buildings: [...start.buildings, ...homes, school] })));
+    expect(valid(loaded)).toBe('ok');
+    const saved = loaded.buildings.find((building: { id: number }) => building.id === 5);
+    expect(saved.interior.fixtures).toHaveLength(2);
+    expect(saved.interior.staff).toEqual({ teacher: 1 });
+    saved.interior.fixtures[0].type = 'millstone';
     expect(valid(loaded)).not.toBe('ok');
   });
 });

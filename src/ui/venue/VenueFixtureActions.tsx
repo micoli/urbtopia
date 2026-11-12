@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, hasProductionInterior, isBroken, isInteriorBuilding, isHomeType, repairCost, WEAR } from '../../core';
+import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, hasProductionInterior, hasServiceInterior, isBroken, isInteriorBuilding, isHomeType, repairCost, WEAR } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -27,11 +27,12 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
   const interiorOwner = useGame(store => store.state.buildings.find(candidate => candidate.id === venueId && hasProductionInterior(candidate)));
   const onFloor = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isInteriorBuilding(candidate)));
   const inHome = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isHomeType(candidate.type)));
+  const inService = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && hasServiceInterior(candidate)));
   const performance = useVenuePerformance(venueId);
   const earnings = fixture ? performance?.earningsByFixture.get(fixture.id) : undefined;
   const hints = fixture ? performance?.layout.hints.get(fixture.id) ?? [] : [];
   if (!fixture) return null;
-  const partition = FIXTURES[fixture.type].partition === true || inHome;
+  const partition = FIXTURES[fixture.type].partition === true || inHome || inService;
   const { startMove, stopMove, selectPlaced } = venueStore.getState();
   const send = gameStore.getState().send;
   return (
@@ -51,7 +52,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
         </>
       ) : (
         <ButtonRow align="stretch" spaced>
-          {!inHome && Math.round(100-conditionOf(fixture)) > 2
+          {!inHome && !inService && Math.round(100-conditionOf(fixture)) > 2
               ? <ActionButton variant="primary" onClick={() => send({ type: onFloor ? 'RepairInteriorFixture' : 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>
                 <Icon name="repair" /> {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} />
                 </ActionButton>

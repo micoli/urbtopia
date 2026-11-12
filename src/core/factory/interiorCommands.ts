@@ -7,7 +7,9 @@ import type { CommandError, CommandOutcome } from '../engine/commands';
 import type { Building, FixtureId, InteriorData, GameState, Rotation, VenueFixture, VenueType } from '../engine/state';
 import type { FixtureVenue } from '../venues/fixtures';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { PRODUCTION_INTERIOR_KINDS } from '../venues/venueVocabulary';
+import { PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS, isServiceInteriorKind } from '../venues/venueVocabulary';
+import { serviceGridSizeOf } from '../interiors/serviceInterior';
+import { isInteriorUnlocked } from '../interiors/interiorUnlock';
 import { interiorLayoutOf } from '../interiors/interiorStaff';
 import { PARQUETS, canHangOnWall, hangsOnWall, homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
 import { interiorGridSizeOf, interiorGridSizeOfType, packSizeOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factoryInterior';
@@ -34,15 +36,19 @@ export const hasProductionInterior = (building: Building): boolean => (PRODUCTIO
 // A Packhouse, a Bakery, a Dairy or a Storehouse: the interiors where a Line of crates runs from a Machine against the wall to an Exit.
 export const hasLineInterior = (building: Building): boolean => building.type === 'packhouse' || interiorLayoutOf(building.type)?.line === true;
 
-export const isInteriorBuilding = (building: Building): boolean => hasProductionInterior(building) || isHomeType(building.type);
+// A School, a Library or a Hospital: the interiors that raise the quality of a service.
+export const hasServiceInterior = (building: Building): boolean => isServiceInteriorKind(building.type);
+
+export const isInteriorBuilding = (building: Building): boolean => hasProductionInterior(building) || hasServiceInterior(building) || isHomeType(building.type);
 
 // What a floor building offers in its build menu: its kind of Fixtures.
-export const interiorKindOf = (building: Building): (typeof PRODUCTION_INTERIOR_KINDS)[number] | 'home' => (hasProductionInterior(building) ? (building.type as (typeof PRODUCTION_INTERIOR_KINDS)[number]) : 'home');
+export const interiorKindOf = (building: Building): (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number] | 'home' =>
+  (hasProductionInterior(building) ? (building.type as (typeof PRODUCTION_INTERIOR_KINDS)[number]) : hasServiceInterior(building) ? (building.type as (typeof SERVICE_INTERIOR_KINDS)[number]) : 'home');
 
 // The kind of Fixtures a building takes: those of its Venue, of a Factory interior or of a Home interior.
 export const fixtureVenueOf = (building: Building): FixtureVenue => (isInteriorBuilding(building) ? interiorKindOf(building) : (building.type as VenueType));
 
-export const interiorSizeOf = (building: Building): number => (building.type === 'factory' ? interiorGridSizeOf(building.tier) : building.type === 'packhouse' ? packhouseGridSizeOf(building.tier) : hasProductionInterior(building) ? interiorGridSizeOfType(building.type, building.tier) : homeGridSizeOf(building.tier));
+export const interiorSizeOf = (building: Building): number => (building.type === 'factory' ? interiorGridSizeOf(building.tier) : building.type === 'packhouse' ? packhouseGridSizeOf(building.tier) : hasProductionInterior(building) ? interiorGridSizeOfType(building.type, building.tier) : hasServiceInterior(building) ? serviceGridSizeOf(building.type, building.tier) : homeGridSizeOf(building.tier));
 
 const technicianHostOf = (state: GameState, buildingId: number): Building | undefined => {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
@@ -60,7 +66,7 @@ const kindOf = interiorKindOf;
 
 const gridSizeOf = interiorSizeOf;
 
-const refundOf = (host: InteriorHost, type: FixtureId): number => (hasProductionInterior(host) ? fixtureRefund(type) : homeFixtureRefund(type));
+const refundOf = (host: InteriorHost, type: FixtureId): number => (hasProductionInterior(host) || hasServiceInterior(host) ? fixtureRefund(type) : homeFixtureRefund(type));
 
 const interiorOf = (host: InteriorHost): InteriorData => host.interior ?? EMPTY_INTERIOR;
 
@@ -103,6 +109,7 @@ export function placeInteriorFixture(state: GameState, buildingId: number, type:
   if (!factory) return { key: 'error.unknownBuilding' };
   if (!(type in FIXTURES) || FIXTURES[type].venue !== kindOf(factory)) return { key: 'error.unknownCommand' };
   if (isHomeType(factory.type) && !isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
+  if (!isHomeType(factory.type) && !isInteriorUnlocked(state, factory.type)) return { key: 'error.itemLocked' };
   if (factory.tier < FIXTURES[type].minTier) return { key: 'error.tierTooLow' };
   const fixture = { type, x, y, rotation };
   if (!canStandOnInterior(factory, fixture)) return { key: 'error.tilesOccupied' };

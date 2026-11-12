@@ -1,4 +1,4 @@
-import { STAFF, hireFeeOf, interiorRolesOf, minTierOfTechnician, technicianPostsOf, type Building } from '../../core';
+import { STAFF, hasProductionInterior, hireFeeOf, interiorRolesOf, minTierOfTechnician, technicianPostsOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { InteriorRestocker } from './InteriorRestocker';
@@ -19,7 +19,7 @@ export function InteriorStaff({ factory }: InteriorStaffProps) {
   return (
     <section className="venue-build" aria-label={t('venue.staff')}>
       <div className="venue-build__items">
-        <div className="venue-staff">
+        {hasProductionInterior(factory) ? <div className="venue-staff">
           <div className="venue-staff__label">
             <strong>{t('venue.role.technician')} · {hired}/{posts}</strong>
             <span className="note note--muted">{t('venue.roleEffect.technician')} · <UrbsAmount value={STAFF.dailyWage.technician} /> {t('venue.wage')}</span>
@@ -29,7 +29,7 @@ export function InteriorStaff({ factory }: InteriorStaffProps) {
             <ActionButton aria-label={`${t('venue.release')} ${t('venue.role.technician')}`} disabled={hired === 0} onClick={() => send({ type: 'ReleaseInteriorTechnician', buildingId: factory.id })}>−</ActionButton>
             <ActionButton aria-label={`${t('venue.hire')} ${t('venue.role.technician')}`} disabled={hired >= posts || locked} onClick={() => send({ type: 'HireInteriorTechnician', buildingId: factory.id })}>+</ActionButton>
           </div>
-        </div>
+        </div> : null}
         {interiorRolesOf(factory.type).map(role => <InteriorRoleStaff key={role} building={factory} role={role} />)}
         {factory.type === 'packhouse' ? <InteriorRestocker packhouse={factory} /> : null}
       </div>

@@ -163,6 +163,7 @@ const wasteTraits = z.strictObject({
 // A Public facility serves the Homes within its radius (the whole city without one), up to the Citizen capacity of its Tier (unlimited without one).
 const facilityBuilding = z.strictObject({
   kind: z.literal('facility'),
+  floorShell: interiorShell.optional(),
   ...identity,
   ...sited,
   ...attractive,

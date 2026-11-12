@@ -1,21 +1,31 @@
-import { hasProductionInterior, interiorFamilyOf, type Building } from '../../core';
+import { hasProductionInterior, hasServiceInterior, interiorFamilyOf, interiorUnlockCitizensOf, isInteriorUnlocked, type Building } from '../../core';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
 import { t } from '../../i18n/t';
 import { venueStore } from '../../store/venueStore';
 import { ActionButton } from '../common/ActionButton';
+import { BlockedReason } from '../common/BlockedReason';
+import { useGame } from '../common/hooks';
 import { Icon } from '../common/Icon';
 
 interface InteriorButtonProps {
   building: Building;
 }
 
-// Opens the interior of a Factory, a Packhouse or a Mill in the same view as the interior of a Venue; those of the Mill, the Bakery, the Dairy and the Storehouse are behind the flag of the Production interiors.
+// Opens the interior of a Factory, a Packhouse, a Mill, a Bakery, a Dairy, a Storehouse, a School, a Library or a Hospital in the same view as the interior of a Venue. All but the Factory's
+// and the Packhouse's are behind the flag of their family, and open once the city has enough Citizens.
 export function InteriorButton({ building }: InteriorButtonProps) {
   const production = useFeatureFlag('productionInterior');
-  if (!hasProductionInterior(building) || (interiorFamilyOf(building.type) === 'production' && !production)) return null;
+  const service = useFeatureFlag('serviceInterior');
+  const unlocked = useGame(store => isInteriorUnlocked(store.state, building.type));
+  if (!hasProductionInterior(building) && !hasServiceInterior(building)) return null;
+  const family = interiorFamilyOf(building.type);
+  if ((family === 'production' && !production) || (family === 'service' && !service)) return null;
   return (
-    <ActionButton variant="primary" block onClick={() => venueStore.getState().open(building.id)}>
-      <Icon name="build" /> {t('factory.interior.open')}
-    </ActionButton>
+    <>
+      <ActionButton variant="primary" block disabled={!unlocked} onClick={() => venueStore.getState().open(building.id)}>
+        <Icon name="build" /> {t('factory.interior.open')}
+      </ActionButton>
+      {unlocked ? null : <BlockedReason reason={t('blocked.interior').replace('{citizens}', String(interiorUnlockCitizensOf(building.type)))} />}
+    </>
   );
 }

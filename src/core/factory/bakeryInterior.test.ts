@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, interiorBonusOfBuilding, interiorLinksOf, interiorSizeOf, newGame, saleIntervalOf, type Building, type Command, type FixtureId, type GameState, type Rotation } from '../index';
 
+// A city with enough Citizens for every interior to be fitted out.
+const homes = [10, 11, 12, 13].map(id => ({ ...createBuilding(id, 'home', 40 + id, 30, 0), tier: 6 }));
+
 const city = (tier = 3, urbs = 100_000): GameState => ({
   ...newGame({ seed: 'bakery-interior', now: 0 }),
   nextId: 100,
   urbs,
   tutorial: null,
-  buildings: [{ ...createBuilding(1, 'bakery', 55, 50, 0), tier }],
+  buildings: [...homes, { ...createBuilding(1, 'bakery', 55, 50, 0), tier }],
 });
 const send = (state: GameState, command: Command): GameState => {
   const result = dispatch(state, command, 0);
@@ -72,7 +75,7 @@ describe('the Line of a Bakery', () => {
   });
 
   it('adds nothing when the Line is cut', () => {
-    const cut = { ...withLine, buildings: withLine.buildings.map(building => ({ ...building, interior: { ...building.interior!, fixtures: building.interior!.fixtures.filter(fixture => fixture.type !== 'bakeryConveyor') } })) };
+    const cut = { ...withLine, buildings: withLine.buildings.map(building => (building.id !== 1 ? building : { ...building, interior: { ...building.interior!, fixtures: building.interior!.fixtures.filter(fixture => fixture.type !== 'bakeryConveyor') } })) };
     expect(interiorBonusOfBuilding(bakery(apply(cut, hire('baker'), hire('seller'))))).toMatchObject({ speed: 0, sales: 0 });
   });
 });

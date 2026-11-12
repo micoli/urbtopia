@@ -26,7 +26,17 @@ export const LINE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'pl
 // The Production interiors that share the engine of the Factory interior, by the kind of their Fixtures.
 export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse'] as const;
 
+// The Service interiors, by the kind of their Fixtures.
+export const SERVICE_INTERIOR_KINDS = ['school', 'library', 'hospital'] as const;
+
+export const isServiceInteriorKind = (kind: string): kind is (typeof SERVICE_INTERIOR_KINDS)[number] => (SERVICE_INTERIOR_KINDS as readonly string[]).includes(kind);
+
 export const isProductionInteriorKind = (kind: string): kind is (typeof PRODUCTION_INTERIOR_KINDS)[number] => (PRODUCTION_INTERIOR_KINDS as readonly string[]).includes(kind);
+
+// The sections of the build menu of the Service interiors, in order.
+export const SCHOOL_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['furniture', 'shelves', 'decor', 'walls'];
+export const LIBRARY_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['shelves', 'furniture', 'comfort', 'walls'];
+export const HOSPITAL_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['beds', 'service', 'furniture', 'walls'];
 
 // The sides of a Factory interior Fixture, seen from the Fixture itself: its front is the side its model faces.
 export const FIXTURE_SIDES = ['front', 'right', 'back', 'left'] as const;

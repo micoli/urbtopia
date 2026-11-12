@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { pairSchema } from '../buildings/tierSchema.ts';
 import { count, filled, localizedText } from '../economy/itemSchemas.ts';
-import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_SIDES, HOME_FIXTURE_ROLES, PACK_SIZES, PRODUCTION_INTERIOR_KINDS } from './venueVocabulary.ts';
+import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_SIDES, HOME_FIXTURE_ROLES, PACK_SIZES, PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS } from './venueVocabulary.ts';
 
 const common = {
   $schema: z.string().optional(),
@@ -65,6 +65,14 @@ export const fixtureSchema = z
       role: z.enum(HOME_FIXTURE_ROLES),
       // Leisure and decor: the share of its group it covers, from 0 to 1 excluded.
       comfort: z.number().gt(0).lte(1).optional(),
+      // Hangs on a wall segment instead of standing on a tile.
+      wall: z.literal(true).optional(),
+    }),
+    z.strictObject({
+      venue: z.enum(SERVICE_INTERIOR_KINDS),
+      ...common,
+      // What the piece adds to the quality of the service of the School, the Library or the Hospital; it counts in full up to a share of the cap of the Tier, then less and less.
+      quality: z.number().positive().optional(),
       // Hangs on a wall segment instead of standing on a tile.
       wall: z.literal(true).optional(),
     }),

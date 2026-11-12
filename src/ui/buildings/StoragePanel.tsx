@@ -6,6 +6,7 @@ import { useGame } from '../common/hooks';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { BlockedReason } from '../common/BlockedReason';
 import { ItemIcon } from '../common/ItemIcon';
+import { InteriorButton } from '../factory/InteriorButton';
 
 interface StoragePanelProps {
   building: Building;
@@ -30,6 +31,7 @@ export function StoragePanel({ building }: StoragePanelProps) {
   const isEmpty = compartments.every((compartment) => stock[compartment].length === 0);
   return (
     <DrawerPanel>
+      <InteriorButton building={building} />
       <BlockedReason reason={isFull ? t('storage.full') : isEmpty ? t('storage.empty') : null} />
       {compartments.map((compartment) => (
         <div key={compartment}>

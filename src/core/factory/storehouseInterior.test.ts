@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, interiorBonusOfBuilding, interiorLinksOf, interiorSizeOf, newGame, storageCapacity, type Building, type Command, type FixtureId, type GameState, type Rotation } from '../index';
 
+// A city with enough Citizens for every interior to be fitted out.
+const homes = [10, 11, 12, 13].map(id => ({ ...createBuilding(id, 'home', 40 + id, 30, 0), tier: 6 }));
+
 const city = (tier = 5, urbs = 100_000): GameState => ({
   ...newGame({ seed: 'storehouse-interior', now: 0 }),
   nextId: 100,
   urbs,
   tutorial: null,
-  buildings: [{ ...createBuilding(1, 'storehouse', 55, 50, 0), tier }],
+  buildings: [...homes, { ...createBuilding(1, 'storehouse', 55, 50, 0), tier }],
 });
 const send = (state: GameState, command: Command): GameState => {
   const result = dispatch(state, command, 0);
@@ -52,7 +55,7 @@ describe('the Storehouse interior', () => {
   });
 
   it('holds no more when the Line is cut', () => {
-    const cut = { ...withLine, buildings: withLine.buildings.map(building => ({ ...building, interior: { ...building.interior!, fixtures: building.interior!.fixtures.filter(fixture => fixture.type !== 'storehouseConveyor') } })) };
+    const cut = { ...withLine, buildings: withLine.buildings.map(building => (building.id !== 1 ? building : { ...building, interior: { ...building.interior!, fixtures: building.interior!.fixtures.filter(fixture => fixture.type !== 'storehouseConveyor') } })) };
     expect(storageCapacity(apply(cut, stocker))).toEqual(storageCapacity(city()));
   });
 });

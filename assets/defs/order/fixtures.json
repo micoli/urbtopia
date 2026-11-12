@@ -170,5 +170,11 @@
   "storehouseConveyorElbowLeft",
   "storehouseConveyorElbowRight",
   "storehouseRack",
-  "storehouseWall"
+  "storehouseWall",
+  "schoolDesk",
+  "schoolTeacherDesk",
+  "schoolLockers",
+  "schoolGlobe",
+  "schoolBlackboard",
+  "schoolWall"
 ]

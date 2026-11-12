@@ -1,4 +1,4 @@
-import { isProductionInteriorKind } from '../core/venues/venueVocabulary';
+import { isProductionInteriorKind, isServiceInteriorKind } from '../core/venues/venueVocabulary';
 import type { FixtureVenue, VenueType } from '../core';
 import { definitionOf } from '../core/buildings/buildingDefinitions';
 import { VENUE_CUSTOMER_MODELS } from '../core/infrastructure/infrastructure';
@@ -11,4 +11,4 @@ export { VENUE_CUSTOMER_MODELS };
 export const VENUE_STAFF_MODELS = Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).staffModels!.map(modelFileOf)])) as unknown as Record<VenueType, readonly string[]>;
 
 // A Factory interior and a Home interior have no crowd.
-export const venueCrowdModelsOf = (venue: FixtureVenue): readonly string[] => (venue === 'home' || isProductionInteriorKind(venue) ? [] : [...new Set([...VENUE_CUSTOMER_MODELS, ...VENUE_STAFF_MODELS[venue]])]);
+export const venueCrowdModelsOf = (venue: FixtureVenue): readonly string[] => (venue === 'home' || isProductionInteriorKind(venue) || isServiceInteriorKind(venue) ? [] : [...new Set([...VENUE_CUSTOMER_MODELS, ...VENUE_STAFF_MODELS[venue]])]);

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useStore } from 'zustand';
-import { fixtureVenueOf, hasProductionInterior, isHomeType } from '../../core';
+import { fixtureVenueOf, hasProductionInterior, hasServiceInterior, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { sceneHandle } from '../../store/sceneHandle';
 import { venueSceneHandle } from '../../store/venueSceneHandle';
@@ -47,7 +47,7 @@ export function VenueDialog() {
     <div className="venue-view" role="dialog" aria-modal="true" aria-label={t('venue.manage')}>
       <VenueCanvas venueId={venueId} venueType={fixtureVenueOf(venue)} />
       <h2 className="venue-view__title">{t(`building.${venue.type}`)}</h2>
-      {hasProductionInterior(venue) ? <InteriorMenus factory={venue} /> : isHomeType(venue.type) ? <HomeMenus home={venue} /> : <VenueMenus venue={venue} />}
+      {hasProductionInterior(venue) || hasServiceInterior(venue) ? <InteriorMenus factory={venue} /> : isHomeType(venue.type) ? <HomeMenus home={venue} /> : <VenueMenus venue={venue} />}
       <VenueRotateButtons />
     </div>
   );

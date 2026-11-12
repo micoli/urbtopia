@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "school",
+  "category": "furniture",
+  "name": {
+    "en": "Teacher's desk",
+    "fr": "Bureau du professeur"
+  },
+  "model": "school-interior-teacher-desk",
+  "footprint": [1, 1],
+  "price": 150,
+  "minTier": 2,
+  "quality": 0.1
+}

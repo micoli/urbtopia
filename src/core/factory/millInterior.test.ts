@@ -3,12 +3,15 @@ import { createBuilding, dispatch, hasProductionInterior, interiorBonusOfBuildin
 import { interiorLinksOf } from './factoryInterior';
 import { FIXTURES } from '../venues/fixtures';
 
+// A city with enough Citizens for every interior to be fitted out.
+const homes = [10, 11, 12, 13].map(id => ({ ...createBuilding(id, 'home', 40 + id, 30, 0), tier: 6 }));
+
 const city = (tier = 3, urbs = 100_000): GameState => ({
   ...newGame({ seed: 'mill-interior', now: 0 }),
   nextId: 100,
   urbs,
   tutorial: null,
-  buildings: [{ ...createBuilding(1, 'mill', 55, 50, 0), tier }, createBuilding(2, 'arcade', 60, 50, 0)],
+  buildings: [...homes, { ...createBuilding(1, 'mill', 55, 50, 0), tier }, createBuilding(2, 'arcade', 60, 50, 0)],
 });
 const send = (state: GameState, command: Command): GameState => {
   const result = dispatch(state, command, 0);

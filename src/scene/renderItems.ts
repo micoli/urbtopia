@@ -90,7 +90,7 @@ const RAIL_MODELS = [RAIL_STRAIGHT_MODEL, RAIL_CORNER_MODEL];
 const shellOf = (type: VenueType) => definitionOf(type).shell!;
 
 // The interior of a Factory has the same pieces as the interior of a Venue.
-type ProductionShellType = 'factory' | 'mill' | 'bakery' | 'dairy' | 'storehouse';
+type ProductionShellType = 'factory' | 'mill' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital';
 
 const floorShellOf = (type: ProductionShellType = 'factory') => definitionOf(type).floorShell!;
 
@@ -110,6 +110,9 @@ export const VENUE_CORNER_PLACEMENT = {
   bakery: interiorCornerOf('bakery'),
   dairy: interiorCornerOf('dairy'),
   storehouse: interiorCornerOf('storehouse'),
+  school: interiorCornerOf('school'),
+  library: interiorCornerOf('library'),
+  hospital: interiorCornerOf('hospital'),
   home: homeCornerOf(),
 } as Record<FixtureVenue, { x: number; z: number; rotation: number }>;
 
@@ -123,6 +126,9 @@ export const VENUE_SHELL_MODELS = {
   bakery: { floor: modelFileOf(floorShellOf('bakery').floor), wall: modelFileOf(floorShellOf('bakery').wall), corner: modelFileOf(floorShellOf('bakery').corner) },
   dairy: { floor: modelFileOf(floorShellOf('dairy').floor), wall: modelFileOf(floorShellOf('dairy').wall), corner: modelFileOf(floorShellOf('dairy').corner) },
   storehouse: { floor: modelFileOf(floorShellOf('storehouse').floor), wall: modelFileOf(floorShellOf('storehouse').wall), corner: modelFileOf(floorShellOf('storehouse').corner) },
+  school: { floor: modelFileOf(floorShellOf('school').floor), wall: modelFileOf(floorShellOf('school').wall), corner: modelFileOf(floorShellOf('school').corner) },
+  library: { floor: modelFileOf(floorShellOf('library').floor), wall: modelFileOf(floorShellOf('library').wall), corner: modelFileOf(floorShellOf('library').corner) },
+  hospital: { floor: modelFileOf(floorShellOf('hospital').floor), wall: modelFileOf(floorShellOf('hospital').wall), corner: modelFileOf(floorShellOf('hospital').corner) },
   home: { floor: parquetModelOf(), wall: modelFileOf(shellOf('hotel').wall), corner: modelFileOf(shellOf('hotel').corner) },
 } as Record<FixtureVenue, { floor: string; wall: string; corner: string }>;
 

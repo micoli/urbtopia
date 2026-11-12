@@ -5,6 +5,7 @@ import { ReachToggle } from '../common/ReachToggle.tsx';
 import { BlockedReason } from '../common/BlockedReason';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { WasteCapacityRows } from './WasteCapacityRows';
+import { InteriorButton } from '../factory/InteriorButton';
 
 interface FacilityPanelProps {
   building: Building & { type: FacilityType };
@@ -33,5 +34,6 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
         {load && <DrawerPanel.LabelValue label={t('facility.inReach')} value={load.citizensInReach}/>}
         {load && load.unservedCitizens > 0 && <DrawerPanel.LabelValue tone="warn" label={t('facility.unserved')} value={`${load.unservedCitizens} (${load.unservedHomes})`}/>}
         {load && load.unservedCitizens > 0 && <BlockedReason reason={t('facility.overloadedHint')} />}
+        <InteriorButton building={building} />
   </DrawerPanel>
 }
