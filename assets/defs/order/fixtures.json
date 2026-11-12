@@ -176,5 +176,12 @@
   "schoolLockers",
   "schoolGlobe",
   "schoolBlackboard",
-  "schoolWall"
+  "schoolWall",
+  "libraryBookshelf",
+  "libraryReadingTable",
+  "libraryChair",
+  "libraryArmchair",
+  "libraryLendingDesk",
+  "libraryCardCatalog",
+  "libraryWall"
 ]

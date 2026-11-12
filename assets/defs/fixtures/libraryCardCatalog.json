@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "library",
+  "category": "shelves",
+  "name": {
+    "en": "Card catalogue",
+    "fr": "Fichier à tiroirs"
+  },
+  "model": "library-interior-card-catalog",
+  "footprint": [1, 1],
+  "price": 140,
+  "minTier": 2,
+  "quality": 0.06
+}

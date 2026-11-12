@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "library",
+  "category": "comfort",
+  "name": {
+    "en": "Reading armchair",
+    "fr": "Fauteuil de lecture"
+  },
+  "model": "library-interior-armchair",
+  "footprint": [1, 1],
+  "price": 120,
+  "minTier": 2,
+  "quality": 0.05
+}

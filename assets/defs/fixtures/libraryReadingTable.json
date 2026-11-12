@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "library",
+  "category": "furniture",
+  "name": {
+    "en": "Reading table",
+    "fr": "Table de lecture"
+  },
+  "model": "library-interior-reading-table",
+  "footprint": [1, 1],
+  "price": 90,
+  "minTier": 1,
+  "quality": 0.05
+}
