@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "storehouse",
+  "category": "machines",
+  "name": {
+    "en": "Loading dock (Drive on the right)",
+    "fr": "Quai de chargement (prise à droite)"
+  },
+  "model": "storehouse-interior-dock-entry",
+  "footprint": [1, 1],
+  "price": 600,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["right"],
+  "family": "dock",
+  "lineOut": ["front"]
+}

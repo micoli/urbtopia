@@ -17,7 +17,7 @@ export const FIXTURE_CATEGORIES = {
   mill: FACTORY_FIXTURE_CATEGORIES,
   bakery: LINE_FIXTURE_CATEGORIES,
   dairy: LINE_FIXTURE_CATEGORIES,
-  storehouse: LINE_FIXTURE_CATEGORIES,
+  storehouse: PACKHOUSE_FIXTURE_CATEGORIES,
   home: HOME_FIXTURE_CATEGORIES,
 } as Record<FixtureVenue, readonly FixtureCategory[]>;
 

@@ -1,3 +1,5 @@
+import { interiorBonusOfBuilding } from '../factory/factoryInterior';
+import { interiorFillRate } from '../interiors/interiorParts';
 import { FARM_CROP_CAPACITY, STORAGE_TYPES, storageTierOf, type StorageType } from './economy';
 import { CROPS } from '../farming/crops';
 import type { GameState, Storage } from '../engine/state';
@@ -24,6 +26,13 @@ export function hasStorage(state: GameState): boolean {
   return state.buildings.some((building) => isStorageType(building.type));
 }
 
+// What the stocker of a Storehouse adds to what it holds: the room its linked racks make, in proportion to the Staff that Citizens fill.
+function roomBonusOf(state: GameState, building: GameState['buildings'][number]): number {
+  if (!building.interior) return 0;
+  const bonus = interiorBonusOfBuilding(building).capacity ?? 0;
+  return bonus === 0 ? 0 : bonus * interiorFillRate(state, building);
+}
+
 export function storageCapacity(state: GameState): Compartments {
   const farms = state.buildings.filter((building) => building.type === 'farm').length;
   const capacity: Compartments = { materials: 0, crops: farms * FARM_CROP_CAPACITY, goods: 0 };
@@ -36,9 +45,10 @@ export function storageCapacity(state: GameState): Compartments {
   for (const building of state.buildings) {
     if (!isStorageType(building.type)) continue;
     const { materials, goods, crops } = storageTierOf(building.type, building.tier);
-    capacity.crops += crops;
-    capacity.materials += materials;
-    capacity.goods += goods;
+    const room = 1 + roomBonusOf(state, building);
+    capacity.crops += Math.floor(crops * room);
+    capacity.materials += Math.floor(materials * room);
+    capacity.goods += Math.floor(goods * room);
   }
   if (state.buildings.some((building) => building.type === 'storehouse')) {
     capacity.materials = Math.max(capacity.materials, production.materials);

@@ -158,5 +158,17 @@
   "dairyConveyorElbowLeft",
   "dairyConveyorElbowRight",
   "dairyCounter",
-  "dairyWall"
+  "dairyWall",
+  "storehouseMotor",
+  "storehouseShaft",
+  "storehouseGear",
+  "storehouseBevel",
+  "storehouseBevelTee",
+  "storehouseDock",
+  "storehouseHoist",
+  "storehouseConveyor",
+  "storehouseConveyorElbowLeft",
+  "storehouseConveyorElbowRight",
+  "storehouseRack",
+  "storehouseWall"
 ]

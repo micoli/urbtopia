@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "storehouse",
+  "category": "line",
+  "name": {
+    "en": "Conveyor elbow (right)",
+    "fr": "Tapis coude (droite)"
+  },
+  "model": "packhouse-floor-conveyor-elbow-right",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "conveyor",
+  "lineIn": ["back"],
+  "lineOut": ["left"]
+}

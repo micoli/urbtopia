@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "storehouse",
+  "category": "line",
+  "name": {
+    "en": "Rack",
+    "fr": "Rayonnage"
+  },
+  "model": "storehouse-interior-rack-exit",
+  "footprint": [1, 1],
+  "price": 400,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "exit",
+  "capacity": 0.15,
+  "lineIn": ["front"]
+}
