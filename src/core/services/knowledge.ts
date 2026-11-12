@@ -19,7 +19,7 @@ export function homeKnowledge(state: GameState, home: Building, coverage: Servic
   // The best quality that the interiors of the facilities serving the Home add to the share of Knowledge their type gives.
   const quality = (type: FacilityType, part: InteriorPart): number => Math.max(0, ...(serving?.get(type) ?? []).map(id => {
     const facility = state.buildings.find(candidate => candidate.id === id);
-    return facility ? serviceQualityOf(state, facility, part, false) : 0;
+    return facility ? serviceQualityOf(state, facility, part, null) : 0;
   }));
   const schooling = SCHOOLING.reduce((sum, [type, points]) => sum + (covered.has(type) ? points * (1 + (type === 'school' ? quality('school', 'schooling') : 0)) : 0), 0);
   const libraryTier = covered.has('library') ? tiers.get(home.id)?.get('library') ?? 0 : 0;

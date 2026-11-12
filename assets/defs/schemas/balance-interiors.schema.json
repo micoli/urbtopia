@@ -53,6 +53,46 @@
             ],
             "additionalProperties": false
           },
+          "care": {
+            "type": "object",
+            "properties": {
+              "points": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "weights": {
+                "type": "object",
+                "properties": {
+                  "carePrimary": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "careDoctor": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "careSurgeon": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "required": [
+                  "carePrimary",
+                  "careDoctor",
+                  "careSurgeon"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "points",
+              "weights"
+            ],
+            "additionalProperties": false
+          },
           "layout": {
             "type": "object",
             "properties": {

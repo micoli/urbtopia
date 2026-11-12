@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "hospital",
+  "category": "furniture",
+  "name": {
+    "en": "Medicine cabinet",
+    "fr": "Armoire à pharmacie"
+  },
+  "model": "hospital-interior-medicine-cabinet",
+  "footprint": [1, 1],
+  "price": 150,
+  "minTier": 1,
+  "quality": 0.05
+}

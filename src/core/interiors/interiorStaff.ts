@@ -22,7 +22,13 @@ export interface ServiceLayout {
   qualityCaps: number[];
 }
 
+export interface CareBalance {
+  points: number;
+  weights: { carePrimary: number; careDoctor: number; careSurgeon: number };
+}
+
 interface InteriorDeclaration {
+  care?: CareBalance;
   family: InteriorFamily;
   unlockCitizens?: number;
   service?: ServiceLayout;
@@ -40,6 +46,8 @@ export const yieldGroupOf = (type: BuildingType, item: string): string | undefin
 export const interiorLayoutOf = (type: BuildingType): InteriorLayout | undefined => DECLARATIONS[type]?.layout;
 
 export const interiorUnlockCitizensOf = (type: BuildingType): number => DECLARATIONS[type]?.unlockCitizens ?? 0;
+
+export const careBalanceOf = (type: BuildingType): CareBalance | undefined => DECLARATIONS[type]?.care;
 
 export const serviceLayoutOf = (type: BuildingType): ServiceLayout | undefined => DECLARATIONS[type]?.service;
 

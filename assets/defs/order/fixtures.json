@@ -183,5 +183,11 @@
   "libraryArmchair",
   "libraryLendingDesk",
   "libraryCardCatalog",
-  "libraryWall"
+  "libraryWall",
+  "hospitalBed",
+  "hospitalVitalsMonitor",
+  "hospitalOperatingTable",
+  "hospitalMedicineCabinet",
+  "hospitalWaitingChair",
+  "hospitalWall"
 ]

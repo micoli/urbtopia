@@ -68,6 +68,6 @@ describe('the Knowledge a School gives', () => {
 
   it('rises once the furniture is fitted and a teacher is hired', () => {
     expect(homeKnowledge(taught, home(taught))).toBeGreaterThan(homeKnowledge(bare, home(bare)));
-    expect(serviceQualityOf(taught, school(taught), 'schooling', false)).toBeGreaterThan(0);
+    expect(serviceQualityOf(taught, school(taught), 'schooling', null)).toBeGreaterThan(0);
   });
 });

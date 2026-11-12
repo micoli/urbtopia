@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "hospital",
+  "category": "service",
+  "name": {
+    "en": "Operating table",
+    "fr": "Table d'opération"
+  },
+  "model": "hospital-interior-operating-table",
+  "footprint": [1, 1],
+  "price": 500,
+  "minTier": 3,
+  "quality": 0.1
+}

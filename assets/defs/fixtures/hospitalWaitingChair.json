@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "hospital",
+  "category": "furniture",
+  "name": {
+    "en": "Waiting chair",
+    "fr": "Chaise d'attente"
+  },
+  "model": "hospital-interior-waiting-chair",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "quality": 0.02
+}
