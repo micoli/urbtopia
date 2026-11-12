@@ -21524,6 +21524,16 @@
     ],
     "flush": true
   },
+  "factory-floor-pump-left": {
+    "file": "factory-floor/pump-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "factory-floor-tank": {
     "file": "factory-floor/tank",
     "source": "managed",

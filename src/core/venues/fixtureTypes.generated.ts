@@ -18,6 +18,7 @@ export type FixtureId =
   | 'bakeryPipeTee'
   | 'bakeryPump'
   | 'bakeryShaft'
+  | 'bakeryPumpLeft'
   | 'bakeryTank'
   | 'bakeryWall'
   | 'barStool'
@@ -49,6 +50,7 @@ export type FixtureId =
   | 'dairyPipeTee'
   | 'dairyPump'
   | 'dairyShaft'
+  | 'dairyPumpLeft'
   | 'dairyTank'
   | 'dairyWall'
   | 'danceMachine'
@@ -69,6 +71,7 @@ export type FixtureId =
   | 'factoryPress'
   | 'factoryPump'
   | 'factoryShaft'
+  | 'factoryPumpLeft'
   | 'factoryTank'
   | 'factoryWall'
   | 'floorLamp'
@@ -271,6 +274,7 @@ export type FactoryFixtureId =
   | 'factoryPress'
   | 'factoryPump'
   | 'factoryShaft'
+  | 'factoryPumpLeft'
   | 'factoryTank'
   | 'factoryWall';
 

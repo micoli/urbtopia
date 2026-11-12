@@ -1007,6 +1007,7 @@ export type ModelId =
   | 'factory-floor-press'
   | 'factory-floor-pump'
   | 'factory-floor-shaft'
+  | 'factory-floor-pump-left'
   | 'factory-floor-tank'
   | 'factory-floor-wall'
   | 'factory-floor-wall-corner'

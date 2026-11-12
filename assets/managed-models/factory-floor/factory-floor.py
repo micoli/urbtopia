@@ -352,6 +352,15 @@ def plain_corner(rng):
     return half_height(thick_corner(P, "slate", "yellow", "iron", "steel_dark"))
 
 
+def mirrored(builder):
+    """The model a builder draws, turned into its mirror image across the x = 0 plane, with the pivots of its moving parts."""
+    def build(rng):
+        parts, spinners = builder(rng)
+        flipped = {name: ([lpm.scale(part, sx=-1) for part in group], (-pivot[0], pivot[1], pivot[2])) for name, (group, pivot) in spinners.items()}
+        return [lpm.scale(part, sx=-1) for part in parts], flipped
+    return build
+
+
 def wall_set():
     return {"floor": concrete_floor, "wall": plain_wall, "partition": plain_partition, "partition-elbow": plain_junction("ES"), "partition-tee": plain_junction("WES"),
             "partition-cross": plain_junction("ESWN"), "wall-corner": plain_corner}
@@ -363,6 +372,7 @@ if __name__ == "__main__":
         "gear": gear,
         "shaft": shaft,
         "pump": pump,
+        "pump-left": mirrored(pump),
         "tank": tank,
         "pipe-straight": pipe_straight,
         "pipe-elbow": pipe_elbow,
