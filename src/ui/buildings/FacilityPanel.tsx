@@ -6,6 +6,7 @@ import { BlockedReason } from '../common/BlockedReason';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { WasteCapacityRows } from './WasteCapacityRows';
 import { InteriorButton } from '../factory/InteriorButton';
+import { VenueTutorialReplay } from '../tutorial/VenueTutorialReplay';
 
 interface FacilityPanelProps {
   building: Building & { type: FacilityType };
@@ -35,5 +36,6 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
         {load && load.unservedCitizens > 0 && <DrawerPanel.LabelValue tone="warn" label={t('facility.unserved')} value={`${load.unservedCitizens} (${load.unservedHomes})`}/>}
         {load && load.unservedCitizens > 0 && <BlockedReason reason={t('facility.overloadedHint')} />}
         <InteriorButton building={building} />
+        <VenueTutorialReplay building={building} />
   </DrawerPanel>
 }

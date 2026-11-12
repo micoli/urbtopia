@@ -10,6 +10,7 @@ export const VENUE_TUTORIAL_STEPS = {
   supermarket: ['place', 'checkout', 'shelf', 'stock', 'cashier', 'collect'],
   factory: ['motor', 'drive', 'flow', 'cooling'],
   mill: ['motor', 'drive', 'miller'],
+  school: ['furniture', 'teacher'],
 } as const;
 
 export type VenueTutorialType = keyof typeof VENUE_TUTORIAL_STEPS;
@@ -25,9 +26,9 @@ export const stepsOfVenueTutorial = (type: VenueTutorialType): readonly VenueTut
 export const isVenueTutorialStep = (type: string, step: unknown): boolean =>
   hasVenueTutorial(type) && (stepsOfVenueTutorial(type) as readonly unknown[]).includes(step);
 
-// The Buildings a tutorial follows: the Venues of its type, or the Factories and Mills whose interior has been used.
+// The Buildings a tutorial follows: the Venues of its type, or the Factories, Mills and Schools whose interior has been used.
 const sitesOf = (state: GameState, type: VenueTutorialType): Building[] =>
-  state.buildings.filter(building => building.type === type && (type === 'factory' || type === 'mill' ? building.interior !== undefined : building.venue !== undefined));
+  state.buildings.filter(building => building.type === type && (type === 'factory' || type === 'mill' || type === 'school' ? building.interior !== undefined : building.venue !== undefined));
 
 function isDoneInInterior(building: Building, step: VenueTutorialStep): boolean {
   const fixtures = building.interior?.fixtures ?? [];
@@ -51,6 +52,7 @@ function isDoneInInterior(building: Building, step: VenueTutorialStep): boolean 
 
 const isDoneIn = (building: Building, step: VenueTutorialStep): boolean => {
   if (building.type === 'factory' || building.type === 'mill') return isDoneInInterior(building, step);
+  if (building.type === 'school') return step === 'furniture' ? (building.interior?.fixtures.length ?? 0) > 0 : step === 'teacher' && totalInteriorStaff(building) > 0;
   const venue = building.venue!;
   switch (step) {
     case 'place':

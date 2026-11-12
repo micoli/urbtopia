@@ -223,7 +223,7 @@ export { advanceInteriors, minTierOfTechnician, restockerPostsOf, technicianPost
 export type { Factory, Packhouse } from './factory/interiorCommands';
 export { interiorFillRate, interiorPartsOf } from './interiors/interiorParts';
 export { isInteriorUnlocked } from './interiors/interiorUnlock';
-export { serviceFurnitureQuality, serviceGridSizeOf, serviceQualityOf } from './interiors/serviceInterior';
+export { serviceFurnitureQuality, serviceGridSizeOf, serviceQualityCapOf, serviceQualityOf } from './interiors/serviceInterior';
 export { hiredInteriorOf, interiorUnlockCitizensOf, serviceLayoutOf, interiorDeclarationOf, interiorFillRateFrom, interiorLayoutOf, interiorPartPresence, interiorRoleShare, interiorFamilyOf, interiorPostsOf, interiorRolesOf, interiorWagesPerHour, minTierOfInteriorRole, partOfRole, totalInteriorStaff } from './interiors/interiorStaff';
 export type { InteriorFamily, InteriorPart } from './interiors/interiorStaff';
 export { hireInteriorStaff, releaseInteriorStaff } from './interiors/interiorStaffCommands';

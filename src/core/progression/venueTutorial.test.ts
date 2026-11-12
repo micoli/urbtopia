@@ -133,3 +133,18 @@ describe('the Mill interior tutorial', () => {
     expect(done.venueTutorials?.mill).toBeNull();
   });
 });
+
+describe('the School interior tutorial', () => {
+  const school = (interior?: Building['interior']): GameState => ({
+    ...newGame({ seed: 'school-tutorial', now: 0 }), tutorial: null, buildings: [{ ...createBuilding(1, 'school', 55, 50, 0), tier: 3, ...(interior ? { interior } : {}) }],
+  });
+
+  it('starts once the interior has been used, and follows the furniture and the teacher', () => {
+    expect(progressVenueTutorials(school()).venueTutorials?.school).toBeUndefined();
+    expect(progressVenueTutorials(school({ fixtures: [], nextFixtureId: 1 })).venueTutorials?.school).toBe('furniture');
+    const furnished = progressVenueTutorials(school({ fixtures: [{ id: 1, type: 'schoolDesk', x: 1, y: 1, rotation: 0 }], nextFixtureId: 2 }));
+    expect(furnished.venueTutorials?.school).toBe('teacher');
+    const done = progressVenueTutorials({ ...furnished, buildings: furnished.buildings.map(building => ({ ...building, interior: { ...building.interior!, staff: { teacher: 1 } } })) });
+    expect(done.venueTutorials?.school).toBeNull();
+  });
+});

@@ -12,6 +12,8 @@ export const serviceGridSizeOf = (type: BuildingType, tier: number): number => {
   return sizes[Math.min(tier, sizes.length) - 1]!;
 };
 
+export const serviceQualityCapOf = (type: BuildingType, tier: number): number => capOf(type, tier);
+
 const capOf = (type: BuildingType, tier: number): number => {
   const caps = serviceLayoutOf(type)?.qualityCaps ?? [0];
   return caps[Math.min(tier, caps.length) - 1]!;

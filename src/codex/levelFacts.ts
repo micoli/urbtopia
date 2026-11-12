@@ -1,6 +1,6 @@
 import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, seatCapOf, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
-  FIXTURES, hasProductionInterior, interiorCapsOfType, interiorGridSizeOfType, interiorKindOf, technicianPostsOf, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
+  FIXTURES, hasProductionInterior, hasServiceInterior, serviceGridSizeOf, serviceQualityCapOf, interiorCapsOfType, interiorGridSizeOfType, interiorKindOf, technicianPostsOf, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
   type StorageType, type UtilityType, type ProductionType, type ShopType, type BuildingKind, isStorageType, kindOf, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf, isProductionType, isOfficeType, officeTierOf, industryEmissionsOf,
 } from '../core';
@@ -178,9 +178,22 @@ function officeFacts(id: BuildingType, level: number): LevelFact[] {
   return [numericFact('codex.fact.jobs', tier => officeTierOf({ type: id, tier }).jobs, level)];
 }
 
+// What the interior of a School, a Library or a Hospital of a Tier offers: its size, the most quality its furniture can add, and the Fixtures it unlocks.
+function serviceInteriorFacts(id: BuildingType, level: number): LevelFact[] {
+  const size = (tier: number) => serviceGridSizeOf(id, tier);
+  const kind = interiorKindOf({ type: id } as Parameters<typeof interiorKindOf>[0]);
+  const fixturesText = (tier: number) => fixtureIdsOf(kind as 'school').filter(fixtureId => !FIXTURES[fixtureId].partition && FIXTURES[fixtureId].minTier <= tier).map(fixtureId => t(`venue.fixture.${fixtureId}`)).join(', ');
+  return [
+    textFact('codex.fact.interiorGrid', tier => `${size(tier)}×${size(tier)}`, level),
+    numericFact('codex.fact.interiorQualityCap', tier => serviceQualityCapOf(id, tier), level, percent),
+    textFact('codex.fact.fixtures', fixturesText, level),
+  ];
+}
+
 function facilityFacts(id: BuildingType, level: number): LevelFact[] {
-  if (!isFacilityType(id) || FACILITIES[id].capacity === null) return [];
-  return [numericFact('codex.fact.capacity', tier => facilityCapacity(id, tier) ?? 0, level)];
+  if (!isFacilityType(id)) return [];
+  const capacity = FACILITIES[id].capacity === null ? [] : [numericFact('codex.fact.capacity', tier => facilityCapacity(id, tier) ?? 0, level)];
+  return [...capacity, ...(hasServiceInterior({ type: id } as Parameters<typeof hasServiceInterior>[0]) ? serviceInteriorFacts(id, level) : [])];
 }
 
 // Every building kind says which facts its upgrade table shows; a kind with nothing to compare across Tiers answers none.
