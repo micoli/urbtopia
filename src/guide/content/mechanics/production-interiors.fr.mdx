@@ -1,0 +1,27 @@
+export const meta = {
+  title: 'Intérieurs de production',
+  summary: "Aménagez la minoterie, la boulangerie, la laiterie et l'entrepôt de l'intérieur, et embauchez le personnel qui fait rapporter la disposition.",
+  order: 36,
+};
+
+## Ce que c'est
+
+Comme l'usine, la **minoterie**, la **boulangerie**, la **laiterie** et l'**entrepôt** ouvrent un intérieur : une pièce où l'on place des équipements. Il ne rapporte aucune recette et n'a aucun visiteur. Un intérieur vide laisse le bâtiment exactement comme avant ; un intérieur aménagé ajoute un **bonus** qui grandit avec le niveau du bâtiment. Ces intérieurs sont une fonctionnalité bêta : activez *Intérieurs de production* dans les réglages.
+
+## Une disposition, un métier
+
+- La **minoterie** ne tourne qu'à la force : un moteur, des arbres et des engrenages amènent un mouvement aux **meules**, qui accélèrent la mouture.
+- La **boulangerie** et la **laiterie** font tourner une **chaîne** : des caisses voyagent sur des tapis depuis une machine contre le mur du fond, à travers les autres machines, jusqu'à une sortie au bord de la pièce. Le pétrin de la boulangerie prend la force et son four prend du gaz par le fluide ; la laiterie marche au fluide, de la cuve à lait au pasteurisateur puis à la cave d'affinage.
+- L'**entrepôt** fait courir une chaîne d'un quai de chargement, par un palan, jusqu'à un rayonnage.
+
+Une chaîne ne compte que si elle est ininterrompue de sa première machine à une sortie et que chaque machine est reliée. Une coupure, une force ou un gaz qui manque, ou un équipement en panne arrête ce qui se trouve en aval.
+
+## Le personnel : qui fait rapporter
+
+Chaque intérieur a ses propres rôles, embauchés comme le personnel d'un lieu : des frais de cinq jours de salaire une fois, puis un salaire par jour. Chaque rôle livre **sa part** de l'effet, au prorata des citoyens qui viennent vraiment travailler : un meunier donne la vitesse, un boulanger la vitesse de la boulangerie, un vendeur le rythme des ventes au comptoir, un fromager le rendement en fromage, un crémier le rendement en crème, un magasinier la place de l'entrepôt. Un rôle non embauché ne livre rien, mais ne retire jamais ce que le bâtiment faisait avant.
+
+Un **technicien** répare les équipements usés à l'heure et ralentit leur usure, comme dans l'intérieur de l'usine.
+
+## Ce que cela coûte
+
+Les moteurs tirent de l'électricité sur la ville, un cinquième quand ils n'entraînent rien. Le personnel embauché occupe des emplois du bâtiment, et ses salaires sont payés chaque heure dans la limite de vos Urbs.

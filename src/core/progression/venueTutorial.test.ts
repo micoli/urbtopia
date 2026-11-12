@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type Building, type Command, type GameState, type StaffRole } from '../index';
-import { canReplayVenueTutorial, isVenueStepDone } from './venueTutorial';
+import { canReplayVenueTutorial, isVenueStepDone, progressVenueTutorials } from './venueTutorial';
 
 const venueBuilding = (id: number, type: 'arcade' | 'supermarket', extra: Partial<Building['venue'] & object> = {}): Building => {
   const building = createBuilding(id, type, 55 + id * 6, 50, 0);
@@ -115,5 +115,21 @@ describe('Factory interior tutorial', () => {
   it('goes on to the Drive once a Motor is placed, and to the Flow once a Machine is linked', () => {
     expect(started(factory([fixture(1, 'factoryMotor', 3, 3)]))).toBe('drive');
     expect(started(factory([fixture(1, 'factoryMotor', 3, 3), fixture(2, 'factoryShaft', 3, 4), fixture(3, 'factoryPress', 3, 5, 2)]))).toBe('flow');
+  });
+});
+
+describe('the Mill interior tutorial', () => {
+  const mill = (interior?: Building['interior']): GameState => ({
+    ...newGame({ seed: 'mill-tutorial', now: 0 }), tutorial: null, buildings: [{ ...createBuilding(1, 'mill', 55, 50, 0), tier: 3, ...(interior ? { interior } : {}) }],
+  });
+
+  it('starts once the interior has been used, and follows the Motor, the Drive and the miller', () => {
+    expect(progressVenueTutorials(mill()).venueTutorials?.mill).toBeUndefined();
+    const started = progressVenueTutorials(mill({ fixtures: [], nextFixtureId: 1 }));
+    expect(started.venueTutorials?.mill).toBe('motor');
+    const driven = progressVenueTutorials(mill({ fixtures: [{ id: 1, type: 'millMotor', x: 2, y: 2, rotation: 0 }, { id: 2, type: 'millShaft', x: 2, y: 3, rotation: 0 }, { id: 3, type: 'millstone', x: 2, y: 4, rotation: 2 }], nextFixtureId: 4 }));
+    expect(driven.venueTutorials?.mill).toBe('miller');
+    const done = progressVenueTutorials({ ...driven, buildings: driven.buildings.map(building => ({ ...building, interior: { ...building.interior!, staff: { miller: 1 } } })) });
+    expect(done.venueTutorials?.mill).toBeNull();
   });
 });

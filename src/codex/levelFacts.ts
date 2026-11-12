@@ -1,6 +1,6 @@
 import {
   CASINO_GAMES, COAL_CAPACITY, marinaCapacity, seatCapOf, FACILITIES, HOME_TIERS, UTILITY_CAPACITY, storageTierOf, farmTier, productionTierOf,
-  FIXTURES, interiorCapsOf, interiorGridSizeOf, technicianPostsOf, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
+  FIXTURES, hasProductionInterior, interiorCapsOfType, interiorGridSizeOfType, interiorKindOf, technicianPostsOf, venuePower, fixtureIdsOf, gridSizeOf, isVenueType, postsOf, staffRolesOf, takingsCapOf, type VenueType, type BuildingType,
   facilityCapacity, footprintOf, gamesOfTier, isFacilityType, maxStake, casinoRadius, casinoWellbeingBonus,
   type StorageType, type UtilityType, type ProductionType, type ShopType, type BuildingKind, isStorageType, kindOf, BUILDING_SPECS, canHaveSolarPanels, ECOLOGY, greenProfileOf, isShopType, sellableGoodsOf, shopTierOf, isProductionType, isOfficeType, officeTierOf, industryEmissionsOf,
 } from '../core';
@@ -53,9 +53,12 @@ function storageFacts(type: StorageType, level: number): LevelFact[] {
     ['codex.fact.goods', 'goods'],
     ['codex.fact.crops', 'crops'],
   ] as const;
-  return compartments
-    .filter(([, compartment]) => storageTierOf(type, 1)[compartment] > 0)
-    .map(([label, compartment]) => numericFact(label, tier => storageTierOf(type, tier)[compartment], level));
+  return [
+    ...compartments
+      .filter(([, compartment]) => storageTierOf(type, 1)[compartment] > 0)
+      .map(([label, compartment]) => numericFact(label, tier => storageTierOf(type, tier)[compartment], level)),
+    ...(hasProductionInterior({ type } as Parameters<typeof hasProductionInterior>[0]) ? interiorFacts(type, level) : []),
+  ];
 }
 
 function casinoFacts(level: number): LevelFact[] {
@@ -102,15 +105,20 @@ function impactFact(perTier: number, level: number): LevelFact {
   return { ...fact, value: t('codex.impact.perHour').replace('{amount}', fact.value) };
 }
 
-// What the Factory interior of a Tier offers: its size, the bonuses it can approach, the Technician posts and the Fixtures it unlocks.
-function interiorFacts(level: number): LevelFact[] {
-  const gridText = (tier: number) => `${interiorGridSizeOf(tier)}×${interiorGridSizeOf(tier)}`;
-  const fixturesText = (tier: number) => fixtureIdsOf('factory').filter(id => !FIXTURES[id].partition && FIXTURES[id].minTier <= tier).map(id => t(`venue.fixture.${id}`)).join(', ');
+// What the interior of a Production building of a Tier offers: its size, the bonuses it can approach, the Technician posts and the Fixtures it unlocks.
+function interiorFacts(id: BuildingType, level: number): LevelFact[] {
+  const size = (tier: number) => interiorGridSizeOfType(id, tier);
+  const gridText = (tier: number) => `${size(tier)}×${size(tier)}`;
+  const kind = interiorKindOf({ type: id } as Parameters<typeof interiorKindOf>[0]);
+  const fixturesText = (tier: number) => fixtureIdsOf(kind as 'factory').filter(fixtureId => !FIXTURES[fixtureId].partition && FIXTURES[fixtureId].minTier <= tier).map(fixtureId => t(`venue.fixture.${fixtureId}`)).join(', ');
+  const caps = interiorCapsOfType(id, 1);
   return [
     textFact('codex.fact.interiorGrid', gridText, level),
-    numericFact('codex.fact.interiorSpeedCap', tier => interiorCapsOf(tier).speed, level, percent),
-    numericFact('codex.fact.interiorYieldCap', tier => interiorCapsOf(tier).yield, level, percent),
-    numericFact('codex.fact.technicianPosts', technicianPostsOf, level),
+    numericFact('codex.fact.interiorSpeedCap', tier => interiorCapsOfType(id, tier).speed, level, percent),
+    numericFact('codex.fact.interiorYieldCap', tier => interiorCapsOfType(id, tier).yield, level, percent),
+    ...(caps.sales === undefined ? [] : [numericFact('codex.fact.interiorSalesCap', tier => interiorCapsOfType(id, tier).sales ?? 0, level, percent)]),
+    ...(caps.capacity === undefined ? [] : [numericFact('codex.fact.interiorCapacityCap', tier => interiorCapsOfType(id, tier).capacity ?? 0, level, percent)]),
+    numericFact('codex.fact.technicianPosts', tier => technicianPostsOf(tier, id), level),
     textFact('codex.fact.fixtures', fixturesText, level),
   ];
 }
@@ -122,7 +130,7 @@ function productionFacts(id: ProductionType, level: number): LevelFact[] {
     numericFact('codex.fact.slots', tier => productionTierOf({ type: id, tier }).maxSlots, level),
     numericFact('codex.fact.yield', tier => productionTierOf({ type: id, tier }).yield, level),
     ...(emissions > 0 ? [impactFact(emissions, level)] : []),
-    ...(id === 'factory' ? interiorFacts(level) : []),
+    ...(hasProductionInterior({ type: id } as Parameters<typeof hasProductionInterior>[0]) && id !== 'packhouse' ? interiorFacts(id, level) : []),
   ];
 }
 

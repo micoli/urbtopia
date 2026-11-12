@@ -502,6 +502,13 @@ export const interiorCapsOf = (tier: number): InteriorCaps => ({ speed: capOf(in
 
 export const interiorGridSizeOf = (tier: number): number => capOf(interiorBalance.gridSizes, tier);
 
+// The highest speed and yield bonus, and what the Exits of a Line add to the sales and to the room, that the interior of a Production building can approach at a Tier.
+export const interiorCapsOfType = (type: BuildingType, tier: number): InteriorCaps & { sales?: number; capacity?: number } => {
+  const layout = interiorLayoutOf(type);
+  if (!layout) return interiorCapsOf(tier);
+  return { speed: capOf(layout.speedCaps, tier), yield: capOf(layout.yieldCaps, tier), ...(layout.salesCaps ? { sales: capOf(layout.salesCaps, tier) } : {}), ...(layout.capacityCaps ? { capacity: capOf(layout.capacityCaps, tier) } : {}) };
+};
+
 // The room, the caps and the Technician posts of a Production interior other than the Factory's, by Tier.
 export const interiorGridSizeOfType = (type: BuildingType, tier: number): number => capOf(interiorLayoutOf(type)?.gridSizes ?? interiorBalance.gridSizes, tier);
 

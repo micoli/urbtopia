@@ -42,6 +42,8 @@ type VenueMessageKey =
   | 'codex.fact.interiorGrid'
   | 'codex.fact.interiorSpeedCap'
   | 'codex.fact.interiorYieldCap'
+  | 'codex.fact.interiorSalesCap'
+  | 'codex.fact.interiorCapacityCap'
   | 'codex.fact.technicianPosts'
   | 'error.invalidEventStart'
   | 'error.eventBusy'
@@ -299,6 +301,8 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'codex.fact.interiorGrid': ['Factory interior', 'Atelier'],
   'codex.fact.interiorSpeedCap': ['Interior speed bonus, up to', 'Bonus de vitesse de l’intérieur, jusqu’à'],
   'codex.fact.interiorYieldCap': ['Interior yield bonus, up to', 'Bonus de rendement de l’intérieur, jusqu’à'],
+  'codex.fact.interiorSalesCap': ['Interior sales bonus, up to', 'Bonus de vente de l’intérieur, jusqu’à'],
+  'codex.fact.interiorCapacityCap': ['Interior room bonus, up to', 'Bonus de place de l’intérieur, jusqu’à'],
   'codex.fact.technicianPosts': ['Technician posts', 'Postes de technicien'],
   'codex.fact.fixtures': ['Fixtures available', 'Équipements disponibles'],
   'error.invalidEventStart': ['This start time is not allowed.', 'Cette heure de début n’est pas autorisée.'],
