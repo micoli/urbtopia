@@ -30,7 +30,7 @@ export function VenueSidePanel({ venue }: VenueSidePanelProps) {
   if (!title) return null;
   return (
     <aside className="side-panel">
-      <PanelHeader title={title} onClose={closePanel} />
+      <PanelHeader title={title} onClose={closePanel} debugNode={venue} />
       {panel === 'recipes' ? <InteriorRecipes factory={venue} /> : panel === 'parquet' ? <HomeParquet home={venue} /> : hasProductionInterior(venue) || hasServiceInterior(venue) ? <InteriorStaff factory={venue} /> : <VenuePanelContent venue={venue} />}
     </aside>
   );

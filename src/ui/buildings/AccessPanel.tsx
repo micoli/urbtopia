@@ -21,7 +21,7 @@ export function AccessPanel() {
   };
   return (
     <>
-      <PanelHeader icon={<Icon name="map" />} title={t('access.title')} onClose={() => select(null)} />
+      <PanelHeader icon={<Icon name="map" />} title={t('access.title')} onClose={() => select(null)} debugNode={access} />
       <p>{t('access.help')}</p>
       <PanelSection id="modifications" title={t('panel.section.modifications')}>
         <ButtonRow align="stretch" spaced className="side-panel-actions">

@@ -1638,7 +1638,7 @@ export const CATALOG = {
   'prefs.fineRotation.description': ['Turns the camera by 45° instead of 90° with the buttons and the touch twist.', 'Fait pivoter la caméra par 45° au lieu de 90° avec les boutons et le geste tactile.'],
   'prefs.alwaysDay.description': ['Lights the map as Daytime at all times.', 'Éclaire la carte comme en plein jour en permanence.'],
   'prefs.signInPrompt.description': ['Reminds you to keep your city safe online.', 'Rappelle de protéger votre ville en ligne.'],
-  'panel.debugPosition': ['Position', 'Position'],
+  'panel.copyJson': ['Copy as JSON (debug)', 'Copier en JSON (debug)'],
   'prefs.managementTabs': ['City management in tabs', 'Gestion de la ville par onglets'],
   'prefs.managementTabs.description': ['Splits the City management dashboard into tabs instead of one long page.', 'Découpe le tableau de bord de la gestion de la ville en onglets au lieu d’une longue page.'],
   'eco.tab.overview': ['Overview', 'Vue d’ensemble'],

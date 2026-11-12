@@ -21,8 +21,8 @@ export function SelectionContentPanel() {
 
   return (
     <>
-      <PanelHeader icon={<BuildingIcon building={building} />} title={t(`building.${building.type}`)} onClose={() => select(null)} />
-      {debug ? <p className="debug-position">{t('panel.debugPosition')} <code>X {building.x} · Y {building.y}</code></p> : null}
+      <PanelHeader icon={<BuildingIcon building={building} />} title={t(`building.${building.type}`)} onClose={() => select(null)} debugNode={building} />
+      {debug ? <><p className="debug-position"><code>#{building.id} ({building.x},{building.y})</code></p></> : null}
       <BuildingUsage building={building} />
       <BuildingModifications building={building} />
       <BuildingHelp building={building} />
