@@ -22,6 +22,7 @@ type VenueMessageKey =
   | 'venue.hireFee'
   | 'error.nothingToRepair'
   | 'venue.repair'
+  | 'venue.repairAll'
   | 'venue.condition'
   | 'venue.wear'
   | 'venue.broken'
@@ -34,6 +35,14 @@ type VenueMessageKey =
   | 'error.noRestock'
   | 'error.restockerAlreadyAssigned'
   | 'error.noFreeRestocker'
+  | 'error.notAssignable'
+  | 'error.notUpstream'
+  | 'venue.assignNoSupply'
+  | 'error.fixtureLimitReached'
+  | 'error.noFocus'
+  | 'error.staffAlreadyAssigned'
+  | 'error.noFreeStaff'
+  | 'error.noStaffAssigned'
   | 'error.noRestockerAssigned'
   | 'codex.fact.grid'
   | 'codex.fact.posts'
@@ -63,6 +72,22 @@ type VenueMessageKey =
   | 'venue.eventNeedsManager'
   | 'venue.shut'
   | 'venue.staff'
+  | 'venue.recipes'
+  | 'bakery.recipes.assembly'
+  | 'bakery.recipes.drive'
+  | 'bakery.recipes.gas'
+  | 'bakery.recipes.line'
+  | 'bakery.recipes.limits'
+  | 'bakery.recipes.bonuses'
+  | 'bakery.recipes.mixer'
+  | 'bakery.recipes.oven'
+  | 'bakery.recipes.counter'
+  | 'bakery.recipes.caps'
+  | 'bakery.recipes.staffParts'
+  | 'bakery.recipes.now'
+  | 'bakery.recipes.consumption'
+  | 'bakery.recipes.power'
+  | 'bakery.recipes.wages'
   | 'venue.wage'
   | 'venue.wages'
   | 'venue.net'
@@ -81,6 +106,12 @@ type VenueMessageKey =
   | 'venue.restockAssign'
   | 'venue.restockRelease'
   | 'venue.restockAtWork'
+  | 'venue.assignRecipe'
+  | 'venue.assignSoldGood'
+  | 'venue.assignNone'
+  | 'venue.assignStaff'
+  | 'venue.assignRelease'
+  | 'venue.assignAtWork'
   | 'venue.restockerFree'
   | 'venue.attractiveness'
   | 'venue.serviceRate'
@@ -124,6 +155,7 @@ type VenueMessageKey =
   | 'packhouse.interior.fault.noDrive'
   | 'packhouse.interior.fault.misfacing'
   | 'packhouse.interior.fault.deadEnd'
+  | 'packhouse.interior.fault.overfed'
   | 'packhouse.interior.noExit'
   | 'packhouse.interior.exitSize'
   | 'packhouse.interior.size.Crate'
@@ -279,6 +311,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'error.unknownFixture': ['This Fixture does not exist.', 'Cet équipement n’existe pas.'],
   'error.nothingToRepair': ['This Fixture is in perfect condition.', 'Cet équipement est en parfait état.'],
   'venue.repair': ['Repair', 'Réparer'],
+  'venue.repairAll': ['Repair everything', 'Tout réparer'],
   'venue.condition': ['Condition', 'État'],
   'venue.wear': ['Wear', 'Vétusté'],
   'venue.broken': ['Out of order: it earns nothing until repaired.', 'En panne : il ne rapporte rien tant qu’il n’est pas réparé.'],
@@ -296,6 +329,14 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'error.noRestock': ['Choose a Restock for this Exit first.', 'Choisissez d’abord un réassort pour cette sortie.'],
   'error.restockerAlreadyAssigned': ['A Restocker is already assigned to this Exit.', 'Un employé de réassort est déjà affecté à cette sortie.'],
   'error.noFreeRestocker': ['No Restocker is free: hire one or release another Exit.', 'Aucun employé de réassort n’est libre : embauchez-en un ou libérez une autre sortie.'],
+  'error.fixtureLimitReached': ['The Bakery has no Slot left for another one: buy a Slot to fit more.', 'La boulangerie n’a plus d’emplacement pour un autre : achetez un emplacement pour en ajouter.'],
+  'error.notUpstream': ['No Oven upstream of this counter bakes that Good.', 'Aucun four en amont de ce comptoir ne cuit ce bien.'],
+  'venue.assignNoSupply': ['No Oven upstream bakes a Recipe yet: choose one on an Oven that feeds this counter.', 'Aucun four en amont ne cuit encore de recette : choisissez-en une sur un four qui alimente ce comptoir.'],
+  'error.notAssignable': ['This Fixture takes no Staff.', 'Ce meuble ne prend pas de personnel.'],
+  'error.noFocus': ['Choose a Recipe or a Sold Good first.', 'Choisissez d’abord une recette ou un bien vendu.'],
+  'error.staffAlreadyAssigned': ['A Staff is already assigned here.', 'Un membre du personnel est déjà affecté ici.'],
+  'error.noFreeStaff': ['No Staff is free: hire one or free another Fixture.', 'Aucun membre du personnel n’est libre : embauchez-en un ou libérez un autre meuble.'],
+  'error.noStaffAssigned': ['No Staff is assigned here.', 'Aucun membre du personnel n’est affecté ici.'],
   'error.noRestockerAssigned': ['No Restocker is assigned to this Exit.', 'Aucun employé de réassort n’est affecté à cette sortie.'],
   'error.noStaffToRelease': ['Nobody to release in this role.', 'Personne à licencier dans ce rôle.'],
   'codex.fact.grid': ['Interior', 'Intérieur'],
@@ -326,6 +367,22 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.eventNeedsManager': ['Only a manager can plan events.', 'Seul un manager peut programmer des événements.'],
   'venue.shut': ['Shut: not enough power', 'Fermé : électricité insuffisante'],
   'venue.staff': ['Staff', 'Personnel'],
+  'venue.recipes': ["Recipes", "Recettes"],
+  'bakery.recipes.assembly': ["Assembly", "Montage"],
+  'bakery.recipes.drive': ["Drive: a Motor turns a Shaft that ends on the right side of the Dough mixer.", "Entraînement : un moteur fait tourner un arbre qui aboutit sur le côté droit du pétrin."],
+  'bakery.recipes.gas': ["Gas: a Tank feeds a Pump, driven by a Motor, whose Pipes end on the left side of the Oven.", "Gaz : une cuve alimente une pompe, entraînée par un moteur, dont les tuyaux aboutissent sur le côté gauche du four."],
+  'bakery.recipes.line': ["Line: the Dough mixer stands against the back wall and its Line leaves by the front. Conveyors carry the dough to the Oven, then from the Oven to the Display counters.", "Chaîne : le pétrin se place contre le mur du fond et sa chaîne part par l’avant. Des tapis portent la pâte au four, puis du four aux comptoirs vitrine."],
+  'bakery.recipes.limits': ["One Mixer feeds up to {mixer} Ovens, and one Oven up to {oven} Display counters; past that, a Fixture gets no Packets.", "Un pétrin alimente au plus {mixer} fours, et un four au plus {oven} comptoirs vitrine ; au-delà, une pièce ne reçoit rien."],
+  'bakery.recipes.bonuses': ["Bonuses", "Bonus"],
+  'bakery.recipes.mixer': ["Dough mixer: speed {value}", "Pétrin : vitesse {value}"],
+  'bakery.recipes.oven': ["Tunnel oven: speed {value}", "Four tunnel : vitesse {value}"],
+  'bakery.recipes.counter': ["Display counter: sales {value}, yield {yield}, draws {power} of power", "Comptoir vitrine : ventes {value}, rendement {yield}, consomme {power} d’électricité"],
+  'bakery.recipes.caps': ["Caps at this Tier: speed {speed}, yield {yield}, sales {sales}.", "Plafonds à ce Tier : vitesse {speed}, rendement {yield}, ventes {sales}."],
+  'bakery.recipes.staffParts': ["The baker is assigned to an Oven and carries its speed for its Recipe; the seller is assigned to a Display counter and carries its sales and its yield for its Sold Good. Staff left unassigned do nothing.", "Le boulanger est affecté à un four et porte sa vitesse pour sa recette ; le vendeur est affecté à un comptoir vitrine et porte ses ventes et son rendement pour son bien vendu. Le personnel non affecté ne fait rien."],
+  'bakery.recipes.now': ["Now: speed {speed}, yield {yield}, sales {sales}.", "Actuellement : vitesse {speed}, rendement {yield}, ventes {sales}."],
+  'bakery.recipes.consumption': ["Consumption", "Consommations"],
+  'bakery.recipes.power': ["Power drawn by the Motors and the Counters: {value}", "Électricité des moteurs et des comptoirs : {value}"],
+  'bakery.recipes.wages': ["Staff wages now:", "Salaires actuels :"],
   'venue.wage': ['per day', 'par jour'],
   'venue.wages': ['Wages per hour', 'Salaires par heure'],
   'venue.net': ['Net per hour', 'Net par heure'],
@@ -365,6 +422,12 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.restockAssign': ['Assign a Restocker', 'Affecter un employé de réassort'],
   'venue.restockRelease': ['Free the Restocker', 'Libérer l’employé de réassort'],
   'venue.restockAtWork': ['A Restocker works on this Line', 'Un employé de réassort travaille sur cette ligne'],
+  'venue.assignRecipe': ['Recipe', 'Recette'],
+  'venue.assignSoldGood': ['Sold Good', 'Bien vendu'],
+  'venue.assignNone': ['None', 'Aucun'],
+  'venue.assignStaff': ['Assign a Staff ({role})', 'Affecter un employé ({role})'],
+  'venue.assignRelease': ['Free the Staff ({role})', 'Libérer l’employé ({role})'],
+  'venue.assignAtWork': ['A Staff ({role}) works here', 'Un employé ({role}) travaille ici'],
   'venue.restockerFree': ['Free Restockers', 'Employés de réassort libres'],
   'venue.role.security': ['Security', 'Sécurité'],
   'venue.roleEffect.manager': ['Unlocks pricing and events, +10% yield', 'Débloque les prix et les événements, +10 % de rendement'],
@@ -432,6 +495,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'packhouse.interior.fault.noDrive': ['{name} gets no Drive (marked on the floor): its input must face a Shaft or a Gear that a Motor turns.', '{name} ne reçoit aucune force (marqué au sol) : son entrée doit faire face à un arbre ou un engrenage que tourne un moteur.'],
   'packhouse.interior.fault.misfacing': ['{name} next to it (marked on the floor) does not carry Packets toward it: turn it or replace it.', '{name} à côté (marqué au sol) ne porte pas les paquets vers lui : pivotez-le ou remplacez-le.'],
   'packhouse.interior.fault.deadEnd': ['Nothing brings Packets to {name}: the cell in front of its entry (marked on the floor) is empty, lay a Conveyor there that carries toward it.', 'Rien n’apporte de paquets à {name} : la case devant son entrée (marquée au sol) est vide, posez-y un tapis qui porte vers lui.'],
+  'packhouse.interior.fault.overfed': ['The Machine ahead already feeds as many {name} as it can: this one gets no Packets. Remove it, or take another from the Line.', 'La machine en amont alimente déjà autant de {name} qu’elle le peut : celui-ci ne reçoit rien. Retirez-le, ou retirez-en un autre de la chaîne.'],
   'packhouse.interior.noExit': ['Its Packets reach no Exit: it adds no bonus.', 'Ses paquets n’atteignent aucune sortie : elle n’apporte aucun bonus.'],
   'packhouse.interior.exitSize': ['Serves {size} of packed Goods.', 'Dessert les {size} de produits emballés.'],
   'packhouse.interior.size.Crate': ['crates', 'caisses'],

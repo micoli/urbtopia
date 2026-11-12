@@ -53,8 +53,8 @@ export function emptyStack(): ShopStack {
 }
 
 // A building saved before it had a counter has fewer stacks than its counter has Slots.
-export function stacksOf(building: Pick<Building, 'type' | 'stacks'>): ShopStack[] {
-  const missing = stackCountOf(building.type) - building.stacks.length;
+export function stacksOf(building: Pick<Building, 'type' | 'stacks'> & Partial<Pick<Building, 'tier'>>): ShopStack[] {
+  const missing = stackCountOf(building.type, building.tier) - building.stacks.length;
   return missing > 0 ? [...building.stacks, ...Array.from({ length: missing }, emptyStack)] : building.stacks;
 }
 

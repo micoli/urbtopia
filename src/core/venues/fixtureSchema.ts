@@ -98,6 +98,12 @@ export const fixtureSchema = z
       // A Machine whose yield only raises one group of the Goods of its building (the Dairy: cheese, cream); it raises them all when left out.
       yieldGroup: z.string().min(1).optional(),
       capacity: z.number().positive().optional(),
+      // The role of the Staff that is assigned to the Fixture by hand: a baker to an Oven, a seller to a Display counter.
+      assigns: z.enum(['baker', 'seller']).optional(),
+      // An Exit of a Line: how far from the middle of its tile, toward its back, the Packets are drawn to go before they vanish; left out, they go through the hatch of the wall.
+      hatch: z.number().positive().optional(),
+      // The electricity the Fixture draws while it stands in the room, besides what the Motors draw.
+      power: z.number().positive().optional(),
       // The kind of a Machine: the Factory interior pays for the variety of kinds that run, not for their number.
       family: z.string().min(1).optional(),
       // A Machine that cools the Motors beside it: the share it adds to the speed and the yield of each Machine they drive.

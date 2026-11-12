@@ -13,7 +13,7 @@ export function VenueFlyout({ venue }: VenueFlyoutProps) {
   if (panel !== 'build') return null;
   return (
     <div className="flyout">
-      <VenueBuildMenu tier={venue.tier} rank={isVenue(venue) ? venueRankOf(venue) : 1} venueType={fixtureVenueOf(venue)} />
+      <VenueBuildMenu tier={venue.tier} rank={isVenue(venue) ? venueRankOf(venue) : 1} venueType={fixtureVenueOf(venue)} building={venue} />
     </div>
   );
 }

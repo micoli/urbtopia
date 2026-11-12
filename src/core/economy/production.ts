@@ -12,6 +12,7 @@ import type { Building, GameState, QueueEntry, ShopStack } from '../engine/state
 import { productionTierOf } from './tiers';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/factoryInterior';
+import { interiorLayoutOf } from '../interiors/interiorStaff';
 import { interiorFillRateFrom } from '../interiors/interiorStaff';
 import { jobsOf } from '../traffic/jobs';
 
@@ -29,12 +30,12 @@ const CARRY_EPSILON = 1e-9;
 
 // A Factory interior adds a fraction of the yield to each cycle: the whole units are paid at once and the rest is carried to the next cycle,
 // so a fair share comes out over many cycles with whole units only.
-export function newQueueEntry(building: Building, item: ItemId, now: number): { entry: QueueEntry; building: Building } {
+export function newQueueEntry(building: Building, item: ItemId, now: number, exitId?: number): { entry: QueueEntry; building: Building } {
   const base = productionTierOf(building).yield;
   const bonus = interiorBonusOfBuilding(building, item).yield;
   const owed = bonus > 0 && building.interior ? base * bonus + (building.interior.carry ?? 0) : 0;
   const extra = Math.floor(owed + CARRY_EPSILON);
-  const entry: QueueEntry = { item, duration: productionDurationOf(building, item), startedAt: isIdle(building) ? now : null, done: false, quantity: base + extra };
+  const entry: QueueEntry = { item, duration: productionDurationOf(building, item), startedAt: isLaneIdle(building, exitId) ? now : null, done: false, quantity: base + extra };
   if (owed === 0 || !building.interior) return { entry, building };
   return { entry, building: { ...building, interior: { ...building.interior, carry: Math.max(0, owed - extra) } } };
 }
@@ -95,19 +96,39 @@ interface Advanced {
   events: GameEvent[];
 }
 
+// A Bakery bakes on one line for each Oven, and on one for what the player queues: an entry only waits for the entries of its own line. Every other building has a single line.
+const SINGLE_LINE = -1;
+
+const laneOf = (building: Pick<Building, 'type'>, entry: QueueEntry): number => (interiorLayoutOf(building.type)?.assignments === true && entry.exitId !== undefined ? entry.exitId : SINGLE_LINE);
+
+// True when no entry of the line an entry would join is still waiting or running.
+export const isLaneIdle = (building: Building, exitId?: number): boolean => {
+  const lane = laneOf(building, { exitId } as QueueEntry);
+  return building.queue.every(entry => entry.done || laneOf(building, entry) !== lane);
+};
+
 export function advanceBuilding(building: Building, now: number): Advanced {
   if (building.queue.length === 0) return { building, events: [] };
   const queue = building.queue.map((entry) => ({ ...entry }));
   const events: GameEvent[] = [];
+  const blocked = new Set<number>();
   for (let index = 0; index < queue.length; index++) {
     const entry = queue[index];
     if (!entry || entry.done) continue;
-    if (entry.startedAt === null) break;
+    const lane = laneOf(building, entry);
+    if (blocked.has(lane)) continue;
+    if (entry.startedAt === null) {
+      blocked.add(lane);
+      continue;
+    }
     const finishedAt = entry.startedAt + entry.duration;
-    if (finishedAt > now) break;
+    if (finishedAt > now) {
+      blocked.add(lane);
+      continue;
+    }
     entry.done = true;
     events.push({ type: 'ProductionCompleted', buildingId: building.id, item: entry.item, at: finishedAt });
-    const next = queue.slice(index + 1).find((candidate) => !candidate.done);
+    const next = queue.slice(index + 1).find((candidate) => !candidate.done && laneOf(building, candidate) === lane);
     if (next) next.startedAt = finishedAt;
   }
   return { building: { ...building, queue }, events };
@@ -139,7 +160,6 @@ const isStocked = (stack: ShopStack): boolean => stack.good !== null && stack.st
 // Stacks sell one after the other: only the selling stack has a sale timer, the stocked ones wait in Slot order.
 function advanceShop(building: Building, now: number): Building {
   if (building.stacks.length === 0) return building;
-  const interval = saleIntervalOf(building);
   const selling = building.stacks.findIndex((stack) => isStocked(stack) && stack.nextSaleAt !== null);
   let stacks = building.stacks.map((stack, index) => (index !== selling && stack.nextSaleAt !== null && isStocked(stack) ? { ...stack, nextSaleAt: null } : stack));
   let startAt: number | null = null;
@@ -147,6 +167,7 @@ function advanceShop(building: Building, now: number): Building {
     const index = startAt === null && selling !== -1 ? selling : stacks.findIndex(isStocked);
     if (index === -1) break;
     const current = stacks[index]!;
+    const interval = saleIntervalOf(building, current.good);
     const ready = current.nextSaleAt === null ? { ...current, nextSaleAt: (startAt ?? now) + interval } : current;
     const { stack, finishedAt } = sellStack(ready, now, interval);
     stacks = stacks.map((candidate, i) => (i === index ? stack : candidate));
@@ -173,8 +194,9 @@ export function taxDue(building: Building): number {
 }
 
 // The speed an interior adds is delivered by Staff that Citizens may not all fill: a running entry was counted with the Staff at full strength, so it is slowed by what is missing.
-function staffShortfallOf(building: Building, filledJobs: ReadonlyMap<number, number>, part: 'speed' | 'sales'): number {
-  const speed = part === 'speed' ? interiorBonusOfBuilding(building).speed : interiorBonusOfBuilding(building).sales ?? 0;
+function staffShortfallOf(building: Building, filledJobs: ReadonlyMap<number, number>, part: 'speed' | 'sales', good?: ItemId | null): number {
+  const bonus = interiorBonusOfBuilding(building, good ?? undefined);
+  const speed = part === 'speed' ? bonus.speed : bonus.sales ?? 0;
   if (speed === 0) return 0;
   const fill = interiorFillRateFrom(building, filledJobs, jobsOf(building));
   return fill >= 1 ? 0 : 1 - (1 + speed * fill) / (1 + speed);
@@ -185,13 +207,12 @@ export function advanceProduction(state: GameState, now: number, elapsedMs: numb
     const idle = idleShops.has(building.id);
     const drawsPower = building.type === 'packhouse' && interiorPowerOfBuilding(building) > 0;
     const ratio = isIndustryType(building.type) ? economicRatio * industrySpeed : economicRatio;
-    const lacking = (part: 'speed' | 'sales') => (staffAtFullStrength ? 0 : staffShortfallOf(building, filledJobs, part));
-    const delay = idle ? elapsedMs : elapsedMs * (1 - ratio * (1 - lacking('speed')));
-    const stackDelay = idle ? elapsedMs : elapsedMs * (1 - ratio * (1 - lacking('sales')));
+    const lacking = (part: 'speed' | 'sales', good?: ItemId | null) => (staffAtFullStrength ? 0 : staffShortfallOf(building, filledJobs, part, good));
+    const delayOf = (part: 'speed' | 'sales', good?: ItemId | null) => (idle ? elapsedMs : elapsedMs * (1 - ratio * (1 - lacking(part, good))));
     const slowed = isIndustryType(building.type) || isShopType(building.type) || drawsPower ? {
       ...building,
-      queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delay }),
-      stacks: building.stacks.map(stack => stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + stackDelay }),
+      queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delayOf('speed', entry.item) }),
+      stacks: building.stacks.map(stack => stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + delayOf('sales', stack.good) }),
     } : building;
     const produced = advanceBuilding(slowed, now);
     const housed = advanceHome(idle ? produced.building : advanceShop(produced.building, now), elapsedMs * (homeRatios.get(building.id) ?? 1));

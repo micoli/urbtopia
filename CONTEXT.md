@@ -47,7 +47,7 @@ A Workshop that turns Wheat into Flour and Olives into Olive oil.
 A Factory that turns Flour and other Materials into Food Goods, and sells those Goods itself over its Counter.
 
 **Counter**:
-The sales Slots of a Production building that sells some Goods itself. The Bakery, the Dairy and the Knitwear factory each have one, with three Slots whatever its Tier, apart from its production Slots; it sells only the Goods its definition lists and is stocked from the Storehouse like a Shop.
+The sales Slots of a Production building that sells some Goods itself. The Bakery, the Dairy and the Knitwear factory each have one, with three Slots, apart from its production Slots; a Tier of the Bakery can give its own number of Counter Slots (`counterSlots` in its Tiers: 3, 3, 4, 4, 5), and the Slots of a Bakery that is upgraded grow with it; it sells only the Goods its definition lists and is stocked from the Storehouse like a Shop.
 _Avoid_: Shop (a Shop is a building of its own)
 
 **Shop**:
@@ -438,7 +438,18 @@ _Avoid_: Stocker (a Supermarket role), Technician, auto-production
 
 **Restock**:
 The packed Good that the player chooses on an Exit, of the size of that Exit, for its Restocker to keep producing. It only drives the Restocker; the Slots stay free for manual productions.
-_Avoid_: Recipe, repeat
+_Avoid_: Recipe (the Oven's choice in a Bakery), repeat
+
+**Recipe**:
+The Good, among those a Bakery produces and the city has unlocked, that the player chooses on an Oven of its interior for the baker assigned to that Oven. The baker's speed then applies to the productions of that Good only.
+_Avoid_: Restock (that is the Good of a Packhouse Exit)
+
+**Sold Good**:
+The Good, among those its Counter sells, the city has unlocked and the Ovens upstream of the Display counter bake (their Recipes), that the player chooses on a Display counter of a Bakery interior for the seller assigned to it. The seller's sales rate then applies to the sales of that Good only.
+_Avoid_: Restock, menu
+
+**Assignment**:
+The link the player makes by hand between one hired Staff of a Bakery interior and one Fixture: a baker to an Oven (with its Recipe), a seller to a Display counter (with its Sold Good). Once the Fixture is reached by the Line, the Staff works on its own (each Oven bakes on a line of its own, slowed by the other lines at work): the baker keeps one production of the Recipe going and stores it, the seller keeps the Sold Good stocked on the Counter and collects what it earns. One Staff serves one Fixture and a Fixture has at most one Staff. A Staff hired and not assigned does nothing, and is paid all the same. Selling or moving the Fixture frees the Staff. The effect of an assigned Staff is still counted in proportion to its Fill rate.
 
 **Scanner**:
 A Fixture a Line passes through, like a Strapper, that checks Packets and lowers the wear of the Fixtures downstream of it.

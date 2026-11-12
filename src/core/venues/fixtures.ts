@@ -78,6 +78,9 @@ export interface FixtureSpec {
   // Service interior: what the piece adds to the quality of the service.
   quality?: number;
   capacity?: number;
+  power?: number;
+  assigns?: 'baker' | 'seller';
+  hatch?: number;
   family?: string;
   coolant?: number;
   heat?: true;

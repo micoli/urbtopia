@@ -13,6 +13,10 @@
   "minTier": 1,
   "wear": 0.03,
   "role": "exit",
+  "yield": 0.04,
   "sales": 0.3,
+  "assigns": "seller",
+  "hatch": 0.3,
+  "power": 0.3,
   "lineIn": ["front"]
 }

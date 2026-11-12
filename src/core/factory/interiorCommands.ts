@@ -11,6 +11,8 @@ import { PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS, isServiceInteriorKin
 import { serviceGridSizeOf } from '../interiors/serviceInterior';
 import { isInteriorUnlocked } from '../interiors/interiorUnlock';
 import { interiorLayoutOf } from '../interiors/interiorStaff';
+import { withoutAssignment } from '../interiors/interiorAssignments';
+import { fixtureLimitOf } from '../interiors/interiorLimits';
 import { PARQUETS, canHangOnWall, hangsOnWall, homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
 import { interiorGridSizeOf, interiorGridSizeOfType, packSizeOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factoryInterior';
 import { producibleItems, type GoodId } from '../economy/items';
@@ -74,8 +76,11 @@ const startsALine = (type: FixtureId): boolean => FIXTURES[type].role === 'machi
 
 // The turns a Fixture of a Packhouse interior can take on a cell of the edge of a floor of a given size, with its back to that edge: a Packer stands against the back wall
 // only, an Exit against any of the four edges. None for a Fixture that stands anywhere, and none for a cell where it cannot stand.
+// An Exit of the Packhouse stands against a wall; the Exit of the other Line interiors, a Counter, stands anywhere.
+const needsAWall = (type: FixtureId): boolean => (FIXTURES[type].role === 'exit' && FIXTURES[type].venue === 'packhouse') || startsALine(type);
+
 const wallTurnsOf = (type: FixtureId, cell: { x: number; y: number }, size: number): readonly Rotation[] => {
-  if (FIXTURES[type].role !== 'exit' && !startsALine(type)) return [];
+  if (!needsAWall(type)) return [];
   const turns: Rotation[] = [];
   if (cell.y === 0) turns.push(0);
   if (cell.x === 0 && FIXTURES[type].role === 'exit') turns.push(3);
@@ -86,8 +91,6 @@ const wallTurnsOf = (type: FixtureId, cell: { x: number; y: number }, size: numb
 
 // The turn a Packer or an Exit takes when put on a cell, if it can stand there.
 export const wallFacingOf = (type: FixtureId, cell: { x: number; y: number }, size: number): Rotation | undefined => wallTurnsOf(type, cell, size)[0];
-
-const needsAWall = (type: FixtureId): boolean => FIXTURES[type].role === 'exit' || startsALine(type);
 
 export function canStandOnInterior(host: InteriorHost, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
   const size = gridSizeOf(host);
@@ -111,6 +114,8 @@ export function placeInteriorFixture(state: GameState, buildingId: number, type:
   if (isHomeType(factory.type) && !isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
   if (!isHomeType(factory.type) && !isInteriorUnlocked(state, factory.type)) return { key: 'error.itemLocked' };
   if (factory.tier < FIXTURES[type].minTier) return { key: 'error.tierTooLow' };
+  const limit = fixtureLimitOf(factory, type);
+  if (limit && limit.count >= limit.max) return { key: 'error.fixtureLimitReached' };
   const fixture = { type, x, y, rotation };
   if (!canStandOnInterior(factory, fixture)) return { key: 'error.tilesOccupied' };
   if (factory.type === 'packhouse' && FIXTURES[type].role === 'exit' && interiorOf(factory).fixtures.filter(other => FIXTURES[other.type].packSize === FIXTURES[type].packSize).length >= packhouseExitLimitOf(factory.tier)) return { key: 'error.exitLimitReached' };
@@ -148,7 +153,7 @@ export function moveInteriorFixture(state: GameState, buildingId: number, fixtur
   const interior = interiorOf(factory);
   const fixture = interior.fixtures.find(candidate => candidate.id === fixtureId);
   if (!fixture) return { key: 'error.unknownFixture' };
-  const moved: VenueFixture = withoutRestocker({ ...fixture, x, y, rotation: rotation ?? fixture.rotation });
+  const moved: VenueFixture = withoutAssignment(withoutRestocker({ ...fixture, x, y, rotation: rotation ?? fixture.rotation }));
   if (!canStandOnInterior(factory, moved, fixtureId)) return { key: 'error.tilesOccupied' };
   const relocated = interior.fixtures.map(candidate => (candidate === fixture ? moved : candidate));
   const taken = carryingHung(factory, relocated, fixture, moved);
@@ -184,6 +189,26 @@ export function repairInteriorFixture(state: GameState, buildingId: number, fixt
   if (cost === 0) return { key: 'error.nothingToRepair' };
   if (state.urbs < cost) return { key: 'error.notEnoughUrbs' };
   return { state: withInterior(state, factory, { ...interior, fixtures: interior.fixtures.map(candidate => (candidate === fixture ? restored(fixture) : candidate)) }, state.urbs - cost), events: [] };
+}
+
+// Repairs the worn Fixtures one after the other, in the order they were placed, as far as the city's Urbs go.
+export function repairAllInteriorFixtures(state: GameState, buildingId: number): CommandOutcome {
+  const factory = hostOf(state, buildingId);
+  if (!factory) return { key: 'error.unknownBuilding' };
+  const interior = interiorOf(factory);
+  const worn = interior.fixtures.filter(fixture => repairCost(fixture) > 0);
+  if (worn.length === 0) return { key: 'error.nothingToRepair' };
+  let urbs = state.urbs;
+  const repaired = new Set<number>();
+  for (const fixture of worn) {
+    const cost = repairCost(fixture);
+    if (urbs < cost) break;
+    urbs -= cost;
+    repaired.add(fixture.id);
+  }
+  if (repaired.size === 0) return { key: 'error.notEnoughUrbs' };
+  const fixtures = interior.fixtures.map(fixture => (repaired.has(fixture.id) ? restored(fixture) : fixture));
+  return { state: withInterior(state, factory, { ...interior, fixtures }, urbs), events: [] };
 }
 
 export function hireInteriorTechnician(state: GameState, buildingId: number): CommandOutcome {

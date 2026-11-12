@@ -95,7 +95,7 @@ const productionBuilding = z.strictObject({
   pens: pensSchema.optional(),
   // The interior of a Production building: the models of its floor, its walls and its corner post.
   floorShell: interiorShell.optional(),
-  tiers: tiersOf({ ...homeLook, durationFactor: z.number().positive(), maxSlots: z.int().min(1), yield: z.int().min(1), penCount: count }, ['model', 'footprint', 'durationFactor', 'maxSlots', 'yield']),
+  tiers: tiersOf({ ...homeLook, durationFactor: z.number().positive(), maxSlots: z.int().min(1), counterSlots: z.int().min(1), yield: z.int().min(1), penCount: count }, ['model', 'footprint', 'durationFactor', 'maxSlots', 'yield']),
 });
 
 // The Farm holds the seed stock and bounds the number of Field tiles.

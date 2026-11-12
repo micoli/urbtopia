@@ -1,9 +1,10 @@
+import { hasCounter } from './counterSlots';
 import { BUILDING_ENTRIES, definitionOf, tiersOf } from '../buildings/buildingDefinitions';
 import type { ShopType } from '../buildings/buildingTypes.generated';
 import type { Building } from '../engine/state';
 import { interiorBonusOfBuilding } from '../factory/factoryInterior';
 import { SHOP, SLOT_PRICES } from './economy';
-import { PACK_IDS, GOODS, type GoodId } from './items';
+import { PACK_IDS, GOODS, type GoodId, type ItemId } from './items';
 
 export const SHOP_TYPES: readonly ShopType[] = BUILDING_ENTRIES.filter(({ kind }) => kind === 'shop').map(({ id }) => id as ShopType);
 
@@ -11,11 +12,9 @@ export const isShopType = (type: string): type is ShopType => (SHOP_TYPES as rea
 
 const counterOf = (type: string) => BUILDING_ENTRIES.find(({ id }) => id === type)?.counter;
 
-export const hasCounter = (type: string): boolean => counterOf(type) !== undefined;
+export { hasCounter, stackCountOf } from './counterSlots';
 
 export const sellsGoods = (type: string): boolean => isShopType(type) || hasCounter(type);
-
-export const stackCountOf = (type: string): number => counterOf(type)?.slots ?? 0;
 
 type ShopGoodCategory = NonNullable<ReturnType<typeof definitionOf>['goodCategory']>;
 
@@ -35,8 +34,8 @@ export function shopTierOf(building: ShopBuilding): ShopTier {
 }
 
 // The seller of a Bakery sells faster over its Counter, in proportion to what its linked display counters add.
-export const saleIntervalOf = (building: ShopBuilding): number =>
-  (SHOP.saleIntervalMs * (counterOf(building.type)?.saleIntervalFactor ?? shopTierOf(building).saleIntervalFactor)) / (1 + (interiorBonusOfBuilding({ type: building.type, tier: building.tier, interior: building.interior }).sales ?? 0));
+export const saleIntervalOf = (building: ShopBuilding, good?: ItemId | null): number =>
+  (SHOP.saleIntervalMs * (counterOf(building.type)?.saleIntervalFactor ?? shopTierOf(building).saleIntervalFactor)) / (1 + (interiorBonusOfBuilding({ type: building.type, tier: building.tier, interior: building.interior }, good ?? undefined).sales ?? 0));
 
 // Packed Crops are Food Goods, always sold by a Shop that sells Food.
 export function sellableGoodsOf(building: ShopBuilding): readonly GoodId[] {

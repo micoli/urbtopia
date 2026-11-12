@@ -1,10 +1,18 @@
 import interiors from '../../../assets/defs/balance/interiors.json' with { type: 'json' };
 import type { Building, BuildingType, InteriorData, InteriorRole } from '../engine/state';
+import { stackCountOf } from '../economy/counterSlots';
 import { STAFF } from '../venues/staff';
 
 export type InteriorFamily = 'production' | 'service';
 
 export type InteriorPart = 'speed' | 'salesRate' | 'cheeseYield' | 'creamYield' | 'capacity' | 'schooling' | 'knowledge' | 'carePrimary' | 'careDoctor' | 'careSurgeon';
+
+// A Machine, named by its family, feeds at most `max` of the Fixtures `to`, named by their family or their role, that its Line reaches.
+export interface LineFeed {
+  from: string;
+  to: string;
+  max: number;
+}
 
 export interface InteriorLayout {
   gridSizes: number[];
@@ -15,6 +23,13 @@ export interface InteriorLayout {
   salesCaps?: number[];
   capacityCaps?: number[];
   yieldGroups?: Record<string, string[]>;
+  feeds?: LineFeed[];
+  // The yield comes from the Exits that Packets reach, not from the Machines.
+  yieldFromExits?: true;
+  // The Staff are assigned by hand to the Fixtures that carry their part: a baker to an Oven, a seller to a Display counter.
+  assignments?: true;
+  // Each Oven bakes on its own line, and each line is slowed by this share of every other line at work: with 0.5, three lines each take twice as long, so three Ovens bake one and a half times as much as one.
+  laneSlowdown?: number;
 }
 
 export interface ServiceLayout {
@@ -62,6 +77,12 @@ const postsByTier = (type: BuildingType, role: InteriorRole): readonly number[] 
 export const interiorPostsOf = (type: BuildingType, role: InteriorRole, tier: number): number => {
   const posts = postsByTier(type, role);
   return posts.length === 0 ? 0 : posts[Math.min(tier, posts.length) - 1]!;
+};
+
+// A Bakery hires as many bakers as it has production Slots and as many sellers as its Counter has Slots; the other roles follow the Tier.
+export const interiorPostsOfBuilding = (building: Pick<Building, 'type' | 'tier' | 'slotCount'>, role: InteriorRole): number => {
+  if (interiorLayoutOf(building.type)?.assignments !== true || (role !== 'baker' && role !== 'seller')) return interiorPostsOf(building.type, role, building.tier);
+  return role === 'baker' ? building.slotCount : stackCountOf(building.type, building.tier);
 };
 
 export const minTierOfInteriorRole = (type: BuildingType, role: InteriorRole): number => postsByTier(type, role).findIndex(posts => posts > 0) + 1;

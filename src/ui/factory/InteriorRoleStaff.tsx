@@ -1,4 +1,4 @@
-import { STAFF, hireFeeOf, hiredInteriorOf, interiorPostsOf, minTierOfInteriorRole, type Building, type InteriorRole } from '../../core';
+import { STAFF, hireFeeOf, hiredInteriorOf, interiorPostsOfBuilding, minTierOfInteriorRole, type Building, type InteriorRole } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
@@ -12,13 +12,13 @@ interface InteriorRoleStaffProps {
 // A role of an interior, hired like the Staff of a Venue: a fee once, a wage by the day, and the part of the effect it carries.
 export function InteriorRoleStaff({ building, role }: InteriorRoleStaffProps) {
   const hired = hiredInteriorOf(building.interior, role);
-  const posts = interiorPostsOf(building.type, role, building.tier);
+  const posts = interiorPostsOfBuilding(building, role);
   const locked = posts === 0;
   const send = gameStore.getState().send;
   return (
     <div className="venue-staff">
       <div className="venue-staff__label">
-        <strong>{t(`interior.role.${role}`)} · {hired}/{posts}</strong>
+        <strong>{t(`interior.role.${role}`)}</strong> <small className="staff-badge">{hired}/{posts}</small>
         <span className="note note--muted">{t(`interior.roleEffect.${role}`)} · <UrbsAmount value={STAFF.dailyWage[role]} /> {t('venue.wage')}</span>
         <span className="note note--muted">{locked ? `${t('venue.tierNeeded')} ${minTierOfInteriorRole(building.type, role)}` : <>{t('venue.hireFee')} <UrbsAmount value={hireFeeOf(role)} /></>}</span>
       </div>

@@ -1241,6 +1241,21 @@
           "type": "number",
           "exclusiveMinimum": 0
         },
+        "assigns": {
+          "type": "string",
+          "enum": [
+            "baker",
+            "seller"
+          ]
+        },
+        "hatch": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "power": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
         "family": {
           "type": "string",
           "minLength": 1

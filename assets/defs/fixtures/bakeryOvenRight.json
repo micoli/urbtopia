@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "bakery",
+  "category": "machines",
+  "name": {
+    "en": "Tunnel oven (gas on the right)",
+    "fr": "Four tunnel (gaz à droite)"
+  },
+  "model": "bakery-interior-oven-right",
+  "footprint": [1, 1],
+  "price": 900,
+  "minTier": 2,
+  "wear": 0.1,
+  "role": "machine",
+  "flow": ["right"],
+  "speed": 0.2,
+  "assigns": "baker",
+  "family": "oven",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

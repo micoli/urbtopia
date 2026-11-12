@@ -68,7 +68,7 @@ const FAMILY_FLAG = { production: 'productionInterior', service: 'serviceInterio
 
 // The flag a command depends on in a given city: the Staff of an interior depend on the flag of the family of the building they are hired in.
 export function flagOfCommandIn(command: Command, state: GameState): FlagId | undefined {
-  if (command.type !== 'HireInteriorStaff' && command.type !== 'ReleaseInteriorStaff') return flagOfCommand(command.type);
+  if (command.type !== 'HireInteriorStaff' && command.type !== 'ReleaseInteriorStaff' && command.type !== 'SetInteriorFocus' && command.type !== 'AssignInteriorStaff' && command.type !== 'UnassignInteriorStaff' && command.type !== 'RepairAllInteriorFixtures') return flagOfCommand(command.type);
   const building = state.buildings.find(candidate => candidate.id === command.buildingId);
   const family = building && interiorFamilyOf(building.type);
   return family ? FAMILY_FLAG[family] : undefined;

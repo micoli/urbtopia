@@ -130,3 +130,11 @@
 [data-layout='B'] .venue-hint {
   left: calc(50% + 40px);
 }
+
+.staff-badge {
+  padding: 1px var(--space-6);
+  border-radius: var(--radius-md);
+  background: var(--color-info-a25);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}

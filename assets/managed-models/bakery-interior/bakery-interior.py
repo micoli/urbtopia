@@ -4,7 +4,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall  # noqa: E402
+from venue_lib import THICK, block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall  # noqa: E402
 
 P = lpm.Palette([
     ("steel", "#c3c9d4", 0.5, 0.4), ("steel_dark", "#8a92a3", 0.5, 0.4), ("iron", "#4a4f5e", 0.4, 0.5), ("black", "#22242c", 0.0, 0.7),
@@ -96,23 +96,38 @@ def oven(rng):
     return parts, {"spin-up": (fan, (-0.15, 0.0, 1.03))}
 
 
+def mirrored(builder):
+    """The model a builder draws, turned into its mirror image across the x = 0 plane, with the pivots of its moving parts."""
+    def build(rng):
+        parts, spinners = builder(rng)
+        flipped = {name: ([lpm.scale(part, sx=-1) for part in group], (-pivot[0], pivot[1], pivot[2])) for name, (group, pivot) in spinners.items()}
+        return [lpm.scale(part, sx=-1) for part in parts], flipped
+    return build
+
+
 def counter_exit(rng):
-    """Exit standing against a wall of the room, on the tile along it (its back on the back edge of the tile, y 0.5, its face toward -y): the belt comes in from the room at
-    BELT_Z, goes through a hatch of the wall and ends in a glass display case on the shop side, where the seller serves the loaves. The loaves travel toward +y."""
-    parts = belt(-1.0, 0.1)
-    for k, y in enumerate((-0.92, -0.5, -0.14)):
+    """Exit that is a piece of wall, centred on its tile like a partition and in line with the partitions beside it: its ears are the same half-height wall, cream with a terracotta
+    band, plinths and a wooden cap, running to both sides of the tile. The belt comes in from the room (-y) at BELT_Z, goes through a hatch left in the wall, under a lintel
+    that stands above the loaves, and ends in a glass display case on the shop side (+y), where the seller serves the loaves. The loaves travel toward +y."""
+    h = THICK / 2
+    top = 0.5
+    parts = belt(-0.5, 0.3)
+    for k, y in enumerate((-0.42, -0.2, 0.08)):
         parts += [block(f"leg_l{k}", -0.2, -0.17, y - 0.03, y + 0.03, 0.0, 0.3, P["iron"]), block(f"leg_r{k}", 0.17, 0.2, y - 0.03, y + 0.03, 0.0, 0.3, P["iron"])]
-    parts += [block("hatch_l", -0.3, -0.22, -0.06, 0.04, 0.3, 0.72, P["terracotta_dark"]), block("hatch_r", 0.22, 0.3, -0.06, 0.04, 0.3, 0.72, P["terracotta_dark"]),
-              block("hatch_top", -0.3, 0.3, -0.06, 0.04, 0.6, 0.72, P["terracotta_dark"]), block("hatch_cap", -0.32, 0.32, -0.07, 0.05, 0.7, 0.74, P["terracotta"]),
-              block("lamp_stem", 0.1, 0.14, -0.02, 0.02, 0.74, 0.78, P["steel_dark"]), block("lamp", 0.09, 0.15, -0.03, 0.03, 0.78, 0.84, P["green"])]
-    parts += [block(f"curtain{k}", -0.22 + 0.088 * k, -0.22 + 0.088 * k + 0.08, -0.03, -0.01, 0.46, 0.6, P["belt"]) for k in range(5)]
-    parts += [block("case_base", -0.36, 0.36, 0.04, 0.5, 0.0, 0.36, P["wood"]), block("case_front", -0.37, 0.37, 0.48, 0.52, 0.0, 0.38, P["wood_dark"]),
-              block("case_top", -0.37, 0.37, 0.04, 0.52, 0.36, 0.4, P["terracotta"]),
+    for k, (x0, x1) in enumerate(((-0.5, -0.25), (0.25, 0.5))):
+        parts += [block(f"ear{k}", x0, x1, -h, h, 0.0, top, P["cream"]), block(f"ear_cap{k}", x0, x1, -h, h, top - 0.015, top, P["wood"]),
+                  block(f"ear_plinth_a{k}", x0, x1, h, h + 0.03, 0.0, 0.06, P["terracotta_dark"]), block(f"ear_plinth_b{k}", x0, x1, -h - 0.03, -h, 0.0, 0.06, P["terracotta_dark"]),
+                  block(f"ear_band_a{k}", x0, x1, h, h + 0.015, 0.3, 0.47, P["terracotta"]), block(f"ear_band_b{k}", x0, x1, -h - 0.015, -h, 0.3, 0.47, P["terracotta"])]
+    parts += [block("post_l", -0.28, -0.22, -h - 0.02, h + 0.02, 0.0, 0.58, P["terracotta_dark"]), block("post_r", 0.22, 0.28, -h - 0.02, h + 0.02, 0.0, 0.58, P["terracotta_dark"]),
+              block("lintel", -0.3, 0.3, -h - 0.03, h + 0.03, 0.54, 0.6, P["terracotta"]),
+              block("lamp_stem", 0.1, 0.14, -0.02, 0.02, 0.6, 0.64, P["steel_dark"]), block("lamp", 0.09, 0.15, -0.03, 0.03, 0.64, 0.7, P["green"])]
+    parts += [block("case_base", -0.36, 0.36, h + 0.01, 0.5, 0.0, 0.36, P["wood"]), block("case_front", -0.37, 0.37, 0.46, 0.5, 0.0, 0.38, P["wood_dark"]),
+              block("case_top", -0.37, 0.37, h + 0.01, 0.5, 0.36, 0.4, P["terracotta"]),
               block("case_post_l", -0.36, -0.32, 0.46, 0.5, 0.4, 0.74, P["wood_dark"]), block("case_post_r", 0.32, 0.36, 0.46, 0.5, 0.4, 0.74, P["wood_dark"]),
-              block("case_glass", -0.32, 0.32, 0.47, 0.49, 0.4, 0.7, P["glass"]), block("case_roof", -0.37, 0.37, 0.04, 0.52, 0.72, 0.76, P["terracotta"]),
-              block("shelf_loaf_a", -0.28, -0.1, 0.18, 0.36, 0.4, 0.46, P["bread"]), block("shelf_loaf_b", -0.06, 0.12, 0.18, 0.36, 0.4, 0.46, P["bread_dark"]),
-              block("shelf_loaf_c", 0.14, 0.3, 0.18, 0.36, 0.4, 0.45, P["bread"])]
-    return shifted(parts, 0.5), {}
+              block("case_glass", -0.32, 0.32, 0.47, 0.49, 0.4, 0.7, P["glass"]), block("case_roof", -0.37, 0.37, h + 0.01, 0.5, 0.72, 0.76, P["terracotta"]),
+              block("shelf_loaf_a", -0.28, -0.1, 0.2, 0.36, 0.4, 0.46, P["bread"]), block("shelf_loaf_b", -0.06, 0.12, 0.2, 0.36, 0.4, 0.46, P["bread_dark"]),
+              block("shelf_loaf_c", 0.14, 0.3, 0.2, 0.36, 0.4, 0.45, P["bread"])]
+    return parts, {}
 
 
 def tile_floor(rng):
@@ -154,6 +169,6 @@ def wall_set():
 
 
 if __name__ == "__main__":
-    models = {"mixer": mixer, "oven": oven, "counter-exit": counter_exit}
+    models = {"mixer": mixer, "mixer-left": mirrored(mixer), "oven": oven, "oven-right": mirrored(oven), "counter-exit": counter_exit}
     export_all(models, P, 1200, HERE, center=False, ground=False)
     export_all(wall_set(), P, 900, HERE, center=False, ground=False)

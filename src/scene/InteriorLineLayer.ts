@@ -6,16 +6,27 @@ const BELT_TOP = 0.42;
 const PACKET_HEIGHT = 0.16;
 const TILES_PER_SECOND = 0.55;
 const SPACING = 1.3;
+// The size of a Good on a Line, which the Goods of the Oven and of the Display counter have too.
+export const ITEM_SCALE = 0.9;
 
 const BODY = new THREE.BoxGeometry(0.22, PACKET_HEIGHT, 0.2);
 const TAPE = new THREE.BoxGeometry(0.03, 0.004, 0.2);
 const BODY_MATERIAL = new THREE.MeshStandardMaterial({ color: 0xc9a26b, roughness: 0.9 });
 const TAPE_MATERIAL = new THREE.MeshStandardMaterial({ color: 0xe9dfc9, roughness: 0.6 });
 
+interface Packet {
+  holder: THREE.Group;
+  crate: THREE.Object3D;
+  // The Good that the Packet has become once it is past the Oven: shown in place of the crate from `bakedAt` along the way.
+  item: THREE.Object3D | null;
+}
+
 interface Way {
   points: readonly THREE.Vector2[];
   length: number;
-  packets: THREE.Object3D[];
+  // How far along the way the Packets turn into the Good; the way is as long as itself when they never do.
+  bakedAt: number;
+  packets: Packet[];
   // Where the first Packet stands, as a share of the gap between two, so that the Packets of the ways of one Packer take them in turn.
   phase: number;
 }
@@ -42,6 +53,8 @@ function pointAt(points: readonly THREE.Vector2[], distance: number): { at: THRE
 // nor saved, still under reduced motion. Its pace follows the speed bonus of the floor.
 export class InteriorLineLayer {
   readonly root = new THREE.Group();
+  // The picture of a Good, or null while its model is not loaded.
+  itemOf: (good: string) => THREE.Object3D | null = () => null;
   private ways: Way[] = [];
   private speed = 1;
   private time = 0;
@@ -56,13 +69,23 @@ export class InteriorLineLayer {
       const siblings = sharing(path);
       const count = Math.max(1, Math.round(length / (SPACING * siblings.length)));
       const phase = siblings.indexOf(path) / siblings.length;
-      const packets = Array.from({ length: count }, () => {
-        const packet = new THREE.Mesh(BODY, BODY_MATERIAL);
-        packet.add(new THREE.Mesh(TAPE, TAPE_MATERIAL).translateY(PACKET_HEIGHT / 2));
-        this.root.add(packet);
-        return packet;
+      const bakedAt = path.baked ? lengthOf(points.slice(0, path.baked.from + 1)) : length;
+      const packets = Array.from({ length: count }, (): Packet => {
+        const holder = new THREE.Group();
+        const crate = new THREE.Mesh(BODY, BODY_MATERIAL);
+        crate.position.y = PACKET_HEIGHT / 2;
+        crate.add(new THREE.Mesh(TAPE, TAPE_MATERIAL).translateY(PACKET_HEIGHT / 2));
+        holder.add(crate);
+        const item = path.baked ? this.itemOf(path.baked.good) : null;
+        if (item) {
+          item.scale.setScalar(ITEM_SCALE);
+          item.visible = false;
+          holder.add(item);
+        }
+        this.root.add(holder);
+        return { holder, crate, item };
       });
-      return { points, length, packets, phase };
+      return { points, length, bakedAt, packets, phase };
     });
     this.place();
   }
@@ -83,11 +106,15 @@ export class InteriorLineLayer {
   }
 
   private place(): void {
-    for (const { points, length, packets, phase } of this.ways) {
-      packets.forEach((packet, index) => {
-        const { at, angle } = pointAt(points, (this.time + ((index + phase) * length) / packets.length) % length);
-        packet.position.set(at.x, BELT_TOP + PACKET_HEIGHT / 2, at.y);
-        packet.rotation.y = angle;
+    for (const { points, length, bakedAt, packets, phase } of this.ways) {
+      packets.forEach(({ holder, crate, item }, index) => {
+        const distance = (this.time + ((index + phase) * length) / packets.length) % length;
+        const { at, angle } = pointAt(points, distance);
+        holder.position.set(at.x, BELT_TOP, at.y);
+        holder.rotation.y = angle;
+        const baked = item !== null && distance >= bakedAt;
+        crate.visible = !baked;
+        if (item) item.visible = baked;
       });
     }
   }

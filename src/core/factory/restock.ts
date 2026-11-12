@@ -9,7 +9,7 @@ import { linkedExitsOf } from './factoryInterior';
 import { restockerWagePerHour } from './interiorWear';
 
 // Queues one production of an item in a building, taking its ingredients from the Storehouse; an entry queued for an Exit's Restocker carries the Exit.
-export function queueItem(state: GameState, building: Building, item: string, now: number, exitId?: number): CommandOutcome {
+export function queueItem(state: GameState, building: Building, item: string, now: number, exitId?: number, durationFactor = 1): CommandOutcome {
   if (!(isMaterial(item) || isGood(item)) || !producibleItems(building.type).includes(item)) return { key: 'error.cannotProduce' };
   if (!isItemUnlocked(state, item)) return { key: 'error.itemLocked' };
   if (building.tier < minTierOf(item)) return { key: 'error.tierTooLow' };
@@ -22,8 +22,9 @@ export function queueItem(state: GameState, building: Building, item: string, no
     if (available < required) return { key: 'error.missingMaterials' };
     materials[material as keyof typeof materials] = available - required;
   }
-  const queued = newQueueEntry(building, item, now);
-  const entry: QueueEntry = exitId === undefined ? queued.entry : { ...queued.entry, exitId };
+  const queued = newQueueEntry(building, item, now, exitId);
+  const timed = durationFactor === 1 ? queued.entry : { ...queued.entry, duration: Math.round(queued.entry.duration * durationFactor) };
+  const entry: QueueEntry = exitId === undefined ? timed : { ...timed, exitId };
   return {
     state: {
       ...state,
@@ -34,10 +35,10 @@ export function queueItem(state: GameState, building: Building, item: string, no
   };
 }
 
-const isError = (outcome: CommandOutcome): outcome is Extract<CommandOutcome, { key: string }> => 'key' in outcome;
+export const isError = (outcome: CommandOutcome): outcome is Extract<CommandOutcome, { key: string }> => 'key' in outcome;
 
 // The Packhouse keeps its last free Slot for the player.
-const RESERVED_SLOTS = 1;
+export const RESERVED_SLOTS = 1;
 
 // The Exits whose Restocker is at work: a Restocker for each, a Restock and a Line that is Linked. The layout results are cached by layout, so the Exits are read from the floor itself.
 const workingExitsOf = (building: Building, urbs: number): VenueFixture[] => {
@@ -48,7 +49,7 @@ const workingExitsOf = (building: Building, urbs: number): VenueFixture[] => {
 };
 
 // Puts a finished entry into the Storehouse; false when there is no room for it.
-function store(state: GameState, entry: QueueEntry): GameState | null {
+export function store(state: GameState, entry: QueueEntry): GameState | null {
   if (!hasStorage(state)) return null;
   const compartment = compartmentOf(entry.item);
   if (storageUsed(state.storage)[compartment] + entry.quantity > storageCapacity(state)[compartment]) return null;
@@ -59,9 +60,9 @@ function store(state: GameState, entry: QueueEntry): GameState | null {
   return { ...state, storage: { materials, goods }, marketUnlocked: state.marketUnlocked || Object.values(goods).some((amount) => (amount ?? 0) > 0) };
 }
 
-const withBuilding = (state: GameState, building: Building): GameState => ({ ...state, buildings: state.buildings.map((candidate) => (candidate.id === building.id ? building : candidate)) });
+export const withBuilding = (state: GameState, building: Building): GameState => ({ ...state, buildings: state.buildings.map((candidate) => (candidate.id === building.id ? building : candidate)) });
 
-const withFixture = (state: GameState, buildingId: number, replacement: VenueFixture): GameState => {
+export const withFixture = (state: GameState, buildingId: number, replacement: VenueFixture): GameState => {
   const building = state.buildings.find((candidate) => candidate.id === buildingId)!;
   return withBuilding(state, { ...building, interior: { ...building.interior!, fixtures: building.interior!.fixtures.map((fixture) => (fixture.id === replacement.id ? replacement : fixture)) } });
 };
@@ -119,4 +120,4 @@ export function advanceRestockers(state: GameState, now: number): { state: GameS
   return { state: current, events };
 }
 
-const MAX_TURNS = 5000;
+export const MAX_TURNS = 5000;

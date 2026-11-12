@@ -15,7 +15,7 @@ interface VenuePanelContentProps {
 // What the panel opened from the main menu shows.
 export function VenuePanelContent({ venue }: VenuePanelContentProps) {
   const panel = useStore(venueStore, store => store.panel);
-  if (panel === 'build') return <VenueBuildMenu tier={venue.tier} rank={isVenue(venue) ? venueRankOf(venue) : 1} venueType={venueTypeOf(venue)} />;
+  if (panel === 'build') return <VenueBuildMenu tier={venue.tier} rank={isVenue(venue) ? venueRankOf(venue) : 1} venueType={venueTypeOf(venue)} building={venue} />;
   if (panel === 'staff') return <VenueStaff venueId={venue.id} />;
   if (panel === 'menu') return <VenueMenu venueId={venue.id} />;
   if (panel === 'events') return <VenueEvents venueId={venue.id} />;

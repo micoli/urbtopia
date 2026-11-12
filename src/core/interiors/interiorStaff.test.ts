@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, dispatch, interiorFamilyOf, interiorPostsOf, jobsOf, newGame, type Building, type Command, type GameState } from '../index';
+import { createBuilding, dispatch, interiorFamilyOf, interiorPostsOf, interiorPostsOfBuilding, jobsOf, newGame, type Building, type Command, type GameState } from '../index';
 import { flagOfCommandIn } from '../../featureFlags/featureFlags';
 import { interiorRoleShare, interiorRolesOf, interiorWagesPerHour, partOfRole, totalInteriorStaff } from './interiorStaff';
 import { payInteriorStaff } from './interiorStaffCommands';
@@ -10,7 +10,7 @@ const city = (tier = 3, urbs = 100_000): GameState => ({
   nextId: 100,
   urbs,
   tutorial: null,
-  buildings: [{ ...createBuilding(1, 'bakery', 55, 50, 0), tier }, { ...createBuilding(2, 'school', 60, 50, 0), tier }, createBuilding(3, 'arcade', 65, 50, 0)],
+  buildings: [{ ...createBuilding(1, 'bakery', 55, 50, 0), tier }, { ...createBuilding(2, 'school', 60, 50, 0), tier }, createBuilding(3, 'arcade', 65, 50, 0), { ...createBuilding(4, 'hospital', 70, 50, 0), tier }],
 });
 const send = (state: GameState, command: Command): GameState => {
   const result = dispatch(state, command, 0);
@@ -22,7 +22,7 @@ const failure = (state: GameState, command: Command) => {
   return result.ok ? null : result.error.key;
 };
 const building = (state: GameState, id: number): Building => state.buildings.find(candidate => candidate.id === id)!;
-const hire = (buildingId: number, role: 'baker' | 'seller' | 'teacher' | 'miller'): Command => ({ type: 'HireInteriorStaff', buildingId, role });
+const hire = (buildingId: number, role: 'baker' | 'seller' | 'teacher' | 'miller' | 'doctor'): Command => ({ type: 'HireInteriorStaff', buildingId, role });
 const release = (buildingId: number, role: 'baker' | 'seller' | 'teacher'): Command => ({ type: 'ReleaseInteriorStaff', buildingId, role });
 
 describe('what each building declares', () => {
@@ -56,8 +56,8 @@ describe('hiring Staff in an interior', () => {
 
   it('refuses a role the building does not have, a Tier too low and a post taken', () => {
     expect(failure(city(), hire(1, 'teacher'))).toBe('error.unknownBuilding');
-    expect(failure(city(1), hire(1, 'baker'))).toBe('error.tierTooLow');
-    expect(failure(send(city(3), hire(1, 'baker')), hire(1, 'baker'))).toBe('error.noStaffPost');
+    expect(failure(city(1), hire(4, 'doctor'))).toBe('error.tierTooLow');
+    expect(failure(send(send(city(3), hire(1, 'baker')), hire(1, 'baker')), hire(1, 'baker'))).toBe('error.noStaffPost');
   });
 
   it('refuses when the city cannot pay the fee', () => {
@@ -125,5 +125,21 @@ describe('the flags of the families', () => {
     expect(flagOfCommandIn(release(2, 'teacher'), city())).toBe('serviceInterior');
     expect(flagOfCommandIn(hire(3, 'baker'), city())).toBeUndefined();
     expect(flagOfCommandIn({ type: 'Collect', buildingId: 1 } as Command, city())).toBeUndefined();
+  });
+});
+
+describe('the posts of a Bakery follow its Slots', () => {
+  it('hires as many bakers as production Slots and as many sellers as Counter Slots, whatever the Tier', () => {
+    const bakery = building(city(1), 1);
+    expect(interiorPostsOfBuilding(bakery, 'baker')).toBe(bakery.slotCount);
+    expect(interiorPostsOfBuilding(bakery, 'seller')).toBe(bakery.stacks.length);
+    const staffed = send(send(city(1), hire(1, 'seller')), hire(1, 'seller'));
+    expect(failure(send(staffed, hire(1, 'seller')), hire(1, 'seller'))).toBe('error.noStaffPost');
+    expect(interiorPostsOfBuilding(building(city(1), 2), 'teacher')).toBe(interiorPostsOf('school', 'teacher', 1));
+  });
+
+  it('gives one more baker for each production Slot bought', () => {
+    const bought = send(city(1), { type: 'BuySlot', buildingId: 1 });
+    expect(interiorPostsOfBuilding(building(bought, 1), 'baker')).toBe(3);
   });
 });

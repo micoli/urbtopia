@@ -15,6 +15,7 @@
   "role": "machine",
   "flow": ["left"],
   "speed": 0.2,
+  "assigns": "baker",
   "family": "oven",
   "lineIn": ["back"],
   "lineOut": ["front"]

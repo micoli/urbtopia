@@ -2,7 +2,8 @@ import type { CommandOutcome } from '../engine/commands';
 import type { Building, GameState, InteriorData, InteriorRole } from '../engine/state';
 import { VENUE } from '../venues/shared';
 import { hireFeeOf } from '../venues/staff';
-import { hiredInteriorOf, interiorPostsOf, interiorRolesOf, interiorWagesPerHour } from './interiorStaff';
+import { withAssignmentsCovered } from './interiorAssignments';
+import { hiredInteriorOf, interiorPostsOfBuilding, interiorRolesOf, interiorWagesPerHour } from './interiorStaff';
 
 const EMPTY_INTERIOR: InteriorData = { fixtures: [], nextFixtureId: 1 };
 
@@ -27,7 +28,7 @@ const staffWith = (building: Building, role: InteriorRole, count: number): Inter
 export function hireInteriorStaff(state: GameState, buildingId: number, role: InteriorRole): CommandOutcome {
   const building = hostOf(state, buildingId, role);
   if (!building) return { key: 'error.unknownBuilding' };
-  const posts = interiorPostsOf(building.type, role, building.tier);
+  const posts = interiorPostsOfBuilding(building, role);
   if (posts === 0) return { key: 'error.tierTooLow' };
   const hired = hiredInteriorOf(building.interior, role);
   if (hired >= posts) return { key: 'error.noStaffPost' };
@@ -41,7 +42,9 @@ export function releaseInteriorStaff(state: GameState, buildingId: number, role:
   if (!building) return { key: 'error.unknownBuilding' };
   const hired = hiredInteriorOf(building.interior, role);
   if (hired === 0) return { key: 'error.noStaffToRelease' };
-  return { state: withStaff(state, building, staffWith(building, role, hired - 1)), events: [] };
+  const next = withStaff(state, building, staffWith(building, role, hired - 1));
+  const fixtures = withAssignmentsCovered(building, role, hired - 1);
+  return { state: { ...next, buildings: next.buildings.map(candidate => (candidate.id === building.id && candidate.interior ? { ...candidate, interior: { ...candidate.interior, fixtures } } : candidate)) }, events: [] };
 }
 
 // The Staff hired in an interior are paid by the hour, as far as the city's Urbs go.

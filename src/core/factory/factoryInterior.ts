@@ -21,6 +21,8 @@ export interface InteriorLinks {
   problems: ReadonlyMap<number, readonly MachineProblem[]>;
   // Packhouse interior: the Fixtures of a Line that carries Packets from a Packer, whose Drive is linked, to an Exit.
   lined: ReadonlySet<number>;
+  // The Fixtures that the Machine ahead of them feeds beyond its limit.
+  overfed: ReadonlySet<number>;
 }
 
 export interface InteriorCaps {
@@ -241,11 +243,13 @@ interface LineReach {
   lined: Set<number>;
   // For each Fixture the Fixtures that Packets go on to.
   next: Map<number, number[]>;
+  // The Fixtures that a Machine feeds beyond its limit: Packets do not go into them.
+  overfed: Set<number>;
 }
 
 // A Line: Packets come out of a Fixture by a side of its lineOut and go into the next one when that one takes them in on the side that faces back. They start from a Packer
 // whose Drive is linked and stop at a Strapper that is not linked; only what leads to an Exit counts.
-function lineReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, linked: ReadonlySet<number>): LineReach {
+function unlimitedLineReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, linked: ReadonlySet<number>): LineReach {
   const sides = (fixture: VenueFixture, key: 'lineIn' | 'lineOut'): readonly FixtureSide[] => FIXTURES[fixture.type][key] ?? [];
   const reached = new Set<number>();
   const next = new Map<number, number[]>();
@@ -274,7 +278,38 @@ function lineReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, Ve
       grew = true;
     }
   }
-  return { lined, next };
+  return { lined, next, overfed: new Set() };
+}
+
+const matches = (fixture: VenueFixture, name: string): boolean => FIXTURES[fixture.type].family === name || roleOf(fixture) === name;
+
+const reachableFrom = (source: number, next: ReadonlyMap<number, number[]>): Set<number> => {
+  const seen = new Set<number>();
+  const queue = [source];
+  while (queue.length > 0) for (const id of next.get(queue.shift()!) ?? []) if (!seen.has(id)) {
+    seen.add(id);
+    queue.push(id);
+  }
+  return seen;
+};
+
+// The Line, once every Machine feeds no more Fixtures than its limit: of those it reaches, the lowest ids are fed and the others are left out, and so is what only they lead to.
+function lineReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, linked: ReadonlySet<number>): LineReach {
+  const limits = (fixture: VenueFixture) => interiorLayoutOf(FIXTURES[fixture.type].venue as BuildingType)?.feeds?.filter(feed => matches(fixture, feed.from)) ?? [];
+  if (!fixtures.some(fixture => limits(fixture).length > 0)) return unlimitedLineReach(fixtures, at, linked);
+  const overfed = new Set<number>();
+  for (let round = 0; round < fixtures.length; round++) {
+    const kept = fixtures.filter(fixture => !overfed.has(fixture.id));
+    const reach = unlimitedLineReach(kept, placedOn(kept), linked);
+    const before = overfed.size;
+    for (const source of kept) for (const feed of limits(source)) {
+      const reachable = reachableFrom(source.id, reach.next);
+      const fed = kept.filter(fixture => reachable.has(fixture.id) && matches(fixture, feed.to)).sort((a, b) => a.id - b.id);
+      for (const extra of fed.slice(feed.max)) overfed.add(extra.id);
+    }
+    if (overfed.size === before) return { ...reach, overfed };
+  }
+  return unlimitedLineReach(fixtures, at, linked);
 }
 
 // The Fixtures that Flow reaches. A Tank only gives its fluid to the Pipes, up to the back of a Pump; a Pump that is handed Drive pushes it on
@@ -409,7 +444,7 @@ interface InteriorReport {
 
 // What a result depends on is the layout of the Fixtures (what, where, turned how, broken or not), never their Condition. The wear of a floor that runs replaces its list at every
 // tick, so a result is looked up by list first, then by layout, and worked out again only when the layout changed.
-const layoutOf = (fixtures: readonly VenueFixture[]): string => fixtures.reduce((key, fixture) => `${key}${fixture.id},${fixture.type},${fixture.x},${fixture.y},${fixture.rotation},${fixture.broken === true ? 1 : 0};`, '');
+const layoutOf = (fixtures: readonly VenueFixture[]): string => fixtures.reduce((key, fixture) => `${key}${fixture.id},${fixture.type},${fixture.x},${fixture.y},${fixture.rotation},${fixture.broken === true ? 1 : 0},${fixture.recipe ?? ''},${fixture.soldGood ?? ''};`, '');
 
 const LAYOUTS_KEPT = 64;
 
@@ -445,7 +480,7 @@ const reportOf = memoized((allFixtures): InteriorReport => {
     else problems.set(machine.id, lacking);
   }
   const line = lineReach(fixtures, at, linked);
-  return { fixtures, at, drive, powered, flow, line, links: { linked, jammed: drive.jammed, problems, lined: line.lined } };
+  return { fixtures, at, drive, powered, flow, line, links: { linked, jammed: drive.jammed, problems, lined: line.lined, overfed: line.overfed } };
 });
 
 export const interiorLinksOf = (allFixtures: readonly VenueFixture[]): InteriorLinks => reportOf(allFixtures).links;
@@ -575,11 +610,12 @@ function bonusOf(allFixtures: readonly VenueFixture[], tier: number, type: Build
   const saving = Math.min(interiorBalance.maxPowerSaving, interiorBalance.boilerPowerSaving * machines.filter(fixture => FIXTURES[fixture.type].heat).length);
   const busy = motors.length === 0 ? 0 : Math.min(1, drive.received.size / (motors.length * interiorBalance.motorCapacity));
   const sum = (key: 'speed' | 'yield') => machines.reduce((total, fixture) => total + (FIXTURES[fixture.type][key] ?? 0) * (1 + coolantOf(fixture)), 0);
+  const fixturePower = allFixtures.filter(fixture => fixture.broken !== true).reduce((total, fixture) => total + (FIXTURES[fixture.type].power ?? 0), 0);
   const variety = interiorBalance.varietyYield * Math.max(0, kindsOf(machines) - 1);
   return {
     speed: saturate(sum('speed'), capOf(layout?.speedCaps ?? interiorBalance.speedCaps, tier)),
     yield: saturate(sum('yield') + variety, capOf(layout?.yieldCaps ?? interiorBalance.yieldCaps, tier)),
-    power: motors.length * interiorBalance.motorPower * (interiorBalance.idlePowerShare + (1 - interiorBalance.idlePowerShare) * busy) * (1 - saving),
+    power: motors.length * interiorBalance.motorPower * (interiorBalance.idlePowerShare + (1 - interiorBalance.idlePowerShare) * busy) * (1 - saving) + fixturePower,
   };
 }
 
@@ -588,6 +624,8 @@ function bonusOf(allFixtures: readonly VenueFixture[], tier: number, type: Build
 export interface LinePath {
   source: number;
   points: readonly { x: number; y: number }[];
+  // Bakery: the Good that the Packets have become once they have gone through an Oven, which is the point of the way where they turn into it, and the Good that arrives at the Exit.
+  baked?: { from: number; good: string };
 }
 
 const MOUTH = 0.15;
@@ -603,15 +641,18 @@ export const linePathsOf = memoized((allFixtures): readonly LinePath[] => {
   };
   const sources = fixtures.filter(fixture => line.lined.has(fixture.id) && (FIXTURES[fixture.type].lineOut?.length ?? 0) > 0 && FIXTURES[fixture.type].lineIn === undefined);
   const paths: LinePath[] = [];
-  const walk = (source: VenueFixture, current: VenueFixture, points: readonly { x: number; y: number }[], seen: ReadonlySet<number>): void => {
+  const walk = (source: VenueFixture, current: VenueFixture, points: readonly { x: number; y: number }[], seen: ReadonlySet<number>, baked?: { from: number; good: string }): void => {
     const nexts = (line.next.get(current.id) ?? []).filter(id => line.lined.has(id) && !seen.has(id));
     if (nexts.length === 0) {
-      if (roleOf(current) === 'exit') paths.push({ source: source.id, points: [...points, toward(current, 'back', HATCH)] });
+      if (roleOf(current) !== 'exit') return;
+      const good = current.soldGood ?? baked?.good;
+      paths.push({ source: source.id, points: [...points, toward(current, 'back', FIXTURES[current.type].hatch ?? HATCH)], ...(baked && good ? { baked: { from: baked.from, good } } : {}) });
       return;
     }
+    const baking = FIXTURES[current.type].assigns === 'baker' && current.recipe !== undefined ? { from: points.length - 1, good: current.recipe } : baked;
     for (const id of nexts) {
       const next = byId.get(id);
-      if (next) walk(source, next, [...points, centre(next)], new Set([...seen, id]));
+      if (next) walk(source, next, [...points, centre(next)], new Set([...seen, id]), baking);
     }
   };
   for (const source of sources) walk(source, source, [toward(source, 'front', MOUTH)], new Set([source.id]));
@@ -626,12 +667,15 @@ export type LineFault =
   | { kind: 'noDrive'; fixture: VenueFixture }
   // The Fixture next to the entry does not carry toward it: turn it, or replace it.
   | { kind: 'misfacing'; fixture: VenueFixture }
+  // The Machine that feeds it already feeds as many as its limit allows.
+  | { kind: 'overfed'; fixture: VenueFixture }
   // Nothing at all lies next to the entry.
   | { kind: 'deadEnd'; cell: { x: number; y: number }; of: VenueFixture };
 
 export function lineFaultOf(allFixtures: readonly VenueFixture[], start: VenueFixture): LineFault | undefined {
   const { links } = reportOf(allFixtures);
   if (links.lined.has(start.id)) return undefined;
+  if (links.overfed.has(start.id)) return { kind: 'overfed', fixture: start };
   const sides = (fixture: VenueFixture, key: 'lineIn' | 'lineOut'): readonly FixtureSide[] => FIXTURES[fixture.type][key] ?? [];
   const at = placedOn(allFixtures.filter(isFactoryFixture));
   const cellAt = (fixture: VenueFixture, side: FixtureSide) => {
@@ -685,7 +729,7 @@ export const interiorPowerOfBuilding = (building: Pick<Building, 'type' | 'tier'
 
 const lineBonuses = new WeakMap<readonly VenueFixture[], Map<string, InteriorBonus>>();
 
-// What the Line of a Bakery, a Dairy or a Storehouse adds, from the Machines and the Exits that Packets reach: their speed and yield, and the sales and the capacity of the Exits,
+// What the Line of a Bakery, a Dairy or a Storehouse adds, from the Machines and the Exits that Packets reach: their speed and yield (the Exits' for a Bakery), and the sales and the capacity of the Exits,
 // each saturating towards the cap of its Tier. Nothing counts until the Line is unbroken from its first Machine to an Exit.
 export function lineBonusOf(allFixtures: readonly VenueFixture[], tier: number, type: BuildingType, group?: string): InteriorBonus {
   const perKey = lineBonuses.get(allFixtures) ?? new Map<string, InteriorBonus>();
@@ -704,7 +748,7 @@ export function lineBonusOf(allFixtures: readonly VenueFixture[], tier: number, 
     const total = (list: readonly VenueFixture[], key: 'speed' | 'yield' | 'sales' | 'capacity') => list.reduce((sum, fixture) => sum + (FIXTURES[fixture.type][key] ?? 0), 0);
     bonus = {
       speed: saturate(total(machines, 'speed'), capOf(layout.speedCaps, tier), interiorBalance.bonusKnee),
-      yield: saturate(total(machines.filter(fixture => group === undefined || FIXTURES[fixture.type].yieldGroup === undefined || FIXTURES[fixture.type].yieldGroup === group), 'yield'), capOf(layout.yieldCaps, tier), interiorBalance.bonusKnee),
+      yield: saturate(layout.yieldFromExits ? total(exits, 'yield') : total(machines.filter(fixture => group === undefined || FIXTURES[fixture.type].yieldGroup === undefined || FIXTURES[fixture.type].yieldGroup === group), 'yield'), capOf(layout.yieldCaps, tier), interiorBalance.bonusKnee),
       sales: layout.salesCaps ? saturate(total(exits, 'sales'), capOf(layout.salesCaps, tier), interiorBalance.bonusKnee) : 0,
       capacity: layout.capacityCaps ? saturate(total(exits, 'capacity'), capOf(layout.capacityCaps, tier), interiorBalance.bonusKnee) : 0,
       power,
@@ -808,17 +852,88 @@ const NO_FIXTURES: readonly VenueFixture[] = [];
 // The Fixtures of a Factory's floor, the same empty list each time when it has none, so what is cached on a list stays cached.
 export const interiorFixturesOf = (building: Pick<Building, 'interior'>): readonly VenueFixture[] => building.interior?.fixtures ?? NO_FIXTURES;
 
+// The Fixtures from which Packets can reach a Fixture through the Line. The report is cached by layout, so they are read from the interior itself.
+export function interiorUpstreamOf(allFixtures: readonly VenueFixture[], id: number): VenueFixture[] {
+  const { next } = reportOf(allFixtures).line;
+  const feeders = new Map<number, number[]>();
+  for (const [from, targets] of next) for (const target of targets) feeders.set(target, [...(feeders.get(target) ?? []), from]);
+  const seen = new Set<number>();
+  const queue = [id];
+  while (queue.length > 0) for (const feeder of feeders.get(queue.shift()!) ?? []) if (!seen.has(feeder)) {
+    seen.add(feeder);
+    queue.push(feeder);
+  }
+  return allFixtures.filter(fixture => seen.has(fixture.id));
+}
+
+// The Goods a Display counter can sell: the Recipes of the Ovens upstream of it, worked out once for each state of the floor.
+const supplied = new WeakMap<readonly VenueFixture[], Map<number, ReadonlySet<string>>>();
+
+export function suppliedGoodsOf(allFixtures: readonly VenueFixture[], counter: VenueFixture): ReadonlySet<string> {
+  const perCounter = supplied.get(allFixtures) ?? new Map<number, ReadonlySet<string>>();
+  supplied.set(allFixtures, perCounter);
+  const known = perCounter.get(counter.id);
+  if (known) return known;
+  const goods = new Set(interiorUpstreamOf(allFixtures, counter.id).filter(fixture => FIXTURES[fixture.type].assigns === 'baker' && fixture.recipe !== undefined).map(fixture => fixture.recipe!));
+  perCounter.set(counter.id, goods);
+  return goods;
+}
+
+// A Bakery adds its bonus Good by Good, through the Staff assigned to its Fixtures: an Oven adds its speed to the productions of its Recipe, and a Display counter its sales and its yield
+// to the sales of its Sold Good, each saturating towards the cap of the Tier. The Mixer, which no Staff serves, adds its speed to every Recipe that is baked. Asked about no Good, it is the best of them.
+const assignedBonuses = new WeakMap<readonly VenueFixture[], Map<string, InteriorBonus>>();
+
+function assignedBonusOf(building: Pick<Building, 'type' | 'tier' | 'interior'>, item?: ItemId): InteriorBonus {
+  const fixtures = building.interior!.fixtures;
+  const perKey = assignedBonuses.get(fixtures) ?? new Map<string, InteriorBonus>();
+  assignedBonuses.set(fixtures, perKey);
+  const key = `${building.type}:${building.tier}:${item ?? ''}`;
+  const known = perKey.get(key);
+  if (known) return known;
+  const bonus = assignedBonusUncached(building, item);
+  perKey.set(key, bonus);
+  return bonus;
+}
+
+function assignedBonusUncached(building: Pick<Building, 'type' | 'tier' | 'interior'>, item?: ItemId): InteriorBonus {
+  const layout = interiorLayoutOf(building.type)!;
+  const allFixtures = building.interior!.fixtures;
+  const { links } = reportOf(allFixtures);
+  // The report is cached by layout, which leaves out what the player assigns: the Fixtures are read from the interior itself.
+  const lined = allFixtures.filter(fixture => links.lined.has(fixture.id));
+  const ovens = lined.filter(fixture => fixture.assigned === true && FIXTURES[fixture.type].assigns === 'baker' && fixture.recipe !== undefined);
+  const counters = lined.filter(fixture => fixture.assigned === true && FIXTURES[fixture.type].assigns === 'seller' && fixture.soldGood !== undefined && suppliedGoodsOf(allFixtures, fixture).has(fixture.soldGood));
+  const unattended = lined.filter(fixture => isMachine(fixture) && FIXTURES[fixture.type].assigns === undefined);
+  const total = (list: readonly VenueFixture[], key: 'speed' | 'yield' | 'sales') => list.reduce((sum, fixture) => sum + (FIXTURES[fixture.type][key] ?? 0), 0);
+  const speedOf = (good: string) => {
+    const baking = ovens.filter(oven => oven.recipe === good);
+    return baking.length === 0 ? 0 : saturate(total(baking, 'speed') + total(unattended, 'speed'), capOf(layout.speedCaps, building.tier), interiorBalance.bonusKnee);
+  };
+  const sellingOf = (good: string, key: 'yield' | 'sales', caps: readonly number[] | undefined) => (caps ? saturate(total(counters.filter(counter => counter.soldGood === good), key), capOf(caps, building.tier), interiorBalance.bonusKnee) : 0);
+  const best = (values: readonly number[]) => Math.max(0, ...values);
+  const baked = [...new Set(ovens.map(oven => oven.recipe!))];
+  const sold = [...new Set(counters.map(counter => counter.soldGood!))];
+  return {
+    speed: item === undefined ? best(baked.map(speedOf)) : speedOf(item),
+    yield: item === undefined ? best(sold.map(good => sellingOf(good, 'yield', layout.yieldCaps))) : sellingOf(item, 'yield', layout.yieldCaps),
+    sales: item === undefined ? best(sold.map(good => sellingOf(good, 'sales', layout.salesCaps))) : sellingOf(item, 'sales', layout.salesCaps),
+    capacity: 0,
+    power: bonusOf(allFixtures, building.tier, building.type).power,
+  };
+}
+
 // The bonus of a building's floor; for a Packhouse, the one that applies to the packed Goods `item` when it is given.
 export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'interior'>, item?: ItemId): InteriorBonus {
   if (!building.interior) return NO_BONUS;
   if (interiorDeclarationOf(building.type)) {
     const layout = interiorLayoutOf(building.type);
+    if (layout?.assignments) return assignedBonusOf(building, item);
     const groups = Object.keys(layout?.yieldGroups ?? {});
     const group = item === undefined ? undefined : yieldGroupOf(building.type, item);
     const bonus = layout?.line ? lineBonusOf(building.interior.fixtures, building.tier, building.type, group) : interiorBonusOf(building.interior.fixtures, building.tier, building.type);
-    // A building that splits its yield in groups of Goods delivers each group through its own role; asked about none, it is the best of them.
+    // A yield that comes from the Exits is delivered by the Staff that serves them. A building that splits its yield in groups of Goods delivers each group through its own role; asked about none, it is the best of them.
     const delivered = (name: string) => bonus.yield * interiorPartPresence(building, `${name}Yield` as InteriorPart);
-    const yieldShare = groups.length === 0 ? bonus.yield : group !== undefined ? delivered(group) : item !== undefined ? 0 : Math.max(...groups.map(delivered));
+    const yieldShare = groups.length === 0 ? bonus.yield * (layout?.yieldFromExits ? interiorPartPresence(building, 'salesRate') : 1) : group !== undefined ? delivered(group) : item !== undefined ? 0 : Math.max(...groups.map(delivered));
     return {
       ...bonus,
       yield: yieldShare,

@@ -36,7 +36,7 @@ export interface QueueEntry {
   startedAt: number | null;
   done: boolean;
   quantity: number;
-  // Packhouse: the Exit whose Restocker queued this production.
+  // The Exit whose Restocker queued this production (Packhouse), or the Oven whose baker did (Bakery).
   exitId?: number;
 }
 
@@ -69,6 +69,10 @@ export interface VenueFixture extends Coord {
   restocker?: true;
   // The moment its Restocker last queued a production: the Exit served longest ago takes the next free Slot.
   restockedAt?: number;
+  // Bakery interior: the Recipe of an Oven or the Sold Good of a Display counter, and whether its baker or its seller is assigned to it.
+  recipe?: GoodId;
+  soldGood?: GoodId;
+  assigned?: true;
 }
 
 export interface VenueEvent {

@@ -3,6 +3,7 @@ import { hasProductionInterior, hasServiceInterior, type Building } from '../../
 import { venueStore } from '../../store/venueStore';
 import { PanelHeader } from '../common/PanelHeader';
 import { useVenueFixtureSelected, VenueFixturePanel } from './VenueFixturePanel';
+import { InteriorRecipes } from '../factory/InteriorRecipes';
 import { InteriorStaff } from '../factory/InteriorStaff';
 import { HomeParquet } from '../home/HomeParquet';
 import { VenuePanelContent } from './VenuePanelContent';
@@ -30,7 +31,7 @@ export function VenueSidePanel({ venue }: VenueSidePanelProps) {
   return (
     <aside className="side-panel">
       <PanelHeader title={title} onClose={closePanel} />
-      {panel === 'parquet' ? <HomeParquet home={venue} /> : hasProductionInterior(venue) || hasServiceInterior(venue) ? <InteriorStaff factory={venue} /> : <VenuePanelContent venue={venue} />}
+      {panel === 'recipes' ? <InteriorRecipes factory={venue} /> : panel === 'parquet' ? <HomeParquet home={venue} /> : hasProductionInterior(venue) || hasServiceInterior(venue) ? <InteriorStaff factory={venue} /> : <VenuePanelContent venue={venue} />}
     </aside>
   );
 }

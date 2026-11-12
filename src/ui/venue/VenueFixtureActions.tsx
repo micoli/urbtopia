@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, hasProductionInterior, hasServiceInterior, isBroken, isInteriorBuilding, isHomeType, repairCost, WEAR } from '../../core';
+import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, hasAssignments, hasProductionInterior, hasServiceInterior, isBroken, isInteriorBuilding, isHomeType, repairCost, WEAR } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -11,6 +11,7 @@ import { VenueShelfStock } from './VenueShelfStock';
 import { useVenuePerformance } from './useVenuePerformance';
 import { Icon } from '../common/Icon';
 import { ExitRestock } from '../factory/ExitRestock';
+import { InteriorAssignment } from '../factory/InteriorAssignment';
 import { InteriorMachineStatus } from '../factory/InteriorMachineStatus';
 
 interface VenueFixtureActionsProps {
@@ -42,6 +43,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
       {partition ? null : isBroken(fixture) ? <p className="note note--danger">{t('venue.broken')}</p> : conditionOf(fixture) < WEAR.breakdownBelow ? <p className="note note--warn">{t('venue.worn')}</p> : null}
       {interiorOwner ? <InteriorMachineStatus factory={interiorOwner} fixture={fixture} /> : null}
       {interiorOwner && movingId === null ? <ExitRestock packhouse={interiorOwner} fixture={fixture} /> : null}
+      {interiorOwner && movingId === null && hasAssignments(interiorOwner) ? <InteriorAssignment building={interiorOwner} fixture={fixture} /> : null}
       {hints.map(hint => <p key={hint} className="note note--warn">{t(`venue.hint.${hint}`)}</p>)}
       {movingId === null ? <VenueShelfStock venueId={venueId} fixture={fixture} /> : null}
       {earnings !== undefined ? <p><strong>{t('venue.fixtureEarnings')}</strong>: <UrbsAmount value={earnings} /></p> : null}

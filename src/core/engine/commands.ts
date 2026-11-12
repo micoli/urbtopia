@@ -37,7 +37,8 @@ import { cancelShow, scheduleShow } from '../tourism/gatherings';
 import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { queueItem } from '../factory/restock';
-import { assignInteriorRestocker, hireInteriorRestocker, setExitRestock, unassignInteriorRestocker, hireInteriorTechnician, releaseInteriorRestocker, moveInteriorFixture, placeInteriorFixture, releaseInteriorTechnician, removeInteriorFixture, repairInteriorFixture, setHomeParquet } from '../factory/interiorCommands';
+import { assignInteriorStaff, setInteriorFocus, unassignInteriorStaff } from '../interiors/interiorAssignments';
+import { repairAllInteriorFixtures, assignInteriorRestocker, hireInteriorRestocker, setExitRestock, unassignInteriorRestocker, hireInteriorTechnician, releaseInteriorRestocker, moveInteriorFixture, placeInteriorFixture, releaseInteriorTechnician, removeInteriorFixture, repairInteriorFixture, setHomeParquet } from '../factory/interiorCommands';
 import { hireInteriorStaff, releaseInteriorStaff } from '../interiors/interiorStaffCommands';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
@@ -159,11 +160,15 @@ export type Command =
   | { readonly type: 'MoveInteriorFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'RemoveInteriorFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RepairInteriorFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'RepairAllInteriorFixtures'; readonly buildingId: number }
   | { readonly type: 'SetHomeParquet'; readonly buildingId: number; readonly parquet: number }
   | { readonly type: 'HireInteriorTechnician'; readonly buildingId: number }
   | { readonly type: 'ReleaseInteriorTechnician'; readonly buildingId: number }
   | { readonly type: 'HireInteriorStaff'; readonly buildingId: number; readonly role: InteriorRole }
   | { readonly type: 'ReleaseInteriorStaff'; readonly buildingId: number; readonly role: InteriorRole }
+  | { readonly type: 'SetInteriorFocus'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId | null }
+  | { readonly type: 'AssignInteriorStaff'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'UnassignInteriorStaff'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'HireInteriorRestocker'; readonly buildingId: number }
   | { readonly type: 'ReleaseInteriorRestocker'; readonly buildingId: number }
   | { readonly type: 'SetExitRestock'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId | null }
@@ -238,6 +243,13 @@ export type ErrorKey =
   | 'error.notAnExit'
   | 'error.noRestock'
   | 'error.restockerAlreadyAssigned'
+  | 'error.notAssignable'
+  | 'error.notUpstream'
+  | 'error.fixtureLimitReached'
+  | 'error.noFocus'
+  | 'error.staffAlreadyAssigned'
+  | 'error.noFreeStaff'
+  | 'error.noStaffAssigned'
   | 'error.noFreeRestocker'
   | 'error.noRestockerAssigned'
   | 'error.outsideOwnedParcels'
@@ -521,6 +533,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return removeInteriorFixture(state, command.buildingId, command.fixtureId);
     case 'RepairInteriorFixture':
       return repairInteriorFixture(state, command.buildingId, command.fixtureId);
+    case 'RepairAllInteriorFixtures':
+      return repairAllInteriorFixtures(state, command.buildingId);
     case 'SetHomeParquet':
       return setHomeParquet(state, command.buildingId, command.parquet);
     case 'HireInteriorTechnician':
@@ -531,6 +545,12 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return hireInteriorStaff(state, command.buildingId, command.role);
     case 'ReleaseInteriorStaff':
       return releaseInteriorStaff(state, command.buildingId, command.role);
+    case 'SetInteriorFocus':
+      return setInteriorFocus(state, command.buildingId, command.fixtureId, command.good);
+    case 'AssignInteriorStaff':
+      return assignInteriorStaff(state, command.buildingId, command.fixtureId);
+    case 'UnassignInteriorStaff':
+      return unassignInteriorStaff(state, command.buildingId, command.fixtureId);
     case 'HireInteriorRestocker':
       return hireInteriorRestocker(state, command.buildingId);
     case 'ReleaseInteriorRestocker':
@@ -1060,7 +1080,7 @@ function stockShop(state: GameState, buildingId: number, good: GoodId, now: numb
   const available = state.storage.goods[good] ?? 0;
   if (available < SHOP.stackSize) return fail('error.missingGoods');
   const alreadySelling = current.some((stack) => stack.stock > 0);
-  const nextSaleAt = alreadySelling ? null : now + saleIntervalOf(building);
+  const nextSaleAt = alreadySelling ? null : now + saleIntervalOf(building, good);
   const stacks = current.map((stack, index) =>
     index === slotIndex ? { ...stack, good, stock: SHOP.stackSize, nextSaleAt } : stack,
   );
@@ -1237,7 +1257,8 @@ function expandedPlacement(state: GameState, building: Building, tier: number): 
 function upgradedTo(building: Building, tier: number): Building {
   const { colorVariant, ...rest } = building;
   const keptColor = colorVariant && colorVariantsOf(building.type, tier).includes(colorVariant) ? { colorVariant } : {};
-  return { ...rest, ...keptColor, tier };
+  const grown = { ...rest, ...keptColor, tier };
+  return hasCounter(building.type) && !isShopType(building.type) ? { ...grown, stacks: stacksOf(grown) } : grown;
 }
 
 function equipHome(state: GameState, id: number): CommandOutcome {

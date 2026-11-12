@@ -72,8 +72,28 @@
     ],
     "flush": true
   },
+  "bakery-interior-mixer-left": {
+    "file": "bakery-interior/mixer-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "bakery-interior-oven": {
     "file": "bakery-interior/oven",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "bakery-interior-oven-right": {
+    "file": "bakery-interior/oven-right",
     "source": "managed",
     "license": "Own work",
     "footprint": [
@@ -21514,8 +21534,8 @@
     ],
     "flush": true
   },
-  "factory-floor-shaft": {
-    "file": "factory-floor/shaft",
+  "factory-floor-pump-left": {
+    "file": "factory-floor/pump-left",
     "source": "managed",
     "license": "Own work",
     "footprint": [
@@ -21524,8 +21544,8 @@
     ],
     "flush": true
   },
-  "factory-floor-pump-left": {
-    "file": "factory-floor/pump-left",
+  "factory-floor-shaft": {
+    "file": "factory-floor/shaft",
     "source": "managed",
     "license": "Own work",
     "footprint": [
