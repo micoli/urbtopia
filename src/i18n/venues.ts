@@ -23,6 +23,7 @@ type VenueMessageKey =
   | 'error.nothingToRepair'
   | 'venue.repair'
   | 'venue.repairAll'
+  | 'venue.repairDetail'
   | 'venue.condition'
   | 'venue.wear'
   | 'venue.broken'
@@ -73,6 +74,9 @@ type VenueMessageKey =
   | 'venue.shut'
   | 'venue.staff'
   | 'venue.recipes'
+  | 'venue.management'
+  | 'interior.features'
+  | `interior.features.${'factory' | 'packhouse' | 'mill' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
   | 'bakery.recipes.assembly'
   | 'bakery.recipes.drive'
   | 'bakery.recipes.gas'
@@ -129,7 +133,7 @@ type VenueMessageKey =
   | 'home.interior.comfort'
   | 'home.interior.wellbeing'
   | 'home.interior.wellbeingShort'
-  | 'factory.interior.open'
+  | `interior.open.${'factory' | 'packhouse' | 'mill' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
   | 'factory.interior.linked'
   | 'factory.interior.speed'
   | 'factory.interior.yield'
@@ -312,6 +316,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'error.nothingToRepair': ['This Fixture is in perfect condition.', 'Cet équipement est en parfait état.'],
   'venue.repair': ['Repair', 'Réparer'],
   'venue.repairAll': ['Repair everything', 'Tout réparer'],
+  'venue.repairDetail': ['Detail', 'Détail'],
   'venue.condition': ['Condition', 'État'],
   'venue.wear': ['Wear', 'Vétusté'],
   'venue.broken': ['Out of order: it earns nothing until repaired.', 'En panne : il ne rapporte rien tant qu’il n’est pas réparé.'],
@@ -368,6 +373,17 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.shut': ['Shut: not enough power', 'Fermé : électricité insuffisante'],
   'venue.staff': ['Staff', 'Personnel'],
   'venue.recipes': ["Recipes", "Recettes"],
+  'venue.management': ['Management', 'Gestion'],
+  'interior.features': ['What it does', 'Fonctionnalités'],
+  'interior.features.factory': ["Machines turn the Motor's Drive into speed and yield for the Factory's Slots. Link them with Shafts and Gears, add Flow for the Machines that need it, and cool the Motors with a Cooling vat.", "Les machines transforment la force du moteur en vitesse et en rendement pour les emplacements de l'usine. Reliez-les par des arbres et des engrenages, ajoutez du fluide pour celles qui en ont besoin, et refroidissez les moteurs avec une cuve réfrigérante."],
+  'interior.features.packhouse': ["A Line carries Packets from the Machines to the Exits, which set the yield of the Packhouse. Keep every Machine linked and fed, and restock the Exits.", "Une chaîne porte les colis des machines jusqu'aux sorties, qui fixent le rendement du conditionnement. Gardez chaque machine reliée et alimentée, et réapprovisionnez les sorties."],
+  'interior.features.mill': ["A Motor, Shafts and Gears drive the millstones: each linked millstone grinds faster. A miller adds the speed bonus.", "Un moteur, des arbres et des engrenages font tourner les meules : chaque meule reliée moud plus vite. Un meunier ajoute le bonus de vitesse."],
+  'interior.features.bakery': ["The Recipes of the Bakery: see below.", "Voir les recettes de la boulangerie."],
+  'interior.features.dairy': ["A Line carries the milk from the vat through the Machines to an Exit. Cheesemakers and cream makers add the cheese and cream yield.", "Une chaîne porte le lait de la cuve jusqu'à une sortie à travers les machines. Les fromagers et les crémiers ajoutent le rendement en fromage et en crème."],
+  'interior.features.storehouse': ["A Line runs from a loading dock, by a hoist, to a shelf rack: each linked rack adds room to the Storehouse. A stocker adds the room bonus.", "Une chaîne court d'un quai de chargement, par un palan, jusqu'à un rayonnage : chaque rayonnage relié ajoute de la place à l'entrepôt. Un magasinier ajoute le bonus de place."],
+  'interior.features.school': ["Furniture adds quality, up to a cap that rises with the Tier. A teacher adds the schooling the School gives to the homes it serves. Furniture never wears.", "Le mobilier ajoute de la qualité, jusqu'à un plafond qui monte avec le niveau. Un enseignant ajoute la scolarité que l'école donne aux logements desservis. Le mobilier ne s'use jamais."],
+  'interior.features.library': ["Furniture adds quality, up to a cap that rises with the Tier. A librarian adds the Knowledge the Library gives to the homes it serves. Furniture never wears.", "Le mobilier ajoute de la qualité, jusqu'à un plafond qui monte avec le niveau. Un bibliothécaire ajoute le savoir que la bibliothèque donne aux logements desservis. Le mobilier ne s'use jamais."],
+  'interior.features.hospital': ["Furniture adds quality, up to a cap that rises with the Tier. Nurses, doctors and surgeons each bring a part of the care, which adds Well-being to the homes served. Furniture never wears.", "Le mobilier ajoute de la qualité, jusqu'à un plafond qui monte avec le niveau. Infirmiers, médecins et chirurgiens apportent chacun une part des soins, qui ajoute du bien-être aux logements desservis. Le mobilier ne s'use jamais."],
   'bakery.recipes.assembly': ["Assembly", "Montage"],
   'bakery.recipes.drive': ["Drive: a Motor turns a Shaft that ends on the right side of the Dough mixer.", "Entraînement : un moteur fait tourner un arbre qui aboutit sur le côté droit du pétrin."],
   'bakery.recipes.gas': ["Gas: a Tank feeds a Pump, driven by a Motor, whose Pipes end on the left side of the Oven.", "Gaz : une cuve alimente une pompe, entraînée par un moteur, dont les tuyaux aboutissent sur le côté gauche du four."],
@@ -467,7 +483,15 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'home.interior.comfort': ['Comfort', 'Confort'],
   'home.interior.wellbeing': ['Well-being', 'Bien-être'],
   'home.interior.wellbeingShort': ['Well-being', 'bien-être'],
-  'factory.interior.open': ['Open the Factory interior', "Ouvrir l'atelier de l'usine"],
+  'interior.open.factory': ['Open the Factory interior', "Ouvrir l'atelier de l'usine"],
+  'interior.open.packhouse': ['Open the Packhouse interior', "Ouvrir l'atelier du conditionnement"],
+  'interior.open.mill': ['Open the Mill interior', "Ouvrir l'atelier de la minoterie"],
+  'interior.open.bakery': ['Open the Bakery interior', "Ouvrir l'atelier de la boulangerie"],
+  'interior.open.dairy': ['Open the Dairy interior', "Ouvrir l'atelier de la laiterie"],
+  'interior.open.storehouse': ['Open the Storehouse interior', "Ouvrir l'intérieur de l'entrepôt"],
+  'interior.open.school': ['Open the School interior', "Ouvrir l'intérieur de l'école"],
+  'interior.open.library': ['Open the Library interior', "Ouvrir l'intérieur de la bibliothèque"],
+  'interior.open.hospital': ['Open the Hospital interior', "Ouvrir l'intérieur de l'hôpital"],
   'factory.interior.linked': ['Machines linked', 'Machines reliées'],
   'factory.interior.speed': ['Speed', 'Vitesse'],
   'factory.interior.yield': ['Yield', 'Rendement'],

@@ -1,5 +1,6 @@
 import { hasProductionInterior, hasServiceInterior, interiorFamilyOf, interiorUnlockCitizensOf, isInteriorUnlocked, type Building } from '../../core';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
+import type { MessageKey } from '../../i18n/messages';
 import { t } from '../../i18n/t';
 import { venueStore } from '../../store/venueStore';
 import { ActionButton } from '../common/ActionButton';
@@ -23,7 +24,7 @@ export function InteriorButton({ building }: InteriorButtonProps) {
   return (
     <>
       <ActionButton variant="primary" block disabled={!unlocked} onClick={() => venueStore.getState().open(building.id)}>
-        <Icon name="build" /> {t('factory.interior.open')}
+        <Icon name="build" /> {t(`interior.open.${building.type}` as MessageKey)}
       </ActionButton>
       {unlocked ? null : <BlockedReason reason={t('blocked.interior').replace('{citizens}', String(interiorUnlockCitizensOf(building.type)))} />}
     </>
