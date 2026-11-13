@@ -5,7 +5,7 @@ import { distanceBetween } from '../venues/layout';
 import { PRODUCTION_INTERIOR_KINDS, type FixtureSide, type PackSize } from '../venues/venueVocabulary';
 import type { ItemId } from '../economy/items';
 import type { Building, BuildingType, VenueFixture } from '../engine/state';
-import { interiorDeclarationOf, interiorLayoutOf, interiorPartPresence, yieldGroupOf, type InteriorPart } from '../interiors/interiorStaff';
+import { interiorDeclarationOf, interiorLayoutOf, interiorPartPresence, isProducerRole, yieldGroupOf, type InteriorPart } from '../interiors/interiorStaff';
 
 export type Turn = 'cw' | 'ccw';
 
@@ -649,7 +649,7 @@ export const linePathsOf = memoized((allFixtures): readonly LinePath[] => {
       paths.push({ source: source.id, points: [...points, toward(current, 'back', FIXTURES[current.type].hatch ?? HATCH)], ...(baked && good ? { baked: { from: baked.from, good } } : {}) });
       return;
     }
-    const baking = FIXTURES[current.type].assigns === 'baker' && current.recipe !== undefined ? { from: points.length - 1, good: current.recipe } : baked;
+    const baking = isProducerRole(FIXTURES[current.type].assigns) && current.recipe !== undefined ? { from: points.length - 1, good: current.recipe } : baked;
     for (const id of nexts) {
       const next = byId.get(id);
       if (next) walk(source, next, [...points, centre(next)], new Set([...seen, id]), baking);
@@ -665,6 +665,8 @@ export type LineFault =
   | { kind: 'broken'; fixture: VenueFixture }
   // A Packer or a Strapper along the way gets no Drive.
   | { kind: 'noDrive'; fixture: VenueFixture }
+  // A Machine along the way that runs on Flow, such as a milk vat, gets none.
+  | { kind: 'noFlow'; fixture: VenueFixture }
   // The Fixture next to the entry does not carry toward it: turn it, or replace it.
   | { kind: 'misfacing'; fixture: VenueFixture }
   // The Machine that feeds it already feeds as many as its limit allows.
@@ -686,7 +688,10 @@ export function lineFaultOf(allFixtures: readonly VenueFixture[], start: VenueFi
   let current = start;
   for (;;) {
     seen.add(current.id);
-    if (isMachine(current) && !links.linked.has(current.id) && current.broken !== true) return { kind: 'noDrive', fixture: current };
+    if (isMachine(current) && !links.linked.has(current.id) && current.broken !== true) {
+      const lacksFlowOnly = links.problems.get(current.id)?.every(problem => problem === 'noFlow' || problem === 'tankFull');
+      return { kind: lacksFlowOnly ? 'noFlow' : 'noDrive', fixture: current };
+    }
     const entries = sides(current, 'lineIn');
     if (entries.length === 0) return undefined;
     const feeders = entries.flatMap(side => {
@@ -874,7 +879,7 @@ export function suppliedGoodsOf(allFixtures: readonly VenueFixture[], counter: V
   supplied.set(allFixtures, perCounter);
   const known = perCounter.get(counter.id);
   if (known) return known;
-  const goods = new Set(interiorUpstreamOf(allFixtures, counter.id).filter(fixture => FIXTURES[fixture.type].assigns === 'baker' && fixture.recipe !== undefined).map(fixture => fixture.recipe!));
+  const goods = new Set(interiorUpstreamOf(allFixtures, counter.id).filter(fixture => isProducerRole(FIXTURES[fixture.type].assigns) && fixture.recipe !== undefined).map(fixture => fixture.recipe!));
   perCounter.set(counter.id, goods);
   return goods;
 }

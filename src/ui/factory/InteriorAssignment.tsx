@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, isItemUnlocked, type Building, type GoodId, type VenueFixture } from '../../core';
+import { assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, isItemUnlocked, isProducerRole, type Building, type GoodId, type VenueFixture } from '../../core';
 import { itemName } from '../../i18n/itemName';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
@@ -25,7 +25,7 @@ export function InteriorAssignment({ building, fixture }: InteriorAssignmentProp
   const choice = focusOf(fixture);
   const options = [{ value: NONE, label: t('venue.assignNone') }, ...goods.map(good => ({ value: good as string, label: itemName(good), disabled: !unlocked.split(',').includes(good) }))];
   const noSupply = role === 'seller' && goods.length === 0;
-  const label = t(role === 'baker' ? 'venue.assignRecipe' : 'venue.assignSoldGood');
+  const label = t(isProducerRole(role) ? 'venue.assignRecipe' : 'venue.assignSoldGood');
   const free = freeStaffOf(building, role);
   return (
     <div className="venue-stock">

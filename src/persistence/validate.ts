@@ -1,4 +1,4 @@
-import { interiorFamilyOf, interiorRolesOf } from '../core';
+import { interiorFamilyOf, interiorRolesOf, isProducerRole } from '../core';
 import { FIXTURES, FIXTURE_IDS, PARQUETS, PIRATE_SHOW_TITLES, isCoveBoatFamily, footprintTiles, isSeaSceneryType, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
@@ -149,7 +149,7 @@ function isGatheringResult(value: unknown): boolean {
 const isSavedRestock = (fixture: Record<string, unknown>): boolean => {
   const { restock, restocker, restockedAt } = fixture;
   if (restock === undefined && restocker === undefined && restockedAt === undefined) return true;
-  if (FIXTURES[fixture.type as keyof typeof FIXTURES].role !== 'exit') return restock === undefined && restocker === undefined && FIXTURES[fixture.type as keyof typeof FIXTURES].assigns === 'baker' && isNumber(restockedAt);
+  if (FIXTURES[fixture.type as keyof typeof FIXTURES].role !== 'exit') return restock === undefined && restocker === undefined && isProducerRole(FIXTURES[fixture.type as keyof typeof FIXTURES].assigns) && isNumber(restockedAt);
   return (restock === undefined || (typeof restock === 'string' && Object.hasOwn(GOODS, restock))) && (restocker === undefined || (restocker === true && restock !== undefined)) && (restockedAt === undefined || isNumber(restockedAt));
 };
 
@@ -164,7 +164,7 @@ const isSavedFocus = (fixture: Record<string, unknown>): boolean => {
   const role = FIXTURES[fixture.type as keyof typeof FIXTURES].assigns;
   const isGood = (value: unknown) => typeof value === 'string' && Object.hasOwn(GOODS, value);
   if (role === undefined) return false;
-  if (recipe !== undefined && (role !== 'baker' || !isGood(recipe))) return false;
+  if (recipe !== undefined && (!isProducerRole(role) || !isGood(recipe))) return false;
   if (soldGood !== undefined && (role !== 'seller' || !isGood(soldGood))) return false;
   return assigned === undefined || (assigned === true && (recipe !== undefined || soldGood !== undefined));
 };
@@ -177,7 +177,7 @@ const isStaffAssignmentCovered = (interior: Record<string, unknown>): boolean =>
   const fixtures: unknown = interior.fixtures;
   if (!Array.isArray(fixtures)) return true;
   const hired = isRecord(interior.staff) ? interior.staff : {};
-  return (['baker', 'seller'] as const).every(role => fixtures.filter(fixture => isRecord(fixture) && fixture.assigned === true && FIXTURES[fixture.type as keyof typeof FIXTURES]?.assigns === role).length <= ((hired[role] as number | undefined) ?? 0));
+  return (['baker', 'seller', 'cheesemaker', 'creamMaker'] as const).every(role => fixtures.filter(fixture => isRecord(fixture) && fixture.assigned === true && FIXTURES[fixture.type as keyof typeof FIXTURES]?.assigns === role).length <= ((hired[role] as number | undefined) ?? 0));
 };
 
 function isInteriorData(value: unknown, kind: string, type?: BuildingType): boolean {

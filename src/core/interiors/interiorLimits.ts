@@ -2,6 +2,7 @@ import type { Building, FixtureId } from '../engine/state';
 import { stackCountOf } from '../economy/counterSlots';
 import { FIXTURES } from '../venues/fixtures';
 import { hasAssignments } from './interiorAssignments';
+import { isProducerRole } from './interiorStaff';
 
 export interface FixtureLimit {
   count: number;
@@ -13,5 +14,5 @@ export function fixtureLimitOf(building: Building, type: FixtureId): FixtureLimi
   const role = FIXTURES[type].assigns;
   if (role === undefined || !hasAssignments(building)) return undefined;
   const count = (building.interior?.fixtures ?? []).filter(fixture => FIXTURES[fixture.type].assigns === role).length;
-  return { count, max: role === 'baker' ? building.slotCount : stackCountOf(building.type, building.tier) };
+  return { count, max: isProducerRole(role) ? building.slotCount : stackCountOf(building.type, building.tier) };
 }

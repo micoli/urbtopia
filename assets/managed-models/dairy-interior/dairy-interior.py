@@ -112,23 +112,32 @@ def cheese_cellar(rng):
     return parts, {"spin-up": (fan, (0.0, 0.0, 0.97))}
 
 
+def mirrored(builder):
+    """The model a builder draws, turned into its mirror image across the x = 0 plane, with the pivots of its moving parts."""
+    def build(rng):
+        parts, spinners = builder(rng)
+        flipped = {name: ([lpm.scale(part, sx=-1) for part in group], (-pivot[0], pivot[1], pivot[2])) for name, (group, pivot) in spinners.items()}
+        return [lpm.scale(part, sx=-1) for part in parts], flipped
+    return build
+
+
 def dairy_exit(rng):
-    """Exit standing against a wall of the room, on the tile along it (its back on the back edge of the tile, y 0.5, its face toward -y): the belt comes in from the room at
-    BELT_Z, goes through a hatch of the wall and ends in a glass display case on the shop side with bottles and wheels of cheese, where the seller serves. The crates travel toward +y."""
-    parts = belt(-1.0, 0.1)
-    for k, y in enumerate((-0.92, -0.5, -0.14)):
+    """Display counter that fills its own tile, centred on it, its face toward -y: a short stub of belt comes in from the room at BELT_Z, goes through a small hatch under a rubber
+    curtain and ends in a glass display case with bottles and wheels of cheese, where the seller serves. The crates travel toward +y."""
+    parts = belt(-0.5, -0.08)
+    for k, y in enumerate((-0.44, -0.24)):
         parts += [block(f"leg_l{k}", -0.2, -0.17, y - 0.03, y + 0.03, 0.0, 0.3, P["iron"]), block(f"leg_r{k}", 0.17, 0.2, y - 0.03, y + 0.03, 0.0, 0.3, P["iron"])]
-    parts += [block("hatch_l", -0.3, -0.22, -0.06, 0.04, 0.3, 0.72, P["blue_dark"]), block("hatch_r", 0.22, 0.3, -0.06, 0.04, 0.3, 0.72, P["blue_dark"]),
-              block("hatch_top", -0.3, 0.3, -0.06, 0.04, 0.6, 0.72, P["blue_dark"]), block("hatch_cap", -0.32, 0.32, -0.07, 0.05, 0.7, 0.74, P["blue"]),
-              block("lamp_stem", 0.1, 0.14, -0.02, 0.02, 0.74, 0.78, P["steel_dark"]), block("lamp", 0.09, 0.15, -0.03, 0.03, 0.78, 0.84, P["green"])]
-    parts += [block(f"curtain{k}", -0.22 + 0.088 * k, -0.22 + 0.088 * k + 0.08, -0.03, -0.01, 0.46, 0.6, P["belt"]) for k in range(5)]
-    parts += [block("case_base", -0.36, 0.36, 0.04, 0.5, 0.0, 0.36, P["milk"]), block("case_stripe", -0.37, 0.37, 0.48, 0.52, 0.0, 0.38, P["blue"]),
-              block("case_top", -0.37, 0.37, 0.04, 0.52, 0.36, 0.4, P["blue_dark"]),
+    parts += [block("hatch_l", -0.3, -0.22, -0.16, -0.06, 0.3, 0.72, P["blue_dark"]), block("hatch_r", 0.22, 0.3, -0.16, -0.06, 0.3, 0.72, P["blue_dark"]),
+              block("hatch_top", -0.3, 0.3, -0.16, -0.06, 0.6, 0.72, P["blue_dark"]), block("hatch_cap", -0.32, 0.32, -0.17, -0.05, 0.7, 0.74, P["blue"]),
+              block("lamp_stem", 0.1, 0.14, -0.12, -0.08, 0.74, 0.78, P["steel_dark"]), block("lamp", 0.09, 0.15, -0.13, -0.07, 0.78, 0.84, P["green"])]
+    parts += [block(f"curtain{k}", -0.22 + 0.088 * k, -0.22 + 0.088 * k + 0.08, -0.13, -0.11, 0.46, 0.6, P["belt"]) for k in range(5)]
+    parts += [block("case_base", -0.36, 0.36, -0.04, 0.5, 0.0, 0.36, P["milk"]), block("case_stripe", -0.37, 0.37, 0.46, 0.5, 0.0, 0.38, P["blue"]),
+              block("case_top", -0.37, 0.37, -0.04, 0.5, 0.36, 0.4, P["blue_dark"]),
               block("case_post_l", -0.36, -0.32, 0.46, 0.5, 0.4, 0.74, P["blue"]), block("case_post_r", 0.32, 0.36, 0.46, 0.5, 0.4, 0.74, P["blue"]),
-              block("case_glass", -0.32, 0.32, 0.47, 0.49, 0.4, 0.7, P["glass"]), block("case_roof", -0.37, 0.37, 0.04, 0.52, 0.72, 0.76, P["blue_dark"]),
-              disc("cheese_a", 0.08, 0.06, (-0.2, 0.28, 0.4), P["cheese"], 8), disc("cheese_b", 0.08, 0.06, (0.0, 0.28, 0.4), P["cheese_dark"], 8), disc("cheese_c", 0.08, 0.06, (0.2, 0.28, 0.4), P["cheese"], 8),
-              block("bottle_a", 0.1, 0.16, 0.12, 0.18, 0.4, 0.5, P["milk"]), block("bottle_b", -0.16, -0.1, 0.12, 0.18, 0.4, 0.5, P["milk"])]
-    return shifted(parts, 0.5), {}
+              block("case_glass", -0.32, 0.32, 0.47, 0.49, 0.4, 0.7, P["glass"]), block("case_roof", -0.37, 0.37, -0.04, 0.5, 0.72, 0.76, P["blue_dark"]),
+              disc("cheese_a", 0.08, 0.06, (-0.2, 0.2, 0.4), P["cheese"], 8), disc("cheese_b", 0.08, 0.06, (0.0, 0.2, 0.4), P["cheese_dark"], 8), disc("cheese_c", 0.08, 0.06, (0.2, 0.2, 0.4), P["cheese"], 8),
+              block("bottle_a", 0.1, 0.16, 0.04, 0.1, 0.4, 0.5, P["milk"]), block("bottle_b", -0.16, -0.1, 0.04, 0.1, 0.4, 0.5, P["milk"])]
+    return parts, {}
 
 
 def tile_floor(rng):
@@ -170,6 +179,6 @@ def wall_set():
 
 
 if __name__ == "__main__":
-    models = {"milk-vat": milk_vat, "pasteurizer": pasteurizer, "cheese-cellar": cheese_cellar, "exit": dairy_exit}
+    models = {"milk-vat": milk_vat, "milk-vat-left": mirrored(milk_vat), "pasteurizer": pasteurizer, "pasteurizer-right": mirrored(pasteurizer), "cheese-cellar": cheese_cellar, "cheese-cellar-right": mirrored(cheese_cellar), "exit": dairy_exit}
     export_all(models, P, 1200, HERE, center=False, ground=False)
     export_all(wall_set(), P, 900, HERE, center=False, ground=False)

@@ -16,6 +16,7 @@
   "flow": ["left"],
   "yield": 0.2,
   "yieldGroup": "cheese",
+  "assigns": "cheesemaker",
   "family": "cellar",
   "lineIn": ["back"],
   "lineOut": ["front"]

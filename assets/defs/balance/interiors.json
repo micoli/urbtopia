@@ -62,6 +62,7 @@
         "yieldCaps": [0.1, 0.2, 0.3, 0.4, 0.5],
         "technicianPosts": [0, 0, 1, 1, 2],
         "line": true,
+        "autoWork": true,
         "yieldGroups": {
           "cheese": ["cheese", "goatCheese"],
           "cream": ["cream"]
@@ -75,6 +76,10 @@
         "creamMaker": {
           "part": "creamYield",
           "posts": [0, 1, 1, 1, 2]
+        },
+        "seller": {
+          "part": "salesRate",
+          "posts": [0, 1, 2, 3, 3]
         }
       },
       "unlockCitizens": 200

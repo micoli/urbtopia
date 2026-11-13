@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { Building } from '../../core';
 import { t } from '../../i18n/t';
+import { InteriorConveyors } from './InteriorConveyors';
 import { InteriorFeatures } from './InteriorFeatures';
 import { InteriorRecipes } from './InteriorRecipes';
 import { InteriorRepairs } from './InteriorRepairs';
@@ -17,6 +18,7 @@ export function InteriorManagement({ factory }: InteriorManagementProps) {
     <section className="venue-build" aria-label={t('venue.management')}>
       <div className="venue-build__items">
         {factory.type === 'bakery' ? <InteriorRecipes factory={factory} /> : <InteriorFeatures building={factory} />}
+        <InteriorConveyors building={factory} />
         <InteriorRepairs buildingId={factory.id} repairs={repairs} />
       </div>
     </section>

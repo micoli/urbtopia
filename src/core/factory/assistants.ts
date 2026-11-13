@@ -3,18 +3,18 @@ import { SHOP } from '../economy/economy';
 import { advanceBuilding } from '../economy/production';
 import { saleIntervalOf } from '../economy/shops';
 import { assignedRoleOf, focusOf, hasAssignments } from '../interiors/interiorAssignments';
-import { interiorLayoutOf } from '../interiors/interiorStaff';
+import { interiorLayoutOf, isProducerRole } from '../interiors/interiorStaff';
 import type { GameEvent } from '../engine/events';
 import type { Building, GameState, ShopStack, VenueFixture } from '../engine/state';
 import type { GoodId } from '../economy/items';
 import { interiorLinksOf, suppliedGoodsOf } from './factoryInterior';
 import { MAX_TURNS, RESERVED_SLOTS, isError, queueItem, store, withBuilding, withFixture } from './restock';
 
-// The Fixtures a Bakery's Staff is at work on: assigned, with their Recipe or their Sold Good, and reached by the Line. The layout results are cached by layout, so the Fixtures are read from the interior.
-const workingOf = (building: Building, role: 'baker' | 'seller'): VenueFixture[] => {
+// The Fixtures the Staff of a Bakery or a Dairy is at work on: assigned, with their Recipe or their Sold Good, and reached by the Line. The layout results are cached by layout, so the Fixtures are read from the interior.
+const workingOf = (building: Building, role: 'producer' | 'seller'): VenueFixture[] => {
   if (!building.interior) return [];
   const { lined } = interiorLinksOf(building.interior.fixtures);
-  return building.interior.fixtures.filter(fixture => fixture.assigned === true && assignedRoleOf(fixture) === role && lined.has(fixture.id) && focusOf(fixture) !== undefined && (role === 'baker' || suppliedGoodsOf(building.interior!.fixtures, fixture).has(fixture.soldGood!))).sort((a, b) => a.id - b.id);
+  return building.interior.fixtures.filter(fixture => fixture.assigned === true && assignedRoleOf(fixture) !== undefined && isProducerRole(assignedRoleOf(fixture)) === (role === 'producer') && lined.has(fixture.id) && focusOf(fixture) !== undefined && (role === 'producer' || suppliedGoodsOf(building.interior!.fixtures, fixture).has(fixture.soldGood!))).sort((a, b) => a.id - b.id);
 };
 
 // A line takes longer for each other line at work: the Ovens share the Tier's pace instead of each running at the full one.
@@ -26,7 +26,7 @@ function bakerTurn(state: GameState, buildingId: number): { state: GameState; ch
   let changed = false;
   let blocked = false;
   let freedAt = state.lastSeen;
-  const ovens = workingOf(state.buildings.find(candidate => candidate.id === buildingId)!, 'baker');
+  const ovens = workingOf(state.buildings.find(candidate => candidate.id === buildingId)!, 'producer');
   for (const oven of ovens) {
     const building = current.buildings.find(candidate => candidate.id === buildingId)!;
     const finished = building.queue.find(entry => entry.exitId === oven.id && entry.item === oven.recipe && entry.done);

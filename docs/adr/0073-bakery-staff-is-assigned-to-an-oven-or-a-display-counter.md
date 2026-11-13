@@ -16,7 +16,7 @@ Refines [ADR 0071](0071-an-interior-role-carries-its-own-part-of-the-effect.md) 
 - **Everything else is as before.** Assigned Staff are Jobs of the Bakery and deliver their effect in proportion to the Fill rate (ADR 0071); wages and the hiring fee do not change. An interior with no assignment leaves the Bakery as it was: its productions and its sales run as before, with no bonus.
 - **Posts follow the Slots.** A Bakery hires as many bakers as it has production Slots and as many sellers as its Counter has Slots, whatever its Tier, and the hiring panel shows `hired/posts` as a badge. The Tier posts of these two roles in `interiors.json` no longer set the number hired.
 - **Limited by the Slots.** A Bakery takes as many Ovens as it has production Slots and as many Display counters as its Counter has Slots (`counterSlots` of its Tier: 3, 3, 4, 4, 5); the build menu shows `placed/allowed` on each and the item is disabled once full. Fixtures already placed beyond the limit stay, and no more can be added until the Slots allow it.
-- **Bakery only.** The assignment is a generic engine; the Dairy and the Storehouse can use it later.
+- **Bakery first, then the Dairy.** The assignment is a generic engine. The Dairy uses it for the work alone (`autoWork` in `interiors.json`): a cream maker is assigned to a Pasteuriser with the Recipe `cream`, a cheesemaker to a Cheese cellar with a cheese, a seller to a Display counter with a Sold Good, and they make, store and sell on their own as a baker and a seller do. Its bonus stays what the Staff hired deliver; the Storehouse can use the engine later.
 
 ## Why
 

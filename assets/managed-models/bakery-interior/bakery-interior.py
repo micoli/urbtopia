@@ -107,12 +107,12 @@ def mirrored(builder):
 
 def counter_exit(rng):
     """Exit that is a piece of wall, centred on its tile like a partition and in line with the partitions beside it: its ears are the same half-height wall, cream with a terracotta
-    band, plinths and a wooden cap, running to both sides of the tile. The belt comes in from the room (-y) at BELT_Z, goes through a hatch left in the wall, under a lintel
+    band, plinths and a wooden cap, running to both sides of the tile. A short stub of belt comes in from the room (-y) at BELT_Z, goes through a hatch left in the wall, under a lintel
     that stands above the loaves, and ends in a glass display case on the shop side (+y), where the seller serves the loaves. The loaves travel toward +y."""
     h = THICK / 2
     top = 0.5
-    parts = belt(-0.5, 0.3)
-    for k, y in enumerate((-0.42, -0.2, 0.08)):
+    parts = belt(-0.5, -0.08)
+    for k, y in enumerate((-0.44, -0.24)):
         parts += [block(f"leg_l{k}", -0.2, -0.17, y - 0.03, y + 0.03, 0.0, 0.3, P["iron"]), block(f"leg_r{k}", 0.17, 0.2, y - 0.03, y + 0.03, 0.0, 0.3, P["iron"])]
     for k, (x0, x1) in enumerate(((-0.5, -0.25), (0.25, 0.5))):
         parts += [block(f"ear{k}", x0, x1, -h, h, 0.0, top, P["cream"]), block(f"ear_cap{k}", x0, x1, -h, h, top - 0.015, top, P["wood"]),

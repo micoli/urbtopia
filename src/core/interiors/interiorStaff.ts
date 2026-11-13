@@ -28,6 +28,8 @@ export interface InteriorLayout {
   yieldFromExits?: true;
   // The Staff are assigned by hand to the Fixtures that carry their part: a baker to an Oven, a seller to a Display counter.
   assignments?: true;
+  // The Staff assigned to a Fixture work on their own, as in a Bakery, though the bonus of the building stays what the Staff hired deliver.
+  autoWork?: true;
   // Each Oven bakes on its own line, and each line is slowed by this share of every other line at work: with 0.5, three lines each take twice as long, so three Ovens bake one and a half times as much as one.
   laneSlowdown?: number;
 }
@@ -56,6 +58,9 @@ const DECLARATIONS = interiors.buildings as Record<string, InteriorDeclaration>;
 export const interiorDeclarationOf = (type: BuildingType): InteriorDeclaration | undefined => DECLARATIONS[type];
 
 // The group of Goods that an item belongs to in a building that splits its yield, if it does.
+// Every assigned role but the seller works a Machine: a baker an Oven, a cheesemaker a Cheese cellar, a cream maker a Pasteuriser.
+export const isProducerRole = (role: InteriorRole | undefined): boolean => role !== undefined && role !== 'seller';
+
 export const yieldGroupOf = (type: BuildingType, item: string): string | undefined => Object.entries(DECLARATIONS[type]?.layout?.yieldGroups ?? {}).find(([, items]) => items.includes(item))?.[0];
 
 export const interiorLayoutOf = (type: BuildingType): InteriorLayout | undefined => DECLARATIONS[type]?.layout;
@@ -79,10 +84,12 @@ export const interiorPostsOf = (type: BuildingType, role: InteriorRole, tier: nu
   return posts.length === 0 ? 0 : posts[Math.min(tier, posts.length) - 1]!;
 };
 
-// A Bakery hires as many bakers as it has production Slots and as many sellers as its Counter has Slots; the other roles follow the Tier.
+// A Bakery hires as many bakers as it has production Slots and as many sellers as its Counter has Slots; the other roles follow the Tier. The Dairy hires sellers as its Counter has Slots.
 export const interiorPostsOfBuilding = (building: Pick<Building, 'type' | 'tier' | 'slotCount'>, role: InteriorRole): number => {
-  if (interiorLayoutOf(building.type)?.assignments !== true || (role !== 'baker' && role !== 'seller')) return interiorPostsOf(building.type, role, building.tier);
-  return role === 'baker' ? building.slotCount : stackCountOf(building.type, building.tier);
+  const layout = interiorLayoutOf(building.type);
+  if (layout?.assignments === true && (role === 'baker' || role === 'seller')) return role === 'baker' ? building.slotCount : stackCountOf(building.type, building.tier);
+  if (layout?.autoWork === true && role === 'seller') return stackCountOf(building.type, building.tier);
+  return interiorPostsOf(building.type, role, building.tier);
 };
 
 export const minTierOfInteriorRole = (type: BuildingType, role: InteriorRole): number => postsByTier(type, role).findIndex(posts => posts > 0) + 1;

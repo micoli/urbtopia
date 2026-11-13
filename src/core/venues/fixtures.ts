@@ -79,7 +79,7 @@ export interface FixtureSpec {
   quality?: number;
   capacity?: number;
   power?: number;
-  assigns?: 'baker' | 'seller';
+  assigns?: 'baker' | 'seller' | 'cheesemaker' | 'creamMaker';
   hatch?: number;
   family?: string;
   coolant?: number;

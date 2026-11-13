@@ -4,14 +4,16 @@ import { ActionButton } from '../common/ActionButton';
 import { UrbsAmount } from '../common/UrbsAmount';
 import type { Worn } from './worn';
 
+const REPAIR_BELOW = 90;
+
 interface InteriorRepairsProps {
   buildingId: number;
   repairs: Worn;
 }
 
-// The Repair everything button and under it what is worn, once the repairs reach the share of the Fixtures' cost set for the badges of the taxes.
+// The Repair everything button and under it what is worn, once a Fixture is under the condition below which it is worth repairing.
 export function InteriorRepairs({ buildingId, repairs }: InteriorRepairsProps) {
-  if (repairs.total === 0 || repairs.ratio * 100 < 90) return null;
+  if (repairs.lowest >= REPAIR_BELOW) return null;
   return (
     <>
       <ActionButton block onClick={() => gameStore.getState().send({ type: 'RepairAllInteriorFixtures', buildingId })}>{t('venue.repairAll')} <UrbsAmount value={repairs.total} /></ActionButton>

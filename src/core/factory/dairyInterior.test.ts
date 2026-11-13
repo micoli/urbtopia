@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, dispatch, interiorBonusOfBuilding, interiorLinksOf, interiorSizeOf, newGame, type Building, type Command, type FixtureId, type GameState, type Rotation } from '../index';
+import { createBuilding, dispatch, interiorBonusOfBuilding, interiorLinksOf, lineFaultOf, interiorSizeOf, newGame, type Building, type Command, type FixtureId, type GameState, type Rotation } from '../index';
 import { maxQuantityOf } from '../economy/production';
 
 // A city with enough Citizens for every interior to be fitted out.
@@ -69,4 +69,55 @@ describe('the Dairy interior', () => {
     const cut = { ...withLine, buildings: withLine.buildings.map(building => (building.id !== 1 ? building : { ...building, interior: { ...building.interior!, fixtures: building.interior!.fixtures.filter(fixture => fixture.type !== 'dairyConveyor') } })) };
     expect(interiorBonusOfBuilding(dairy(apply(cut, hire('cheesemaker'), hire('creamMaker'))), 'cheese').yield).toBe(0);
   });
+
+describe('the Milk vat with its milk on the left', () => {
+  it('links to a Pump on its left, as the one with the milk on the right does on its right', () => {
+    const state = apply(city(), place('dairyMilkVatLeft', 6, 0), place('dairyTank', 4, 0, 3), place('dairyPumpLeft', 5, 0, 3), place('dairyMotor', 5, 1, 2));
+    const vat = dairy(state).interior!.fixtures.find(fixture => fixture.type === 'dairyMilkVatLeft')!;
+    expect(interiorLinksOf(dairy(state).interior!.fixtures).linked.has(vat.id)).toBe(true);
+  });
+});
+
+describe('the Pasteuriser with its milk on the right', () => {
+  it('links to a Pump on its right', () => {
+    const state = apply(city(), place('dairyPasteurizerRight', 4, 2), ...pumped(5, 2, 1));
+    const fixtures = dairy(state).interior!.fixtures;
+    const pasteurizer = fixtures.find(fixture => fixture.type === 'dairyPasteurizerRight')!;
+    expect(interiorLinksOf(fixtures).linked.has(pasteurizer.id)).toBe(true);
+  });
+});
+
+describe('the Cheese cellar with its cooling on the right', () => {
+  it('links to a Pump on its right', () => {
+    const state = apply(city(), place('dairyCheeseCellarRight', 4, 2), ...pumped(5, 2, 1));
+    const fixtures = dairy(state).interior!.fixtures;
+    const cellar = fixtures.find(fixture => fixture.type === 'dairyCheeseCellarRight')!;
+    expect(interiorLinksOf(fixtures).linked.has(cellar.id)).toBe(true);
+  });
+});
+
+describe('the Cross pipe', () => {
+  it('carries the Flow of a Pump on to the Machines on its three other sides', () => {
+    const state = apply(city(), ...pumped(3, 2, 3), place('dairyPipeCross', 4, 2), place('dairyPasteurizer', 5, 2), place('dairyPasteurizerRight', 4, 1, 1), place('dairyCheeseCellar', 4, 3, 1));
+    const fixtures = dairy(state).interior!.fixtures;
+    const { linked } = interiorLinksOf(fixtures);
+    expect(fixtures.filter(fixture => /Pasteurizer|CheeseCellar/.test(fixture.type)).map(fixture => linked.has(fixture.id))).toEqual([true, true, true]);
+  });
+});
+
+describe('the Conveyors of the Dairy', () => {
+  it('has every piece the Packhouse has: joiners, splitters and tees', () => {
+    const pieces = ['dairyConveyorTee', 'dairyConveyorSplit', 'dairyConveyorSplitStraightLeft', 'dairyConveyorSplitStraightRight', 'dairyConveyorJoinStraightLeft', 'dairyConveyorJoinStraightRight'] as const;
+    pieces.forEach((piece, index) => expect(failure(city(), place(piece, 4 + (index % 3), 2 + Math.floor(index / 3)))).toBeNull());
+  });
+});
+
+describe('the fault of a Dairy line without Flow', () => {
+  it('blames the missing Flow, not the Drive, when the milk vat gets none', () => {
+    const state = apply(city(), ...line);
+    const fixtures = dairy(state).interior!.fixtures;
+    const counter = fixtures.find(fixture => fixture.type === 'dairyCounter')!;
+    expect(lineFaultOf(fixtures, counter)).toMatchObject({ kind: 'noFlow' });
+  });
+});
 });

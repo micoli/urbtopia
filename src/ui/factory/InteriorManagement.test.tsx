@@ -25,14 +25,14 @@ describe('InteriorManagement', () => {
     expect(html).not.toContain('Repair everything');
   });
 
-  it('hides the repair section while the repairs stay under 90 % of what repairing everything from nothing would cost', () => {
-    const html = renderToStaticMarkup(<InteriorManagement factory={bakery([40, 55, 100])} />);
+  it('hides the repair section while every Fixture is at 90 % or more', () => {
+    const html = renderToStaticMarkup(<InteriorManagement factory={bakery([90, 95, 100])} />);
     expect(html).not.toContain('Repair everything');
     expect(html).not.toContain('repair-detail');
   });
 
-  it('shows the repair section once the repairs reach it', () => {
-    const html = renderToStaticMarkup(<InteriorManagement factory={bakery([0, 0, 0])} />);
+  it('shows the repair section as soon as one Fixture is under 90 %', () => {
+    const html = renderToStaticMarkup(<InteriorManagement factory={bakery([89, 100, 100])} />);
     expect(html).toContain('Repair everything');
   });
 });
@@ -50,5 +50,23 @@ describe('InteriorManagement features', () => {
     const html = renderToStaticMarkup(<InteriorManagement factory={mill} />);
     expect(html).toContain('repair-detail');
     expect(html).toContain('millstones');
+  });
+});
+
+describe('InteriorManagement of a Dairy', () => {
+  it('lists every kind of Line', () => {
+    const html = renderToStaticMarkup(<InteriorManagement factory={{ ...createBuilding(1, 'dairy', 55, 50, 0), tier: 3 }} />);
+    expect(html).toContain('Cream line');
+    expect(html).toContain('Cheese line');
+    expect(html).toContain('Full line');
+    expect(html).toContain('Conveyor elbow');
+  });
+});
+
+describe('InteriorManagement of a Packhouse', () => {
+  it('lists the joiners and splitters of its Line', () => {
+    const html = renderToStaticMarkup(<InteriorManagement factory={{ ...createBuilding(1, 'packhouse', 55, 50, 0), tier: 3 }} />);
+    expect(html).toContain('Straight joining conveyor');
+    expect(html).toContain('Splitting conveyor');
   });
 });

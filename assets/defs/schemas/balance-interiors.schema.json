@@ -173,6 +173,10 @@
                 "type": "boolean",
                 "const": true
               },
+              "autoWork": {
+                "type": "boolean",
+                "const": true
+              },
               "laneSlowdown": {
                 "type": "number",
                 "minimum": 0

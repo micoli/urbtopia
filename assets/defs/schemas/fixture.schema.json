@@ -1245,7 +1245,9 @@
           "type": "string",
           "enum": [
             "baker",
-            "seller"
+            "seller",
+            "cheesemaker",
+            "creamMaker"
           ]
         },
         "hatch": {

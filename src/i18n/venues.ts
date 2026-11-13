@@ -76,6 +76,11 @@ type VenueMessageKey =
   | 'venue.recipes'
   | 'venue.management'
   | 'interior.features'
+  | 'interior.conveyors'
+  | 'dairy.lines'
+  | 'dairy.lines.cream'
+  | 'dairy.lines.cheese'
+  | 'dairy.lines.both'
   | `interior.features.${'factory' | 'packhouse' | 'mill' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
   | 'bakery.recipes.assembly'
   | 'bakery.recipes.drive'
@@ -157,6 +162,7 @@ type VenueMessageKey =
   | 'packhouse.interior.idle'
   | 'packhouse.interior.fault.broken'
   | 'packhouse.interior.fault.noDrive'
+  | 'packhouse.interior.fault.noFlow'
   | 'packhouse.interior.fault.misfacing'
   | 'packhouse.interior.fault.deadEnd'
   | 'packhouse.interior.fault.overfed'
@@ -375,11 +381,16 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.recipes': ["Recipes", "Recettes"],
   'venue.management': ['Management', 'Gestion'],
   'interior.features': ['What it does', 'Fonctionnalités'],
+  'interior.conveyors': ['Conveyor pieces', 'Pièces de tapis'],
+  'dairy.lines': ['Lines', 'Chaînes'],
+  'dairy.lines.cream': ['Cream line: Milk vat, Pasteuriser, Conveyors, then a Display counter. It adds the cream yield.', 'Chaîne de crème : cuve à lait, pasteurisateur, tapis, puis un comptoir vitrine. Elle ajoute du rendement en crème.'],
+  'dairy.lines.cheese': ['Cheese line: Milk vat, Cheese cellar, Conveyors, then a Display counter. It adds the cheese yield.', 'Chaîne de fromage : cuve à lait, cave d’affinage, tapis, puis un comptoir vitrine. Elle ajoute du rendement en fromage.'],
+  'dairy.lines.both': ['Full line: Milk vat, Pasteuriser, Cheese cellar, Conveyors, then a Display counter. It adds both yields.', 'Chaîne complète : cuve à lait, pasteurisateur, cave d’affinage, tapis, puis un comptoir vitrine. Elle ajoute les deux rendements.'],
   'interior.features.factory': ["Machines turn the Motor's Drive into speed and yield for the Factory's Slots. Link them with Shafts and Gears, add Flow for the Machines that need it, and cool the Motors with a Cooling vat.", "Les machines transforment la force du moteur en vitesse et en rendement pour les emplacements de l'usine. Reliez-les par des arbres et des engrenages, ajoutez du fluide pour celles qui en ont besoin, et refroidissez les moteurs avec une cuve réfrigérante."],
   'interior.features.packhouse': ["A Line carries Packets from the Machines to the Exits, which set the yield of the Packhouse. Keep every Machine linked and fed, and restock the Exits.", "Une chaîne porte les colis des machines jusqu'aux sorties, qui fixent le rendement du conditionnement. Gardez chaque machine reliée et alimentée, et réapprovisionnez les sorties."],
   'interior.features.mill': ["A Motor, Shafts and Gears drive the millstones: each linked millstone grinds faster. A miller adds the speed bonus.", "Un moteur, des arbres et des engrenages font tourner les meules : chaque meule reliée moud plus vite. Un meunier ajoute le bonus de vitesse."],
   'interior.features.bakery': ["The Recipes of the Bakery: see below.", "Voir les recettes de la boulangerie."],
-  'interior.features.dairy': ["A Line carries the milk from the vat through the Machines to an Exit. Cheesemakers and cream makers add the cheese and cream yield.", "Une chaîne porte le lait de la cuve jusqu'à une sortie à travers les machines. Les fromagers et les crémiers ajoutent le rendement en fromage et en crème."],
+  'interior.features.dairy': ["A Line carries the milk from the vat through the Machines to an Exit. Cheesemakers and cream makers add the cheese and cream yield, and assigned to a Cheese cellar or a Pasteuriser with a Recipe they make it on their own and store it; a seller assigned to a Display counter sells what arrives on it.", "Une chaîne porte le lait de la cuve jusqu'à une sortie à travers les machines. Les fromagers et les crémiers ajoutent le rendement en fromage et en crème, et affectés à une cave d’affinage ou à un pasteurisateur avec une recette ils la fabriquent seuls et la rangent ; un vendeur affecté à un comptoir vitrine vend ce qui y arrive."],
   'interior.features.storehouse': ["A Line runs from a loading dock, by a hoist, to a shelf rack: each linked rack adds room to the Storehouse. A stocker adds the room bonus.", "Une chaîne court d'un quai de chargement, par un palan, jusqu'à un rayonnage : chaque rayonnage relié ajoute de la place à l'entrepôt. Un magasinier ajoute le bonus de place."],
   'interior.features.school': ["Furniture adds quality, up to a cap that rises with the Tier. A teacher adds the schooling the School gives to the homes it serves. Furniture never wears.", "Le mobilier ajoute de la qualité, jusqu'à un plafond qui monte avec le niveau. Un enseignant ajoute la scolarité que l'école donne aux logements desservis. Le mobilier ne s'use jamais."],
   'interior.features.library': ["Furniture adds quality, up to a cap that rises with the Tier. A librarian adds the Knowledge the Library gives to the homes it serves. Furniture never wears.", "Le mobilier ajoute de la qualité, jusqu'à un plafond qui monte avec le niveau. Un bibliothécaire ajoute le savoir que la bibliothèque donne aux logements desservis. Le mobilier ne s'use jamais."],
@@ -517,6 +528,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'packhouse.interior.idle': ['Carries no Packets: no Packer with Drive sends any here, or this does not lead to an Exit.', 'Ne porte aucun paquet : aucune emballeuse alimentée n’en envoie ici, ou cela ne mène pas à une sortie.'],
   'packhouse.interior.fault.broken': ['The Line is cut: {name} is broken (marked on the floor). Repair it.', 'La ligne est coupée : {name} est en panne (marqué au sol). Réparez-le.'],
   'packhouse.interior.fault.noDrive': ['{name} gets no Drive (marked on the floor): its input must face a Shaft or a Gear that a Motor turns.', '{name} ne reçoit aucune force (marqué au sol) : son entrée doit faire face à un arbre ou un engrenage que tourne un moteur.'],
+  'packhouse.interior.fault.noFlow': ['{name} gets no Flow (marked on the floor): its input must face a Pipe or a Tank fed by a Pump that a Motor drives.', '{name} ne reçoit aucun fluide (marqué au sol) : son entrée doit faire face à un tuyau ou une cuve alimentés par une pompe qu’entraîne un moteur.'],
   'packhouse.interior.fault.misfacing': ['{name} next to it (marked on the floor) does not carry Packets toward it: turn it or replace it.', '{name} à côté (marqué au sol) ne porte pas les paquets vers lui : pivotez-le ou remplacez-le.'],
   'packhouse.interior.fault.deadEnd': ['Nothing brings Packets to {name}: the cell in front of its entry (marked on the floor) is empty, lay a Conveyor there that carries toward it.', 'Rien n’apporte de paquets à {name} : la case devant son entrée (marquée au sol) est vide, posez-y un tapis qui porte vers lui.'],
   'packhouse.interior.fault.overfed': ['The Machine ahead already feeds as many {name} as it can: this one gets no Packets. Remove it, or take another from the Line.', 'La machine en amont alimente déjà autant de {name} qu’elle le peut : celui-ci ne reçoit rien. Retirez-le, ou retirez-en un autre de la chaîne.'],

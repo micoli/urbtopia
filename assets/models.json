@@ -20814,6 +20814,16 @@
     ],
     "flush": true
   },
+  "dairy-interior-cheese-cellar-right": {
+    "file": "dairy-interior/cheese-cellar-right",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "dairy-interior-exit": {
     "file": "dairy-interior/exit",
     "source": "managed",
@@ -20836,6 +20846,16 @@
   },
   "dairy-interior-milk-vat": {
     "file": "dairy-interior/milk-vat",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "dairy-interior-milk-vat-left": {
+    "file": "dairy-interior/milk-vat-left",
     "source": "managed",
     "license": "Own work",
     "footprint": [
@@ -20886,6 +20906,16 @@
   },
   "dairy-interior-pasteurizer": {
     "file": "dairy-interior/pasteurizer",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "dairy-interior-pasteurizer-right": {
+    "file": "dairy-interior/pasteurizer-right",
     "source": "managed",
     "license": "Own work",
     "footprint": [
@@ -21476,6 +21506,16 @@
   },
   "factory-floor-partition-tee": {
     "file": "factory-floor/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-pipe-cross": {
+    "file": "factory-floor/pipe-cross",
     "source": "managed",
     "license": "Own work",
     "footprint": [

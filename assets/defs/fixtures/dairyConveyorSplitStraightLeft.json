@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "dairy",
+  "category": "line",
+  "name": {
+    "en": "Straight splitting conveyor (left)",
+    "fr": "Tapis répartiteur droit (gauche)"
+  },
+  "model": "packhouse-floor-conveyor-split-straight-left",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "conveyor",
+  "lineIn": ["back"],
+  "lineOut": ["front", "left"]
+}

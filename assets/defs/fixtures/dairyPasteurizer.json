@@ -16,6 +16,7 @@
   "flow": ["left"],
   "yield": 0.15,
   "yieldGroup": "cream",
+  "assigns": "creamMaker",
   "family": "pasteurizer",
   "lineIn": ["back"],
   "lineOut": ["front"]

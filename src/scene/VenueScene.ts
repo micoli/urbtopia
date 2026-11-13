@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { VENUE_STAFF_MODELS, venueCrowdModelsOf } from './venueCrowdModels';
@@ -371,7 +371,7 @@ export class VenueScene {
         token.add(cloneModel(this.library.get(model)));
         token.scale.setScalar(ITEM_SCALE);
         const back = turnedOffset(0, -1, fixture.rotation);
-        const baker = FIXTURES[fixture.type].assigns === 'baker';
+        const baker = isProducerRole(FIXTURES[fixture.type].assigns);
         const [height, depth] = baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
         token.position.set(centre.x + back.x * depth, height, centre.z + back.z * depth);
         this.tokensRoot.add(token);
@@ -393,7 +393,7 @@ export class VenueScene {
   // The Staff assigned to a Fixture stands beside it, turned toward it: a seller behind its Display counter, on the shop side; a baker at the side of its Oven that its gas does not use.
   private placeStaff(fixture: VenueFixture, centre: { x: number; z: number }): void {
     const spec = FIXTURES[fixture.type];
-    const model = spec.assigns === 'baker' ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
+    const model = isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
     if (!model || !this.ensured(model)) return;
     const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.[0] === 'right' ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
     const holder = new THREE.Group();
