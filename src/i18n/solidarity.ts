@@ -3,6 +3,7 @@ const texts = {
   'solidarity.donate': ['Donate', 'Donner'],
   'solidarity.cancel': ['Cancel', 'Annuler'],
   'solidarity.confirm': ['Donate {quantity} × {good}', 'Donner {quantity} × {good}'],
+  'solidarity.all': ['All', 'Tous'],
   'solidarity.quantity': ['Quantity to donate', 'Quantité à donner'],
   'solidarity.stock': ['{quantity} × {good} will leave your stock. No Urbs received.', '{quantity} × {good} quitteront votre stock. Aucun Urb reçu.'],
   'solidarity.value': ['Donation value: {value}', 'Valeur du don : {value}'],
