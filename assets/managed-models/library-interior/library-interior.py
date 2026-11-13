@@ -23,9 +23,9 @@ FLOOR_TOP = 0.03
 BOOKS = ("book_red", "book_blue", "book_green", "book_yellow", "book_cream")
 
 
-def on_floor(build):
+def on_floor(build, shift_y=0.0):
     def lifted(rng):
-        return [lpm.move(part, 0, 0, FLOOR_TOP) for part in build(rng)]
+        return [lpm.move(part, 0, shift_y, FLOOR_TOP) for part in build(rng)]
     return lifted
 
 
@@ -147,7 +147,7 @@ def wall_set():
 
 
 def fixtures():
-    return {"bookshelf": on_floor(bookshelf), "reading-table": on_floor(reading_table), "armchair": on_floor(armchair), "chair": on_floor(chair), "lending-desk": on_floor(lending_desk), "card-catalog": on_floor(card_catalog)}
+    return {"bookshelf": on_floor(bookshelf, 0.5), "reading-table": on_floor(reading_table), "armchair": on_floor(armchair), "chair": on_floor(chair, -0.2), "lending-desk": on_floor(lending_desk), "card-catalog": on_floor(card_catalog)}
 
 
 if __name__ == "__main__":
