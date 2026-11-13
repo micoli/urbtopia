@@ -31,6 +31,9 @@ const OVEN_ROOF = 1.0;
 const OVEN_ROOF_DEPTH = 0.2;
 const CASE_ROOF = 0.76;
 const CASE_DEPTH = 0.3;
+// The Good an Exit of a Packhouse restocks stands above the hatch of its dock.
+const DOCK_ROOF = 0.95;
+const DOCK_DEPTH = 0.42;
 const STAFF_SCALE = 0.7;
 const STAFF_DISTANCE = 0.85;
 
@@ -364,7 +367,8 @@ export class VenueScene {
     for (const fixture of this.lastFixtures) {
       const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
       const centre = { x: fixture.x + width / 2, z: fixture.y + depth / 2 };
-      const good = focusOf(fixture);
+      const isExit = FIXTURES[fixture.type].role === 'exit';
+      const good = isExit ? fixture.restock : focusOf(fixture);
       const model = good === undefined ? null : itemModelOf(good);
       if (model && this.ensured(model)) {
         const token = new THREE.Group();
@@ -372,11 +376,11 @@ export class VenueScene {
         token.scale.setScalar(ITEM_SCALE);
         const back = turnedOffset(0, -1, fixture.rotation);
         const baker = isProducerRole(FIXTURES[fixture.type].assigns);
-        const [height, depth] = baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
+        const [height, depth] = isExit ? [DOCK_ROOF, DOCK_DEPTH] : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
         token.position.set(centre.x + back.x * depth, height, centre.z + back.z * depth);
         this.tokensRoot.add(token);
       }
-      if (fixture.assigned) this.placeStaff(fixture, centre);
+      if (fixture.assigned || fixture.restocker) this.placeStaff(fixture, centre);
     }
     this.dirty = true;
   }
@@ -393,7 +397,7 @@ export class VenueScene {
   // The Staff assigned to a Fixture stands beside it, turned toward it: a seller behind its Display counter, on the shop side; a baker at the side of its Oven that its gas does not use.
   private placeStaff(fixture: VenueFixture, centre: { x: number; z: number }): void {
     const spec = FIXTURES[fixture.type];
-    const model = isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
+    const model = isProducerRole(spec.assigns) || spec.role === 'exit' ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
     if (!model || !this.ensured(model)) return;
     const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.[0] === 'right' ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
     const holder = new THREE.Group();
