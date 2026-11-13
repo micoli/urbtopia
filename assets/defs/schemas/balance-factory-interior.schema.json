@@ -43,6 +43,15 @@
         "maximum": 9007199254740991
       }
     },
+    "restockerPosts": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
     "motorPower": {
       "type": "number",
       "exclusiveMinimum": 0
@@ -88,6 +97,7 @@
     "yieldCaps",
     "usagePerHour",
     "technicianPosts",
+    "restockerPosts",
     "motorPower",
     "idlePowerShare",
     "motorCapacity",

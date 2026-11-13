@@ -26,8 +26,9 @@ const mill = (state: GameState): Building => state.buildings.find(candidate => c
 const place = (fixture: FixtureId, x: number, y: number, rotation: Rotation = 0): Command => ({ type: 'PlaceInteriorFixture', buildingId: 1, fixture, x, y, rotation });
 const apply = (state: GameState, ...commands: Command[]) => commands.reduce(send, state);
 
-// A Motor turns a Shaft that brings the Drive to the front of a Millstone.
-const fitted = [place('millMotor', 2, 2), place('millShaft', 2, 3), place('millstone', 2, 4, 2)];
+// A Motor turns a Shaft that brings the Drive to the front of a Millstone; a second Motor drives the Pump, which pushes through the Pipes to a Cleaner, the Millstone, a Bagger and an Oil tank.
+export const fitted = [place('millMotor', 2, 2), place('millShaft', 2, 3), place('millstone', 2, 4, 2), place('millMotor', 4, 6, 2), place('millPump', 4, 5, 1), place('millPipeCross', 3, 5), place('millPipeCross', 2, 5),
+  place('millPipe', 1, 5, 1), place('millCleaner', 0, 5, 1), place('millBagger', 2, 6), place('millOilTank', 3, 4, 2)];
 
 describe('the Mill interior', () => {
   it('is a Production interior of its own kind, with a room that grows with the Tier', () => {

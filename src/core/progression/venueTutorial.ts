@@ -9,7 +9,7 @@ export const VENUE_TUTORIAL_STEPS = {
   arcade: ['place', 'fixture', 'employee', 'collect'],
   supermarket: ['place', 'checkout', 'shelf', 'stock', 'cashier', 'collect'],
   factory: ['motor', 'drive', 'flow', 'cooling'],
-  mill: ['motor', 'drive', 'miller'],
+  mill: ['motor', 'drive', 'flow', 'miller'],
   school: ['furniture', 'teacher'],
 } as const;
 
@@ -32,13 +32,13 @@ const sitesOf = (state: GameState, type: VenueTutorialType): Building[] =>
 
 function isDoneInInterior(building: Building, step: VenueTutorialStep): boolean {
   const fixtures = building.interior?.fixtures ?? [];
-  const linked = interiorLinksOf(fixtures).linked;
+  const { linked, problems } = interiorLinksOf(fixtures);
   const linkedMachines = fixtures.filter(fixture => linked.has(fixture.id));
   switch (step) {
     case 'motor':
       return fixtures.some(fixture => FIXTURES[fixture.type].role === 'motor');
     case 'drive':
-      return linkedMachines.some(fixture => FIXTURES[fixture.type].drive !== undefined);
+      return fixtures.some(fixture => FIXTURES[fixture.type].drive !== undefined && FIXTURES[fixture.type].role === 'machine' && (linked.has(fixture.id) || !(problems.get(fixture.id) ?? []).some(problem => problem !== 'noFlow' && problem !== 'tankFull')));
     case 'flow':
       return linkedMachines.some(fixture => FIXTURES[fixture.type].flow !== undefined);
     case 'miller':

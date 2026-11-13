@@ -22715,6 +22715,16 @@
     "license": "Own work",
     "rotationOffset": 180
   },
+  "mill-interior-bagger": {
+    "file": "mill-interior/bagger",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "mill-interior-floor": {
     "file": "mill-interior/floor",
     "source": "managed",
@@ -22727,6 +22737,16 @@
   },
   "mill-interior-millstone": {
     "file": "mill-interior/millstone",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "mill-interior-millstone-right": {
+    "file": "mill-interior/millstone-right",
     "source": "managed",
     "license": "Own work",
     "footprint": [

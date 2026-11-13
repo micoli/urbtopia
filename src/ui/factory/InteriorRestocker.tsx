@@ -11,7 +11,7 @@ interface InteriorRestockerProps {
 export function InteriorRestocker({ packhouse }: InteriorRestockerProps) {
   const hired = packhouse.interior?.restockers ?? 0;
   const assigned = packhouse.interior?.fixtures.filter(fixture => fixture.restocker).length ?? 0;
-  const posts = restockerPostsOf(packhouse.tier);
+  const posts = restockerPostsOf(packhouse.tier, packhouse.type);
   const send = gameStore.getState().send;
   return (
     <div className="venue-staff">

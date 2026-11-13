@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
-import { VENUE_STAFF_MODELS, venueCrowdModelsOf } from './venueCrowdModels';
+import { RESTOCKER_MODEL, VENUE_STAFF_MODELS, venueCrowdModelsOf } from './venueCrowdModels';
 import { ITEM_SCALE, InteriorLineLayer } from './InteriorLineLayer';
 import { InteriorMotionLayer, type FixtureMotion } from './InteriorMotionLayer';
 import { VenueCrowdLayer } from './VenueCrowdLayer';
@@ -31,9 +31,10 @@ const OVEN_ROOF = 1.0;
 const OVEN_ROOF_DEPTH = 0.2;
 const CASE_ROOF = 0.76;
 const CASE_DEPTH = 0.3;
-// The Good an Exit of a Packhouse restocks stands above the hatch of its dock.
+// The Good an Exit of a Packhouse restocks stands above the hatch of its dock; that of a Machine of a Factory, above the Machine.
 const DOCK_ROOF = 0.95;
 const DOCK_DEPTH = 0.42;
+const MACHINE_ROOF = 1.1;
 const STAFF_SCALE = 0.7;
 const STAFF_DISTANCE = 0.85;
 
@@ -173,7 +174,7 @@ export class VenueScene {
 
   setFixtures(fixtures: readonly VenueFixture[]): void {
     if (this.shelfStock.sync(fixtures)) this.dirty = true;
-    const signature = JSON.stringify(fixtures.map(fixture => [fixture.id, fixture.type, fixture.x, fixture.y, fixture.rotation, fixture.recipe, fixture.soldGood, fixture.assigned]));
+    const signature = JSON.stringify(fixtures.map(fixture => [fixture.id, fixture.type, fixture.x, fixture.y, fixture.rotation, fixture.recipe, fixture.soldGood, fixture.assigned, fixture.restock, fixture.restocker]));
     if (signature === this.fixturesSignature) return;
     this.fixturesSignature = signature;
     this.lastFixtures = fixtures;
@@ -367,8 +368,8 @@ export class VenueScene {
     for (const fixture of this.lastFixtures) {
       const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
       const centre = { x: fixture.x + width / 2, z: fixture.y + depth / 2 };
-      const isExit = FIXTURES[fixture.type].role === 'exit';
-      const good = isExit ? fixture.restock : focusOf(fixture);
+      const restockable = isRestockable(FIXTURES[fixture.type]);
+      const good = restockable ? fixture.restock : focusOf(fixture);
       const model = good === undefined ? null : itemModelOf(good);
       if (model && this.ensured(model)) {
         const token = new THREE.Group();
@@ -376,7 +377,7 @@ export class VenueScene {
         token.scale.setScalar(ITEM_SCALE);
         const back = turnedOffset(0, -1, fixture.rotation);
         const baker = isProducerRole(FIXTURES[fixture.type].assigns);
-        const [height, depth] = isExit ? [DOCK_ROOF, DOCK_DEPTH] : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
+        const [height, depth] = restockable || FIXTURES[fixture.type].assigns === 'miller' ? (FIXTURES[fixture.type].role === 'exit' ? [DOCK_ROOF, DOCK_DEPTH] : [MACHINE_ROOF, 0]) : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
         token.position.set(centre.x + back.x * depth, height, centre.z + back.z * depth);
         this.tokensRoot.add(token);
       }
@@ -394,12 +395,12 @@ export class VenueScene {
     return false;
   }
 
-  // The Staff assigned to a Fixture stands beside it, turned toward it: a seller behind its Display counter, on the shop side; a baker at the side of its Oven that its gas does not use.
+  // The Staff assigned to a Fixture stands beside it, turned toward it: a seller behind its Display counter, on the shop side; a baker at the side of its Oven that its gas does not use. A miller is a plain worker, like a Restocker.
   private placeStaff(fixture: VenueFixture, centre: { x: number; z: number }): void {
     const spec = FIXTURES[fixture.type];
-    const model = isProducerRole(spec.assigns) || spec.role === 'exit' ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
+    const model = isRestockable(spec) || spec.assigns === 'miller' ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
     if (!model || !this.ensured(model)) return;
-    const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.[0] === 'right' ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
+    const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.includes('right') ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
     const holder = new THREE.Group();
     const body = cloneModel(this.library.get(model));
     holder.add(body);

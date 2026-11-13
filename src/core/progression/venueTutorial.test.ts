@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, dispatch, newGame, type Building, type Command, type GameState, type StaffRole } from '../index';
+import { createBuilding, dispatch, newGame, type Building, type Command, type GameState, type StaffRole, type VenueFixture } from '../index';
 import { canReplayVenueTutorial, isVenueStepDone, progressVenueTutorials } from './venueTutorial';
 
 const venueBuilding = (id: number, type: 'arcade' | 'supermarket', extra: Partial<Building['venue'] & object> = {}): Building => {
@@ -118,6 +118,12 @@ describe('Factory interior tutorial', () => {
   });
 });
 
+const millLayout: VenueFixture[] = [
+  { id: 1, type: 'millMotor', x: 2, y: 2, rotation: 0 }, { id: 2, type: 'millShaft', x: 2, y: 3, rotation: 0 }, { id: 3, type: 'millstone', x: 2, y: 4, rotation: 2 }, { id: 4, type: 'millMotor', x: 4, y: 6, rotation: 2 },
+  { id: 5, type: 'millPump', x: 4, y: 5, rotation: 1 }, { id: 6, type: 'millPipeCross', x: 3, y: 5, rotation: 0 }, { id: 7, type: 'millPipeCross', x: 2, y: 5, rotation: 0 }, { id: 8, type: 'millPipe', x: 1, y: 5, rotation: 1 },
+  { id: 9, type: 'millCleaner', x: 0, y: 5, rotation: 1 }, { id: 10, type: 'millBagger', x: 2, y: 6, rotation: 2 }, { id: 11, type: 'millOilTank', x: 3, y: 4, rotation: 0 },
+];
+
 describe('the Mill interior tutorial', () => {
   const mill = (interior?: Building['interior']): GameState => ({
     ...newGame({ seed: 'mill-tutorial', now: 0 }), tutorial: null, buildings: [{ ...createBuilding(1, 'mill', 55, 50, 0), tier: 3, ...(interior ? { interior } : {}) }],
@@ -128,8 +134,10 @@ describe('the Mill interior tutorial', () => {
     const started = progressVenueTutorials(mill({ fixtures: [], nextFixtureId: 1 }));
     expect(started.venueTutorials?.mill).toBe('motor');
     const driven = progressVenueTutorials(mill({ fixtures: [{ id: 1, type: 'millMotor', x: 2, y: 2, rotation: 0 }, { id: 2, type: 'millShaft', x: 2, y: 3, rotation: 0 }, { id: 3, type: 'millstone', x: 2, y: 4, rotation: 2 }], nextFixtureId: 4 }));
-    expect(driven.venueTutorials?.mill).toBe('miller');
-    const done = progressVenueTutorials({ ...driven, buildings: driven.buildings.map(building => ({ ...building, interior: { ...building.interior!, staff: { miller: 1 } } })) });
+    expect(driven.venueTutorials?.mill).toBe('flow');
+    const piped = progressVenueTutorials(mill({ fixtures: [...millLayout], nextFixtureId: 20 }));
+    expect(piped.venueTutorials?.mill).toBe('miller');
+    const done = progressVenueTutorials({ ...piped, buildings: piped.buildings.map(building => ({ ...building, interior: { ...building.interior!, staff: { miller: 1 } } })) });
     expect(done.venueTutorials?.mill).toBeNull();
   });
 });

@@ -35,3 +35,7 @@ A Packhouse is a loop the player repeats: queue, wait, collect. The Restocker ma
 - The Exit's side panel gains a Restock choice and a Restocker assignment, and the Packhouse floor panel a hire/release control next to the Technician's.
 - `packhouseFloor.json` gains `restockerPosts`; `venues.json` gains the `restocker` wage; the persistence validation accepts the new fields.
 - The production advance gains a restart-and-store step for assigned Exits, which Catch-up replays.
+
+## Update: the Factory
+
+A Factory hires Restockers too (`restockerPosts` in `factoryInterior.json`). Each is assigned to a Machine that runs (driven, fed, not broken) instead of an Exit, and a Machine can be given any Good the Factory produces. Without a Restocker, the player collects the production by hand, as before.

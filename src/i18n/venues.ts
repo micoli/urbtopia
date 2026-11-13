@@ -167,6 +167,7 @@ type VenueMessageKey =
   | 'packhouse.interior.fault.deadEnd'
   | 'packhouse.interior.fault.overfed'
   | 'packhouse.interior.noExit'
+  | 'mill.interior.incomplete'
   | 'packhouse.interior.exitSize'
   | 'packhouse.interior.size.Crate'
   | 'packhouse.interior.size.Box'
@@ -338,7 +339,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'error.wrongPackSize': ['This Good is not packed in the size of this Exit.', 'Ce produit n’est pas emballé au format de cette sortie.'],
   'error.notAnExit': ['This Fixture is not an Exit.', 'Cet équipement n’est pas une sortie.'],
   'error.noRestock': ['Choose a Restock for this Exit first.', 'Choisissez d’abord un réassort pour cette sortie.'],
-  'error.restockerAlreadyAssigned': ['A Restocker is already assigned to this Exit.', 'Un employé de réassort est déjà affecté à cette sortie.'],
+  'error.restockerAlreadyAssigned': ['A Restocker is already assigned here.', 'Un employé de réassort est déjà affecté ici.'],
   'error.noFreeRestocker': ['No Restocker is free: hire one or release another Exit.', 'Aucun employé de réassort n’est libre : embauchez-en un ou libérez une autre sortie.'],
   'error.fixtureLimitReached': ['The Bakery has no Slot left for another one: buy a Slot to fit more.', 'La boulangerie n’a plus d’emplacement pour un autre : achetez un emplacement pour en ajouter.'],
   'error.notUpstream': ['No Oven upstream of this counter bakes that Good.', 'Aucun four en amont de ce comptoir ne cuit ce bien.'],
@@ -386,9 +387,9 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'dairy.lines.cream': ['Cream line: Milk vat, Pasteuriser, Conveyors, then a Display counter. It adds the cream yield.', 'Chaîne de crème : cuve à lait, pasteurisateur, tapis, puis un comptoir vitrine. Elle ajoute du rendement en crème.'],
   'dairy.lines.cheese': ['Cheese line: Milk vat, Cheese cellar, Conveyors, then a Display counter. It adds the cheese yield.', 'Chaîne de fromage : cuve à lait, cave d’affinage, tapis, puis un comptoir vitrine. Elle ajoute du rendement en fromage.'],
   'dairy.lines.both': ['Full line: Milk vat, Pasteuriser, Cheese cellar, Conveyors, then a Display counter. It adds both yields.', 'Chaîne complète : cuve à lait, pasteurisateur, cave d’affinage, tapis, puis un comptoir vitrine. Elle ajoute les deux rendements.'],
-  'interior.features.factory': ["Machines turn the Motor's Drive into speed and yield for the Factory's Slots. Link them with Shafts and Gears, add Flow for the Machines that need it, and cool the Motors with a Cooling vat.", "Les machines transforment la force du moteur en vitesse et en rendement pour les emplacements de l'usine. Reliez-les par des arbres et des engrenages, ajoutez du fluide pour celles qui en ont besoin, et refroidissez les moteurs avec une cuve réfrigérante."],
+  'interior.features.factory': ["Machines turn the Motor's Drive into speed and yield for the Factory's Slots. Link them with Shafts and Gears, add Flow for the Machines that need it, and cool the Motors with a Cooling vat. Each Machine can make any Good of the Factory: pick one, and a Restocker assigned to it stores what it makes in the Storehouse.", "Les machines transforment la force du moteur en vitesse et en rendement pour les emplacements de l'usine. Reliez-les par des arbres et des engrenages, ajoutez du fluide pour celles qui en ont besoin, et refroidissez les moteurs avec une cuve réfrigérante. Chaque machine peut fabriquer n'importe quel bien de l'usine : choisissez-en un, et un employé de réassort affecté le range à l'entrepôt."],
   'interior.features.packhouse': ["A Line carries Packets from the Machines to the Exits, which set the yield of the Packhouse. Keep every Machine linked and fed, and restock the Exits.", "Une chaîne porte les colis des machines jusqu'aux sorties, qui fixent le rendement du conditionnement. Gardez chaque machine reliée et alimentée, et réapprovisionnez les sorties."],
-  'interior.features.mill': ["A Motor, Shafts and Gears drive the millstones: each linked millstone grinds faster. A miller adds the speed bonus.", "Un moteur, des arbres et des engrenages font tourner les meules : chaque meule reliée moud plus vite. Un meunier ajoute le bonus de vitesse."],
+  'interior.features.mill': ["A Motor, Shafts and Gears drive the millstones, and a Pump drives the Pipes. Choose on each millstone what it grinds, wheat or olives: a Cleaner takes the grain in, a Bagger gives the flour out and an Oil tank the olive oil, all on the Pipes of the same Pump. A miller assigned to a complete millstone grinds on his own and stores the production in the Storehouse; without one, you collect it yourself.", "Un moteur, des arbres et des engrenages font tourner les meules, et une pompe alimente la tuyauterie. Choisissez sur chaque meule ce qu'elle moud, du blé ou des olives : une nettoyeuse fait entrer le grain, une ensacheuse sort la farine et un réservoir l'huile d'olive, tous sur la tuyauterie de la même pompe. Un meunier affecté à une meule complète moud seul et range la production à l'entrepôt ; sans lui, vous la récupérez vous-même."],
   'interior.features.bakery': ["The Recipes of the Bakery: see below.", "Voir les recettes de la boulangerie."],
   'interior.features.dairy': ["A Line carries the milk from the vat through the Machines to an Exit. Cheesemakers and cream makers add the cheese and cream yield, and assigned to a Cheese cellar or a Pasteuriser with a Recipe they make it on their own and store it; a seller assigned to a Display counter sells what arrives on it.", "Une chaîne porte le lait de la cuve jusqu'à une sortie à travers les machines. Les fromagers et les crémiers ajoutent le rendement en fromage et en crème, et affectés à une cave d’affinage ou à un pasteurisateur avec une recette ils la fabriquent seuls et la rangent ; un vendeur affecté à un comptoir vitrine vend ce qui y arrive."],
   'interior.features.storehouse': ["A Line runs from a loading dock, by a hoist, to a shelf rack: each linked rack adds room to the Storehouse. A stocker adds the room bonus.", "Une chaîne court d'un quai de chargement, par un palan, jusqu'à un rayonnage : chaque rayonnage relié ajoute de la place à l'entrepôt. Un magasinier ajoute le bonus de place."],
@@ -443,12 +444,12 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.roleEffect.surgeon': ['Operates: the most Well-being a Hospital can give', "Opère : le plus de bien-être qu’un hôpital puisse donner"],
   'venue.role.technician': ['Technician', 'Personnel technique'],
   'venue.role.restocker': ['Restocker', 'Employé de réassort'],
-  'venue.roleEffect.restocker': ['Keeps the production of an Exit’s Restock going and stores it', 'Relance la production du réassort d’une sortie et la range à l’entrepôt'],
+  'venue.roleEffect.restocker': ['Keeps the production of a Restock going and stores it', 'Relance la production d’un réassort et la range à l’entrepôt'],
   'venue.restock': ['Restock', 'Réassort'],
   'venue.restockNone': ['No restock', 'Aucun réassort'],
   'venue.restockAssign': ['Assign a Restocker', 'Affecter un employé de réassort'],
   'venue.restockRelease': ['Free the Restocker', 'Libérer l’employé de réassort'],
-  'venue.restockAtWork': ['A Restocker works on this Line', 'Un employé de réassort travaille sur cette ligne'],
+  'venue.restockAtWork': ['A Restocker works here', 'Un employé de réassort travaille ici'],
   'venue.assignRecipe': ['Recipe', 'Recette'],
   'venue.assignSoldGood': ['Sold Good', 'Bien vendu'],
   'venue.assignNone': ['None', 'Aucun'],
@@ -532,6 +533,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'packhouse.interior.fault.misfacing': ['{name} next to it (marked on the floor) does not carry Packets toward it: turn it or replace it.', '{name} à côté (marqué au sol) ne porte pas les paquets vers lui : pivotez-le ou remplacez-le.'],
   'packhouse.interior.fault.deadEnd': ['Nothing brings Packets to {name}: the cell in front of its entry (marked on the floor) is empty, lay a Conveyor there that carries toward it.', 'Rien n’apporte de paquets à {name} : la case devant son entrée (marquée au sol) est vide, posez-y un tapis qui porte vers lui.'],
   'packhouse.interior.fault.overfed': ['The Machine ahead already feeds as many {name} as it can: this one gets no Packets. Remove it, or take another from the Line.', 'La machine en amont alimente déjà autant de {name} qu’elle le peut : celui-ci ne reçoit rien. Retirez-le, ou retirez-en un autre de la chaîne.'],
+  'mill.interior.incomplete': ['The pipes of its Pump must reach a Cleaner and, for its Recipe, a Bagger (flour) or an Oil tank (olive oil), and a Recipe must be chosen.', "La tuyauterie de sa pompe doit atteindre une nettoyeuse et, selon sa recette, une ensacheuse (farine) ou un réservoir d'huile (huile d'olive), et une recette doit être choisie."],
   'packhouse.interior.noExit': ['Its Packets reach no Exit: it adds no bonus.', 'Ses paquets n’atteignent aucune sortie : elle n’apporte aucun bonus.'],
   'packhouse.interior.exitSize': ['Serves {size} of packed Goods.', 'Dessert les {size} de produits emballés.'],
   'packhouse.interior.size.Crate': ['crates', 'caisses'],

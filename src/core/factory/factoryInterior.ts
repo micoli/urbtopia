@@ -312,6 +312,9 @@ function lineReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, Ve
   return unlimitedLineReach(fixtures, at, linked);
 }
 
+// A Machine of a Mill with a second side for Flow hands it on, like a Pipe: the Cleaner and the Millstone sit in the chain with the Pump and the Tank. A Pump of a Mill also draws from the Machine behind it.
+const passesFlow = (fixture: VenueFixture): boolean => FIXTURES[fixture.type].venue === 'mill' && sidesOf(fixture, 'flow').length > 1;
+
 // The Fixtures that Flow reaches. A Tank only gives its fluid to the Pipes, up to the back of a Pump; a Pump that is handed Drive pushes it on
 // out of its front, through Pipes and to the Machines, and to the back of the next Pump.
 interface FlowReach {
@@ -336,8 +339,10 @@ function flowReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, Ve
     const queue = [start];
     while (queue.length > 0) {
       const current = queue.shift()!;
-      const pumpOutlet = current === start && roleOf(start) === 'pump' ? neighbourOn(start, 'front', at) : undefined;
-      const neighbours = current === start && roleOf(start) === 'pump' ? (pumpOutlet ? [pumpOutlet] : []) : connectionsOf(current, 'flow', at);
+      const isStartingPump = current === start && roleOf(start) === 'pump';
+      const pumpOutlet = isStartingPump ? neighbourOn(start, 'front', at) : undefined;
+      const millIntake = isStartingPump && FIXTURES[start.type].venue === 'mill' ? neighbourOn(start, 'back', at) : undefined;
+      const neighbours = isStartingPump ? [pumpOutlet, millIntake].filter((neighbour): neighbour is VenueFixture => neighbour !== undefined) : connectionsOf(current, 'flow', at);
       for (const next of neighbours) {
         if (seen.has(next.id)) continue;
         seen.add(next.id);
@@ -355,6 +360,7 @@ function flowReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, Ve
         if (isMachine(next)) {
           if (marksMachines) reached.add(next.id);
           output.nodes.add(next.id);
+          if (passesFlow(next)) queue.push(next);
           continue;
         }
         reached.add(next.id);
@@ -366,6 +372,10 @@ function flowReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, Ve
   for (const tank of fixtures.filter(fixture => roleOf(fixture) === 'tank')) {
     reached.add(tank.id);
     walk(tank, false);
+  }
+  for (const pump of fixtures.filter(fixture => roleOf(fixture) === 'pump' && powered.has(fixture.id) && FIXTURES[fixture.type].venue === 'mill')) {
+    queued.add(pump.id);
+    pushing.push(pump);
   }
   for (let index = 0; index < pushing.length; index++) walk(pushing[index]!, true);
   return { reached, outputs, starved: starvedVats(fixtures, fedByTank, outputs, reached) };
@@ -430,6 +440,23 @@ function problemsOf(machine: VenueFixture, drive: DriveReceipts, flowing: Readon
   return problems;
 }
 
+// The Millstones at work: linked, with a Recipe, on the Pipes of a Pump that also reaches a linked Machine of the family at the intake and the one that takes what the Recipe makes.
+function milledOf(fixtures: readonly VenueFixture[], flow: FlowReach, linked: ReadonlySet<number>): Set<number> {
+  const milling = interiorLayoutOf('mill')?.milling;
+  const milled = new Set<number>();
+  if (!milling) return milled;
+  const byId = new Map(fixtures.map(fixture => [fixture.id, fixture]));
+  for (const { nodes } of flow.outputs.values()) {
+    const fed = [...nodes].filter(id => linked.has(id)).map(id => byId.get(id)!);
+    const has = (family: string): boolean => fed.some(fixture => FIXTURES[fixture.type].family === family);
+    for (const stone of fed.filter(fixture => FIXTURES[fixture.type].family === 'millstone' && fixture.recipe !== undefined)) {
+      const destination = milling.destinations[stone.recipe!];
+      if (destination !== undefined && has(milling.input) && has(destination)) milled.add(stone.id);
+    }
+  }
+  return milled;
+}
+
 // What is worked out once for a list of Fixtures: Drive, Flow and Links. A floor's list is replaced, never changed, when the player edits it,
 // so each list is read once however many panels, bonuses and scenes ask.
 interface InteriorReport {
@@ -480,7 +507,8 @@ const reportOf = memoized((allFixtures): InteriorReport => {
     else problems.set(machine.id, lacking);
   }
   const line = lineReach(fixtures, at, linked);
-  return { fixtures, at, drive, powered, flow, line, links: { linked, jammed: drive.jammed, problems, lined: line.lined, overfed: line.overfed } };
+  const lined = new Set([...line.lined, ...milledOf(fixtures, flow, linked)]);
+  return { fixtures, at, drive, powered, flow, line, links: { linked, jammed: drive.jammed, problems, lined, overfed: line.overfed } };
 });
 
 export const interiorLinksOf = (allFixtures: readonly VenueFixture[]): InteriorLinks => reportOf(allFixtures).links;
@@ -715,6 +743,12 @@ export function lineFaultOf(allFixtures: readonly VenueFixture[], start: VenueFi
 export const linkedExitsOf = memoized((allFixtures): readonly VenueFixture[] => {
   const { lined } = interiorLinksOf(allFixtures);
   return allFixtures.filter(fixture => lined.has(fixture.id) && roleOf(fixture) === 'exit');
+});
+
+// The Machines of a Factory interior that run: driven, fed and not broken.
+export const runningMachinesOf = memoized((allFixtures): readonly VenueFixture[] => {
+  const { linked } = interiorLinksOf(allFixtures);
+  return allFixtures.filter(fixture => linked.has(fixture.id) && roleOf(fixture) === 'machine');
 });
 
 // What the Motors of a Packhouse interior ask of the city's power, as those of a Factory interior do: all of it when the Machines they drive run, a share of it at rest.

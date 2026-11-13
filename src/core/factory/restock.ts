@@ -5,7 +5,7 @@ import { isItemUnlocked } from '../progression/unlocks';
 import type { CommandOutcome } from '../engine/commands';
 import type { GameEvent } from '../engine/events';
 import type { Building, GameState, QueueEntry, VenueFixture } from '../engine/state';
-import { linkedExitsOf } from './factoryInterior';
+import { linkedExitsOf, runningMachinesOf } from './factoryInterior';
 import { restockerWagePerHour } from './interiorWear';
 
 // Queues one production of an item in a building, taking its ingredients from the Storehouse; an entry queued for an Exit's Restocker carries the Exit.
@@ -44,9 +44,12 @@ export const RESERVED_SLOTS = 1;
 const workingExitsOf = (building: Building, urbs: number): VenueFixture[] => {
   const hired = building.interior?.restockers ?? 0;
   if (!building.interior || urbs < hired * restockerWagePerHour()) return [];
-  const linked = new Set(linkedExitsOf(building.interior.fixtures).map((exit) => exit.id));
+  const linked = new Set(restockableOf(building.interior.fixtures, building.type).map((fixture) => fixture.id));
   return building.interior.fixtures.filter((fixture) => linked.has(fixture.id) && fixture.restocker && fixture.restock).sort((a, b) => a.id - b.id).slice(0, hired);
 };
+
+// What a Restocker serves: the Exits that a Line reaches in a Packhouse, the Machines that run in a Factory.
+const restockableOf = (fixtures: readonly VenueFixture[], type: Building['type']): readonly VenueFixture[] => (type === 'factory' ? runningMachinesOf(fixtures) : linkedExitsOf(fixtures));
 
 // Puts a finished entry into the Storehouse; false when there is no room for it.
 export function store(state: GameState, entry: QueueEntry): GameState | null {
@@ -102,7 +105,7 @@ function restockTurn(state: GameState, buildingId: number): { state: GameState; 
 
 // Runs the Restockers of every Packhouse up to `now`, one production after the other, so that a long absence gives what the same time played would.
 export function advanceRestockers(state: GameState, now: number): { state: GameState; events: GameEvent[] } {
-  const ids = state.buildings.filter((building) => building.type === 'packhouse' && workingExitsOf(building, state.urbs).length > 0).map((building) => building.id);
+  const ids = state.buildings.filter((building) => (building.type === 'packhouse' || building.type === 'factory') && workingExitsOf(building, state.urbs).length > 0).map((building) => building.id);
   if (ids.length === 0) return { state, events: [] };
   let current = state;
   const events: GameEvent[] = [];

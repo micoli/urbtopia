@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "mill",
+  "category": "machines",
+  "name": {
+    "en": "Oil tank (olive oil output)",
+    "fr": "Réservoir d'huile (sortie huile)"
+  },
+  "model": "factory-floor-tank",
+  "footprint": [1, 1],
+  "price": 250,
+  "minTier": 1,
+  "wear": 0.02,
+  "role": "machine",
+  "flow": ["front"],
+  "family": "oilTank"
+}

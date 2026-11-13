@@ -7,12 +7,21 @@
         "gridSizes": [5, 6, 7, 8, 9],
         "speedCaps": [0.1, 0.18, 0.26, 0.34, 0.42],
         "yieldCaps": [0.02, 0.04, 0.06, 0.08, 0.1],
-        "technicianPosts": [0, 0, 1, 1, 2]
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "autoWork": true,
+        "extraProducers": [0, 0, 0, 1, 2],
+        "milling": {
+          "input": "cleaner",
+          "destinations": {
+            "flour": "bagger",
+            "oliveOil": "oilTank"
+          }
+        }
       },
       "roles": {
         "miller": {
           "part": "speed",
-          "posts": [0, 1, 1, 1, 2]
+          "posts": [1, 2, 3, 4, 5]
         }
       },
       "unlockCitizens": 100

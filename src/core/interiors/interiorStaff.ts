@@ -32,6 +32,10 @@ export interface InteriorLayout {
   autoWork?: true;
   // Each Oven bakes on its own line, and each line is slowed by this share of every other line at work: with 0.5, three lines each take twice as long, so three Ovens bake one and a half times as much as one.
   laneSlowdown?: number;
+  // Machines that an assigned role may have beyond the production Slots, by Tier.
+  extraProducers?: number[];
+  // A Millstone works when the Pump that feeds it also feeds a Machine of the family `input` and the one of the family that `destinations` names for its Recipe.
+  milling?: { input: string; destinations: Record<string, string> };
 }
 
 export interface ServiceLayout {

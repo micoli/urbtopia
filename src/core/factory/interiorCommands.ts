@@ -1,4 +1,4 @@
-import { FIXTURES } from '../venues/fixtures';
+import { FIXTURES, isRestockable } from '../venues/fixtures';
 import { entranceCell } from '../venues/shared';
 import { fixtureRefund, fixtureTiles } from '../venues/venues';
 import { hireFeeOf } from '../venues/staff';
@@ -233,9 +233,10 @@ export function releaseInteriorTechnician(state: GameState, buildingId: number):
   return { state: withInterior(state, factory, { ...interior, technicians: hired - 1 }), events: [] };
 }
 
+// A Packhouse and a Factory have Restockers: the first serves its Exits, the second its Machines.
 const packhouseOf = (state: GameState, buildingId: number): Building | undefined => {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
-  return building?.type === 'packhouse' ? building : undefined;
+  return building?.type === 'packhouse' || building?.type === 'factory' ? building : undefined;
 };
 
 export function hireInteriorRestocker(state: GameState, buildingId: number): CommandOutcome {
@@ -243,7 +244,7 @@ export function hireInteriorRestocker(state: GameState, buildingId: number): Com
   if (!packhouse) return { key: 'error.unknownBuilding' };
   const interior = interiorOf(packhouse);
   const hired = interior.restockers ?? 0;
-  const posts = restockerPostsOf(packhouse.tier);
+  const posts = restockerPostsOf(packhouse.tier, packhouse.type);
   if (posts === 0) return { key: 'error.tierTooLow' };
   if (hired >= posts) return { key: 'error.noStaffPost' };
   const fee = hireFeeOf('restocker');
@@ -270,7 +271,7 @@ const withoutRestocker = (fixture: VenueFixture): VenueFixture => without(fixtur
 const exitOf = (interior: InteriorData, fixtureId: number): VenueFixture | CommandError => {
   const fixture = interior.fixtures.find(candidate => candidate.id === fixtureId);
   if (!fixture) return { key: 'error.unknownFixture' };
-  return FIXTURES[fixture.type].role === 'exit' ? fixture : { key: 'error.notAnExit' };
+  return isRestockable(FIXTURES[fixture.type]) ? fixture : { key: 'error.notAnExit' };
 };
 
 const withFixture = (state: GameState, packhouse: Building, replacement: VenueFixture): CommandOutcome => {
@@ -286,8 +287,8 @@ export function setExitRestock(state: GameState, buildingId: number, fixtureId: 
   if (good === null) {
     return withFixture(state, packhouse, without(exit, 'restock', 'restocker'));
   }
-  if (!producibleItems('packhouse').includes(good)) return { key: 'error.cannotProduce' };
-  if (packSizeOf(good) !== FIXTURES[exit.type].packSize) return { key: 'error.wrongPackSize' };
+  if (!producibleItems(packhouse.type).includes(good)) return { key: 'error.cannotProduce' };
+  if (packhouse.type === 'packhouse' && packSizeOf(good) !== FIXTURES[exit.type].packSize) return { key: 'error.wrongPackSize' };
   if (!isItemUnlocked(state, good)) return { key: 'error.itemLocked' };
   return withFixture(state, packhouse, { ...exit, restock: good });
 }

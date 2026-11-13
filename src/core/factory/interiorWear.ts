@@ -20,7 +20,7 @@ export const technicianPostsOf = (tier: number, type: BuildingType = 'factory'):
 
 const hasInterior = (building: Building): building is Building & { interior: InteriorData } => isProductionInteriorKind(building.type) && building.interior !== undefined && building.interior.fixtures.length > 0;
 
-export const restockerPostsOf = (tier: number): number => tierValue(packhouseBalance.restockerPosts, tier);
+export const restockerPostsOf = (tier: number, type: BuildingType = 'packhouse'): number => tierValue(type === 'factory' ? interiorBalance.restockerPosts : packhouseBalance.restockerPosts, tier);
 
 export const restockerWagePerHour = (): number => STAFF.dailyWage.restocker / STAFF.dayHours;
 

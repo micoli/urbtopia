@@ -31,7 +31,7 @@ export function InteriorStaff({ factory }: InteriorStaffProps) {
           </div>
         </div> : null}
         {interiorRolesOf(factory.type).map(role => <InteriorRoleStaff key={role} building={factory} role={role} />)}
-        {factory.type === 'packhouse' ? <InteriorRestocker packhouse={factory} /> : null}
+        {factory.type === 'packhouse' || factory.type === 'factory' ? <InteriorRestocker packhouse={factory} /> : null}
       </div>
     </section>
   );

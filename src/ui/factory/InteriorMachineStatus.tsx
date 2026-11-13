@@ -32,6 +32,7 @@ export function InteriorMachineStatus({ factory, fixture }: InteriorMachineStatu
   if (role === 'conveyor' || role === 'scanner' || role === 'exit') return <LineStatus lined={status.links.lined.has(fixture.id)} fixture={fixture} fixtures={fixtures} />;
   if (status.links.overfed.has(fixture.id)) return <p className="note note--warn">{t('packhouse.interior.fault.overfed').replace('{name}', t(`venue.fixture.${fixture.type}`))}</p>;
   if (hasLineInterior(factory) && status.links.linked.has(fixture.id) && !status.links.lined.has(fixture.id)) return <><p className="note note--warn">{t('packhouse.interior.noExit')}</p></>;
+  if (FIXTURES[fixture.type].family === 'millstone' && status.links.linked.has(fixture.id) && !status.links.lined.has(fixture.id)) return <p className="note note--warn">{t('mill.interior.incomplete')}</p>;
   if (status.links.linked.has(fixture.id)) return <><p className="note">{t('factory.interior.linkedMachine')}</p><InteriorBenefits fixtures={fixtures} fixture={fixture} /></>;
   const problems = status.links.problems.get(fixture.id) ?? [];
   return <>{problems.map(problem => <p key={problem} className="note note--warn">{t(`factory.interior.problem.${problem}`)}</p>)}</>;

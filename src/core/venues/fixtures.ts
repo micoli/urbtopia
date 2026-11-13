@@ -79,7 +79,7 @@ export interface FixtureSpec {
   quality?: number;
   capacity?: number;
   power?: number;
-  assigns?: 'baker' | 'seller' | 'cheesemaker' | 'creamMaker';
+  assigns?: 'baker' | 'seller' | 'cheesemaker' | 'creamMaker' | 'miller';
   hatch?: number;
   family?: string;
   coolant?: number;
@@ -110,6 +110,9 @@ const specOf = ({ id: _id, kind: _kind, name: _name, model, tint, footprint, joi
 export const FIXTURE_ENTRIES = entriesOf<FixtureDefinition, FixtureId>(files, fixtureOrder);
 
 export const FIXTURES = Object.fromEntries(FIXTURE_ENTRIES.map(entry => [entry.id, specOf(entry)])) as Record<FixtureId, FixtureSpec>;
+
+// What a Restocker can serve: an Exit of a Packhouse, or a Machine of a Factory, which makes any Good the Factory can. A Boiler only heats: it makes nothing.
+export const isRestockable = (spec: Pick<FixtureSpec, 'role' | 'venue' | 'heat'>): boolean => spec.role === 'exit' || (spec.venue === 'factory' && spec.role === 'machine' && spec.heat !== true);
 
 export const FIXTURE_IDS = Object.keys(FIXTURES) as FixtureId[];
 
