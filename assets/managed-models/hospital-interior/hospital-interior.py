@@ -21,9 +21,9 @@ P = lpm.Palette([
 FLOOR_TOP = 0.03
 
 
-def on_floor(build):
+def on_floor(build, shift_y=0.0):
     def lifted(rng):
-        return [lpm.move(part, 0, 0, FLOOR_TOP) for part in build(rng)]
+        return [lpm.move(part, 0, shift_y, FLOOR_TOP) for part in build(rng)]
     return lifted
 
 
@@ -126,7 +126,7 @@ def wall_set():
 
 
 def fixtures():
-    return {"bed": on_floor(hospital_bed), "operating-table": on_floor(operating_table), "vitals-monitor": on_floor(vitals_monitor), "medicine-cabinet": on_floor(medicine_cabinet),
+    return {"bed": on_floor(hospital_bed), "operating-table": on_floor(operating_table), "vitals-monitor": on_floor(vitals_monitor), "medicine-cabinet": on_floor(medicine_cabinet, 0.5),
             "waiting-chair": on_floor(waiting_chair)}
 
 

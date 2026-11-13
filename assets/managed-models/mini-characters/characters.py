@@ -20,8 +20,9 @@ P = lpm.Palette([
     ("hair_red", "#b8482a", 0.0, 0.9), ("hair_grey", "#b9bcc4", 0.0, 0.9),
     ("red", "#e04848", 0.0, 0.8), ("blue", "#4a78c2", 0.0, 0.8), ("green", "#4fa35a", 0.0, 0.8), ("yellow", "#f2c440", 0.0, 0.8),
     ("purple", "#8a5ac8", 0.0, 0.8), ("orange", "#f28a2c", 0.0, 0.8), ("teal", "#3aa8a0", 0.0, 0.8), ("pink", "#e88ab0", 0.0, 0.8),
-    ("denim", "#3f5a8a", 0.0, 0.9), ("khaki", "#b8a476", 0.0, 0.9), ("charcoal", "#3c4150", 0.0, 0.9), ("white", "#f2f2f2", 0.0, 0.8),
+    ("denim", "#3f5a8a", 0.0, 0.9), ("khaki", "#b8a476", 0.0, 0.9), ("charcoal", "#3c4150", 0.0, 0.9), ("white", "#f2f2f2", 0.0, 0.8), ("steel", "#b8c0cc", 0.5, 0.4),
     ("shoe", "#2a2d3a", 0.0, 0.8), ("eye", "#1c1c22", 0.0, 0.5), ("apron", "#5aae4a", 0.0, 0.9),
+    ("scrub", "#3f9aa8", 0.0, 0.9), ("scrub_dark", "#2c7480", 0.0, 0.9), ("mask", "#d8eef2", 0.0, 0.9),
 ])
 
 # (hair, hair style, skin, shirt, trousers) per person; styles: short, curly, long, bun, ponytail, locs, beard.
@@ -45,6 +46,9 @@ PEOPLE = {
     "restaurant/character-maitre-d": ("hair_grey", "short", "skin2", "charcoal", "charcoal", "maitre-d"),
     "restaurant/character-waiter": ("hair_brown", "bun", "skin4", "white", "charcoal", "waiter"),
     "restaurant/character-bartender": ("hair_red", "beard", "skin2", "white", "charcoal", "bartender"),
+    "hospital-interior/character-nurse": ("hair_brown", "bun", "skin2", "pink", "white", "nurse"),
+    "hospital-interior/character-doctor": ("hair_grey", "short", "skin1", "white", "charcoal", "doctor"),
+    "hospital-interior/character-surgeon": ("hair_black", "scrubcap", "skin3", "scrub", "scrub", "surgeon"),
 }
 
 # Bone: (head, tail, parent). Arms and legs point down from the shoulder and the hip.
@@ -80,6 +84,8 @@ def hair(style, color, skin):
     if style == "cap":
         parts += [box("cap", -0.14, 0.14, -0.13, 0.13, 0.7, 0.79, "purple", "head"), box("visor", -0.1, 0.1, -0.21, -0.12, 0.7, 0.72, "purple", "head")]
         return parts
+    if style == "scrubcap":
+        return [box("scrubcap", -0.145, 0.145, -0.135, 0.145, 0.7, 0.8, "scrub_dark", "head"), box("scrubcap_back", -0.145, 0.145, 0.06, 0.145, 0.58, 0.72, "scrub_dark", "head")]
     parts.append(box("hair_top", -0.14, 0.14, -0.13, 0.14, 0.72, 0.8, color, "head"))
     parts.append(box("hair_back", -0.14, 0.14, 0.08, 0.14, 0.56 if style in ("long", "curly") else 0.62, 0.8, color, "head"))
     if style in ("long", "curly"):
@@ -122,6 +128,19 @@ def outfit_parts(role):
     if role == "bartender":
         return [box("vest", -0.11, 0.11, -0.078, -0.07, 0.31, 0.49, "red", "torso"), box("towel", 0.05, 0.14, -0.05, 0.06, 0.49, 0.53, "white", "torso"),
                 box("towel_front", 0.07, 0.13, -0.085, -0.06, 0.4, 0.52, "white", "torso")]
+    if role == "nurse":
+        return [box("tunic_skirt", -0.115, 0.115, -0.075, 0.075, 0.2, 0.31, "pink", "torso"), box("collar", -0.075, 0.075, -0.078, -0.07, 0.44, 0.5, "white", "torso"),
+                box("nurse_cap", -0.12, 0.12, -0.11, 0.1, 0.8, 0.88, "white", "head"), box("cap_cross_v", -0.012, 0.012, -0.115, -0.108, 0.81, 0.87, "red", "head"),
+                box("cap_cross_h", -0.035, 0.035, -0.115, -0.108, 0.832, 0.848, "red", "head")]
+    if role == "doctor":
+        return [box("coat_skirt", -0.12, 0.12, -0.08, 0.08, 0.1, 0.31, "white", "torso"), box("coat_front", -0.12, 0.12, -0.08, -0.07, 0.31, 0.5, "white", "torso"),
+                box("coat_slit", -0.01, 0.01, -0.081, -0.07, 0.1, 0.46, "charcoal", "torso"), box("stethoscope_l", -0.09, -0.07, -0.085, -0.07, 0.4, 0.52, "charcoal", "torso"),
+                box("stethoscope_r", 0.07, 0.09, -0.085, -0.07, 0.4, 0.52, "charcoal", "torso"), box("stethoscope_disc", -0.025, 0.025, -0.09, -0.07, 0.34, 0.39, "steel", "torso"),
+                box("head_mirror", -0.04, 0.04, -0.14, -0.12, 0.72, 0.78, "steel", "head")]
+    if role == "surgeon":
+        return [box("mask", -0.1, 0.1, -0.14, -0.12, 0.54, 0.62, "mask", "head"), box("mask_strap", -0.13, 0.13, -0.12, 0.12, 0.6, 0.62, "mask", "head"),
+                box("apron", -0.1, 0.1, -0.085, -0.07, 0.14, 0.45, "white", "torso"), box("gloves_l", 0.103, 0.167, -0.034, 0.034, 0.26, 0.31, "white", "arm-left"),
+                box("gloves_r", -0.167, -0.103, -0.034, 0.034, 0.26, 0.31, "white", "arm-right")]
     return []
 
 

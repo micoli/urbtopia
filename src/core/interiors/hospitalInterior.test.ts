@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, dispatch, interiorKindOf, interiorPostsOf, newGame, serviceFurnitureQuality, type Building, type Command, type FixtureId, type GameState, type Rotation } from '../index';
+import { avatarsOfBuilding, createBuilding, dispatch, interiorKindOf, interiorPostsOf, newGame, serviceFurnitureQuality, type Building, type Command, type FixtureId, type GameState, type Rotation } from '../index';
 import { careWellbeingOf } from './serviceInterior';
 import { homeBenefits } from '../environment/wellbeing';
 import { serviceCoverage } from '../services/services';
@@ -73,5 +73,19 @@ describe('the Hospital interior', () => {
     const staffed = apply(city(), ...furnished, hire('nurse'), hire('doctor'), hire('surgeon'));
     expect(benefits(staffed)).toBeGreaterThan(benefits(bare));
     expect(benefits(apply(city(), ...furnished))).toBe(benefits(bare));
+  });
+});
+
+describe('Hospital avatars', () => {
+  it('shows each hired role as an avatar in costume beside the Fixtures of their post', () => {
+    const building = { ...hospital(city()), interior: { staff: { nurse: 2, doctor: 1 } } } as Building;
+    const avatars = avatarsOfBuilding(building);
+    expect(avatars.map(avatar => avatar.count)).toEqual([2, 1]);
+    expect(avatars[0]!.beside).toContain('hospitalBed');
+    expect(avatars.map(avatar => avatar.model)).toEqual(['hospital-interior/character-nurse', 'hospital-interior/character-doctor']);
+  });
+
+  it('shows nobody while no Staff is hired', () => {
+    expect(avatarsOfBuilding(hospital(city()))).toEqual([]);
   });
 });

@@ -225,7 +225,7 @@ export type { Factory, Packhouse } from './factory/interiorCommands';
 export { interiorFillRate, interiorPartsOf } from './interiors/interiorParts';
 export { isInteriorUnlocked } from './interiors/interiorUnlock';
 export { serviceFurnitureQuality, serviceGridSizeOf, serviceQualityCapOf, serviceQualityOf } from './interiors/serviceInterior';
-export { hiredInteriorOf, interiorUnlockCitizensOf, serviceLayoutOf, interiorDeclarationOf, interiorFillRateFrom, interiorLayoutOf, interiorPartPresence, interiorRoleShare, isProducerRole, interiorFamilyOf, interiorPostsOf, interiorPostsOfBuilding, interiorRolesOf, interiorWagesPerHour, minTierOfInteriorRole, partOfRole, totalInteriorStaff } from './interiors/interiorStaff';
+export { avatarOfRole, avatarsOfBuilding, type InteriorAvatars, hiredInteriorOf, interiorUnlockCitizensOf, serviceLayoutOf, interiorDeclarationOf, interiorFillRateFrom, interiorLayoutOf, interiorPartPresence, interiorRoleShare, isProducerRole, interiorFamilyOf, interiorPostsOf, interiorPostsOfBuilding, interiorRolesOf, interiorWagesPerHour, minTierOfInteriorRole, partOfRole, totalInteriorStaff } from './interiors/interiorStaff';
 export type { InteriorFamily, InteriorPart } from './interiors/interiorStaff';
 export { fixtureLimitOf, type FixtureLimit } from './interiors/interiorLimits';
 export { assignedFixturesOf, assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, hasAssignments } from './interiors/interiorAssignments';

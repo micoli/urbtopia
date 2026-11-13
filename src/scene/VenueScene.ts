@@ -1,6 +1,7 @@
 import * as THREE from 'three';
+import { AvatarPatrol, patrolRoute } from './avatarPatrol';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { RESTOCKER_MODEL, VENUE_STAFF_MODELS, venueCrowdModelsOf } from './venueCrowdModels';
@@ -37,6 +38,8 @@ const DOCK_DEPTH = 0.42;
 const MACHINE_ROOF = 1.1;
 const STAFF_SCALE = 0.7;
 const STAFF_DISTANCE = 0.85;
+// Staff stand on the corner of their Fixture, not in front of it.
+const CORNER_MARGIN = 0.09;
 
 // A side of a Fixture in the floor's axes (x to the east, z to the south), once the Fixture is turned: rotation 0 leaves it as drawn, each turn takes it a quarter turn on.
 const turnedOffset = (x: number, z: number, turns: number): { x: number; z: number } => (turns % 4 === 0 ? { x, z } : turnedOffset(-z, x, turns - 1));
@@ -84,6 +87,8 @@ export class VenueScene {
   // The Good chosen on an Oven or a Display counter, floating above it, and the Staff assigned to it, standing beside it.
   private tokensRoot = new THREE.Group();
   private staffMixers: THREE.AnimationMixer[] = [];
+  private avatars: readonly InteriorAvatars[] = [];
+  private patrols: AvatarPatrol[] = [];
   private wearRoot = new THREE.Group();
   private shelfStock = new ShelfStockLayer(() => { this.dirty = true; });
   private raycaster = new THREE.Raycaster();
@@ -180,6 +185,13 @@ export class VenueScene {
     this.lastFixtures = fixtures;
     this.crowd.setFixtures(fixtures);
     this.rebuildFixtures();
+  }
+
+  // The Staff hired in a Service interior, standing in the room in costume beside the Fixtures of their post.
+  setAvatars(avatars: readonly InteriorAvatars[]): void {
+    if (JSON.stringify(avatars) === JSON.stringify(this.avatars)) return;
+    this.avatars = avatars;
+    this.rebuildTokens();
   }
 
   // The Fixtures of a Factory interior that run, and the way they turn.
@@ -365,6 +377,7 @@ export class VenueScene {
   private rebuildTokens(): void {
     this.clear(this.tokensRoot);
     this.staffMixers = [];
+    this.patrols = [];
     for (const fixture of this.lastFixtures) {
       const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
       const centre = { x: fixture.x + width / 2, z: fixture.y + depth / 2 };
@@ -383,7 +396,38 @@ export class VenueScene {
       }
       if (fixture.assigned || fixture.restocker) this.placeStaff(fixture, centre);
     }
+    this.placeAvatars();
     this.dirty = true;
+  }
+
+  // One avatar per Fixture of their post, who walks around it and stops now and then, turned toward it.
+  private placeAvatars(): void {
+    const attended = new Set<number>();
+    for (const { model, beside, count } of this.avatars) {
+      if (!this.ensured(model)) continue;
+      const posts = beside.flatMap(type => this.lastFixtures.filter(fixture => fixture.type === type && !attended.has(fixture.id)));
+      for (const fixture of posts.slice(0, count)) {
+        const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
+        const route = patrolRoute({ x: fixture.x, y: fixture.y, width, depth }, (x, z) => this.isFree(x, z));
+        if (route.length === 0) continue;
+        attended.add(fixture.id);
+        const holder = new THREE.Group();
+        const body = cloneModel(this.library.get(model));
+        holder.add(body);
+        holder.scale.setScalar(STAFF_SCALE);
+        const patrol = new AvatarPatrol(holder, new THREE.AnimationMixer(body), this.library.clipsOf(model), route, { x: fixture.x + width / 2, z: fixture.y + depth / 2 }, fixture.id);
+        this.patrols.push(patrol);
+        this.tokensRoot.add(holder);
+      }
+    }
+  }
+
+  private isFree(x: number, z: number): boolean {
+    if (x < 0 || z < 0 || x >= this.size || z >= this.size) return false;
+    return !this.lastFixtures.some(fixture => {
+      const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
+      return !FIXTURES[fixture.type].wall && x >= fixture.x && x < fixture.x + width && z >= fixture.y && z < fixture.y + depth;
+    });
   }
 
   // True once a model is loaded; otherwise asks for it and builds the tokens again when it has arrived.
@@ -395,17 +439,23 @@ export class VenueScene {
     return false;
   }
 
-  // The Staff assigned to a Fixture stands beside it, turned toward it: a seller behind its Display counter, on the shop side; a baker at the side of its Oven that its gas does not use. A miller is a plain worker, like a Restocker.
+  // The Staff assigned to a Fixture stands on the diagonal of its corner, turned toward it: a seller behind its Display counter, on the shop side; a baker at the side of its Oven that its gas does not use. A miller is a plain worker, like a Restocker.
   private placeStaff(fixture: VenueFixture, centre: { x: number; z: number }): void {
     const spec = FIXTURES[fixture.type];
     const model = isRestockable(spec) || spec.assigns === 'miller' ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
     if (!model || !this.ensured(model)) return;
     const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.includes('right') ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
+    const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
+    const corner = { x: Math.sign(side.x - side.z), z: Math.sign(side.z + side.x) };
+    this.stand(model, { x: centre.x + corner.x * (width / 2 + CORNER_MARGIN), z: centre.z + corner.z * (depth / 2 + CORNER_MARGIN) }, { x: corner.x, z: corner.z });
+  }
+
+  private stand(model: string, at: { x: number; z: number }, side: { x: number; z: number }): void {
     const holder = new THREE.Group();
     const body = cloneModel(this.library.get(model));
     holder.add(body);
     holder.scale.setScalar(STAFF_SCALE);
-    holder.position.set(centre.x + side.x * STAFF_DISTANCE, 0, centre.z + side.z * STAFF_DISTANCE);
+    holder.position.set(at.x, 0, at.z);
     holder.rotation.y = Math.atan2(-side.x, -side.z);
     const mixer = new THREE.AnimationMixer(body);
     const idle = this.library.clipsOf(model).find(clip => clip.name === 'idle');
@@ -666,7 +716,8 @@ export class VenueScene {
     this.motion.update(delta);
     this.line.update(delta);
     for (const mixer of this.staffMixers) mixer.update(delta);
-    if (this.crowd.active || this.motion.active || this.line.active || this.staffMixers.length > 0) this.dirty = true;
+    for (const patrol of this.patrols) patrol.update(delta);
+    if (this.crowd.active || this.patrols.length > 0 || this.motion.active || this.line.active || this.staffMixers.length > 0) this.dirty = true;
     if (this.dirty) {
       this.dirty = false;
       this.renderer.render(this.scene, this.camera);

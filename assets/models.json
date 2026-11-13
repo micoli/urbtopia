@@ -22297,6 +22297,36 @@
     ],
     "flush": true
   },
+  "hospital-interior-character-doctor": {
+    "file": "hospital-interior/character-doctor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-character-nurse": {
+    "file": "hospital-interior/character-nurse",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "hospital-interior-character-surgeon": {
+    "file": "hospital-interior/character-surgeon",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "hospital-interior-floor": {
     "file": "hospital-interior/floor",
     "source": "managed",

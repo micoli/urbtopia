@@ -144,15 +144,27 @@
       "roles": {
         "nurse": {
           "part": "carePrimary",
-          "posts": [1, 2, 2, 3, 3]
+          "posts": [1, 2, 2, 3, 3],
+          "avatar": {
+            "model": "hospital-interior-character-nurse",
+            "beside": ["hospitalBed"]
+          }
         },
         "doctor": {
           "part": "careDoctor",
-          "posts": [0, 1, 1, 2, 2]
+          "posts": [0, 1, 1, 2, 2],
+          "avatar": {
+            "model": "hospital-interior-character-doctor",
+            "beside": ["hospitalVitalsMonitor", "hospitalBed"]
+          }
         },
         "surgeon": {
           "part": "careSurgeon",
-          "posts": [0, 0, 1, 1, 2]
+          "posts": [0, 0, 1, 1, 2],
+          "avatar": {
+            "model": "hospital-interior-character-surgeon",
+            "beside": ["hospitalOperatingTable"]
+          }
         }
       },
       "unlockCitizens": 600,

@@ -1,6 +1,7 @@
 import interiors from '../../../assets/defs/balance/interiors.json' with { type: 'json' };
 import type { Building, BuildingType, InteriorData, InteriorRole } from '../engine/state';
 import { stackCountOf } from '../economy/counterSlots';
+import { modelFileOf } from '../models/modelFiles';
 import { STAFF } from '../venues/staff';
 
 export type InteriorFamily = 'production' | 'service';
@@ -54,7 +55,7 @@ interface InteriorDeclaration {
   unlockCitizens?: number;
   service?: ServiceLayout;
   layout?: InteriorLayout;
-  roles: Partial<Record<InteriorRole, { part: InteriorPart; posts: number[] }>>;
+  roles: Partial<Record<InteriorRole, { part: InteriorPart; posts: number[]; avatar?: { model: string; beside: string[] } }>>;
 }
 
 const DECLARATIONS = interiors.buildings as Record<string, InteriorDeclaration>;
@@ -95,6 +96,25 @@ export const interiorPostsOfBuilding = (building: Pick<Building, 'type' | 'tier'
   if (layout?.autoWork === true && role === 'seller') return stackCountOf(building.type, building.tier);
   return interiorPostsOf(building.type, role, building.tier);
 };
+
+export const avatarOfRole = (type: BuildingType, role: InteriorRole): { model: string; beside: readonly string[] } | undefined => {
+  const avatar = DECLARATIONS[type]?.roles[role]?.avatar;
+  return avatar && { ...avatar, model: modelFileOf(avatar.model) };
+};
+
+export interface InteriorAvatars {
+  model: string;
+  beside: readonly string[];
+  count: number;
+}
+
+// The hired Staff that stand in the room as avatars, one group per role.
+export const avatarsOfBuilding = (building: Pick<Building, 'type' | 'interior'>): InteriorAvatars[] =>
+  interiorRolesOf(building.type).flatMap(role => {
+    const avatar = avatarOfRole(building.type, role);
+    const count = hiredInteriorOf(building.interior, role);
+    return avatar && count > 0 ? [{ ...avatar, count }] : [];
+  });
 
 export const minTierOfInteriorRole = (type: BuildingType, role: InteriorRole): number => postsByTier(type, role).findIndex(posts => posts > 0) + 1;
 
