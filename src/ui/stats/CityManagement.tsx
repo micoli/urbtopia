@@ -26,6 +26,7 @@ import {SectionNavigation} from './management/SectionNavigation';
 import {TemperatureSection} from './management/TemperatureSection';
 import {TourismSection} from './management/TourismSection';
 import {TrafficSection} from './management/TrafficSection';
+import {InteriorsSection} from './management/InteriorsSection';
 import {JobsSection} from './management/JobsSection';
 import {RailMetroSection} from './management/railMetro/RailMetroSection';
 import {TransportMapSection} from './management/transportMap/TransportMapSection';
@@ -95,6 +96,7 @@ function CityManagementDialog() {
     const objectivesSection = <ObjectivesSection key="objectives" state={state} energy={energy} green={green} transport={transport}/>;
     const nextUnlockSection = <NextUnlockSection key="nextUnlock"/>;
     const productionSection = <ProductionSection key="production" state={state} energy={energy}/>;
+    const interiorsSection = <InteriorsSection key="interiors" state={state}/>;
     const energySection = <EnergySection key="energy" state={state} energy={energy} green={green} transport={transport}/>;
     const waterSection = <WaterSection key="water" state={state}/>;
     const budgetSection = <BudgetSection key="budget" state={state} energy={energy} transport={transport} congestion={congestion}/>;
@@ -118,6 +120,7 @@ function CityManagementDialog() {
         ],
         production: [
             productionSection,
+            interiorsSection,
             energySection,
             waterSection,
         ],

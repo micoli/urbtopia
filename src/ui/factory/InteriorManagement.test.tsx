@@ -66,9 +66,10 @@ describe('InteriorManagement examples', () => {
 });
 
 describe('InteriorManagement indicators', () => {
-  it('writes out the indicators of the interior at the top, with their names', () => {
+  it('writes out only the levers of the interior at the top, with their names', () => {
     const html = renderToStaticMarkup(<InteriorManagement factory={{ ...createBuilding(1, 'mill', 55, 50, 0), tier: 3 }} />);
-    for (const label of ['Machines linked', 'Speed', 'Yield', 'Power drawn by the Motors']) expect(html, label).toContain(label);
+    for (const label of ['Machines linked', 'Speed', 'Power drawn by the Motors']) expect(html, label).toContain(label);
+    expect(html).not.toContain('Yield');
     expect(html.indexOf('Speed')).toBeLessThan(html.indexOf('Examples of set-ups'));
   });
 

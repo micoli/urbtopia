@@ -8,18 +8,20 @@ const sectionsOf = (type: string) => managementSectionsOf({ type: type as Buildi
 describe('managementSectionsOf', () => {
   it.each([
     ['home', ['eco-needs', 'eco-services', 'eco-jobs']],
-    ['workshop', ['eco-production']],
+    ['workshop', ['eco-production', 'eco-interiors']],
+    ['mill', ['eco-production', 'eco-interiors']],
     ['waterTower', ['eco-water']],
     ['powerPlant', ['eco-energy']],
     ['coalPlant', ['eco-energy', 'eco-emissions']],
     ['backup', ['eco-energy', 'eco-emissions']],
-    ['school', ['eco-services']],
+    ['school', ['eco-services', 'eco-interiors']],
     ['mound', ['eco-waste']],
     ['incinerator', ['eco-waste', 'eco-emissions']],
-    ['recyclingPlant', ['eco-waste']],
+    ['recyclingPlant', ['eco-waste', 'eco-interiors']],
     ['busStop', ['eco-transport']],
     ['railStation', ['eco-railMetro']],
     ['casino', ['eco-tourism']],
+    ['arcade', ['eco-tourism', 'eco-interiors']],
   ])('links %s to its sections', (type, expected) => {
     expect(sectionsOf(type)).toEqual(expected);
   });

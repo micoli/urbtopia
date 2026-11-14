@@ -215,6 +215,7 @@ export { partitionPieceOf, type PartitionPiece, type PartitionShape } from './ve
 export type { FixtureVenue } from './venues/fixtures';
 export { isRestockable } from './venues/fixtures';
 export { FIXTURES, FIXTURE_IDS, FIXTURE_MODELS, FIXTURE_CATEGORIES, fixtureIdsOf, fixtureIdsInCategory, VENUE, VENUE_TYPES, VENUE_PROFILES, isVenueType, venuePower, venueTypeOf, priceAcceptance, priceOf, takingsCapOf, venuePerformance, venueLayout, isVenuePowered, venueBoundaries, canPlaceFixture, entranceCell, fixtureRefund, fixtureFootprint, fixtureTiles, gridSizeOf, isVenue, playsCapacityPerHour, takingsDue, takingsPerHour, visitorsPerHour, netPerHour, HOTEL, SUPERMARKET, cityAttractiveness, priceMultiplier, reputationOf, roomsOf, markupOf, unitPrice, stockOf, isShelf, hasStock, EVENT, eventBudgetOf, eventMultiplierOf, isEventActive, isEventScheduled, inCooldown, eventBoundaries, WEAR, conditionOf, isBroken, repairCost, technicianRepairCost, STAFF, STAFF_ROLES, FRONT_ROLE, hiredOf, hireFeeOf, minTierOfRole, postsOf, postsAtTier, staffRolesOf, totalStaff, wagesPerHour, venueFillRate, MAX_RANK, earnedOf, nextRankAt, rankOf, venueRankOf, RESTAURANT, INGREDIENT_FAMILIES, INGREDIENTS, dishPrice, familyOf, isIngredient, menuOf, menuSlotsOf, seatingOf, servedIngredients, stockOfIngredient, varietyOf, setMenu } from './venues/venues';
+export { recyclingGainsOf } from './factory/factoryInterior';
 export type { LineFault, LinePath } from './factory/factoryInterior';
 export { interiorBenefitsOf, interiorUpstreamOf, suppliedGoodsOf, interiorBonusOf, interiorBonusOfBuilding, interiorCapsOf, interiorCapsOfType, interiorGridSizeOfType, interiorFixturesOf, interiorGridSizeOf, interiorLinksOf, interiorMotionOf, interiorMotorLoadOf, interiorOverloadedOf, interiorPowerOfBuilding, interiorUsageWeightsOf, lineFaultOf, linePathsOf, linkedExitsOf, packSizeOf, packhouseBonusOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factory/factoryInterior';
 export { canStandOnInterior, fixtureVenueOf, hasLineInterior, hasProductionInterior, hasServiceInterior, isMill, interiorKindOf, interiorSizeOf, assignInteriorRestocker, hireInteriorRestocker, hireInteriorTechnician, setExitRestock, unassignInteriorRestocker, releaseInteriorRestocker, isFactory, isInteriorBuilding, isPackhouse, moveInteriorFixture, wallFacingOf, placeInteriorFixture, setInteriorParquet, releaseInteriorTechnician, removeInteriorFixture, repairAllInteriorFixtures, repairInteriorFixture } from './factory/interiorCommands';
@@ -224,6 +225,7 @@ export { advanceInteriors, minTierOfTechnician, restockerPostsOf, technicianPost
 export type { Factory, Packhouse } from './factory/interiorCommands';
 export { interiorFillRate, interiorPartsOf } from './interiors/interiorParts';
 export { isInteriorUnlocked } from './interiors/interiorUnlock';
+export { interiorEconomyRows, type InteriorEconomyKind, type InteriorEconomyRow } from './interiors/interiorEconomy';
 export { INTERIOR_EXAMPLES, interiorExampleOf, type ExampleFixture, type InteriorExample } from './interiors/interiorExamples';
 export { serviceFurnitureQuality, serviceGridSizeOf, serviceQualityCapOf, serviceQualityOf } from './interiors/serviceInterior';
 export { avatarOfRole, interiorAvatarModels, avatarsOfBuilding, type InteriorAvatars, hiredInteriorOf, interiorUnlockCitizensOf, serviceLayoutOf, interiorDeclarationOf, interiorFillRateFrom, interiorLayoutOf, interiorPartPresence, interiorRoleShare, isProducerRole, interiorFamilyOf, interiorPostsOf, interiorPostsOfBuilding, interiorRolesOf, interiorWagesPerHour, minTierOfInteriorRole, partOfRole, totalInteriorStaff } from './interiors/interiorStaff';
@@ -304,4 +306,4 @@ export type { DropGroup } from './replan';
 export type { TileLayer } from './replan';
 export { isReplanSummaryEmpty, replanSummary } from './replan';
 export type { ReplanSummary } from './replan';
-export { isProductionInteriorKind } from './venues/venueVocabulary';
+export { isProductionInteriorKind, isServiceInteriorKind } from './venues/venueVocabulary';

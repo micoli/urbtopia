@@ -1,6 +1,5 @@
 import type { Building } from '../../core';
 import { t } from '../../i18n/t';
-import { formatPercent } from './formatPercent';
 import { Icon } from '../common/Icon';
 import { UrbsStat } from '../common/UrbsStat';
 import { useInteriorIndicators } from './useInteriorIndicators';
@@ -9,9 +8,9 @@ interface InteriorStatsProps {
   factory: Building;
 }
 
-// What sits at the top of the main menu of a Factory interior: the Urbs, then in one box the Machines that are linked, the bonus they bring and the power the Motors draw.
+// What sits at the top of the main menu of a Factory interior: the Urbs, then in one box the Machines that are linked, the levers the building has and the power the Motors draw.
 export function InteriorStats({ factory }: InteriorStatsProps) {
-  const { machines, linked, speed, yield: yieldBonus, power } = useInteriorIndicators(factory);
+  const { machines, linked, power, effects } = useInteriorIndicators(factory);
   return (
     <>
       <UrbsStat />
@@ -20,14 +19,12 @@ export function InteriorStats({ factory }: InteriorStatsProps) {
           <Icon name="production" />
           {linked} / {machines}
         </span>
-        <span className="dock-rate" title={t('factory.interior.speed')}>
-          <Icon name="trend" />
-          {formatPercent(speed)}
-        </span>
-        <span className="dock-rate" title={t('factory.interior.yield')}>
-          <Icon name="yield" />
-          {formatPercent(yieldBonus)}
-        </span>
+        {effects.map(effect => (
+          <span key={effect.id} className="dock-rate" title={t(effect.label)}>
+            <Icon name={effect.icon} />
+            {effect.value}
+          </span>
+        ))}
         <span className="dock-rate" title={t('factory.interior.power')}>
           <Icon name="power" />
           {power.toFixed(1)}

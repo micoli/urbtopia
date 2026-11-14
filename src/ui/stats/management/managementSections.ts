@@ -12,6 +12,7 @@ export interface ManagementSection {
 export const MANAGEMENT_SECTIONS = {
   'eco-needs': { icon: 'needs', label: 'needs.title', group: 'overview' },
   'eco-production': { icon: 'production', label: 'eco.production', group: 'production' },
+  'eco-interiors': { icon: 'city', label: 'eco.interiors', group: 'production' },
   'eco-energy': { icon: 'power', label: 'eco.energy', group: 'production' },
   'eco-water': { icon: 'water', label: 'stat.water', group: 'production' },
   'eco-budget': { icon: 'money', label: 'eco.budgetSection', group: 'city' },
