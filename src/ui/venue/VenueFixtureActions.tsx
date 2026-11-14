@@ -54,12 +54,6 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
         </>
       ) : (
         <ButtonRow align="stretch" spaced>
-          {!inHome && !inService && Math.round(100-conditionOf(fixture)) > 2
-              ? <ActionButton variant="primary" onClick={() => send({ type: onFloor ? 'RepairInteriorFixture' : 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>
-                <Icon name="repair" /> {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} />
-                </ActionButton>
-              : null
-          }
           <ActionButton onClick={() => startMove(fixture.id)}><Icon name="move" /> {t('venue.move')}</ActionButton>
           {FIXTURES[fixture.type].wall ? null : <ActionButton onClick={() => send({ type: onFloor ? 'MoveInteriorFixture' : 'MoveFixture', buildingId: venueId, fixtureId: fixture.id, x: fixture.x, y: fixture.y, rotation: ((fixture.rotation + 1) % 4) as 0 | 1 | 2 | 3 })}><Icon name="rotateRight" /> {t('venue.rotate')}</ActionButton>}
           <ActionButton
@@ -70,6 +64,12 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
           >
             <Icon name="trash" /> {t('panel.sell')} · +<UrbsAmount value={inHome ? homeFixtureRefund(fixture.type) : fixtureRefund(fixture.type)} />
           </ActionButton>
+          {!inHome && !inService && Math.round(100-conditionOf(fixture)) > 2
+              ? <ActionButton variant="primary" onClick={() => send({ type: onFloor ? 'RepairInteriorFixture' : 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>
+                <Icon name="repair" /> {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} />
+              </ActionButton>
+              : null
+          }
         </ButtonRow>
       )}
     </section>
