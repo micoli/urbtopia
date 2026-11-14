@@ -1,5 +1,4 @@
 import { interiorBonusOfBuilding } from '../factory/factoryInterior';
-import { interiorFillRate } from '../interiors/interiorParts';
 import { FARM_CROP_CAPACITY, STORAGE_TYPES, storageTierOf, type StorageType } from './economy';
 import { CROPS } from '../farming/crops';
 import type { GameState, Storage } from '../engine/state';
@@ -26,12 +25,8 @@ export function hasStorage(state: GameState): boolean {
   return state.buildings.some((building) => isStorageType(building.type));
 }
 
-// What the stocker of a Storehouse adds to what it holds: the room its linked racks make, in proportion to the Staff that Citizens fill.
-function roomBonusOf(state: GameState, building: GameState['buildings'][number]): number {
-  if (!building.interior) return 0;
-  const bonus = interiorBonusOfBuilding(building).capacity ?? 0;
-  return bonus === 0 ? 0 : bonus * interiorFillRate(state, building);
-}
+// What the stocker of a Storehouse adds to what it holds: the room its linked racks make, in proportion to the Staff hired.
+const roomBonusOf = (building: GameState['buildings'][number]): number => interiorBonusOfBuilding(building).capacity ?? 0;
 
 export function storageCapacity(state: GameState): Compartments {
   const farms = state.buildings.filter((building) => building.type === 'farm').length;
@@ -42,18 +37,25 @@ export function storageCapacity(state: GameState): Compartments {
     const compartment = compartmentProducedBy(building.type);
     production[compartment] += building.slotCount * maxQuantityOf(building);
   }
+  const extra: Compartments = { materials: 0, crops: 0, goods: 0 };
   for (const building of state.buildings) {
     if (!isStorageType(building.type)) continue;
     const { materials, goods, crops } = storageTierOf(building.type, building.tier);
-    const room = 1 + roomBonusOf(state, building);
-    capacity.crops += Math.floor(crops * room);
-    capacity.materials += Math.floor(materials * room);
-    capacity.goods += Math.floor(goods * room);
+    const bonus = roomBonusOf(building);
+    capacity.crops += crops;
+    capacity.materials += materials;
+    capacity.goods += goods;
+    extra.crops += Math.floor(crops * bonus);
+    extra.materials += Math.floor(materials * bonus);
+    extra.goods += Math.floor(goods * bonus);
   }
   if (state.buildings.some((building) => building.type === 'storehouse')) {
     capacity.materials = Math.max(capacity.materials, production.materials);
     capacity.goods = Math.max(capacity.goods, production.goods);
   }
+  capacity.crops += extra.crops;
+  capacity.materials += extra.materials;
+  capacity.goods += extra.goods;
   return capacity;
 }
 

@@ -223,7 +223,6 @@ export { PARQUETS, PARQUET_MODELS, parquetModelOf, canHangOnWall, hangsOnWall, h
 export type { ComfortGroup } from './homes/homeInterior';
 export { advanceInteriors, minTierOfTechnician, restockerPostsOf, technicianPostsOf, technicianWagePerHour } from './factory/interiorWear';
 export type { Factory, Packhouse } from './factory/interiorCommands';
-export { interiorFillRate, interiorPartsOf } from './interiors/interiorParts';
 export { isInteriorUnlocked } from './interiors/interiorUnlock';
 export { interiorEconomyRows, type InteriorEconomyKind, type InteriorEconomyRow } from './interiors/interiorEconomy';
 export { INTERIOR_EXAMPLES, interiorExampleOf, type ExampleFixture, type InteriorExample } from './interiors/interiorExamples';

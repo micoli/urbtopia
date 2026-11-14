@@ -54,6 +54,23 @@ describe('the Storehouse interior', () => {
     expect(capacity.materials).toBeGreaterThan(base.materials);
   });
 
+  it('adds its room on top of what the production queues need', () => {
+    const producing = (state: GameState): GameState => ({ ...state, buildings: [...state.buildings, ...[2, 3, 4, 5, 6, 7, 8, 9, 14].map(id => ({ ...createBuilding(id, 'factory', 30 + id * 3, 40, 0), tier: 4, slotCount: 8 }))] });
+    expect(storageCapacity(producing(city())).goods).toBeGreaterThan(storageCapacity(city()).goods);
+    const base = storageCapacity(producing(city()));
+    const hired = storageCapacity(producing(apply(city(), ...line, stocker)));
+    expect(hired.goods).toBeGreaterThan(base.goods);
+    expect(hired.materials).toBeGreaterThan(base.materials);
+  });
+
+  it('adds its room with the Staff hired, whether or not Citizens fill the posts', () => {
+    const hired = apply(withLine, stocker);
+    const grown = storageCapacity(hired);
+    const afterAdaptation = { ...hired, lastSeen: 10 * 24 * 3_600_000 };
+    expect(storageCapacity(afterAdaptation)).toEqual(grown);
+    expect(grown.goods).toBeGreaterThan(storageCapacity(city()).goods);
+  });
+
   it('holds no more when the Line is cut', () => {
     const cut = { ...withLine, buildings: withLine.buildings.map(building => (building.id !== 1 ? building : { ...building, interior: { ...building.interior!, fixtures: building.interior!.fixtures.filter(fixture => fixture.type !== 'storehouseConveyor') } })) };
     expect(storageCapacity(apply(cut, stocker))).toEqual(storageCapacity(city()));

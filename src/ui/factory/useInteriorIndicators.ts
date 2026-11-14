@@ -13,12 +13,12 @@ export interface InteriorIndicators {
 export function useInteriorIndicators(factory: Building): InteriorIndicators {
   const fixtures = interiorFixturesOf(factory);
   return useMemo(() => {
-    const floor = { type: factory.type, tier: factory.tier, interior: factory.interior };
+    const floor = { type: factory.type, tier: factory.tier, interior: factory.interior, breakerOff: factory.breakerOff };
     return {
       machines: fixtures.filter(fixture => FIXTURES[fixture.type].role === 'machine').length,
       linked: interiorLinksOf(fixtures).linked.size,
       power: interiorPowerOfBuilding(floor),
       effects: interiorEffectsOf(floor),
     };
-  }, [fixtures, factory.type, factory.tier, factory.interior]);
+  }, [fixtures, factory.type, factory.tier, factory.interior, factory.breakerOff]);
 }
