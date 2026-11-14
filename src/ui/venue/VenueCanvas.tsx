@@ -122,7 +122,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       if (interior) {
         scene.setSize(sizeOf(interior, venueType));
         scene.setLightLevel(interior.building.breakerOff ? BREAKER_OFF_LIGHT : 1);
-        if (venueType === 'home') scene.setFloorModel(parquetModelOf(interior.building.interior?.parquet));
+        if (isInteriorBuilding(interior.building)) scene.setFloorModel(interior.building.interior?.parquet === undefined ? undefined : parquetModelOf(interior.building.interior.parquet));
         scene.setFixtures([...interior.fixtures]);
         scene.setTrucks(isPackhouse(interior.building) || interior.building.type === 'recyclingPlant' ? linkedExitsOf(interior.fixtures) : NO_EXITS);
         const pace = 1 + interiorBonusOfBuilding(interior.building).speed;

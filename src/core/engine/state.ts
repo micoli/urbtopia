@@ -91,7 +91,7 @@ export interface InteriorData {
   nextFixtureId: number;
   // The part of a unit of yield that the Machines added and no cycle has paid out yet, from 0 to 1 excluded.
   carry?: number;
-  // Home interior: the floor chosen among the parquets, 0 when left out.
+  // The floor chosen among the parquets; left out, the floor of the interior kind (the first parquet for a Home).
   parquet?: number;
   // The Staff hired for the interior, by role; each fills a Job of the building and carries its own part of the interior's effect.
   staff?: Partial<Record<InteriorRole, number>>;

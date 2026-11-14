@@ -181,13 +181,15 @@ export function removeInteriorFixture(state: GameState, buildingId: number, fixt
   return { state: withInterior(state, factory, { ...interior, fixtures: taken.fixtures }, state.urbs + refundOf(factory, fixture.type) + taken.refund), events: [] };
 }
 
-// The floor of a Home interior is a free choice among the parquets.
-export function setHomeParquet(state: GameState, buildingId: number, parquet: number): CommandOutcome {
-  const home = hostOf(state, buildingId);
-  if (!home || home.type === 'factory') return { key: 'error.unknownBuilding' };
-  if (!isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
+// The floor of an interior is a free choice among the parquets; none leaves the floor of its kind (the first parquet for a Home).
+export function setInteriorParquet(state: GameState, buildingId: number, parquet?: number): CommandOutcome {
+  const host = hostOf(state, buildingId);
+  if (!host) return { key: 'error.unknownBuilding' };
+  if (isHomeType(host.type) && !isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
+  const { parquet: _previous, ...interior } = interiorOf(host);
+  if (parquet === undefined) return { state: withInterior(state, host, interior), events: [] };
   if (!Number.isInteger(parquet) || parquet < 0 || parquet >= PARQUETS.length) return { key: 'error.unknownCommand' };
-  return { state: withInterior(state, home, { ...interiorOf(home), parquet }), events: [] };
+  return { state: withInterior(state, host, { ...interior, parquet }), events: [] };
 }
 
 // The breaker cuts all the power of a Production interior: it draws none and runs nothing until it is switched back on.

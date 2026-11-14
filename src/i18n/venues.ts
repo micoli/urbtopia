@@ -134,6 +134,7 @@ type VenueMessageKey =
   | 'venue.fixtureEarnings'
   | 'venue.manage'
   | 'home.interior.open'
+  | 'interior.floor.default'
   | 'home.interior.parquet'
   | `home.interior.parquet.${string}`
   | 'blocked.furnish'
@@ -502,6 +503,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'service.interior.quality': ['Quality', 'Qualité'],
   'blocked.interior': ['Its interior opens at {citizens} Citizens.', "Son intérieur s'ouvre à {citizens} habitants."],
   'blocked.furnish': ['Furnishing opens at {citizens} Citizens.', "L'aménagement s'ouvre à {citizens} habitants."],
+  'interior.floor.default': ['Original floor', "Sol d'origine"],
   'home.interior.parquet': ['Floor', 'Parquet'],
   'home.interior.parquet.light': ['Light oak', 'Chêne clair'],
   'home.interior.parquet.honey': ['Honey', 'Miel'],

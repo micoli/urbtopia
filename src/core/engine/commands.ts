@@ -38,7 +38,7 @@ import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { queueItem } from '../factory/restock';
 import { assignInteriorStaff, setInteriorFocus, unassignInteriorStaff } from '../interiors/interiorAssignments';
-import { setInteriorBreaker, repairAllInteriorFixtures, assignInteriorRestocker, hireInteriorRestocker, setExitRestock, unassignInteriorRestocker, hireInteriorTechnician, releaseInteriorRestocker, moveInteriorFixture, placeInteriorFixture, releaseInteriorTechnician, removeInteriorFixture, repairInteriorFixture, setHomeParquet } from '../factory/interiorCommands';
+import { setInteriorBreaker, repairAllInteriorFixtures, assignInteriorRestocker, hireInteriorRestocker, setExitRestock, unassignInteriorRestocker, hireInteriorTechnician, releaseInteriorRestocker, moveInteriorFixture, placeInteriorFixture, releaseInteriorTechnician, removeInteriorFixture, repairInteriorFixture, setInteriorParquet } from '../factory/interiorCommands';
 import { hireInteriorStaff, releaseInteriorStaff } from '../interiors/interiorStaffCommands';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
@@ -162,7 +162,7 @@ export type Command =
   | { readonly type: 'RemoveInteriorFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RepairInteriorFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RepairAllInteriorFixtures'; readonly buildingId: number }
-  | { readonly type: 'SetHomeParquet'; readonly buildingId: number; readonly parquet: number }
+  | { readonly type: 'SetInteriorParquet'; readonly buildingId: number; readonly parquet?: number }
   | { readonly type: 'HireInteriorTechnician'; readonly buildingId: number }
   | { readonly type: 'ReleaseInteriorTechnician'; readonly buildingId: number }
   | { readonly type: 'HireInteriorStaff'; readonly buildingId: number; readonly role: InteriorRole }
@@ -537,8 +537,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return repairInteriorFixture(state, command.buildingId, command.fixtureId);
     case 'RepairAllInteriorFixtures':
       return repairAllInteriorFixtures(state, command.buildingId);
-    case 'SetHomeParquet':
-      return setHomeParquet(state, command.buildingId, command.parquet);
+    case 'SetInteriorParquet':
+      return setInteriorParquet(state, command.buildingId, command.parquet);
     case 'SetInteriorBreaker':
       return setInteriorBreaker(state, command.buildingId, command.off);
     case 'HireInteriorTechnician':

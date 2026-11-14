@@ -221,22 +221,31 @@ describe('hanging a painting on a wall', () => {
   });
 });
 
-describe('the floor of a Home interior', () => {
+describe('the floor of an interior', () => {
   it('is a free choice among the parquets, the first by default', () => {
     expect(home(city()).interior?.parquet).toBeUndefined();
-    const state = send(city(), { type: 'SetHomeParquet', buildingId: 1, parquet: 2 });
+    const state = send(city(), { type: 'SetInteriorParquet', buildingId: 1, parquet: 2 });
     expect(home(state).interior?.parquet).toBe(2);
     expect(state.urbs).toBe(city().urbs);
   });
 
   it('keeps the Fixtures when the parquet changes', () => {
-    const state = send(send(city(), place('homeBed', 0, 1)), { type: 'SetHomeParquet', buildingId: 1, parquet: 1 });
+    const state = send(send(city(), place('homeBed', 0, 1)), { type: 'SetInteriorParquet', buildingId: 1, parquet: 1 });
     expect(home(state).interior?.fixtures).toHaveLength(1);
   });
 
   it('refuses a parquet that does not exist, a building that is not a Home and a city too small', () => {
-    expect(failure(city(), { type: 'SetHomeParquet', buildingId: 1, parquet: PARQUETS.length })).toBe('error.unknownCommand');
-    expect(failure(city(), { type: 'SetHomeParquet', buildingId: 2, parquet: 1 })).toBe('error.unknownBuilding');
-    expect(failure(city(1, 100_000, false), { type: 'SetHomeParquet', buildingId: 1, parquet: 1 })).toBe('error.itemLocked');
+    expect(failure(city(), { type: 'SetInteriorParquet', buildingId: 1, parquet: PARQUETS.length })).toBe('error.unknownCommand');
+    expect(failure(city(), { type: 'SetInteriorParquet', buildingId: 2, parquet: 1 })).toBe('error.unknownBuilding');
+    expect(failure(city(1, 100_000, false), { type: 'SetInteriorParquet', buildingId: 1, parquet: 1 })).toBe('error.itemLocked');
+  });
+
+  it('is also chosen in a Factory interior, and goes back to its own floor when left out', () => {
+    const base = city();
+    const state = { ...base, buildings: [...base.buildings, createBuilding(5, 'factory', 70, 50, 0)] };
+    const chosen = send(state, { type: 'SetInteriorParquet', buildingId: 5, parquet: 3 });
+    expect(chosen.buildings.find(candidate => candidate.id === 5)?.interior?.parquet).toBe(3);
+    const reset = send(chosen, { type: 'SetInteriorParquet', buildingId: 5 });
+    expect(reset.buildings.find(candidate => candidate.id === 5)?.interior?.parquet).toBeUndefined();
   });
 });

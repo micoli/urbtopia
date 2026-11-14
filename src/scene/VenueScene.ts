@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { AvatarPatrol, patrolRoute } from './avatarPatrol';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, isVenueType, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { RESTOCKER_MODEL, VENUE_STAFF_MODELS, venueCrowdModelsOf } from './venueCrowdModels';
@@ -118,6 +118,7 @@ export class VenueScene {
   onDrop: (cell: Coord | null) => void = () => {};
 
   private shellModels: { floor: string; wall: string; corner: string };
+  private readonly defaultFloor: string;
   private cornerPlacement: { x: number; z: number; rotation: number };
 
   private readonly sun = new THREE.DirectionalLight(0xfff2d6, SUN_INTENSITY);
@@ -125,6 +126,7 @@ export class VenueScene {
 
   constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1, venueType: FixtureVenue = 'arcade', seed = 1) {
     this.shellModels = VENUE_SHELL_MODELS[venueType];
+    this.defaultFloor = this.shellModels.floor;
     this.cornerPlacement = VENUE_CORNER_PLACEMENT[venueType];
     this.crowd = new VenueCrowdLayer(this.library, size, entranceCell(tier), seed, venueType);
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: wantsAntialias(), powerPreference: 'low-power' });
@@ -134,7 +136,7 @@ export class VenueScene {
     this.scene.background = new THREE.Color(0x232838);
     this.sun.position.set(6, 12, 8);
     this.scene.add(this.sun, this.sky, this.shell, this.fixtureRoot, this.tokensRoot, this.truckRoot, this.line.root, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
-    this.ready = this.library.ensure([...Object.values(this.shellModels), ...(venueType === 'home' ? PARQUET_MODELS : []), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...(FIXTURES[id].truck ? [FIXTURES[id].truck!] : []), ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
+    this.ready = this.library.ensure([...Object.values(this.shellModels), ...(isVenueType(venueType) ? [] : PARQUET_MODELS), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...(FIXTURES[id].truck ? [FIXTURES[id].truck!] : []), ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
       this.rebuildFixtures();
@@ -171,10 +173,11 @@ export class VenueScene {
     return layer;
   }
 
-  // Swaps the floor of the room, for a Home interior whose parquet is chosen by the player.
-  setFloorModel(model: string): void {
-    if (model === this.shellModels.floor) return;
-    this.shellModels = { ...this.shellModels, floor: model };
+  // Swaps the floor of the room for the parquet chosen by the player, or back to the floor of its kind.
+  setFloorModel(model: string | undefined): void {
+    const floor = model ?? this.defaultFloor;
+    if (floor === this.shellModels.floor) return;
+    this.shellModels = { ...this.shellModels, floor };
     this.builtSize = -1;
     this.buildShell();
   }
