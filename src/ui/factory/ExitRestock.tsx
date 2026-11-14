@@ -1,8 +1,8 @@
 import { FIXTURES, isItemUnlocked, isRestockable, packSizeOf, producibleItems, type Building, type GoodId, type VenueFixture } from '../../core';
-import { itemName } from '../../i18n/itemName';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { Dropdown } from '../common/Dropdown';
+import { ItemLabel } from '../common/ItemLabel';
 import { useGame } from '../common/hooks';
 import { SwitchField } from '../common/SwitchField';
 
@@ -19,7 +19,7 @@ export function ExitRestock({ packhouse, fixture }: ExitRestockProps) {
   const send = gameStore.getState().send;
   const size = FIXTURES[fixture.type].packSize;
   const goods = producibleItems(packhouse.type).filter(item => packhouse.type === 'factory' || packSizeOf(item) === size) as GoodId[];
-  const options = [{ value: NONE, label: t('venue.restockNone') }, ...goods.map(good => ({ value: good as string, label: itemName(good), disabled: !isItemUnlocked(state, good) }))];
+  const options = [{ value: NONE, label: t('venue.restockNone') }, ...goods.map(good => ({ value: good as string, label: <ItemLabel item={good} />, disabled: !isItemUnlocked(state, good) }))];
   const role = t('interior.role.restocker');
   const free = (packhouse.interior?.restockers ?? 0) - (packhouse.interior?.fixtures.filter(other => other.restocker).length ?? 0);
   return (

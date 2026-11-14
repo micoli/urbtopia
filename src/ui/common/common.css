@@ -248,6 +248,8 @@
   flex: none;
 }
 .challenge-line .item-icon { width: 32px; height: 32px; }
+.item-label { display: inline-flex; align-items: center; gap: var(--space-8); min-width: 0; }
+.item-label .item-icon { width: 28px; height: 28px; }
 
 .note--warn {
   color: var(--color-warning);

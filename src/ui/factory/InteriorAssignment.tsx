@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, isItemUnlocked, isProducerRole, picksItem, type Building, type GoodId, type VenueFixture } from '../../core';
-import { itemName } from '../../i18n/itemName';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { Dropdown } from '../common/Dropdown';
+import { ItemLabel } from '../common/ItemLabel';
 import { useGame } from '../common/hooks';
 import { ItemChoice } from './ItemChoice';
 import { RestockerAssignment } from './RestockerAssignment';
@@ -27,7 +27,7 @@ export function InteriorAssignment({ building, fixture }: InteriorAssignmentProp
   if (role === undefined) return <ItemChoice building={building} fixture={fixture} />;
   if (role === 'restocker') return <RestockerAssignment building={building} fixture={fixture} />;
   const choice = focusOf(fixture);
-  const options = [{ value: NONE, label: t('venue.assignNone') }, ...goods.map(good => ({ value: good as string, label: itemName(good), disabled: !unlocked.split(',').includes(good) }))];
+  const options = [{ value: NONE, label: t('venue.assignNone') }, ...goods.map(good => ({ value: good as string, label: <ItemLabel item={good} />, disabled: !unlocked.split(',').includes(good) }))];
   const noSupply = role === 'seller' && goods.length === 0;
   const label = t(isProducerRole(role) ? 'venue.assignRecipe' : 'venue.assignSoldGood');
   const free = freeStaffOf(building, role);
