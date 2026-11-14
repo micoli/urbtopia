@@ -2,7 +2,7 @@ import { BUILDING_ENTRIES, definitionOf, kindOf, tiersOf, variantTiersOf } from 
 import { VENUE_TYPES } from '../core/venues/profiles';
 import { modelFileOf } from '../core/models/modelFiles';
 import { BRIDGE_RAMP_MODEL, BRIDGE_ROAD_MODEL, BRIDGE_SPAN_MODEL, FOOTBRIDGE_MODELS, GROUND_PANEL_MODEL, PARK_TREE_MODEL, BICYCLE_MODEL, PEDESTRIAN_ACCESS_MODEL, RAIL_CORNER_MODEL, RAIL_STRAIGHT_MODEL, ROAD_PIECE_MODELS, ROOF_PANEL_MODEL, TUNNEL_MODELS, WALKWAY_MODELS } from '../core/infrastructure/infrastructure';
-import { PARQUET_MODELS, parquetModelOf, ANIMAL_MODEL_FILES, ITEM_MODEL_FILES, penAnimalsOf, BOAT_MODELS, FIXTURE_MODELS, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, footbridgeOpenSides, footbridgeParts, isInfrastructureBridge, isPedestrianBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, DIRECTION_VECTORS, roundaboutPiece, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
+import { PARQUET_MODELS, parquetModelOf, ANIMAL_MODEL_FILES, ITEM_MODEL_FILES, penAnimalsOf, BOAT_MODELS, FIXTURE_MODELS, interiorAvatarModels, FLEET_VEHICLES, CROP_IDS, bridgeRamps, bridgeRoadKeys, bridgeTiles, footbridgeOpenSides, footbridgeParts, isInfrastructureBridge, isPedestrianBridge, occupiedTiles, waterKeys, FACILITIES, FACILITY_TYPES, GAME_CONFIG, cropStage, footprintOf, isFacilityType, roadExits, roadPiece, tileKey, DIRECTIONS, DIRECTION_VECTORS, roundaboutPiece, neighbour, type Building, type BuildingType, type FacilityType, type CropId, type GameState, type ColorVariant, type ServiceCategory, type Direction, type Coord, solarPanelsOf, solarPanelPlacements, turnedOffset, paintKitOf, colorVariantsOfKit } from '../core';
 import type { FixtureVenue, VenueType } from '../core';
 import { WATER_VARIANTS, cornerCode, edgeInfo } from './waterShape';
 import { cropModelsOf, growthModelOf, harvestedModelOf, produceModelOf } from './cropModels';
@@ -90,20 +90,30 @@ const RAIL_MODELS = [RAIL_STRAIGHT_MODEL, RAIL_CORNER_MODEL];
 const shellOf = (type: VenueType) => definitionOf(type).shell!;
 
 // The interior of a Factory has the same pieces as the interior of a Venue.
-const floorShellOf = () => definitionOf('factory').floorShell!;
+type ProductionShellType = 'factory' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital';
+
+const floorShellOf = (type: ProductionShellType = 'factory') => definitionOf(type).floorShell!;
 
 // A Home interior is drawn with the shell of the Hotel: full-height walls around a plain floor.
 const homeCornerOf = () => ({ x: shellOf('hotel').cornerX, z: shellOf('hotel').cornerZ, rotation: (shellOf('hotel').cornerRotation * Math.PI) / 180 });
 
-const floorCornerOf = () => ({ x: floorShellOf().cornerX, z: floorShellOf().cornerZ, rotation: (floorShellOf().cornerRotation * Math.PI) / 180 });
+const interiorCornerOf = (type: ProductionShellType = 'factory') => ({ x: floorShellOf(type).cornerX, z: floorShellOf(type).cornerZ, rotation: (floorShellOf(type).cornerRotation * Math.PI) / 180 });
 
 // Where the corner piece stands, by kind of Venue: the models of each kit are cut around different origins.
 export const VENUE_CORNER_PLACEMENT = {
   ...(Object.fromEntries(
     VENUE_TYPES.map(type => [type, { x: shellOf(type).cornerX, z: shellOf(type).cornerZ, rotation: (shellOf(type).cornerRotation * Math.PI) / 180 }]),
   ) as Record<VenueType, { x: number; z: number; rotation: number }>),
-  factory: floorCornerOf(),
-  packhouse: floorCornerOf(),
+  factory: interiorCornerOf(),
+  packhouse: interiorCornerOf(),
+  mill: interiorCornerOf('mill'),
+  workshop: interiorCornerOf('workshop'),
+  bakery: interiorCornerOf('bakery'),
+  dairy: interiorCornerOf('dairy'),
+  storehouse: interiorCornerOf('storehouse'),
+  school: interiorCornerOf('school'),
+  library: interiorCornerOf('library'),
+  hospital: interiorCornerOf('hospital'),
   home: homeCornerOf(),
 } as Record<FixtureVenue, { x: number; z: number; rotation: number }>;
 
@@ -113,6 +123,14 @@ export const VENUE_SHELL_MODELS = {
   ) as Record<VenueType, { floor: string; wall: string; corner: string }>),
   factory: { floor: modelFileOf(floorShellOf().floor), wall: modelFileOf(floorShellOf().wall), corner: modelFileOf(floorShellOf().corner) },
   packhouse: { floor: modelFileOf(floorShellOf().floor), wall: modelFileOf(floorShellOf().wall), corner: modelFileOf(floorShellOf().corner) },
+  mill: { floor: modelFileOf(floorShellOf('mill').floor), wall: modelFileOf(floorShellOf('mill').wall), corner: modelFileOf(floorShellOf('mill').corner) },
+  workshop: { floor: modelFileOf(floorShellOf('workshop').floor), wall: modelFileOf(floorShellOf('workshop').wall), corner: modelFileOf(floorShellOf('workshop').corner) },
+  bakery: { floor: modelFileOf(floorShellOf('bakery').floor), wall: modelFileOf(floorShellOf('bakery').wall), corner: modelFileOf(floorShellOf('bakery').corner) },
+  dairy: { floor: modelFileOf(floorShellOf('dairy').floor), wall: modelFileOf(floorShellOf('dairy').wall), corner: modelFileOf(floorShellOf('dairy').corner) },
+  storehouse: { floor: modelFileOf(floorShellOf('storehouse').floor), wall: modelFileOf(floorShellOf('storehouse').wall), corner: modelFileOf(floorShellOf('storehouse').corner) },
+  school: { floor: modelFileOf(floorShellOf('school').floor), wall: modelFileOf(floorShellOf('school').wall), corner: modelFileOf(floorShellOf('school').corner) },
+  library: { floor: modelFileOf(floorShellOf('library').floor), wall: modelFileOf(floorShellOf('library').wall), corner: modelFileOf(floorShellOf('library').corner) },
+  hospital: { floor: modelFileOf(floorShellOf('hospital').floor), wall: modelFileOf(floorShellOf('hospital').wall), corner: modelFileOf(floorShellOf('hospital').corner) },
   home: { floor: parquetModelOf(), wall: modelFileOf(shellOf('hotel').wall), corner: modelFileOf(shellOf('hotel').corner) },
 } as Record<FixtureVenue, { floor: string; wall: string; corner: string }>;
 
@@ -141,6 +159,7 @@ export const MODEL_KEYS: readonly string[] = [
     ...VENUE_CUSTOMER_MODELS,
     ...Object.values(VENUE_STAFF_MODELS).flat(),
     ...FIXTURE_MODELS,
+    ...interiorAvatarModels(),
     ...PARQUET_MODELS,
     ...RAIL_MODELS,
     ...Object.values(HEDGE_MODELS),

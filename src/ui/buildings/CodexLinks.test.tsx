@@ -31,4 +31,18 @@ describe('CodexLinks', () => {
   it('gives no Venue staff link to buildings without staff', () => {
     expect(renderToStaticMarkup(<CodexLinks building={createBuilding(1, 'school', 8, 8, 0)} />)).not.toContain('Venue staff');
   });
+
+  it('links an interior to the page of its family, and no other building', () => {
+    for (const type of ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse'] as const) {
+      const html = renderToStaticMarkup(<CodexLinks building={createBuilding(1, type, 8, 8, 0)} />);
+      expect(html, type).toContain('title="Production interiors"');
+      expect(html, type).not.toContain('Service interiors');
+    }
+    for (const type of ['school', 'library', 'hospital'] as const) {
+      const html = renderToStaticMarkup(<CodexLinks building={createBuilding(1, type, 8, 8, 0)} />);
+      expect(html, type).toContain('title="Service interiors"');
+      expect(html, type).not.toContain('Production interiors');
+    }
+    expect(renderToStaticMarkup(<CodexLinks building={createBuilding(1, 'townHall', 8, 8, 0)} />)).not.toContain('interiors');
+  });
 });

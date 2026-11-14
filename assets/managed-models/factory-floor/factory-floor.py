@@ -164,6 +164,12 @@ def pipe_tee(rng):
             flange_x("flange_left", -0.5)] + pipe_support("support", 0, 0)
 
 
+def pipe_cross(rng):
+    """Cross joining the four sides: the tee with a fourth arm, toward the back (+y)."""
+    return [pipe_run_y("run_y", -0.46, 0.46), pipe_run_x("run_x", -0.46, 0.46), pipe_joint(), flange_y("flange_front", -0.5), flange_y("flange_back", 0.46), flange_x("flange_right", 0.46),
+            flange_x("flange_left", -0.5)] + pipe_support("support", 0, 0)
+
+
 def bevel_cone(name):
     """A 45 degree cone with its tip at the origin of its axis (local z) and its wide end 0.14 further, drawn with 12 sides and a ring of teeth."""
     cone = lpm.lathe(name, [(0.0, 0.0), (0.08, 0.0), (0.22, 0.14), (0.0, 0.14)], segments=12, at=(0, 0, 0), color=P["brass"])
@@ -352,6 +358,15 @@ def plain_corner(rng):
     return half_height(thick_corner(P, "slate", "yellow", "iron", "steel_dark"))
 
 
+def mirrored(builder):
+    """The model a builder draws, turned into its mirror image across the x = 0 plane, with the pivots of its moving parts."""
+    def build(rng):
+        parts, spinners = builder(rng)
+        flipped = {name: ([lpm.scale(part, sx=-1) for part in group], (-pivot[0], pivot[1], pivot[2])) for name, (group, pivot) in spinners.items()}
+        return [lpm.scale(part, sx=-1) for part in parts], flipped
+    return build
+
+
 def wall_set():
     return {"floor": concrete_floor, "wall": plain_wall, "partition": plain_partition, "partition-elbow": plain_junction("ES"), "partition-tee": plain_junction("WES"),
             "partition-cross": plain_junction("ESWN"), "wall-corner": plain_corner}
@@ -363,10 +378,12 @@ if __name__ == "__main__":
         "gear": gear,
         "shaft": shaft,
         "pump": pump,
+        "pump-left": mirrored(pump),
         "tank": tank,
         "pipe-straight": pipe_straight,
         "pipe-elbow": pipe_elbow,
         "pipe-tee": pipe_tee,
+        "pipe-cross": pipe_cross,
         "press": press,
         "mixing-vat": mixing_vat,
         "lathe-cw": turning_lathe_cw,

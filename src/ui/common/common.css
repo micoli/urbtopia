@@ -401,6 +401,8 @@
 }
 
 .switch-field:hover { background: var(--white-a05); }
+.switch-field:disabled { opacity: 0.5; cursor: not-allowed; }
+.switch-field:disabled:hover { background: none; }
 
 .switch-field:focus-visible {
   outline: 2px solid var(--color-focus);

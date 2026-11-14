@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { comfortBonusOf, comfortOf, floorFixturesOf, type Building } from '../../core';
+import { comfortBonusOf, comfortOf, interiorFixturesOf, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { UrbsStat } from '../common/UrbsStat';
 
@@ -9,7 +9,7 @@ interface HomeStatsProps {
 
 // What sits at the top of the main menu of a Home interior: the Urbs, the Comfort and the Well-being it adds.
 export function HomeStats({ home }: HomeStatsProps) {
-  const { comfort, bonus } = useMemo(() => ({ comfort: comfortOf(floorFixturesOf(home)), bonus: comfortBonusOf({ tier: home.tier, floor: home.floor }) }), [home.tier, home.floor]);
+  const { comfort, bonus } = useMemo(() => ({ comfort: comfortOf(interiorFixturesOf(home)), bonus: comfortBonusOf({ tier: home.tier, interior: home.interior }) }), [home.tier, home.interior]);
   return (
     <>
       <UrbsStat />

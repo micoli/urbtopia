@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "library",
+  "category": "shelves",
+  "name": {
+    "en": "Bookshelf",
+    "fr": "Bibliothèque"
+  },
+  "model": "library-interior-bookshelf",
+  "footprint": [1, 1],
+  "price": 160,
+  "minTier": 1,
+  "quality": 0.07
+}

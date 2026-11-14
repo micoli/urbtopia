@@ -3,11 +3,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { FIXTURE_CATEGORIES, FIXTURES, fixtureIdsInCategory, fixtureIdsOf, VENUE_TYPES } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
+import { venueStore } from '../../store/venueStore';
 import { VenueBuildMenu } from './VenueBuildMenu';
 import { VenueFixtureItem } from './VenueFixtureItem';
 
 afterEach(() => {
   prefsStore.getState().setLanguage('en');
+  venueStore.setState({ openSection: undefined });
 });
 
 const html = (tier: number, type: (typeof VENUE_TYPES)[number], rank = 1) => renderToStaticMarkup(<VenueBuildMenu tier={tier} rank={rank} venueType={type} />).replaceAll('&#x27;', "'");
@@ -37,6 +39,18 @@ describe('Venue build menu', () => {
     expect(markup).toContain(t('venue.fixture.barrelClimber'));
     expect(markup).toMatch(new RegExp(`aria-expanded="true"[^>]*>\\s*<span>${t('venue.category.games')}`));
     expect(markup).toMatch(new RegExp(`aria-expanded="false"[^>]*>\\s*<span>${t('venue.category.furniture')}`));
+  });
+
+  it('remembers the section left open when the interior closes and another opens', () => {
+    const store = venueStore.getState();
+    expect(store.openSection).toBeUndefined();
+    store.open(1);
+    store.setOpenSection('furniture');
+    venueStore.getState().close();
+    venueStore.getState().open(2);
+    expect(venueStore.getState().openSection).toBe('furniture');
+    venueStore.getState().setOpenSection(null);
+    expect(venueStore.getState().openSection).toBeNull();
   });
 
   it('shows the cost of an item, and locks the ones above the Tier with the Tier they need', () => {

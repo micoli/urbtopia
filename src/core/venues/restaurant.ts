@@ -34,10 +34,13 @@ export const RESTAURANT = {
 // The edible Goods and Materials a Restaurant can serve, by family. A Menu mixes families to please more Diners.
 export const INGREDIENT_FAMILIES = {
   dairy: ['milk', 'goatMilk', 'cheese', 'goatCheese', 'cream'],
-  bakery: ['flour', 'bread', 'fougasse', 'appleCake', 'cherryClafoutis'],
+  bakery: ['bread', 'fougasse', 'appleCake', 'cherryClafoutis'],
   sea: ['fish', 'cannedFish'],
   farm: ['henEgg', 'duckEgg'],
-  orchard: ['cherry', 'olive', 'oliveOil'],
+  // The vegetables and the fruits that grow on the farms, besides what the orchards give.
+  vegetable: ['beet', 'carrot', 'corn', 'lettuce', 'mushroom', 'pumpkin', 'tomato'],
+  grain: ['wheat', 'rice'],
+  orchard: ['cherry', 'apple', 'orange', 'watermelon', 'bushBerries', 'olive', 'oliveOil'],
   sweet: ['honey'],
 } as const satisfies Record<string, readonly ItemId[]>;
 
@@ -55,7 +58,8 @@ export const familyOf = (item: ItemId): IngredientFamily => FAMILY_OF.get(item)!
 
 export const menuSlotsOf = (tier: number): number => venueTierOf('restaurant', tier).menuSlots!;
 
-export const menuOf = (venue: VenueData): readonly ItemId[] => venue.menu ?? [];
+// A Menu saved before an item left the list (flour) drops it.
+export const menuOf = (venue: VenueData): readonly ItemId[] => (venue.menu ?? []).filter(isIngredient);
 
 export const stockOfIngredient = (storage: Storage, item: ItemId): number => Math.floor((isGood(item) ? storage.goods[item] : storage.materials[item]) ?? 0);
 

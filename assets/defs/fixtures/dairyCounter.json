@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "dairy",
+  "category": "line",
+  "name": {
+    "en": "Display counter",
+    "fr": "Comptoir vitrine"
+  },
+  "model": "dairy-interior-exit",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "exit",
+  "assigns": "seller",
+  "lineIn": ["front"]
+}

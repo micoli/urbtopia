@@ -33,7 +33,7 @@ const city = (fixtures: VenueFixture[], wheat = 20, restockers = 1, slotCount = 
   state = succeed(state, { type: 'PlaceBuilding', buildingType: 'storehouse', x: 56, y: 59 });
   state = succeed(state, { type: 'PlaceBuilding', buildingType: 'packhouse', x: 60, y: 59 });
   const packhouse = state.buildings.find(building => building.type === 'packhouse')!;
-  const upgraded: Building = { ...packhouse, tier: 3, slotCount, floor: { fixtures, nextFixtureId: 50, restockers } };
+  const upgraded: Building = { ...packhouse, tier: 3, slotCount, interior: { fixtures, nextFixtureId: 50, restockers } };
   return { ...state, storage: { materials: { wheat }, goods: {} }, buildings: state.buildings.map(building => (building === packhouse ? upgraded : building)) };
 };
 const packhouseOf = (state: GameState): Building => state.buildings.find(building => building.type === 'packhouse')!;

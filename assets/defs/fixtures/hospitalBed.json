@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "hospital",
+  "category": "beds",
+  "name": {
+    "en": "Hospital bed",
+    "fr": "Lit d'hôpital"
+  },
+  "model": "hospital-interior-bed",
+  "footprint": [1, 1],
+  "price": 200,
+  "minTier": 1,
+  "quality": 0.07
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "workshop",
+  "category": "plumbing",
+  "name": {
+    "en": "Pump (Drive on the left)",
+    "fr": "Pompe (prise à gauche)"
+  },
+  "model": "factory-floor-pump-left",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "pump",
+  "drive": ["left"],
+  "flow": ["front", "back"]
+}

@@ -91,6 +91,14 @@
       }
     ]
   },
+  "floorShell": {
+    "floor": "hospital-interior-floor",
+    "wall": "hospital-interior-wall",
+    "corner": "hospital-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  },
   "category": "health",
   "drawnToScale": true,
   "power": 2,

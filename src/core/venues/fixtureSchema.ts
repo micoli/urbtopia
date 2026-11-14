@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { pairSchema } from '../buildings/tierSchema.ts';
 import { count, filled, localizedText } from '../economy/itemSchemas.ts';
-import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_SIDES, HOME_FIXTURE_ROLES, PACK_SIZES } from './venueVocabulary.ts';
+import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_SIDES, HOME_FIXTURE_ROLES, PACK_SIZES, PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS } from './venueVocabulary.ts';
 
 const common = {
   $schema: z.string().optional(),
@@ -69,9 +69,17 @@ export const fixtureSchema = z
       wall: z.literal(true).optional(),
     }),
     z.strictObject({
-      venue: z.enum(['factory', 'packhouse']),
+      venue: z.enum(SERVICE_INTERIOR_KINDS),
       ...common,
-      // What the Fixture does on a Factory floor or a Packhouse floor: a Motor and a Pump are the sources of Drive and Flow, Gears, Shafts and Pipes carry them, a Machine uses them.
+      // What the piece adds to the quality of the service of the School, the Library or the Hospital; it counts in full up to a share of the cap of the Tier, then less and less.
+      quality: z.number().positive().optional(),
+      // Hangs on a wall segment instead of standing on a tile.
+      wall: z.literal(true).optional(),
+    }),
+    z.strictObject({
+      venue: z.enum(PRODUCTION_INTERIOR_KINDS),
+      ...common,
+      // What the Fixture does on a Factory interior or a Packhouse interior: a Motor and a Pump are the sources of Drive and Flow, Gears, Shafts and Pipes carry them, a Machine uses them.
       role: z.enum(FACTORY_FIXTURE_ROLES).optional(),
       // The sides through which Drive passes or enters, and those through which Flow does.
       drive: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
@@ -85,13 +93,26 @@ export const fixtureSchema = z
       // Where smoke rises while the Machine runs, in the model's own space (x, up, z).
       smoke: z.tuple([z.number(), z.number(), z.number()]).optional(),
       yield: z.number().positive().optional(),
-      // The kind of a Machine: the Factory floor pays for the variety of kinds that run, not for their number.
+      // An Exit of a Line: what it adds to the rate at which the building sells over its Counter, and to what the building holds.
+      sales: z.number().positive().optional(),
+      // A Machine whose yield only raises one group of the Goods of its building (the Dairy: cheese, cream); it raises them all when left out.
+      yieldGroup: z.string().min(1).optional(),
+      capacity: z.number().positive().optional(),
+      // The role of the Staff that is assigned to the Fixture by hand: a baker to an Oven, a cheesemaker to a Cheese cellar, a cream maker to a Pasteuriser, a seller to a Display counter.
+      assigns: z.enum(['baker', 'seller', 'cheesemaker', 'creamMaker', 'miller', 'restocker']).optional(),
+      // A Machine at the start of a Line on which the player picks the item that the Line carries: the Extractor of a Workshop.
+      picks: z.literal(true).optional(),
+      // An Exit of a Line: how far from the middle of its tile, toward its back, the Packets are drawn to go before they vanish; left out, they go through the hatch of the wall.
+      hatch: z.number().positive().optional(),
+      // The electricity the Fixture draws while it stands in the room, besides what the Motors draw.
+      power: z.number().positive().optional(),
+      // The kind of a Machine: the Factory interior pays for the variety of kinds that run, not for their number.
       family: z.string().min(1).optional(),
       // A Machine that cools the Motors beside it: the share it adds to the speed and the yield of each Machine they drive.
       coolant: z.number().positive().optional(),
       // A Machine that heats its circuit of Flow, which a coolant on the same circuit then cools twice as well.
       heat: z.literal(true).optional(),
-      // Packhouse floor: the sides through which Packets come into a Line Fixture and leave it.
+      // Packhouse interior: the sides through which Packets come into a Line Fixture and leave it.
       lineIn: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
       lineOut: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
       // An Exit: the size of packed Goods it serves.

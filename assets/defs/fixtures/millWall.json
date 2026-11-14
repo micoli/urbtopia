@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "mill",
+  "category": "walls",
+  "name": {
+    "en": "Wall",
+    "fr": "Mur"
+  },
+  "model": "mill-interior-partition",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "partition": true,
+  "joins": {
+    "elbow": "mill-interior-partition-elbow",
+    "tee": "mill-interior-partition-tee",
+    "cross": "mill-interior-partition-cross"
+  }
+}

@@ -62,5 +62,13 @@
       "model": "buildings-windmill-2x2-t5",
       "durationFactor": 0.5
     }
-  ]
+  ],
+  "floorShell": {
+    "floor": "mill-interior-floor",
+    "wall": "mill-interior-wall",
+    "corner": "mill-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  }
 }

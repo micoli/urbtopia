@@ -3,7 +3,9 @@ import { isHomeType } from '../buildings/buildingDefinitions';
 import { citizensOf } from '../buildings/city';
 import type { Building, GameState } from '../engine/state';
 import type { FacilityType } from './facilities';
-import { servingTiersOf, serviceCoverage, type ServiceCoverage, type ServingTiers } from './services';
+import { serviceQualityOf } from '../interiors/serviceInterior';
+import type { InteriorPart } from '../interiors/interiorStaff';
+import { servingFacilitiesOf, servingTiersOf, serviceCoverage, type ServiceCoverage, type ServingTiers } from './services';
 
 export const KNOWLEDGE = knowledge;
 
@@ -13,10 +15,16 @@ const SCHOOLING = Object.entries(KNOWLEDGE.schooling) as [FacilityType, number][
 export function homeKnowledge(state: GameState, home: Building, coverage: ServiceCoverage = serviceCoverage(state), tiers: ServingTiers = servingTiersOf(state)): number {
   const covered = coverage.get(home.id);
   if (!covered) return 0;
-  const schooling = SCHOOLING.reduce((sum, [type, points]) => sum + (covered.has(type) ? points : 0), 0);
+  const serving = servingFacilitiesOf(state).get(home.id);
+  // The best quality that the interiors of the facilities serving the Home add to the share of Knowledge their type gives.
+  const quality = (type: FacilityType, part: InteriorPart): number => Math.max(0, ...(serving?.get(type) ?? []).map(id => {
+    const facility = state.buildings.find(candidate => candidate.id === id);
+    return facility ? serviceQualityOf(state, facility, part, null) : 0;
+  }));
+  const schooling = SCHOOLING.reduce((sum, [type, points]) => sum + (covered.has(type) ? points * (1 + (type === 'school' ? quality('school', 'schooling') : 0)) : 0), 0);
   const libraryTier = covered.has('library') ? tiers.get(home.id)?.get('library') ?? 0 : 0;
-  const library = KNOWLEDGE.library[Math.min(libraryTier, KNOWLEDGE.library.length) - 1] ?? 0;
-  return 100 - (100 - schooling) * (1 - library / 100);
+  const library = Math.min(100, (KNOWLEDGE.library[Math.min(libraryTier, KNOWLEDGE.library.length) - 1] ?? 0) * (1 + quality('library', 'knowledge')));
+  return 100 - (100 - Math.min(100, schooling)) * (1 - library / 100);
 }
 
 const cityCache = new WeakMap<GameState, number | null>();

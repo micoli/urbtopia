@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "library",
+  "category": "furniture",
+  "name": {
+    "en": "Chair",
+    "fr": "Chaise"
+  },
+  "model": "library-interior-chair",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "quality": 0.02
+}

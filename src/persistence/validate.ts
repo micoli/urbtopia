@@ -1,4 +1,5 @@
-import { FIXTURES, FIXTURE_IDS, PARQUETS, PIRATE_SHOW_TITLES, isCoveBoatFamily, footprintTiles, isSeaSceneryType, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
+import { interiorFamilyOf, isMaterial, interiorRolesOf, isProducerRole } from '../core';
+import { FIXTURES, isRestockable, FIXTURE_IDS, PARQUETS, PIRATE_SHOW_TITLES, isCoveBoatFamily, footprintTiles, isSeaSceneryType, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
 
@@ -144,23 +145,45 @@ function isGatheringResult(value: unknown): boolean {
   );
 }
 
-// What an Exit of a Packhouse floor keeps for its Restocker: a Restock that is a packed Good, and an assignment only once a Restock is set.
+// What an Exit of a Packhouse interior or a Machine of a Factory interior keeps for its Restocker: a Restock that is a packed Good, and an assignment only once a Restock is set.
 const isSavedRestock = (fixture: Record<string, unknown>): boolean => {
   const { restock, restocker, restockedAt } = fixture;
   if (restock === undefined && restocker === undefined && restockedAt === undefined) return true;
-  if (FIXTURES[fixture.type as keyof typeof FIXTURES].role !== 'exit') return false;
+  if (!isRestockable(FIXTURES[fixture.type as keyof typeof FIXTURES])) return restock === undefined && restocker === undefined && isProducerRole(FIXTURES[fixture.type as keyof typeof FIXTURES].assigns) && isNumber(restockedAt);
   return (restock === undefined || (typeof restock === 'string' && Object.hasOwn(GOODS, restock))) && (restocker === undefined || (restocker === true && restock !== undefined)) && (restockedAt === undefined || isNumber(restockedAt));
 };
 
-// A placed Fixture, in a Venue or on a Factory floor: its id must be one the next id has already passed.
+// A placed Fixture, in a Venue or on a Factory interior: its id must be one the next id has already passed.
 const isSavedFixture = (nextFixtureId: number) => (fixture: unknown): boolean =>
-  isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, nextFixtureId - 1) && FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean') && (fixture.good === undefined || (typeof fixture.good === 'string' && Object.hasOwn(GOODS, fixture.good))) && (fixture.stock === undefined || isNonNegative(fixture.stock)) && isSavedRestock(fixture);
+  isRecord(fixture) && isInt(fixture.id, 1) && isInt(fixture.id, 1, nextFixtureId - 1) && FIXTURE_IDS.includes(fixture.type as never) && isCoord(fixture) && isInt(fixture.rotation, 0, 3) && (fixture.condition === undefined || (isNumber(fixture.condition) && fixture.condition >= 0 && fixture.condition <= 100)) && (fixture.broken === undefined || typeof fixture.broken === 'boolean') && (fixture.good === undefined || (typeof fixture.good === 'string' && Object.hasOwn(GOODS, fixture.good))) && (fixture.stock === undefined || isNonNegative(fixture.stock)) && isSavedRestock(fixture) && isSavedFocus(fixture);
 
-const isAssignmentCovered = (floor: Record<string, unknown>): boolean =>
-  !Array.isArray(floor.fixtures) || floor.fixtures.filter((fixture) => isRecord(fixture) && fixture.restocker !== undefined).length <= ((floor.restockers as number | undefined) ?? 0);
+// What a Fixture of a Bakery keeps for its Staff: a Recipe on an Oven, a Sold Good on a Display counter, and an assignment only once that Good is set.
+const isSavedFocus = (fixture: Record<string, unknown>): boolean => {
+  const { recipe, soldGood, assigned } = fixture;
+  if (recipe === undefined && soldGood === undefined && assigned === undefined) return true;
+  const spec = FIXTURES[fixture.type as keyof typeof FIXTURES];
+  const role = spec.assigns;
+  const isGood = (value: unknown) => typeof value === 'string' && Object.hasOwn(GOODS, value);
+  if (role === undefined) return spec.picks === true && soldGood === undefined && assigned === undefined && (recipe === undefined || (typeof recipe === 'string' && isMaterial(recipe)));
+  if (role === 'restocker') return recipe === undefined && soldGood === undefined && (assigned === undefined || assigned === true);
+  if (recipe !== undefined && (!isProducerRole(role) || !(isGood(recipe) || (typeof recipe === 'string' && isMaterial(recipe))))) return false;
+  if (soldGood !== undefined && (role !== 'seller' || !isGood(soldGood))) return false;
+  return assigned === undefined || (assigned === true && (recipe !== undefined || soldGood !== undefined));
+};
 
-function isFloorData(value: unknown, kind: 'factory' | 'packhouse' | 'home'): boolean {
-  return isRecord(value) && isInt(value.nextFixtureId, 1) && (value.rng === undefined || isNumber(value.rng)) && (value.technicians === undefined || isInt(value.technicians, 0, 5)) && (value.restockers === undefined || isInt(value.restockers, 0, 5)) && isAssignmentCovered(value) && (value.carry === undefined || (isNumber(value.carry) && value.carry >= 0 && value.carry < 1)) && (value.parquet === undefined || (kind === 'home' && isInt(value.parquet, 0, PARQUETS.length - 1))) && isArrayOf(value.fixtures, fixture => isSavedFixture(value.nextFixtureId as number)(fixture) && FIXTURES[(fixture as { type: keyof typeof FIXTURES }).type].venue === kind);
+const isAssignmentCovered = (interior: Record<string, unknown>): boolean =>
+  !Array.isArray(interior.fixtures) || interior.fixtures.filter((fixture) => isRecord(fixture) && fixture.restocker !== undefined).length <= ((interior.restockers as number | undefined) ?? 0);
+
+// A Staff serves one Fixture: no more Fixtures are assigned than Staff of the role are hired.
+const isStaffAssignmentCovered = (interior: Record<string, unknown>): boolean => {
+  const fixtures: unknown = interior.fixtures;
+  if (!Array.isArray(fixtures)) return true;
+  const hired = isRecord(interior.staff) ? interior.staff : {};
+  return (['baker', 'seller', 'cheesemaker', 'creamMaker', 'miller', 'restocker'] as const).every(role => fixtures.filter(fixture => isRecord(fixture) && fixture.assigned === true && FIXTURES[fixture.type as keyof typeof FIXTURES]?.assigns === role).length <= ((hired[role] as number | undefined) ?? 0));
+};
+
+function isInteriorData(value: unknown, kind: string, type?: BuildingType): boolean {
+  return isRecord(value) && (value.staff === undefined || (type !== undefined && isRecord(value.staff) && Object.entries(value.staff).every(([role, count]) => (interiorRolesOf(type) as readonly string[]).includes(role) && isInt(count, 0, 20)))) && isInt(value.nextFixtureId, 1) && (value.rng === undefined || isNumber(value.rng)) && (value.technicians === undefined || isInt(value.technicians, 0, 5)) && (value.restockers === undefined || isInt(value.restockers, 0, 5)) && isAssignmentCovered(value) && isStaffAssignmentCovered(value) && (value.carry === undefined || (isNumber(value.carry) && value.carry >= 0 && value.carry < 1)) && (value.parquet === undefined || (kind === 'home' && isInt(value.parquet, 0, PARQUETS.length - 1))) && isArrayOf(value.fixtures, fixture => isSavedFixture(value.nextFixtureId as number)(fixture) && FIXTURES[(fixture as { type: keyof typeof FIXTURES }).type].venue === kind);
 }
 
 function isVenueData(value: unknown): boolean {
@@ -213,7 +236,7 @@ function isBuilding(value: unknown): boolean {
     (value.solar === undefined || (typeof value.type === 'string' && canHaveSolarPanels(value.type as BuildingType) && typeof value.solar === 'boolean')) &&
     (value.colorVariant === undefined || isColorAccepted(value.type, value.colorVariant)) &&
     (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
-    (value.floor === undefined || (value.type === 'factory' && isFloorData(value.floor, 'factory')) || (value.type === 'packhouse' && isFloorData(value.floor, 'packhouse')) || (isHomeType(value.type) && isFloorData(value.floor, 'home'))) &&
+    (value.interior === undefined || (value.type === 'factory' && isInteriorData(value.interior, 'factory')) || (value.type === 'packhouse' && isInteriorData(value.interior, 'packhouse')) || (isHomeType(value.type) && isInteriorData(value.interior, 'home')) || (typeof value.type === 'string' && interiorFamilyOf(value.type as BuildingType) !== undefined && isInteriorData(value.interior, value.type, value.type as BuildingType))) &&
     (value.club === undefined || (typeof value.type === 'string' && hasClub(value.type) && isClubData(value.club))) &&
     (value.attraction === undefined || (typeof value.type === 'string' && sellsTicketsType(value.type) && isAttractionData(value.attraction))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
@@ -369,8 +392,11 @@ function isDonation(donation: unknown): boolean {
   return isRecord(donation) && typeof donation.id === 'string' && UUID.test(donation.id) && isInt(donation.value, 1) && (donation.accountId === undefined || typeof donation.accountId === 'string');
 }
 
+// The tutorials of the Factory, the Mill and the School interiors were removed: a city saved with one still loads, and the entry is ignored.
+const REMOVED_VENUE_TUTORIALS = ['factory', 'mill', 'school'];
+
 function isVenueTutorials(value: unknown): boolean {
-  return isRecord(value) && Object.entries(value).every(([type, step]) => (VENUE_TUTORIAL_TYPES as string[]).includes(type) && (step === null || isVenueTutorialStep(type, step)));
+  return isRecord(value) && Object.entries(value).every(([type, step]) => REMOVED_VENUE_TUTORIALS.includes(type) || ((VENUE_TUTORIAL_TYPES as string[]).includes(type) && (step === null || isVenueTutorialStep(type, step))));
 }
 
 const LAYOUT_ENTRIES: Record<string, (item: unknown) => boolean> = {

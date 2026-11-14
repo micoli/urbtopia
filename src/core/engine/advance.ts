@@ -16,8 +16,10 @@ import type { GameEvent } from './events';
 import { advanceProduction, shiftRunningTimers } from '../economy/production';
 import type { Building, GameState } from './state';
 import { advanceVenues, venueBoundaries } from '../venues/venues';
-import { advanceFloors } from '../factory/floorWear';
+import { advanceInteriors } from '../factory/interiorWear';
+import { payInteriorStaff } from '../interiors/interiorStaffCommands';
 import { advanceRestockers } from '../factory/restock';
+import { advanceAssistants } from '../factory/assistants';
 import { advanceAttractions } from '../tourism/takings';
 import { advanceClubs } from '../clubs/clubCommands';
 import { advanceChampionships, championshipBoundaries } from '../clubs/championship';
@@ -71,7 +73,8 @@ export function forfeitOfflineTime(state: GameState, now: number): AdvanceResult
 
 function withRestockers(produced: AdvanceResult, now: number): AdvanceResult {
   const restocked = advanceRestockers(produced.state, now);
-  return { state: restocked.state, events: [...produced.events, ...restocked.events] };
+  const assisted = advanceAssistants(restocked.state, now);
+  return { state: assisted.state, events: [...produced.events, ...restocked.events, ...assisted.events] };
 }
 
 function idleShopIds(state: GameState, now: number): ReadonlySet<number> {
@@ -112,8 +115,7 @@ function replay(state: GameState, until: number): AdvanceResult {
     const ratio = adapting ? 1 : energy.economicRatio;
     const industrySpeed = 1 + knowledgeEffect(current, 'production');
     if (ratio > 0) for (const b of current.buildings) {
-      const running = b.queue.find(q => !q.done && q.startedAt !== null);
-      if (running?.startedAt != null) end = Math.min(end, now + Math.max(0, running.duration - (now - running.startedAt)) / (isIndustryType(b.type) ? ratio * industrySpeed : ratio));
+      for (const running of b.queue) if (!running.done && running.startedAt !== null) end = Math.min(end, now + Math.max(0, running.duration - (now - running.startedAt)) / (isIndustryType(b.type) ? ratio * industrySpeed : ratio));
       if (!idleShops.has(b.id)) for (const stack of b.stacks) if (stack.nextSaleAt !== null && stack.stock > 0) end = Math.min(end, now + Math.max(0, stack.nextSaleAt - now) / ratio);
     }
     for (const boundary of venueBoundaries(current, now, energy.supplied)) end = Math.min(end, boundary);
@@ -137,13 +139,13 @@ function replay(state: GameState, until: number): AdvanceResult {
     const coverage = serviceCoverage(current);
     const congestion = congestionStats(current, now);
     const homeRatios = new Map(current.buildings.filter(b => isHomeType(b.type)).map(b => [b.id, homeTaxMultiplier(current, b, { energy, coverage, poweredCasinos, congestion })]));
-    const produced = withRestockers(advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios, idleShops, congestion.filledJobs, industrySpeed), end);
+    const produced = withRestockers(advanceProduction(current, end, elapsed, adapting ? 1 : energy.economicRatio, homeRatios, idleShops, congestion.filledJobs, industrySpeed, adapting), end);
     events.push(...produced.events);
-    const gathered = advanceGatherings(advanceAttractions(advanceFloors(advanceVenues(produced.state, now, end, energy.supplied), now, end, energy.supplied), now, end), now, end);
+    const gathered = advanceGatherings(advanceAttractions(payInteriorStaff(advanceInteriors(advanceVenues(produced.state, now, end, energy.supplied), now, end, energy.supplied), now, end), now, end), now, end);
     events.push(...gathered.events);
     const withVenues = { ...gathered.state, buildings: advanceClubs(advanceChampionships(gathered.state, end), now, end).buildings };
     current = {
-      ...produced.state, storage: transport.coalPerHour > 0 ? { ...withVenues.storage, materials: { ...withVenues.storage.materials, coal: end === coalEnd ? 0 : remainingCoal(current, transport.coalPerHour, elapsed) } } : withVenues.storage, lastSeen: end, urbs: end === budgetEnd ? 0 : Math.max(0, current.urbs + (gathered.state.urbs - produced.state.urbs) - cost * elapsed / ECOLOGY.hourMs),
+      ...produced.state, storage: transport.coalPerHour > 0 ? { ...withVenues.storage, materials: { ...withVenues.storage.materials, coal: end === coalEnd ? 0 : remainingCoal(current, transport.coalPerHour, elapsed) } } : withVenues.storage, lastSeen: end, urbs: end === budgetEnd ? 0 : Math.max(0, produced.state.urbs + (gathered.state.urbs - produced.state.urbs) - cost * elapsed / ECOLOGY.hourMs),
       ...(current.solidarityMs === undefined ? {} : { solidarityMs: Math.max(0, current.solidarityMs - elapsed) }),
       buildings: withVenues.buildings.map(b => updateBattery(b, energy.batteryRates.get(b.id) ?? 0, batteryEnds.get(b.id), end, elapsed))
     };

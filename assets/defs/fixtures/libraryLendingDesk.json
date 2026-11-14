@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "library",
+  "category": "furniture",
+  "name": {
+    "en": "Lending desk",
+    "fr": "Comptoir de prêt"
+  },
+  "model": "library-interior-lending-desk",
+  "footprint": [1, 1],
+  "price": 200,
+  "minTier": 2,
+  "quality": 0.08
+}

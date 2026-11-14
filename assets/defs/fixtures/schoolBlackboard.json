@@ -1,0 +1,16 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "school",
+  "category": "decor",
+  "name": {
+    "en": "Blackboard",
+    "fr": "Tableau noir"
+  },
+  "model": "school-interior-blackboard",
+  "footprint": [1, 1],
+  "price": 100,
+  "minTier": 1,
+  "wall": true,
+  "quality": 0.08
+}

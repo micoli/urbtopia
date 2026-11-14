@@ -37,7 +37,9 @@ import { cancelShow, scheduleShow } from '../tourism/gatherings';
 import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { queueItem } from '../factory/restock';
-import { assignFloorRestocker, hireFloorRestocker, setExitRestock, unassignFloorRestocker, hireFloorTechnician, releaseFloorRestocker, moveFloorFixture, placeFloorFixture, releaseFloorTechnician, removeFloorFixture, repairFloorFixture, setHomeParquet } from '../factory/floorCommands';
+import { assignInteriorStaff, setInteriorFocus, unassignInteriorStaff } from '../interiors/interiorAssignments';
+import { repairAllInteriorFixtures, assignInteriorRestocker, hireInteriorRestocker, setExitRestock, unassignInteriorRestocker, hireInteriorTechnician, releaseInteriorRestocker, moveInteriorFixture, placeInteriorFixture, releaseInteriorTechnician, removeInteriorFixture, repairInteriorFixture, setHomeParquet } from '../factory/interiorCommands';
+import { hireInteriorStaff, releaseInteriorStaff } from '../interiors/interiorStaffCommands';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
 import { withStartingCity } from './newGame';
@@ -61,7 +63,7 @@ import type { ChallengeRewardKind } from '../challenges/types';
 import { abandonCasinoRound, playSlotMachine, settleBlackjack, settleBlockmatch, startCasinoRound } from '../leisure/casinoRound';
 import { buildPedestrianAccess, buildWalkway, demolishPedestrianAccess, demolishWalkways, movePedestrianAccess } from '../underground/walkways';
 import type { BlackjackAction } from '../leisure/blackjack';
-import type { FixtureId, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, NetworkMode, QueueEntry, ShopStack, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
+import type { FixtureId, InteriorRole, StaffRole, BoatFamily, Building, BuildingType, BusLine, GameState, ColorVariant, NetworkMode, QueueEntry, ShopStack, Rotation, TransitLine, TransitTile, TransitVehicleKind } from './state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { colorVariantsOf, isRepaintableType } from '../buildings/paint';
 import { STOP_NAME_MAX_LENGTH, isTransitStopType } from '../transit/stopNames';
@@ -154,18 +156,24 @@ export type Command =
   | { readonly type: 'SetShelfGood'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId }
   | { readonly type: 'SetMenu'; readonly buildingId: number; readonly menu: readonly ItemId[] }
   | { readonly type: 'RepairFixture'; readonly buildingId: number; readonly fixtureId: number }
-  | { readonly type: 'PlaceFloorFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
-  | { readonly type: 'MoveFloorFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
-  | { readonly type: 'RemoveFloorFixture'; readonly buildingId: number; readonly fixtureId: number }
-  | { readonly type: 'RepairFloorFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'PlaceInteriorFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'MoveInteriorFixture'; readonly buildingId: number; readonly fixtureId: number; readonly x: number; readonly y: number; readonly rotation?: Rotation }
+  | { readonly type: 'RemoveInteriorFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'RepairInteriorFixture'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'RepairAllInteriorFixtures'; readonly buildingId: number }
   | { readonly type: 'SetHomeParquet'; readonly buildingId: number; readonly parquet: number }
-  | { readonly type: 'HireFloorTechnician'; readonly buildingId: number }
-  | { readonly type: 'ReleaseFloorTechnician'; readonly buildingId: number }
-  | { readonly type: 'HireFloorRestocker'; readonly buildingId: number }
-  | { readonly type: 'ReleaseFloorRestocker'; readonly buildingId: number }
+  | { readonly type: 'HireInteriorTechnician'; readonly buildingId: number }
+  | { readonly type: 'ReleaseInteriorTechnician'; readonly buildingId: number }
+  | { readonly type: 'HireInteriorStaff'; readonly buildingId: number; readonly role: InteriorRole }
+  | { readonly type: 'ReleaseInteriorStaff'; readonly buildingId: number; readonly role: InteriorRole }
+  | { readonly type: 'SetInteriorFocus'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId | null }
+  | { readonly type: 'AssignInteriorStaff'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'UnassignInteriorStaff'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'HireInteriorRestocker'; readonly buildingId: number }
+  | { readonly type: 'ReleaseInteriorRestocker'; readonly buildingId: number }
   | { readonly type: 'SetExitRestock'; readonly buildingId: number; readonly fixtureId: number; readonly good: GoodId | null }
-  | { readonly type: 'AssignFloorRestocker'; readonly buildingId: number; readonly fixtureId: number }
-  | { readonly type: 'UnassignFloorRestocker'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'AssignInteriorRestocker'; readonly buildingId: number; readonly fixtureId: number }
+  | { readonly type: 'UnassignInteriorRestocker'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
@@ -235,6 +243,13 @@ export type ErrorKey =
   | 'error.notAnExit'
   | 'error.noRestock'
   | 'error.restockerAlreadyAssigned'
+  | 'error.notAssignable'
+  | 'error.notUpstream'
+  | 'error.fixtureLimitReached'
+  | 'error.noFocus'
+  | 'error.staffAlreadyAssigned'
+  | 'error.noFreeStaff'
+  | 'error.noStaffAssigned'
   | 'error.noFreeRestocker'
   | 'error.noRestockerAssigned'
   | 'error.outsideOwnedParcels'
@@ -510,30 +525,42 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return repairFixture(state, command.buildingId, command.fixtureId);
     case 'RemoveFixture':
       return removeFixture(state, command.buildingId, command.fixtureId);
-    case 'PlaceFloorFixture':
-      return placeFloorFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
-    case 'MoveFloorFixture':
-      return moveFloorFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
-    case 'RemoveFloorFixture':
-      return removeFloorFixture(state, command.buildingId, command.fixtureId);
-    case 'RepairFloorFixture':
-      return repairFloorFixture(state, command.buildingId, command.fixtureId);
+    case 'PlaceInteriorFixture':
+      return placeInteriorFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
+    case 'MoveInteriorFixture':
+      return moveInteriorFixture(state, command.buildingId, command.fixtureId, command.x, command.y, command.rotation);
+    case 'RemoveInteriorFixture':
+      return removeInteriorFixture(state, command.buildingId, command.fixtureId);
+    case 'RepairInteriorFixture':
+      return repairInteriorFixture(state, command.buildingId, command.fixtureId);
+    case 'RepairAllInteriorFixtures':
+      return repairAllInteriorFixtures(state, command.buildingId);
     case 'SetHomeParquet':
       return setHomeParquet(state, command.buildingId, command.parquet);
-    case 'HireFloorTechnician':
-      return hireFloorTechnician(state, command.buildingId);
-    case 'ReleaseFloorTechnician':
-      return releaseFloorTechnician(state, command.buildingId);
-    case 'HireFloorRestocker':
-      return hireFloorRestocker(state, command.buildingId);
-    case 'ReleaseFloorRestocker':
-      return releaseFloorRestocker(state, command.buildingId);
+    case 'HireInteriorTechnician':
+      return hireInteriorTechnician(state, command.buildingId);
+    case 'ReleaseInteriorTechnician':
+      return releaseInteriorTechnician(state, command.buildingId);
+    case 'HireInteriorStaff':
+      return hireInteriorStaff(state, command.buildingId, command.role);
+    case 'ReleaseInteriorStaff':
+      return releaseInteriorStaff(state, command.buildingId, command.role);
+    case 'SetInteriorFocus':
+      return setInteriorFocus(state, command.buildingId, command.fixtureId, command.good);
+    case 'AssignInteriorStaff':
+      return assignInteriorStaff(state, command.buildingId, command.fixtureId);
+    case 'UnassignInteriorStaff':
+      return unassignInteriorStaff(state, command.buildingId, command.fixtureId);
+    case 'HireInteriorRestocker':
+      return hireInteriorRestocker(state, command.buildingId);
+    case 'ReleaseInteriorRestocker':
+      return releaseInteriorRestocker(state, command.buildingId);
     case 'SetExitRestock':
       return setExitRestock(state, command.buildingId, command.fixtureId, command.good);
-    case 'AssignFloorRestocker':
-      return assignFloorRestocker(state, command.buildingId, command.fixtureId);
-    case 'UnassignFloorRestocker':
-      return unassignFloorRestocker(state, command.buildingId, command.fixtureId);
+    case 'AssignInteriorRestocker':
+      return assignInteriorRestocker(state, command.buildingId, command.fixtureId);
+    case 'UnassignInteriorRestocker':
+      return unassignInteriorRestocker(state, command.buildingId, command.fixtureId);
     case 'PlaceFixture':
       return placeFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
     case 'StockShop':
@@ -1053,7 +1080,7 @@ function stockShop(state: GameState, buildingId: number, good: GoodId, now: numb
   const available = state.storage.goods[good] ?? 0;
   if (available < SHOP.stackSize) return fail('error.missingGoods');
   const alreadySelling = current.some((stack) => stack.stock > 0);
-  const nextSaleAt = alreadySelling ? null : now + saleIntervalOf(building);
+  const nextSaleAt = alreadySelling ? null : now + saleIntervalOf(building, good);
   const stacks = current.map((stack, index) =>
     index === slotIndex ? { ...stack, good, stock: SHOP.stackSize, nextSaleAt } : stack,
   );
@@ -1230,7 +1257,8 @@ function expandedPlacement(state: GameState, building: Building, tier: number): 
 function upgradedTo(building: Building, tier: number): Building {
   const { colorVariant, ...rest } = building;
   const keptColor = colorVariant && colorVariantsOf(building.type, tier).includes(colorVariant) ? { colorVariant } : {};
-  return { ...rest, ...keptColor, tier };
+  const grown = { ...rest, ...keptColor, tier };
+  return hasCounter(building.type) && !isShopType(building.type) ? { ...grown, stacks: stacksOf(grown) } : grown;
 }
 
 function equipHome(state: GameState, id: number): CommandOutcome {

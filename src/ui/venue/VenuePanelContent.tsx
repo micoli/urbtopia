@@ -12,14 +12,14 @@ interface VenuePanelContentProps {
   venue: Building;
 }
 
-// What the panel opened from the main menu shows.
+// What the panel opened from the main menu shows. The Management of a Hotel or an Arcade is where its Takings are.
 export function VenuePanelContent({ venue }: VenuePanelContentProps) {
   const panel = useStore(venueStore, store => store.panel);
-  if (panel === 'build') return <VenueBuildMenu tier={venue.tier} rank={isVenue(venue) ? venueRankOf(venue) : 1} venueType={venueTypeOf(venue)} />;
+  if (panel === 'build') return <VenueBuildMenu tier={venue.tier} rank={isVenue(venue) ? venueRankOf(venue) : 1} venueType={venueTypeOf(venue)} building={venue} />;
   if (panel === 'staff') return <VenueStaff venueId={venue.id} />;
   if (panel === 'menu') return <VenueMenu venueId={venue.id} />;
   if (panel === 'events') return <VenueEvents venueId={venue.id} />;
-  if (panel === 'takings') return <>
+  if (panel === 'takings' || panel === 'management') return <>
     <VenueTakings building={venue} editable />
     <UpgradeSection building={venue}/>
   </>;

@@ -1,4 +1,3 @@
-import { floorBenefitsOf, floorLinksOf } from '../factory/factoryFloor';
 import { FIXTURES } from '../venues/fixtures';
 import { hasStock } from '../venues/supermarket';
 import { hiredOf } from '../venues/staff';
@@ -7,7 +6,6 @@ import type { Building, GameState } from '../engine/state';
 export const VENUE_TUTORIAL_STEPS = {
   arcade: ['place', 'fixture', 'employee', 'collect'],
   supermarket: ['place', 'checkout', 'shelf', 'stock', 'cashier', 'collect'],
-  factory: ['motor', 'drive', 'flow', 'cooling'],
 } as const;
 
 export type VenueTutorialType = keyof typeof VENUE_TUTORIAL_STEPS;
@@ -23,30 +21,11 @@ export const stepsOfVenueTutorial = (type: VenueTutorialType): readonly VenueTut
 export const isVenueTutorialStep = (type: string, step: unknown): boolean =>
   hasVenueTutorial(type) && (stepsOfVenueTutorial(type) as readonly unknown[]).includes(step);
 
-// The Buildings a tutorial follows: the Venues of its type, or the Factories whose floor has been used.
+// The Buildings a tutorial follows: the Venues of its type.
 const sitesOf = (state: GameState, type: VenueTutorialType): Building[] =>
-  state.buildings.filter(building => building.type === type && (type === 'factory' ? building.floor !== undefined : building.venue !== undefined));
-
-function isDoneInFloor(building: Building, step: VenueTutorialStep): boolean {
-  const fixtures = building.floor?.fixtures ?? [];
-  const linked = floorLinksOf(fixtures).linked;
-  const linkedMachines = fixtures.filter(fixture => linked.has(fixture.id));
-  switch (step) {
-    case 'motor':
-      return fixtures.some(fixture => FIXTURES[fixture.type].role === 'motor');
-    case 'drive':
-      return linkedMachines.some(fixture => FIXTURES[fixture.type].drive !== undefined);
-    case 'flow':
-      return linkedMachines.some(fixture => FIXTURES[fixture.type].flow !== undefined);
-    case 'cooling':
-      return fixtures.some(fixture => FIXTURES[fixture.type].role === 'motor' && floorBenefitsOf(fixtures, fixture).cooling > 0);
-    default:
-      return false;
-  }
-}
+  state.buildings.filter(building => building.type === type && building.venue !== undefined);
 
 const isDoneIn = (building: Building, step: VenueTutorialStep): boolean => {
-  if (building.type === 'factory') return isDoneInFloor(building, step);
   const venue = building.venue!;
   switch (step) {
     case 'place':

@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "workshop",
+  "category": "line",
+  "name": {
+    "en": "Storage bin",
+    "fr": "Bac de stockage"
+  },
+  "model": "workshop-interior-bin",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "exit",
+  "assigns": "restocker",
+  "lineIn": ["back"]
+}

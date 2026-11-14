@@ -1,3 +1,4 @@
+import type { INTERIOR_ROLES_ALL } from '../venues/venueVocabulary';
 import type { PirateShowTitle } from '../tourism/pirateShows';
 import type { ClubData } from '../clubs/clubTypes';
 import type { ChallengeClaim, ChallengeProgress } from '../challenges/types';
@@ -35,7 +36,7 @@ export interface QueueEntry {
   startedAt: number | null;
   done: boolean;
   quantity: number;
-  // Packhouse: the Exit whose Restocker queued this production.
+  // The Exit whose Restocker queued this production (Packhouse), or the Oven whose baker did (Bakery).
   exitId?: number;
 }
 
@@ -63,11 +64,15 @@ export interface VenueFixture extends Coord {
   broken?: boolean;
   good?: GoodId;
   stock?: number;
-  // Exit of a Packhouse floor: the packed Good its Line restarts, and whether a Restocker is assigned to it.
+  // Exit of a Packhouse interior: the packed Good its Line restarts, and whether a Restocker is assigned to it.
   restock?: GoodId;
   restocker?: true;
   // The moment its Restocker last queued a production: the Exit served longest ago takes the next free Slot.
   restockedAt?: number;
+  // Bakery interior: the Recipe of an Oven or the Sold Good of a Display counter, and whether its baker or its seller is assigned to it.
+  recipe?: GoodId;
+  soldGood?: GoodId;
+  assigned?: true;
 }
 
 export interface VenueEvent {
@@ -78,17 +83,21 @@ export interface VenueEvent {
 
 export type StaffRole = 'manager' | 'employee' | 'technician' | 'security' | 'cashier' | 'stocker' | 'receptionist' | 'housekeeper' | 'cook' | 'kitchenAssistant' | 'maitreD' | 'waiter' | 'bartender';
 
+export type InteriorRole = (typeof INTERIOR_ROLES_ALL)[number];
+
 // The interior of a Factory: the Fixtures the player placed, like a Venue's, without Takings or Visitors.
-export interface FloorData {
+export interface InteriorData {
   fixtures: VenueFixture[];
   nextFixtureId: number;
   // The part of a unit of yield that the Machines added and no cycle has paid out yet, from 0 to 1 excluded.
   carry?: number;
   // Home interior: the floor chosen among the parquets, 0 when left out.
   parquet?: number;
+  // The Staff hired for the interior, by role; each fills a Job of the building and carries its own part of the interior's effect.
+  staff?: Partial<Record<InteriorRole, number>>;
   // Technicians hired for the floor; they repair worn Fixtures by the hour and slow their wear.
   technicians?: number;
-  // Restockers hired for a Packhouse floor; each is assigned by hand to an Exit.
+  // Restockers hired for a Packhouse interior; each is assigned by hand to an Exit.
   restockers?: number;
   // The floor's own stream of the game's Seed, for its breakdowns.
   rng?: number;
@@ -173,7 +182,7 @@ export interface Building extends Coord {
   coalEnabled?: boolean;
   name?: string;
   venue?: VenueData;
-  floor?: FloorData;
+  interior?: InteriorData;
   attraction?: AttractionData;
   club?: ClubData;
   // Stands only: the Pirate cove they belong to.

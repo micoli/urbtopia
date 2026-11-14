@@ -1,4 +1,17 @@
-import { greenProfileOf, isArenaType, isAttraction, isShowType, isSportVenueType, isStadiumType, sportRulesOf, isFacilityType, isTransitStopType, isUtilityType, kindOf, type Building } from '../../core';
+import {
+    greenProfileOf,
+    isArenaType,
+    isAttraction,
+    isShowType,
+    isSportVenueType,
+    isStadiumType,
+    sportRulesOf,
+    isFacilityType,
+    isTransitStopType,
+    isUtilityType,
+    kindOf,
+    type Building
+} from '../../core';
 import { t } from '../../i18n/t';
 import { ReachToggle } from '../common/ReachToggle';
 import { TownHallPanel } from '../politics/TownHallPanel';
@@ -19,6 +32,7 @@ import { StadiumPanel } from './StadiumPanel';
 import { StopLineButtons } from './StopLineButtons';
 import { StopNameField } from './StopNameField';
 import { UtilityPanel } from './UtilityPanel';
+import {isSportType} from "../../core/leisure/sportVenues.ts";
 
 export function BuildingUsage({ building }: { building: Building }) {
   const clubs = useFeatureFlag('clubs');
@@ -27,19 +41,19 @@ export function BuildingUsage({ building }: { building: Building }) {
   const isEcologicalBuilding = greenProfileOf(building.type) || ['solar', 'battery', 'backup'].includes(building.type) || isTransitStopType(building.type) || building.solar;
   return (
     <PanelSection id="usage" title={t('panel.section.usage')}>
+      {KindPanel ? <KindPanel building={building} /> : null}
       <BuildingAccess building={building} />
       <BuildingJobs building={building} />
       {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
       {isTransitStopType(building.type) ? <StopLineButtons building={building} /> : null}
       {isEcologicalBuilding ? <EcologicalBuildingPanel building={building} /> : null}
-      <SportCourtVisitors building={building} />
+      {isSportType(building) && <SportCourtVisitors building={building} />}
       {isSportVenueType(building.type) ? <ReachToggle /> : null}
       {isAttraction(building) ? <AttractionPanel building={building} /> : null}
       {isArenaType(building.type) && !isAttraction(building) ? <ArenaPanel building={building} /> : null}
       {clubs && sportRulesOf(building.type) ? <ClubPanel building={building} /> : null}
       {isStadiumType(building.type) ? <StadiumPanel building={building} /> : null}
       {isShowType(building.type) ? <ShowPanel building={building} /> : null}
-      {KindPanel ? <KindPanel building={building} /> : null}
       {isFacilityType(building.type) ? <FacilityPanel building={{ ...building, type: building.type }} /> : null}
       {building.type === 'townHall' ? <TownHallPanel building={building} /> : null}
       {isUtilityType(building.type) ? <UtilityPanel building={building} type={building.type} /> : null}

@@ -47,7 +47,7 @@ A Workshop that turns Wheat into Flour and Olives into Olive oil.
 A Factory that turns Flour and other Materials into Food Goods, and sells those Goods itself over its Counter.
 
 **Counter**:
-The sales Slots of a Production building that sells some Goods itself. The Bakery, the Dairy and the Knitwear factory each have one, with three Slots whatever its Tier, apart from its production Slots; it sells only the Goods its definition lists and is stocked from the Storehouse like a Shop.
+The sales Slots of a Production building that sells some Goods itself. The Bakery, the Dairy and the Knitwear factory each have one, with three Slots, apart from its production Slots; a Tier of the Bakery can give its own number of Counter Slots (`counterSlots` in its Tiers: 3, 3, 4, 4, 5), and the Slots of a Bakery that is upgraded grow with it; it sells only the Goods its definition lists and is stocked from the Storehouse like a Shop.
 _Avoid_: Shop (a Shop is a building of its own)
 
 **Shop**:
@@ -265,7 +265,7 @@ A Public facility of the Education Service category with five Tiers. Never requi
 _Avoid_: Media library, bookshop, archive
 
 **Public facility**:
-A building that serves Citizens with a public service in a Service category, at no operating cost except the Waste facilities (Mound, Incinerator, Recycling plant), which charge for the Waste they process. Its Tier raises its Citizen capacity; the Town hall has no Tier.
+A building that serves Citizens with a public service in a Service category, at no operating cost except the Waste facilities (Mound, Incinerator, Recycling plant), which charge for the Waste they process, and the wages of the Staff the player hires in its Service interior. Its Tier raises its Citizen capacity; the Town hall has no Tier.
 _Avoid_: Civic building, public service, amenity
 
 **Service category**:
@@ -345,11 +345,11 @@ The page that opens from a Venue's side panel and shows its interior, where the 
 _Avoid_: Interior, editor, back office
 
 **Fixture**:
-An item the player places inside a Venue's interior or a Factory floor: a counter, a table, a chair, a game machine, a billiard table, an air hockey table; on a Factory floor, a Motor, Gear, Shaft, Pump, Pipe or Machine; on a Packhouse floor, a Motor, Gear, Shaft, Packer, Conveyor, Strapper, Scanner or Exit (a Restocker is Staff, not a Fixture). Its position relative to the other Fixtures affects the Venue's performance.
+An item the player places inside a Venue's interior or a Factory interior: a counter, a table, a chair, a game machine, a billiard table, an air hockey table; on a Factory interior, a Motor, Gear, Shaft, Pump, Pipe or Machine; on a Packhouse interior, a Motor, Gear, Shaft, Packer, Conveyor, Strapper, Scanner or Exit (a Restocker is Staff, not a Fixture). Its position relative to the other Fixtures affects the Venue's performance.
 _Avoid_: Furniture, equipment, decoration
 
 **Staff**:
-The workers of a Venue, held as roles, not as individuals: manager, employee, technician and security in an Arcade; manager, cashier, stocker and security in a Supermarket; manager, receptionist, housekeeper and technician in a Hotel; cook, kitchen assistant, maître d', waiter and bartender in a Restaurant. Each role fills a post of the Venue's Tier (the manager from Tier 2, the technician from Tier 3), is staffed by Citizens like a Job, costs a one-off hiring fee of five days of wages, then a daily wage in Urbs. Hired Staff are the Venue's Jobs; those Citizens do not come for are Unfilled Jobs.
+The workers of a Venue, held as roles, not as individuals: manager, employee, technician and security in an Arcade; manager, cashier, stocker and security in a Supermarket; manager, receptionist, housekeeper and technician in a Hotel; cook, kitchen assistant, maître d', waiter and bartender in a Restaurant. In a Production interior or a Service interior: miller (Mill); baker, seller (Bakery); cheesemaker, cream maker (Dairy); stocker (Storehouse); teacher (School); librarian (Library); nurse, doctor, surgeon (Hospital), each carrying its own part of the interior's effect in proportion to its own Fill rate, with a Technician where Fixtures wear. Each role fills a post of the Venue's Tier (the manager from Tier 2, the technician from Tier 3), is staffed by Citizens like a Job, costs a one-off hiring fee of five days of wages, then a daily wage in Urbs. Hired Staff are the Venue's Jobs; those Citizens do not come for are Unfilled Jobs.
 _Avoid_: Employee (one of the roles), worker, personnel
 
 **Condition**:
@@ -396,20 +396,28 @@ _Avoid_: Revenue, income, till
 A simulated customer of a Venue, modelled in aggregate. Arcade, Supermarket and Restaurant draw them from the surrounding Citizens; a Hotel draws them from outside the city, by the city's attractiveness and its Reputation. In a Supermarket they are called Shoppers, in a Hotel guests, in a Restaurant Diners. Only a visual silhouette is shown, never saved.
 _Avoid_: Customer, guest, Citizen
 
-**Factory floor**:
-The interior of a Factory, opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Factory's Tier, where the player places Fixtures. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. A Factory with an empty floor produces as it always did; the floor only adds a bonus to speed and yield, capped by the Factory's Tier.
-_Avoid_: Venue (earns Urbs from Visitors), workshop floor, plant
+**Factory interior**:
+The Production interior of a Factory, opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Factory's Tier, where the player places Fixtures. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. A Factory with an empty floor produces as it always did; the floor only adds a bonus to speed and yield, capped by the Factory's Tier.
+_Avoid_: Factory floor, Venue (earns Urbs from Visitors), workshop floor, plant
 
-**Packhouse floor**:
-The interior of a Packhouse, opened from its side panel in the same Management view as a Venue and built on the same engine as the Factory floor: a 3D room whose grid grows with the Packhouse's Tier, where the player places Fixtures. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. A Packhouse with an empty floor packs as it always did; the floor only adds a bonus to speed and yield, capped by the Packhouse's Tier, and only for the packed Goods whose Line is Linked. Its Machines wear like those of a Factory floor, and a Technician repairs them. A Restocker hired for it keeps the production of a Line's Good going on its own.
-_Avoid_: Venue, Factory floor (a Factory's interior), packing line
+**Packhouse interior**:
+The Production interior of a Packhouse, opened from its side panel in the same Management view as a Venue and built on the same engine as the Factory interior: a 3D room whose grid grows with the Packhouse's Tier, where the player places Fixtures. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. A Packhouse with an empty floor packs as it always did; the floor only adds a bonus to speed and yield, capped by the Packhouse's Tier, and only for the packed Goods whose Line is Linked. Its Machines wear like those of a Factory interior, and a Technician repairs them. A Restocker hired for it keeps the production of a Line's Good going on its own.
+_Avoid_: Packhouse floor, Venue, Factory interior, packing line
+
+**Production interior**:
+The interior of a Production building or a Storehouse, opened from its side panel in the same Management view as a Venue, where the player places Fixtures to raise what the building produces or holds. It is not a Venue: it earns no Takings and has no Visitors, Rank or events. The Factory interior and the Packhouse interior are Production interiors.
+_Avoid_: Venue, floor, workshop
+
+**Service interior**:
+The interior of a Public facility (a School, a Library, a Hospital), opened from its side panel in the same Management view as a Venue, where the player places Fixtures and hires Staff to raise the quality of the service (the Knowledge a School or a Library gives, the Well-being a Hospital gives), never its reach or capacity. It is not a Venue: it earns no Takings and has no Visitors, Rank or events.
+_Avoid_: Venue, floor, Home interior (only a Comfort)
 
 **Line**:
-The network of a Packhouse floor that carries Packets from a Packer to an Exit, through Conveyors and Strappers, in one direction. A Line is Linked when it is unbroken from the Packer to an Exit; a break, or a worn Fixture that has broken down, unlinks everything downstream of it. Packets shown on it are a picture of the Line, never counted.
-_Avoid_: Belt, pipeline, Flow (the liquid network of a Factory floor)
+The network of a Packhouse interior that carries Packets from a Packer to an Exit, through Conveyors and Strappers, in one direction. A Line is Linked when it is unbroken from the Packer to an Exit; a break, or a worn Fixture that has broken down, unlinks everything downstream of it. Packets shown on it are a picture of the Line, never counted.
+_Avoid_: Belt, pipeline, Flow (the liquid network of a Factory interior)
 
 **Packer**:
-The Machine at the start of a Line, standing against the back wall of a Packhouse floor, on the tile along it and facing the room, that needs Drive, which enters on its right side or, in its left-handed version, on its left side, and puts Packets on the Line.
+The Machine at the start of a Line, standing against the back wall of a Packhouse interior, on the tile along it and facing the room, that needs Drive, which enters on its right side or, in its left-handed version, on its left side, and puts Packets on the Line.
 _Avoid_: Packing machine, entry
 
 **Conveyor**:
@@ -421,16 +429,27 @@ A Machine that a Line passes through, taking Packets in on one side and giving t
 _Avoid_: Binder, wrapper
 
 **Exit**:
-The end of a Line: a Conveyor standing against any edge of a Packhouse floor, on the tile along it with its back to the edge, turned by itself to face away from the room, that delivers the Packets through a hatch. Each Exit serves one size of packed Goods (Crate, Box or Pallet), told apart by its colour; a Slot's bonus counts only if an Exit of its size is Linked, and a Packhouse floor has as many Exits of each size as its Tier allows. A truck waits outside each Exit that is Linked. An Exit carries a Restock and, once the player assigns one, a Restocker.
+The end of a Line: a Conveyor standing against any edge of a Packhouse interior, on the tile along it with its back to the edge, turned by itself to face away from the room, that delivers the Packets through a hatch. Each Exit serves one size of packed Goods (Crate, Box or Pallet), told apart by its colour; a Slot's bonus counts only if an Exit of its size is Linked, and a Packhouse interior has as many Exits of each size as its Tier allows. A truck waits outside each Exit that is Linked. An Exit carries a Restock and, once the player assigns one, a Restocker.
 _Avoid_: Output, outlet, door
 
 **Restocker**:
-A worker of a Packhouse floor, hired from it like a Technician (a one-off fee of five days of wages, then a daily wage in Urbs, a number of posts set by the Packhouse's Tier) and assigned by hand to one Exit. While its Line is Linked and its Exit has a Restock, it keeps one production of that Good in the Packhouse's queue and sends each finished one to the Storehouse. It always works, whatever the Commute does, unless the wage cannot be paid, and is not one of the Packhouse's Jobs. An unassigned Restocker is paid all the same.
+A worker of a Packhouse interior, hired from it like a Technician (a one-off fee of five days of wages, then a daily wage in Urbs, a number of posts set by the Packhouse's Tier) and assigned by hand to one Exit. While its Line is Linked and its Exit has a Restock, it keeps one production of that Good in the Packhouse's queue and sends each finished one to the Storehouse. It always works, whatever the Commute does, unless the wage cannot be paid, and is not one of the Packhouse's Jobs. An unassigned Restocker is paid all the same.
 _Avoid_: Stocker (a Supermarket role), Technician, auto-production
 
 **Restock**:
 The packed Good that the player chooses on an Exit, of the size of that Exit, for its Restocker to keep producing. It only drives the Restocker; the Slots stay free for manual productions.
-_Avoid_: Recipe, repeat
+_Avoid_: Recipe (the Oven's choice in a Bakery), repeat
+
+**Recipe**:
+The Good, among those a Bakery produces and the city has unlocked, that the player chooses on an Oven of its interior for the baker assigned to that Oven. The baker's speed then applies to the productions of that Good only.
+_Avoid_: Restock (that is the Good of a Packhouse Exit)
+
+**Sold Good**:
+The Good, among those its Counter sells, the city has unlocked and the Ovens upstream of the Display counter bake (their Recipes), that the player chooses on a Display counter of a Bakery interior for the seller assigned to it. The seller's sales rate then applies to the sales of that Good only.
+_Avoid_: Restock, menu
+
+**Assignment**:
+The link the player makes by hand between one hired Staff of a Bakery interior and one Fixture: a baker to an Oven (with its Recipe), a seller to a Display counter (with its Sold Good). Once the Fixture is reached by the Line, the Staff works on its own (each Oven bakes on a line of its own, slowed by the other lines at work): the baker keeps one production of the Recipe going and stores it, the seller keeps the Sold Good stocked on the Counter and collects what it earns. One Staff serves one Fixture and a Fixture has at most one Staff. A Staff hired and not assigned does nothing, and is paid all the same. Selling or moving the Fixture frees the Staff. The effect of an assigned Staff is still counted in proportion to its Fill rate.
 
 **Scanner**:
 A Fixture a Line passes through, like a Strapper, that checks Packets and lowers the wear of the Fixtures downstream of it.
@@ -445,7 +464,7 @@ A note from 0 to 100 of a Home interior, built from how many of the Citizens' da
 _Avoid_: Standing (a Hotel Room's class), Reputation, Happiness
 
 **Machine**:
-A Fixture of a Factory floor that needs Drive, Flow or both, and a given turning direction for its Drive. Linked, it contributes to the bonus of the Factory; unlinked, it contributes nothing.
+A Fixture of a Factory interior that needs Drive, Flow or both, and a given turning direction for its Drive. Linked, it contributes to the bonus of the Factory; unlinked, it contributes nothing.
 _Avoid_: Equipment, Workshop
 
 **Drive**:
@@ -453,15 +472,15 @@ The turning force a Motor sends through Gears and Shafts to the Machines. A Gear
 _Avoid_: Power (electricity), torque
 
 **Bevel gear**:
-A Fixture of a Factory floor that turns the Drive a quarter turn (the elbow) or splits it three ways (the tee), so that one Motor can serve several Machines. Its cones mesh like Gears at a right angle: a turn is told about the +x or +z axis of the floor, whichever way a Fixture faces, so the Drive reverses between the stem and a side cone only when the two cones point toward the same sign of axis. In a tee the two side cones both mesh the stem, so they turn opposite ways.
+A Fixture of a Factory interior that turns the Drive a quarter turn (the elbow) or splits it three ways (the tee), so that one Motor can serve several Machines. Its cones mesh like Gears at a right angle: a turn is told about the +x or +z axis of the floor, whichever way a Fixture faces, so the Drive reverses between the stem and a side cone only when the two cones point toward the same sign of axis. In a tee the two side cones both mesh the stem, so they turn opposite ways.
 _Avoid_: Gearbox, junction
 
 **Flow**:
 The fluid a Tank holds and a Pump sends through Pipes to the Machines. A Pump takes the fluid in at its back and pushes it out of its front, and only does so when it is handed Drive like a Machine; without a Pump, a Tank gives nothing. A Tank feeds at most three Cooling vats; the ones past that, the highest ids first, get no Flow.
 _Avoid_: Water (the city's water network), pressure
 
-**Floor economy**:
-What a Factory floor costs and brings. Each Motor draws power from the city's electricity Demand, a fifth of it with nothing to drive. A Motor drives three Machines or Pumps, linked or not; the ones beyond that, the highest ids first, are overloaded: they stop and show red until a Motor is added or one is taken off. An active Machine (a linked one) adds its own speed and yield, and each kind of Machine that runs beyond the first adds a little yield. The bonuses count in full up to half the cap of the Factory's Tier, then every Machine adds less than the one before, and they never reach the cap.
+**Interior economy**:
+What a Factory interior costs and brings. Each Motor draws power from the city's electricity Demand, a fifth of it with nothing to drive. A Motor drives three Machines or Pumps, linked or not; the ones beyond that, the highest ids first, are overloaded: they stop and show red until a Motor is added or one is taken off. An active Machine (a linked one) adds its own speed and yield, and each kind of Machine that runs beyond the first adds a little yield. The bonuses count in full up to half the cap of the Factory's Tier, then every Machine adds less than the one before, and they never reach the cap.
 _Avoid_: Upkeep, running cost
 
 **Cooling vat**:
@@ -1170,9 +1189,9 @@ _Avoid_: Docs, documentation, manual, wiki
 - A Venue is distinct from a Casino and a Shop: Minigames and Stakes belong to the Casino only.
 - A breakdown of a Fixture is drawn from the Venue's own stream of the game's Seed, so reloading never dodges it.
 - A Venue is simulated in aggregate per game tick, collected by hand like Tax, and replayed by Catch-up.
-- A Factory floor is a Factory's interior, not a Venue: Minigames, Stakes, Takings, Visitors, Rank and events do not apply to it.
-- A Factory floor is optional: a Factory with no Fixtures produces as before, and the bonus never lowers the production a Factory has by Tier.
-- A Factory floor is simulated in aggregate, saved as its list of Fixtures and replayed by Catch-up like a Venue. Its Links are rebuilt from the grid, never saved.
+- A Factory interior is a Factory's interior, not a Venue: Minigames, Stakes, Takings, Visitors, Rank and events do not apply to it.
+- A Factory interior is optional: a Factory with no Fixtures produces as before, and the bonus never lowers the production a Factory has by Tier.
+- A Factory interior is simulated in aggregate, saved as its list of Fixtures and replayed by Catch-up like a Venue. Its Links are rebuilt from the grid, never saved.
 - A breakdown of a Gear or Pipe unlinks the Machines downstream of it; the Repair is paid in Urbs, by the player or by a Technician.
 - A Pleasure boat is a Leisure building and a Casino boat is a Casino, both hosted by a Boat on a Water tile.
 - Removing a Water tile that carries a Bridge, a Desert island or a Sea fort, a Marina that holds Boats, or a Water tile that would cut a Boat off its Marina or Pirate cove is refused. A Water tile that carries a Boat can be removed: the Boat moves to the nearest free tile of the water of its Marina or Pirate cove and stays attached to it; with no free tile left, the removal is refused.

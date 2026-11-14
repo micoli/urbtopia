@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useStore } from 'zustand';
-import { fixtureVenueOf, isHomeType } from '../../core';
+import { fixtureVenueOf, hasProductionInterior, hasServiceInterior, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { sceneHandle } from '../../store/sceneHandle';
 import { venueSceneHandle } from '../../store/venueSceneHandle';
 import { venueStore } from '../../store/venueStore';
 import { useGame } from '../common/hooks';
 import { VenueCanvas } from './VenueCanvas';
-import { FloorMenus } from '../factory/FloorMenus';
+import { InteriorMenus } from '../factory/InteriorMenus';
 import { HomeMenus } from '../home/HomeMenus';
 import { VenueMenus } from './VenueMenus';
 import { VenueRotateButtons } from './VenueRotateButtons';
@@ -47,7 +47,7 @@ export function VenueDialog() {
     <div className="venue-view" role="dialog" aria-modal="true" aria-label={t('venue.manage')}>
       <VenueCanvas venueId={venueId} venueType={fixtureVenueOf(venue)} />
       <h2 className="venue-view__title">{t(`building.${venue.type}`)}</h2>
-      {venue.type === 'factory' || venue.type === 'packhouse' ? <FloorMenus factory={venue} /> : isHomeType(venue.type) ? <HomeMenus home={venue} /> : <VenueMenus venue={venue} />}
+      {hasProductionInterior(venue) || hasServiceInterior(venue) ? <InteriorMenus factory={venue} /> : isHomeType(venue.type) ? <HomeMenus home={venue} /> : <VenueMenus venue={venue} />}
       <VenueRotateButtons />
     </div>
   );

@@ -29,7 +29,7 @@ export function SalesStacks({ building }: SalesStacksProps) {
     <Note tone="muted">{t('shop.sells')}: {[...listed.map(itemName), ...(sellsPacks ? [t('shop.packs')] : [])].join(', ')}</Note>
     <SlotList>
       {selling.map((stack, index) => (
-        <SlotList.Slot key={index} progress={isWaiting(stack) ? undefined : stackSaleProgress(stack, now, saleIntervalOf(building))}>
+        <SlotList.Slot key={index} progress={isWaiting(stack) ? undefined : stackSaleProgress(stack, now, saleIntervalOf(building, stack.good))}>
           <span>
             {itemName(stack.good!)} {SHOP.stackSize - stack.stock}/{SHOP.stackSize}
           </span>

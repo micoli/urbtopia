@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "workshop",
+  "category": "machines",
+  "name": {
+    "en": "Cleaner (air feed on the right)",
+    "fr": "Nettoyeur (alimentation pneumatique à droite)"
+  },
+  "model": "workshop-interior-cleaner-right",
+  "footprint": [1, 1],
+  "price": 500,
+  "minTier": 1,
+  "wear": 0.06,
+  "role": "machine",
+  "flow": ["right"],
+  "family": "cleaner",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

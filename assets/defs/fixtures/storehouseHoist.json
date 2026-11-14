@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "storehouse",
+  "category": "machines",
+  "name": {
+    "en": "Hoist (Drive on the right)",
+    "fr": "Palan (prise à droite)"
+  },
+  "model": "storehouse-interior-hoist",
+  "footprint": [1, 1],
+  "price": 900,
+  "minTier": 2,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["right"],
+  "family": "hoist",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

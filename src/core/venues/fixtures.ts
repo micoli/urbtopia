@@ -5,7 +5,7 @@ import type { FixtureId, VenueType } from '../engine/state';
 import { modelFileOf } from '../models/modelFiles';
 import type { FixtureDefinition } from './fixtureSchema';
 import { VENUE_TYPES } from './profiles';
-import { FACTORY_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type PackSize } from './venueVocabulary';
+import { FACTORY_FIXTURE_CATEGORIES, HOSPITAL_FIXTURE_CATEGORIES, LIBRARY_FIXTURE_CATEGORIES, SCHOOL_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, LINE_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, type PRODUCTION_INTERIOR_KINDS, type SERVICE_INTERIOR_KINDS, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type PackSize } from './venueVocabulary';
 
 export type { FixtureCategory };
 
@@ -14,11 +14,19 @@ export const FIXTURE_CATEGORIES = {
   ...(Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).fixtureCategories!])) as unknown as Record<VenueType, readonly FixtureCategory[]>),
   factory: FACTORY_FIXTURE_CATEGORIES,
   packhouse: PACKHOUSE_FIXTURE_CATEGORIES,
+  mill: FACTORY_FIXTURE_CATEGORIES,
+  bakery: LINE_FIXTURE_CATEGORIES,
+  dairy: LINE_FIXTURE_CATEGORIES,
+  workshop: LINE_FIXTURE_CATEGORIES,
+  storehouse: PACKHOUSE_FIXTURE_CATEGORIES,
+  school: SCHOOL_FIXTURE_CATEGORIES,
+  library: LIBRARY_FIXTURE_CATEGORIES,
+  hospital: HOSPITAL_FIXTURE_CATEGORIES,
   home: HOME_FIXTURE_CATEGORIES,
 } as Record<FixtureVenue, readonly FixtureCategory[]>;
 
-// What a Fixture can be placed in: a Venue, a Factory floor, a Packhouse floor or a Home interior.
-export type FixtureVenue = VenueType | 'factory' | 'packhouse' | 'home';
+// What a Fixture can be placed in: a Venue, a Factory interior, a Packhouse interior or a Home interior.
+export type FixtureVenue = VenueType | (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number] | 'home';
 
 export interface FixtureSpec {
   venue: FixtureVenue;
@@ -54,7 +62,7 @@ export interface FixtureSpec {
   waiting?: number;
   // Decoration: attractiveness it adds.
   attract?: number;
-  // Factory floor: what the Fixture does, the sides through which Drive and Flow pass, the direction a Machine needs its Drive to turn,
+  // Factory interior: what the Fixture does, the sides through which Drive and Flow pass, the direction a Machine needs its Drive to turn,
   // and what a linked Machine adds to the speed and the yield of the Factory's Slots.
   role?: FactoryFixtureRole | HomeFixtureRole;
   // Home interior: the Fixture hangs on a wall segment.
@@ -66,10 +74,20 @@ export interface FixtureSpec {
   speed?: number;
   smoke?: readonly [number, number, number];
   yield?: number;
+  sales?: number;
+  yieldGroup?: string;
+  // Service interior: what the piece adds to the quality of the service.
+  quality?: number;
+  capacity?: number;
+  power?: number;
+  assigns?: 'baker' | 'seller' | 'cheesemaker' | 'creamMaker' | 'miller' | 'restocker';
+  // A Machine on which the player picks the item that the Line carries (the Extractor of a Workshop).
+  picks?: true;
+  hatch?: number;
   family?: string;
   coolant?: number;
   heat?: true;
-  // Packhouse floor: the sides through which Packets come into a Line Fixture and leave it, and the size of packed Goods an Exit serves.
+  // Packhouse interior: the sides through which Packets come into a Line Fixture and leave it, and the size of packed Goods an Exit serves.
   lineIn?: readonly FixtureSide[];
   lineOut?: readonly FixtureSide[];
   packSize?: PackSize;
@@ -95,6 +113,9 @@ const specOf = ({ id: _id, kind: _kind, name: _name, model, tint, footprint, joi
 export const FIXTURE_ENTRIES = entriesOf<FixtureDefinition, FixtureId>(files, fixtureOrder);
 
 export const FIXTURES = Object.fromEntries(FIXTURE_ENTRIES.map(entry => [entry.id, specOf(entry)])) as Record<FixtureId, FixtureSpec>;
+
+// What a Restocker can serve: an Exit of a Packhouse, or a Machine of a Factory, which makes any Good the Factory can. A Boiler only heats: it makes nothing.
+export const isRestockable = (spec: Pick<FixtureSpec, 'role' | 'venue' | 'heat'>): boolean => spec.role === 'exit' || (spec.venue === 'factory' && spec.role === 'machine' && spec.heat !== true);
 
 export const FIXTURE_IDS = Object.keys(FIXTURES) as FixtureId[];
 

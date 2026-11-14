@@ -20,8 +20,7 @@ import { RecipeLabel } from './RecipeLabel';
 import { SalesStacks } from './SalesStacks';
 import { StockCount } from './StockCount';
 import { Icon } from '../common/Icon';
-import { FloorButton } from '../factory/FloorButton';
-import { VenueTutorialReplay } from '../tutorial/VenueTutorialReplay';
+import { InteriorButton } from '../factory/InteriorButton';
 
 interface ProductionPanelProps {
   building: Building;
@@ -61,8 +60,7 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
   const filtering = canFilter && onlyCraftable;
 
   return <DrawerPanel>
-      <FloorButton building={building} />
-      <VenueTutorialReplay building={building} />
+      <InteriorButton building={building} />
       <PowerShortageNote />
       <FirstUseHint id="production">{t('hint.production')}</FirstUseHint>
       <SlotList>

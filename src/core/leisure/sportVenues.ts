@@ -1,6 +1,8 @@
 import { SPORT_ENTRIES } from '../buildings/buildingDefinitions.ts';
 import { modelFileOf } from '../models/modelFiles.ts';
 import type { SportVenueType } from '../buildings/buildingTypes.generated.ts';
+import {Building} from "../engine/state.ts";
+import {walkDestinationOf} from "../traffic/walking.ts";
 
 export type { SportVenueType };
 
@@ -24,3 +26,4 @@ export const SPORT_VENUES = Object.fromEntries(SPORT_ENTRIES.map(({ id, model, f
 export const SPORT_VENUE_TYPES = Object.keys(SPORT_VENUES) as SportVenueType[];
 
 export const isSportVenueType = (type: string): type is SportVenueType => type in SPORT_VENUES;
+export const isSportType = (building: Building): boolean => walkDestinationOf(building) === 'sport';

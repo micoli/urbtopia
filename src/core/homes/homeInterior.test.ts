@@ -21,7 +21,7 @@ const failure = (state: GameState, command: Command) => {
   return result.ok ? null : result.error.key;
 };
 const home = (state: GameState): Building => state.buildings.find(candidate => candidate.id === 1)!;
-const place = (fixture: FixtureId, x: number, y: number, rotation: Rotation = 0, buildingId = 1): Command => ({ type: 'PlaceFloorFixture', buildingId, fixture, x, y, rotation });
+const place = (fixture: FixtureId, x: number, y: number, rotation: Rotation = 0, buildingId = 1): Command => ({ type: 'PlaceInteriorFixture', buildingId, fixture, x, y, rotation });
 const fixture = (type: FixtureId, x: number, y: number, id = 1): VenueFixture => ({ id, type, x, y, rotation: 0 });
 
 describe('the Comfort of a Home interior', () => {
@@ -68,9 +68,9 @@ describe('the Comfort of a Home interior', () => {
   });
 
   it('caps its Well-being bonus by the Tier of the Home', () => {
-    const base = { ...createBuilding(1, 'home', 0, 0, 0), floor: { fixtures: [fixture('homeBed', 0, 0)], nextFixtureId: 2 } };
+    const base = { ...createBuilding(1, 'home', 0, 0, 0), interior: { fixtures: [fixture('homeBed', 0, 0)], nextFixtureId: 2 } };
     expect(comfortBonusOf(base)).toBeCloseTo(homeWellbeingCapOf(1) * 0.25);
-    expect(comfortBonusOf({ ...base, floor: undefined })).toBe(0);
+    expect(comfortBonusOf({ ...base, interior: undefined })).toBe(0);
     expect(homeWellbeingCapOf(1)).toBe(5);
     expect(homeWellbeingCapOf(8)).toBe(12);
   });
@@ -78,16 +78,16 @@ describe('the Comfort of a Home interior', () => {
 
 describe('furnishing a Home', () => {
   it('starts with no interior and puts the Fixture on a new one, for a price', () => {
-    expect(home(city()).floor).toBeUndefined();
+    expect(home(city()).interior).toBeUndefined();
     const state = send(city(), place('homeBed', 0, 1));
-    expect(home(state).floor?.fixtures).toEqual([{ id: 1, type: 'homeBed', x: 0, y: 1, rotation: 0 }]);
+    expect(home(state).interior?.fixtures).toEqual([{ id: 1, type: 'homeBed', x: 0, y: 1, rotation: 0 }]);
     expect(state.urbs).toBe(100_000 - FIXTURES.homeBed.price);
   });
 
   it('leaves the Home as it was apart from its interior', () => {
     const before = home(city());
     const after = home(send(city(), place('homeBed', 0, 1)));
-    expect({ ...after, floor: undefined }).toEqual({ ...before, floor: undefined });
+    expect({ ...after, interior: undefined }).toEqual({ ...before, interior: undefined });
   });
 
   it('only takes Home Fixtures, and only in a Home', () => {
@@ -118,11 +118,11 @@ describe('furnishing a Home', () => {
 
   it('moves and removes a Fixture, refunding half its price', () => {
     let state = send(city(), place('homeBed', 0, 1));
-    state = send(state, { type: 'MoveFloorFixture', buildingId: 1, fixtureId: 1, x: 2, y: 1 });
-    expect(home(state).floor?.fixtures[0]).toMatchObject({ x: 2, y: 1 });
+    state = send(state, { type: 'MoveInteriorFixture', buildingId: 1, fixtureId: 1, x: 2, y: 1 });
+    expect(home(state).interior?.fixtures[0]).toMatchObject({ x: 2, y: 1 });
     const urbs = state.urbs;
-    state = send(state, { type: 'RemoveFloorFixture', buildingId: 1, fixtureId: 1 });
-    expect(home(state).floor?.fixtures).toEqual([]);
+    state = send(state, { type: 'RemoveInteriorFixture', buildingId: 1, fixtureId: 1 });
+    expect(home(state).interior?.fixtures).toEqual([]);
     expect(state.urbs).toBe(urbs + homeFixtureRefund('homeBed'));
     expect(homeFixtureRefund('homeBed')).toBe(FIXTURES.homeBed.price / 2);
   });
@@ -130,7 +130,7 @@ describe('furnishing a Home', () => {
   it('keeps its interior through a Tier upgrade', () => {
     const state = send(city(), place('homeBed', 0, 1));
     const upgraded = { ...state, buildings: state.buildings.map(building => (building.id === 1 ? { ...building, tier: 2 } : building)) };
-    expect(home(upgraded).floor?.fixtures).toHaveLength(1);
+    expect(home(upgraded).interior?.fixtures).toHaveLength(1);
   });
 });
 
@@ -168,7 +168,7 @@ describe('hanging a painting on a wall', () => {
     let state = send(city(), place('homePaintingLandscape', 1, 0, 0));
     state = send(state, place('homePaintingSeascape', 0, 2, 1));
     state = send(state, place('homeBed', 1, 0));
-    expect(home(state).floor?.fixtures).toHaveLength(3);
+    expect(home(state).interior?.fixtures).toHaveLength(3);
   });
 
   it('refuses a slot that is not on a back wall, at the doorway or already taken', () => {
@@ -197,20 +197,20 @@ describe('hanging a painting on a wall', () => {
 
     it('hangs on a face of the wall and is taken down, and refunded, with it', () => {
       let state = send(walled(), place('homePaintingLandscape', 1, 2, 2));
-      expect(home(state).floor?.fixtures).toHaveLength(3);
+      expect(home(state).interior?.fixtures).toHaveLength(3);
       const before = state.urbs;
-      state = send(state, { type: 'RemoveFloorFixture', buildingId: 1, fixtureId: 1 });
-      expect(home(state).floor?.fixtures.map(item => item.type)).toEqual(['homeWall']);
+      state = send(state, { type: 'RemoveInteriorFixture', buildingId: 1, fixtureId: 1 });
+      expect(home(state).interior?.fixtures.map(item => item.type)).toEqual(['homeWall']);
       expect(state.urbs).toBe(before + homeFixtureRefund('homeWall') + homeFixtureRefund('homePaintingLandscape'));
     });
 
     it('follows the wall when it moves, and is taken down when no face is left', () => {
       let state = send(walled(), place('homePaintingLandscape', 1, 2, 2));
-      state = send(state, { type: 'MoveFloorFixture', buildingId: 1, fixtureId: 1, x: 1, y: 4 });
-      const items = home(state).floor!.fixtures;
+      state = send(state, { type: 'MoveInteriorFixture', buildingId: 1, fixtureId: 1, x: 1, y: 4 });
+      const items = home(state).interior!.fixtures;
       expect(items.find(item => item.type === 'homePaintingLandscape')).toMatchObject({ x: 1, y: 4, rotation: 2 });
-      state = send(state, { type: 'MoveFloorFixture', buildingId: 1, fixtureId: 1, x: 2, y: 3 });
-      expect(home(state).floor!.fixtures.map(item => item.type)).not.toContain('homePaintingLandscape');
+      state = send(state, { type: 'MoveInteriorFixture', buildingId: 1, fixtureId: 1, x: 2, y: 3 });
+      expect(home(state).interior!.fixtures.map(item => item.type)).not.toContain('homePaintingLandscape');
     });
 
     it('refuses a face the wall does not show, a low wall and a bare floor tile', () => {
@@ -223,15 +223,15 @@ describe('hanging a painting on a wall', () => {
 
 describe('the floor of a Home interior', () => {
   it('is a free choice among the parquets, the first by default', () => {
-    expect(home(city()).floor?.parquet).toBeUndefined();
+    expect(home(city()).interior?.parquet).toBeUndefined();
     const state = send(city(), { type: 'SetHomeParquet', buildingId: 1, parquet: 2 });
-    expect(home(state).floor?.parquet).toBe(2);
+    expect(home(state).interior?.parquet).toBe(2);
     expect(state.urbs).toBe(city().urbs);
   });
 
   it('keeps the Fixtures when the parquet changes', () => {
     const state = send(send(city(), place('homeBed', 0, 1)), { type: 'SetHomeParquet', buildingId: 1, parquet: 1 });
-    expect(home(state).floor?.fixtures).toHaveLength(1);
+    expect(home(state).interior?.fixtures).toHaveLength(1);
   });
 
   it('refuses a parquet that does not exist, a building that is not a Home and a city too small', () => {

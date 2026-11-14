@@ -1,11 +1,12 @@
 import * as THREE from 'three';
+import { AvatarPatrol, patrolRoute } from './avatarPatrol';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, hostWallOf, partitionPieceOf, type Coord, type FixtureVenue, type LinePath, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
-import { venueCrowdModelsOf } from './venueCrowdModels';
-import { FloorLineLayer } from './FloorLineLayer';
-import { FloorMotionLayer, type FixtureMotion } from './FloorMotionLayer';
+import { RESTOCKER_MODEL, VENUE_STAFF_MODELS, venueCrowdModelsOf } from './venueCrowdModels';
+import { ITEM_SCALE, InteriorLineLayer } from './InteriorLineLayer';
+import { InteriorMotionLayer, type FixtureMotion } from './InteriorMotionLayer';
 import { VenueCrowdLayer } from './VenueCrowdLayer';
 import { ShelfStockLayer } from './ShelfStockLayer';
 import type { Figure } from './venueCrowd';
@@ -26,6 +27,21 @@ const WEAR_BAR_BACK = 0x1b1f2b;
 const WEAR_BAR_WIDTH = 0.8;
 const WEAR_BAR_THICKNESS = 0.1;
 const WEAR_BAR_HEIGHT = 1.4;
+// The Good of an Oven or of a Display counter stands on top of the furniture: on the roof of the oven, away from its chimney and its fan, and on the roof of the case, in the middle of the shop half of the tile.
+const OVEN_ROOF = 1.0;
+const OVEN_ROOF_DEPTH = 0.2;
+const CASE_ROOF = 0.76;
+const CASE_DEPTH = 0.3;
+// The Good an Exit of a Packhouse restocks stands above the hatch of its dock; that of a Machine of a Factory, above the Machine.
+const DOCK_ROOF = 0.95;
+const DOCK_DEPTH = 0.42;
+const MACHINE_ROOF = 1.1;
+const STAFF_SCALE = 0.7;
+// Staff stand on the corner of their Fixture, not in front of it.
+const CORNER_MARGIN = 0.09;
+
+// A side of a Fixture in the floor's axes (x to the east, z to the south), once the Fixture is turned: rotation 0 leaves it as drawn, each turn takes it a quarter turn on.
+const turnedOffset = (x: number, z: number, turns: number): { x: number; z: number } => (turns % 4 === 0 ? { x, z } : turnedOffset(-z, x, turns - 1));
 
 export interface VenueGhost {
   tiles: readonly Coord[];
@@ -53,8 +69,8 @@ export class VenueScene {
   private selectionRoot = new THREE.Group();
   private warningRoot = new THREE.Group();
   private crowd: VenueCrowdLayer;
-  private motion = new FloorMotionLayer();
-  private line = new FloorLineLayer();
+  private motion = new InteriorMotionLayer();
+  private line = this.newLineLayer();
   private lastFrame = performance.now();
   private fixturesSignature = '';
   private zoom = 1;
@@ -67,6 +83,11 @@ export class VenueScene {
   private westWalls = new THREE.Group();
   private cornerPost = new THREE.Group();
   private brokenRoot = new THREE.Group();
+  // The Good chosen on an Oven or a Display counter, floating above it, and the Staff assigned to it, standing beside it.
+  private tokensRoot = new THREE.Group();
+  private staffMixers: THREE.AnimationMixer[] = [];
+  private avatars: readonly InteriorAvatars[] = [];
+  private patrols: AvatarPatrol[] = [];
   private wearRoot = new THREE.Group();
   private shelfStock = new ShelfStockLayer(() => { this.dirty = true; });
   private raycaster = new THREE.Raycaster();
@@ -109,7 +130,7 @@ export class VenueScene {
     const sun = new THREE.DirectionalLight(0xfff2d6, 2.2);
     sun.position.set(6, 12, 8);
     const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
-    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.truckRoot, this.line.root, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
+    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.tokensRoot, this.truckRoot, this.line.root, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
     this.ready = this.library.ensure([...Object.values(this.shellModels), ...(venueType === 'home' ? PARQUET_MODELS : []), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...(FIXTURES[id].truck ? [FIXTURES[id].truck!] : []), ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
@@ -138,6 +159,15 @@ export class VenueScene {
     this.frameHandle = requestAnimationFrame(this.frame);
   }
 
+  private newLineLayer(): InteriorLineLayer {
+    const layer = new InteriorLineLayer();
+    layer.itemOf = good => {
+      const model = itemModelOf(good as GoodId);
+      return model && this.library.has(model) ? cloneModel(this.library.get(model)) : null;
+    };
+    return layer;
+  }
+
   // Swaps the floor of the room, for a Home interior whose parquet is chosen by the player.
   setFloorModel(model: string): void {
     if (model === this.shellModels.floor) return;
@@ -148,7 +178,7 @@ export class VenueScene {
 
   setFixtures(fixtures: readonly VenueFixture[]): void {
     if (this.shelfStock.sync(fixtures)) this.dirty = true;
-    const signature = JSON.stringify(fixtures.map(fixture => [fixture.id, fixture.type, fixture.x, fixture.y, fixture.rotation]));
+    const signature = JSON.stringify(fixtures.map(fixture => [fixture.id, fixture.type, fixture.x, fixture.y, fixture.rotation, fixture.recipe, fixture.soldGood, fixture.assigned, fixture.restock, fixture.restocker]));
     if (signature === this.fixturesSignature) return;
     this.fixturesSignature = signature;
     this.lastFixtures = fixtures;
@@ -156,24 +186,43 @@ export class VenueScene {
     this.rebuildFixtures();
   }
 
-  // The Fixtures of a Factory floor that run, and the way they turn.
+  // The Staff hired in a Service interior, standing in the room in costume beside the Fixtures of their post.
+  setAvatars(avatars: readonly InteriorAvatars[]): void {
+    if (JSON.stringify(avatars) === JSON.stringify(this.avatars)) return;
+    this.avatars = avatars;
+    this.rebuildTokens();
+  }
+
+  // The Fixtures of a Factory interior that run, and the way they turn.
   setMotion(motion: ReadonlyMap<number, FixtureMotion>, speed = 1): void {
     this.motion.setMotion(motion);
     this.motion.setSpeed(speed);
     this.dirty = true;
   }
 
-  // The ways that Packets take on a Packhouse floor, and the pace they ride at.
+  // The ways that Packets take on a Packhouse interior, and the pace they ride at.
   setLine(paths: readonly LinePath[], speed = 1): void {
     if (paths !== this.linePaths) {
       this.linePaths = paths;
       this.line.setPaths(paths);
+      this.loadBakedGoods(paths);
     }
     this.line.setSpeed(speed);
     this.dirty = true;
   }
 
-  // The Exits of a Packhouse floor whose Line is linked: a truck waits outside each of them.
+  // The Packets that have gone through an Oven are drawn as the Good that arrives at the Exit: its model is loaded, then the Packets are laid again.
+  private loadBakedGoods(paths: readonly LinePath[]): void {
+    const models = [...new Set(paths.flatMap(path => (path.baked ? [itemModelOf(path.baked.good as GoodId)] : [])))].filter((model): model is string => model !== null && !this.library.has(model));
+    if (models.length === 0) return;
+    void this.library.ensure(models).then(() => {
+      if (this.disposed || this.linePaths !== paths) return;
+      this.line.setPaths(paths);
+      this.dirty = true;
+    });
+  }
+
+  // The Exits of a Packhouse interior whose Line is linked: a truck waits outside each of them.
   setTrucks(exits: readonly VenueFixture[]): void {
     if (exits === this.trucks) return;
     this.trucks = exits;
@@ -217,7 +266,7 @@ export class VenueScene {
     this.markTiles(this.warningRoot, tiles, WARNING_COLOR);
   }
 
-  // A bar shows once a Fixture is worn: its Condition has fallen to 90 %. A Factory floor reads it as what is left, a Venue as what is lost.
+  // A bar shows once a Fixture is worn: its Condition has fallen to 90 %. A Factory interior reads it as what is left, a Venue as what is lost.
   setWear(fixtures: readonly VenueFixture[], remaining = false): void {
     this.clear(this.wearRoot, true);
     for (const fixture of fixtures) {
@@ -320,7 +369,99 @@ export class VenueScene {
       this.motion.bind(fixture.id, object, spec.smoke);
       if (spec.tint !== undefined) this.tint(object, spec.tint);
     }
+    this.rebuildTokens();
     this.dirty = true;
+  }
+
+  private rebuildTokens(): void {
+    this.clear(this.tokensRoot);
+    this.staffMixers = [];
+    this.patrols = [];
+    for (const fixture of this.lastFixtures) {
+      const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
+      const centre = { x: fixture.x + width / 2, z: fixture.y + depth / 2 };
+      const restockable = isRestockable(FIXTURES[fixture.type]);
+      const spec = FIXTURES[fixture.type];
+      const good = spec.assigns === 'restocker' ? workFocusOf(this.lastFixtures, fixture) : spec.picks ? fixture.recipe : restockable ? fixture.restock : focusOf(fixture);
+      const model = good === undefined ? null : itemModelOf(good);
+      if (model && this.ensured(model)) {
+        const token = new THREE.Group();
+        token.add(cloneModel(this.library.get(model)));
+        token.scale.setScalar(ITEM_SCALE);
+        const back = turnedOffset(0, -1, fixture.rotation);
+        const baker = isProducerRole(FIXTURES[fixture.type].assigns);
+        const [height, depth] = restockable || spec.picks || FIXTURES[fixture.type].assigns === 'miller' ? (FIXTURES[fixture.type].role === 'exit' ? [DOCK_ROOF, DOCK_DEPTH] : [MACHINE_ROOF, 0]) : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
+        token.position.set(centre.x + back.x * depth, height, centre.z + back.z * depth);
+        this.tokensRoot.add(token);
+      }
+      if (fixture.assigned || fixture.restocker) this.placeStaff(fixture, centre);
+    }
+    this.placeAvatars();
+    this.dirty = true;
+  }
+
+  // One avatar per Fixture of their post, who walks around it and stops now and then, turned toward it.
+  private placeAvatars(): void {
+    const attended = new Set<number>();
+    for (const { model, beside, count } of this.avatars) {
+      if (!this.ensured(model)) continue;
+      const posts = beside.flatMap(type => this.lastFixtures.filter(fixture => fixture.type === type && !attended.has(fixture.id)));
+      for (const fixture of posts.slice(0, count)) {
+        const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
+        const route = patrolRoute({ x: fixture.x, y: fixture.y, width, depth }, (x, z) => this.isFree(x, z));
+        if (route.length === 0) continue;
+        attended.add(fixture.id);
+        const holder = new THREE.Group();
+        const body = cloneModel(this.library.get(model));
+        holder.add(body);
+        holder.scale.setScalar(STAFF_SCALE);
+        const patrol = new AvatarPatrol(holder, new THREE.AnimationMixer(body), this.library.clipsOf(model), route, { x: fixture.x + width / 2, z: fixture.y + depth / 2 }, fixture.id);
+        this.patrols.push(patrol);
+        this.tokensRoot.add(holder);
+      }
+    }
+  }
+
+  private isFree(x: number, z: number): boolean {
+    if (x < 0 || z < 0 || x >= this.size || z >= this.size) return false;
+    return !this.lastFixtures.some(fixture => {
+      const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
+      return !FIXTURES[fixture.type].wall && x >= fixture.x && x < fixture.x + width && z >= fixture.y && z < fixture.y + depth;
+    });
+  }
+
+  // True once a model is loaded; otherwise asks for it and builds the tokens again when it has arrived.
+  private ensured(model: string): boolean {
+    if (this.library.has(model)) return true;
+    void this.library.ensure([model]).then(() => {
+      if (!this.disposed) this.rebuildTokens();
+    });
+    return false;
+  }
+
+  // The Staff assigned to a Fixture stands on the diagonal of its corner, turned toward it: a seller behind its Display counter, on the shop side; a baker at the side of its Oven that its gas does not use. A miller is a plain worker, like a Restocker.
+  private placeStaff(fixture: VenueFixture, centre: { x: number; z: number }): void {
+    const spec = FIXTURES[fixture.type];
+    const model = isRestockable(spec) || spec.assigns === 'miller' ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
+    if (!model || !this.ensured(model)) return;
+    const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.includes('right') ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
+    const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
+    const corner = { x: Math.sign(side.x - side.z), z: Math.sign(side.z + side.x) };
+    this.stand(model, { x: centre.x + corner.x * (width / 2 + CORNER_MARGIN), z: centre.z + corner.z * (depth / 2 + CORNER_MARGIN) }, { x: corner.x, z: corner.z });
+  }
+
+  private stand(model: string, at: { x: number; z: number }, side: { x: number; z: number }): void {
+    const holder = new THREE.Group();
+    const body = cloneModel(this.library.get(model));
+    holder.add(body);
+    holder.scale.setScalar(STAFF_SCALE);
+    holder.position.set(at.x, 0, at.z);
+    holder.rotation.y = Math.atan2(-side.x, -side.z);
+    const mixer = new THREE.AnimationMixer(body);
+    const idle = this.library.clipsOf(model).find(clip => clip.name === 'idle');
+    if (idle) mixer.clipAction(idle).play();
+    this.staffMixers.push(mixer);
+    this.tokensRoot.add(holder);
   }
 
   // A wall Fixture hangs on a back wall, or on the face of a wall of the room when it stands on the tile of one.
@@ -574,7 +715,9 @@ export class VenueScene {
     this.crowd.update(delta, this.camera);
     this.motion.update(delta);
     this.line.update(delta);
-    if (this.crowd.active || this.motion.active || this.line.active) this.dirty = true;
+    for (const mixer of this.staffMixers) mixer.update(delta);
+    for (const patrol of this.patrols) patrol.update(delta);
+    if (this.crowd.active || this.patrols.length > 0 || this.motion.active || this.line.active || this.staffMixers.length > 0) this.dirty = true;
     if (this.dirty) {
       this.dirty = false;
       this.renderer.render(this.scene, this.camera);

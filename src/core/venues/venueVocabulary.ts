@@ -2,22 +2,48 @@
 
 export const STAFF_ROLES_ALL = ['manager', 'employee', 'technician', 'security', 'cashier', 'stocker', 'receptionist', 'housekeeper', 'cook', 'kitchenAssistant', 'maitreD', 'waiter', 'bartender'] as const;
 
+// The Staff of a Production interior or a Service interior (a Technician is counted apart, as in the Factory interior).
+export const INTERIOR_ROLES_ALL = ['miller', 'baker', 'seller', 'cheesemaker', 'creamMaker', 'restocker', 'stocker', 'teacher', 'librarian', 'nurse', 'doctor', 'surgeon'] as const;
+
+// What a role of an interior carries: one part of the interior's effect.
+export const INTERIOR_PARTS_ALL = ['speed', 'salesRate', 'cheeseYield', 'creamYield', 'capacity', 'schooling', 'restock', 'knowledge', 'carePrimary', 'careDoctor', 'careSurgeon'] as const;
+
+export const INTERIOR_FAMILIES_ALL = ['production', 'service'] as const;
+
 export const FIXTURE_CATEGORIES_ALL = ['games', 'service', 'furniture', 'shelves', 'checkouts', 'decor', 'beds', 'bathroom', 'comfort', 'reception', 'walls', 'kitchen', 'dining', 'bar', 'power', 'plumbing', 'machines', 'line'] as const;
 
 export type FixtureCategory = (typeof FIXTURE_CATEGORIES_ALL)[number];
 
-// The sections of the build menu of a Factory floor, in order.
+// The sections of the build menu of a Factory interior, in order.
 export const FACTORY_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'plumbing', 'machines', 'walls'];
 
-// The sections of the build menu of a Packhouse floor, in order.
+// The sections of the build menu of a Packhouse interior, in order.
 export const PACKHOUSE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'machines', 'line', 'walls'];
 
-// The sides of a Factory floor Fixture, seen from the Fixture itself: its front is the side its model faces.
+// The sections of the build menu of a Production interior that runs a Line of crates, in order: the Bakery, the Dairy and the Storehouse.
+export const LINE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'plumbing', 'machines', 'line', 'walls'];
+
+// The Production interiors that share the engine of the Factory interior, by the kind of their Fixtures.
+export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse', 'workshop'] as const;
+
+// The Service interiors, by the kind of their Fixtures.
+export const SERVICE_INTERIOR_KINDS = ['school', 'library', 'hospital'] as const;
+
+export const isServiceInteriorKind = (kind: string): kind is (typeof SERVICE_INTERIOR_KINDS)[number] => (SERVICE_INTERIOR_KINDS as readonly string[]).includes(kind);
+
+export const isProductionInteriorKind = (kind: string): kind is (typeof PRODUCTION_INTERIOR_KINDS)[number] => (PRODUCTION_INTERIOR_KINDS as readonly string[]).includes(kind);
+
+// The sections of the build menu of the Service interiors, in order.
+export const SCHOOL_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['furniture', 'shelves', 'decor', 'walls'];
+export const LIBRARY_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['shelves', 'furniture', 'comfort', 'walls'];
+export const HOSPITAL_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['beds', 'service', 'furniture', 'walls'];
+
+// The sides of a Factory interior Fixture, seen from the Fixture itself: its front is the side its model faces.
 export const FIXTURE_SIDES = ['front', 'right', 'back', 'left'] as const;
 
 export type FixtureSide = (typeof FIXTURE_SIDES)[number];
 
-// A Conveyor, a Scanner and an Exit belong to the Line of a Packhouse floor.
+// A Conveyor, a Scanner and an Exit belong to the Line of a Packhouse interior.
 export const FACTORY_FIXTURE_ROLES = ['motor', 'gear', 'shaft', 'bevel', 'pump', 'tank', 'pipe', 'machine', 'conveyor', 'scanner', 'exit'] as const;
 
 // The sizes of packed Goods an Exit serves.

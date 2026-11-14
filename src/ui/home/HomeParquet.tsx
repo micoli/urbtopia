@@ -10,7 +10,7 @@ interface HomeParquetProps {
 
 // The floor of a Home interior: a free choice among the parquets.
 export function HomeParquet({ home }: HomeParquetProps) {
-  const chosen = home.floor?.parquet ?? 0;
+  const chosen = home.interior?.parquet ?? 0;
   return (
     <section className="venue-build">
       {PARQUETS.map((parquet, index) => (

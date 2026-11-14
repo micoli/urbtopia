@@ -126,7 +126,7 @@ export function comfortOf(fixtures: readonly VenueFixture[]): number {
 }
 
 // The Well-being points a Home gains from its interior: its Comfort, as a share of the most its Tier allows. Never negative.
-export function comfortBonusOf(home: Pick<Building, 'tier' | 'floor'>): number {
-  if (!home.floor) return 0;
-  return homeWellbeingCapOf(home.tier) * comfortOf(home.floor.fixtures) / 100;
+export function comfortBonusOf(home: Pick<Building, 'tier' | 'interior'>): number {
+  if (!home.interior) return 0;
+  return homeWellbeingCapOf(home.tier) * comfortOf(home.interior.fixtures) / 100;
 }

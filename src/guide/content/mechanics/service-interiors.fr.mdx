@@ -1,0 +1,31 @@
+export const meta = {
+  title: 'Intérieurs de service',
+  summary: "Aménagez l'école, la bibliothèque et l'hôpital de l'intérieur, et embauchez le personnel qui transforme le mobilier en un meilleur service.",
+  order: 37,
+};
+
+## Ce que c'est
+
+L'**école**, la **bibliothèque** et l'**hôpital** ouvrent un intérieur : une pièce où l'on place du mobilier. Il ne rapporte aucune recette et n'a aucun visiteur. Un intérieur vide laisse l'équipement exactement comme avant. Un intérieur meublé ajoute de la **qualité** au service, jusqu'à un plafond qui monte avec le niveau de l'équipement. Ces intérieurs sont une fonctionnalité bêta : activez *Intérieurs de service* dans les réglages, et la ville doit compter assez d'habitants pour qu'ils s'ouvrent.
+
+Le mobilier ne s'use jamais, et la portée et la capacité de l'équipement ne changent pas : l'intérieur améliore seulement le service rendu aux logements qu'il dessert déjà.
+
+## Le mobilier ajoute de la qualité
+
+Chaque pièce ajoute un peu de qualité. Les premières comptent en entier, puis chacune ajoute moins, et le total n'atteint jamais le plafond du niveau. Un **tableau noir** se suspend au mur du fond de la pièce, comme un tableau dans un logement.
+
+## Le personnel la livre
+
+Le mobilier seul ne fait rien : il faut quelqu'un pour s'en servir. Chaque équipement embauche ses propres rôles, comme le personnel d'un lieu (des frais de cinq jours de salaire une fois, puis un salaire par jour), et la qualité ne compte qu'au prorata du personnel qui vient vraiment travailler.
+
+- Un **enseignant** augmente la part de scolarité qu'une école donne au Savoir des logements qu'elle dessert.
+- Un **bibliothécaire** augmente le Savoir qu'une bibliothèque donne.
+- À l'hôpital, un **infirmier**, un **médecin** et un **chirurgien** livrent chacun une part des soins, qui ajoute du bien-être aux logements desservis. L'infirmier vient en premier, le médecin dès le niveau 2 et le chirurgien dès le niveau 3.
+
+## Ce que cela coûte
+
+Un équipement n'a aucun coût de fonctionnement par lui-même, mais le personnel que vous embauchez est payé chaque heure, dans la limite de vos Urbs, et occupe des emplois du bâtiment. Un équipement sans intérieur, ou sans personnel embauché, ne coûte rien, comme avant.
+
+## Les chiffres de votre ville
+
+<LiveRules id="serviceInteriors" />

@@ -1,5 +1,6 @@
 import type { Building, BuildingType } from '../engine/state';
 import { totalStaff } from '../venues/staff';
+import { totalInteriorStaff } from '../interiors/interiorStaff';
 import { VENUE_TYPES, isVenueType } from '../venues/profiles';
 import { INDUSTRY_TYPES, industryWeightOf } from '../economy/productionTypes';
 import { SHOP_TYPES, isShopType, shopTierOf } from '../economy/shops';
@@ -18,7 +19,8 @@ export const JOBS = {
   uncappedFacility: 40,
 };
 
-export function jobsOf(building: Building): number {
+// The Jobs a building offers by itself, before the Staff hired in its interior.
+function baseJobsOf(building: Building): number {
   if (building.type === 'casino') return JOBS.casinoPerTier * building.tier;
   if (building.type === 'farm') return JOBS.farmPerTier * building.tier;
   if (building.type === 'packhouse') return JOBS.packhousePerTier * building.tier;
@@ -31,3 +33,6 @@ export function jobsOf(building: Building): number {
   const capacity = FACILITIES[building.type].capacity === null ? null : facilityCapacity(building.type, building.tier);
   return capacity === null ? JOBS.uncappedFacility : Math.round(capacity / JOBS.facilityCapacityDivisor);
 }
+
+// The Staff hired in an interior are Jobs of the building, filled by Citizens like the others.
+export const jobsOf = (building: Building): number => baseJobsOf(building) + totalInteriorStaff(building);

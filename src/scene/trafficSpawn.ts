@@ -1,12 +1,12 @@
 import { tileKey, type Coord } from '../core';
 
 export const SPAWN = {
-  floor: 1,
+  interior: 1,
   saturatedBonus: 4,
 };
 
 export function spawnWeight(ratio: number): number {
-  return SPAWN.floor + SPAWN.saturatedBonus * Math.min(1, Math.max(0, ratio - 1));
+  return SPAWN.interior + SPAWN.saturatedBonus * Math.min(1, Math.max(0, ratio - 1));
 }
 
 // At a junction a vehicle that does not go straight leans towards the section with the most traffic: the busiest weighs this many times an empty one.

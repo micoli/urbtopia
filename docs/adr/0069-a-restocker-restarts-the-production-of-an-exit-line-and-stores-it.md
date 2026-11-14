@@ -4,6 +4,8 @@ status: accepted
 
 # A Restocker restarts the production of an Exit's Line and stores it
 
+> Renamed: what this ADR calls the Factory floor or the Packhouse floor is now the Factory interior or the Packhouse interior ([ADR 0070](0070-interiors-come-in-three-families-venue-production-and-service.md)).
+
 Amends [ADR 0068](0068-packhouse-floor-reuses-the-factory-floor-engine-with-a-line-network.md) and follows [ADR 0065](0065-factory-floor-technician-always-works.md). The Packhouse floor gains a second worker, the Restocker, who spares the player the manual queueing and collecting of a Good they pack all the time.
 
 ## Decisions
@@ -33,3 +35,7 @@ A Packhouse is a loop the player repeats: queue, wait, collect. The Restocker ma
 - The Exit's side panel gains a Restock choice and a Restocker assignment, and the Packhouse floor panel a hire/release control next to the Technician's.
 - `packhouseFloor.json` gains `restockerPosts`; `venues.json` gains the `restocker` wage; the persistence validation accepts the new fields.
 - The production advance gains a restart-and-store step for assigned Exits, which Catch-up replays.
+
+## Update: the Factory
+
+A Factory hires Restockers too (`restockerPosts` in `factoryInterior.json`). Each is assigned to a Machine that runs (driven, fed, not broken) instead of an Exit, and a Machine can be given any Good the Factory produces. Without a Restocker, the player collects the production by hand, as before.

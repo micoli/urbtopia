@@ -1,6 +1,6 @@
 import venues from '../../../assets/defs/balance/venues.json' with { type: 'json' };
 import { definitionOf, tiersOf } from '../buildings/buildingDefinitions';
-import type { StaffRole, VenueData, VenueType } from '../engine/state';
+import type { InteriorRole, StaffRole, VenueData, VenueType } from '../engine/state';
 import { VENUE_TYPES } from './profiles';
 
 export const STAFF_ROLES_BY_VENUE = Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).staffRoles!])) as unknown as Record<VenueType, readonly StaffRole[]>;
@@ -12,8 +12,8 @@ export const staffRolesOf = (venue: VenueType): readonly StaffRole[] => STAFF_RO
 // The role that serves the front desk of each kind of Venue.
 export const FRONT_ROLE = Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).frontRole!])) as Record<VenueType, StaffRole>;
 
-// The Restocker of a Packhouse floor is paid like Staff but belongs to no Venue.
-export type WagedRole = StaffRole | 'restocker';
+// The Restocker of a Packhouse interior is paid like Staff but belongs to no Venue.
+export type WagedRole = StaffRole | InteriorRole | 'restocker';
 
 export const STAFF = venues.staff as Omit<typeof venues.staff, 'dailyWage'> & { dailyWage: Record<WagedRole, number> };
 

@@ -1,9 +1,10 @@
 import { useStore } from 'zustand';
-import type { Building } from '../../core';
+import { hasProductionInterior, hasServiceInterior, isVenue, type Building } from '../../core';
 import { venueStore } from '../../store/venueStore';
 import { PanelHeader } from '../common/PanelHeader';
 import { useVenueFixtureSelected, VenueFixturePanel } from './VenueFixturePanel';
-import { FloorStaff } from '../factory/FloorStaff';
+import { InteriorManagement } from '../factory/InteriorManagement';
+import { InteriorStaff } from '../factory/InteriorStaff';
 import { HomeParquet } from '../home/HomeParquet';
 import { VenuePanelContent } from './VenuePanelContent';
 import { venuePanelTitle } from './venuePanelTitle';
@@ -29,8 +30,8 @@ export function VenueSidePanel({ venue }: VenueSidePanelProps) {
   if (!title) return null;
   return (
     <aside className="side-panel">
-      <PanelHeader title={title} onClose={closePanel} />
-      {panel === 'parquet' ? <HomeParquet home={venue} /> : venue.type === 'factory' || venue.type === 'packhouse' ? <FloorStaff factory={venue} /> : <VenuePanelContent venue={venue} />}
+      <PanelHeader title={title} onClose={closePanel} debugNode={venue} />
+      {panel === 'management' && !isVenue(venue) ? <InteriorManagement factory={venue} /> : panel === 'parquet' ? <HomeParquet home={venue} /> : hasProductionInterior(venue) || hasServiceInterior(venue) ? <InteriorStaff factory={venue} /> : <VenuePanelContent venue={venue} />}
     </aside>
   );
 }

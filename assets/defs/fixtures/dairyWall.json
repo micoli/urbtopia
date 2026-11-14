@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "dairy",
+  "category": "walls",
+  "name": {
+    "en": "Wall",
+    "fr": "Mur"
+  },
+  "model": "dairy-interior-partition",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "partition": true,
+  "joins": {
+    "elbow": "dairy-interior-partition-elbow",
+    "tee": "dairy-interior-partition-tee",
+    "cross": "dairy-interior-partition-cross"
+  }
+}

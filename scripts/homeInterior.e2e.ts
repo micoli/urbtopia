@@ -4,7 +4,6 @@ test('a Home is furnished from its panel and its Comfort follows the layout', as
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => {
-    localStorage.setItem('urbtopia-flags', JSON.stringify({ homeInterior: true }));
     localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', taxBadgeThreshold: 1, layout: 'C' }));
   });
   await page.goto('/?e2e');
@@ -25,7 +24,7 @@ test('a Home is furnished from its panel and its Comfort follows the layout', as
       { id: 7, type: 'homePaintingSeascape', x: 0, y: 2, rotation: 1 },
       { id: 8, type: 'homePaintingAbstract', x: 2, y: 0, rotation: 0 },
     ];
-    const home = { ...createBuilding(50, 'home', 64, 64, 0), tier: 2, floor: { fixtures, nextFixtureId: 10 } };
+    const home = { ...createBuilding(50, 'home', 64, 64, 0), tier: 2, interior: { fixtures, nextFixtureId: 10 } };
     gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [home, { ...createBuilding(51, 'home', 70, 64, 0), tier: 8 }, { ...createBuilding(52, 'home', 74, 64, 0), tier: 8 }], nextId: 53, adaptationUntil: 0 });
     uiStore.getState().select(50);
   });
@@ -45,7 +44,7 @@ test('a Home is furnished from its panel and its Comfort follows the layout', as
     const { gameStore } = await import('../src/store/gameStore.ts');
     const state = gameStore.getState().state;
     const home = state.buildings.find(building => building.id === 50)!;
-    gameStore.getState().replaceState({ ...state, buildings: state.buildings.map(building => (building.id === 50 ? { ...home, floor: { ...home.floor!, fixtures: home.floor!.fixtures.filter(fixture => fixture.type !== 'homeTelevision') } } : building)) });
+    gameStore.getState().replaceState({ ...state, buildings: state.buildings.map(building => (building.id === 50 ? { ...home, interior: { ...home.interior!, fixtures: home.interior!.fixtures.filter(fixture => fixture.type !== 'homeTelevision') } } : building)) });
   });
   await expect.poll(async () => stats.filter({ hasText: 'Confort' }).textContent()).not.toBe(before);
   expect(errors).toEqual([]);

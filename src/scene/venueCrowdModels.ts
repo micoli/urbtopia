@@ -1,3 +1,4 @@
+import { isProductionInteriorKind, isServiceInteriorKind } from '../core/venues/venueVocabulary';
 import type { FixtureVenue, VenueType } from '../core';
 import { definitionOf } from '../core/buildings/buildingDefinitions';
 import { VENUE_CUSTOMER_MODELS } from '../core/infrastructure/infrastructure';
@@ -9,5 +10,8 @@ export { VENUE_CUSTOMER_MODELS };
 // The staff of a Venue is the character shipped with its own pack. The Hotel is built from the furniture kit, which has none.
 export const VENUE_STAFF_MODELS = Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).staffModels!.map(modelFileOf)])) as unknown as Record<VenueType, readonly string[]>;
 
-// A Factory floor and a Home interior have no crowd.
-export const venueCrowdModelsOf = (venue: FixtureVenue): readonly string[] => (venue === 'factory' || venue === 'packhouse' || venue === 'home' ? [] : [...new Set([...VENUE_CUSTOMER_MODELS, ...VENUE_STAFF_MODELS[venue]])]);
+// The Restockers of a Factory or a Packhouse are plain workers, not the cook of the Restaurant.
+export const RESTOCKER_MODEL = VENUE_STAFF_MODELS.hotel[1]!;
+
+// A Factory interior and a Home interior have no crowd.
+export const venueCrowdModelsOf = (venue: FixtureVenue): readonly string[] => (venue === 'home' || isProductionInteriorKind(venue) || isServiceInteriorKind(venue) ? [] : [...new Set([...VENUE_CUSTOMER_MODELS, ...VENUE_STAFF_MODELS[venue]])]);

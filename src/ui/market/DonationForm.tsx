@@ -33,7 +33,7 @@ export function DonationForm({ item, onClose }: DonationFormProps) {
     gameStore.getState().send({ type: 'DonateItems', id: crypto.randomUUID(), item, quantity: amount, accountId });
     if (!gameStore.getState().lastError) onClose();
   }}>
-    <NumberStepper label={t('solidarity.quantity')} value={amount} min={1} max={available} onChange={setQuantity} />
+    <NumberStepper label={t('solidarity.quantity')} value={amount} min={1} max={available} onChange={setQuantity} maxLabel={t('solidarity.all')} />
     {valid && <div className="donation-preview" aria-live="polite">
       <p>{stockText}</p>
       {!isGood(item) && <p>{t('solidarity.materialNote')}</p>}

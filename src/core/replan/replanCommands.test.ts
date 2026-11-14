@@ -39,7 +39,7 @@ const lift = (action: Extract<Command, { type: 'Replan' }>['action']): Command =
 
 function city(): GameState {
   const base = newGame({ seed: 'replan-commands', now: T0 });
-  const home = { ...createBuilding(1, 'home', 40, 40, 0), tier: 6, floor: { fixtures: [], nextFixtureId: 4, parquet: 2 } };
+  const home = { ...createBuilding(1, 'home', 40, 40, 0), tier: 6, interior: { fixtures: [], nextFixtureId: 4, parquet: 2 } };
   const harbour: GameState = {
     ...base, urbs: 100_000, tutorial: null, adaptationUntil: 0, nextId: 300,
     roads: [...row(40, 49, 47), ...row(48, 51, 60), ...row(55, 58, 60)].map((tile, index) => ({ ...tile, kind: 'road' as const, ...(index === 0 ? { tier: 2 } : {}) })),

@@ -20,6 +20,8 @@ import { greenBeltBonusOf } from '../politics/ordinanceEffects';
 import { incineratorPenaltyOf, odorPenaltyOf } from '../waste/wasteNuisance';
 import { buildingsOfType } from '../buildings/buildingIndex';
 import { comfortBonusOf } from '../homes/homeInterior';
+import { careWellbeingOf } from '../interiors/serviceInterior';
+import { servingFacilitiesOf } from '../services/services';
 
 const WELLBEING_LIMIT = 100;
 
@@ -76,6 +78,15 @@ export function pollutionPenaltyOf(state: GameState, home: Building, coalRates: 
   return Math.min(ECOLOGY.coalWellbeingCap, penalty + incineratorPenaltyOf(state, home));
 }
 
+// The best care that the Hospitals serving a Home bring it, in Well-being points, with the Jobs that Citizens fill on the Commute read from the Commute being worked out.
+function careBonusOf(state: GameState, home: Building, congestion: CongestionStats): number {
+  const hospitals = servingFacilitiesOf(state).get(home.id)?.get('hospital') ?? [];
+  return Math.max(0, ...hospitals.map(id => {
+    const hospital = state.buildings.find(candidate => candidate.id === id);
+    return hospital ? careWellbeingOf(state, hospital, isAdapting(state) ? null : congestion.filledJobs) : 0;
+  }));
+}
+
 function computeHomeBenefits(state: GameState, home: Building, coalRates: ReadonlyMap<number, number>, coverage: ServiceCoverage, poweredCasinos: ReadonlySet<number>, congestion: CongestionStats) {
   const green = greenBenefits(state, home);
   const pollutionPenalty = pollutionPenaltyOf(state, home, coalRates);
@@ -91,7 +102,8 @@ function computeHomeBenefits(state: GameState, home: Building, coalRates: Readon
   const beltBonus = green.wellbeing > 0 ? Math.max(0, Math.min(greenBeltBonusOf(state), WELLBEING_LIMIT - withServices - walkingBonus)) : 0;
   const knowledgeBonus = Math.max(0, Math.min(knowledgeEffect(state, 'wellbeing'), WELLBEING_LIMIT - withServices - walkingBonus - beltBonus));
   const comfortBonus = Math.max(0, Math.min(comfortBonusOf(home), WELLBEING_LIMIT - withServices - walkingBonus - beltBonus - knowledgeBonus));
-  const withoutSolidarity = withServices + walkingBonus + beltBonus + knowledgeBonus + comfortBonus - pollutionPenalty - odorPenalty - servicePenalty - congestionPenalty - gatheringPenalty - unemploymentPenalty;
+  const careBonus = Math.max(0, Math.min(careBonusOf(state, home, congestion), WELLBEING_LIMIT - withServices - walkingBonus - beltBonus - knowledgeBonus - comfortBonus));
+  const withoutSolidarity = withServices + walkingBonus + beltBonus + knowledgeBonus + comfortBonus + careBonus - pollutionPenalty - odorPenalty - servicePenalty - congestionPenalty - gatheringPenalty - unemploymentPenalty;
   const solidarity = Math.min(solidarityBonus(state), WELLBEING_LIMIT - withoutSolidarity);
   return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, odorPenalty, servicePenalty, congestionPenalty, gatheringPenalty, unemploymentPenalty, walkingBonus, knowledgeBonus, comfortBonus, solidarityBonus: solidarity };
 }

@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "hospital",
+  "category": "walls",
+  "name": {
+    "en": "Wall",
+    "fr": "Mur"
+  },
+  "model": "hospital-interior-partition",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "partition": true,
+  "joins": {
+    "elbow": "hospital-interior-partition-elbow",
+    "tee": "hospital-interior-partition-tee",
+    "cross": "hospital-interior-partition-cross"
+  }
+}

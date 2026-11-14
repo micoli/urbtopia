@@ -1,0 +1,346 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "buildings": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "family": {
+            "type": "string",
+            "enum": [
+              "production",
+              "service"
+            ]
+          },
+          "unlockCitizens": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "service": {
+            "type": "object",
+            "properties": {
+              "gridSizes": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              },
+              "qualityCaps": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              }
+            },
+            "required": [
+              "gridSizes",
+              "qualityCaps"
+            ],
+            "additionalProperties": false
+          },
+          "care": {
+            "type": "object",
+            "properties": {
+              "points": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "weights": {
+                "type": "object",
+                "properties": {
+                  "carePrimary": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "careDoctor": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "careSurgeon": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "required": [
+                  "carePrimary",
+                  "careDoctor",
+                  "careSurgeon"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "points",
+              "weights"
+            ],
+            "additionalProperties": false
+          },
+          "layout": {
+            "type": "object",
+            "properties": {
+              "gridSizes": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              },
+              "speedCaps": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "yieldCaps": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "technicianPosts": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "line": {
+                "type": "boolean",
+                "const": true
+              },
+              "salesCaps": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "capacityCaps": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "yieldGroups": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "additionalProperties": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "yieldFromExits": {
+                "type": "boolean",
+                "const": true
+              },
+              "assignments": {
+                "type": "boolean",
+                "const": true
+              },
+              "autoWork": {
+                "type": "boolean",
+                "const": true
+              },
+              "laneSlowdown": {
+                "type": "number",
+                "minimum": 0
+              },
+              "extraProducers": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "milling": {
+                "type": "object",
+                "properties": {
+                  "input": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "destinations": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "required": [
+                  "input",
+                  "destinations"
+                ],
+                "additionalProperties": false
+              },
+              "feeds": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "to": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "max": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "to",
+                    "max"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "gridSizes",
+              "speedCaps",
+              "yieldCaps",
+              "technicianPosts"
+            ],
+            "additionalProperties": false
+          },
+          "roles": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "enum": [
+                "miller",
+                "baker",
+                "seller",
+                "cheesemaker",
+                "creamMaker",
+                "restocker",
+                "stocker",
+                "teacher",
+                "librarian",
+                "nurse",
+                "doctor",
+                "surgeon"
+              ]
+            },
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "part": {
+                  "type": "string",
+                  "enum": [
+                    "speed",
+                    "salesRate",
+                    "cheeseYield",
+                    "creamYield",
+                    "capacity",
+                    "schooling",
+                    "restock",
+                    "knowledge",
+                    "carePrimary",
+                    "careDoctor",
+                    "careSurgeon"
+                  ]
+                },
+                "posts": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "avatar": {
+                  "type": "object",
+                  "properties": {
+                    "model": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "beside": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "model",
+                    "beside"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "part",
+                "posts"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "family",
+          "roles"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "buildings"
+  ],
+  "additionalProperties": false,
+  "title": "Interiors balance",
+  "description": "assets/defs/balance/interiors.json: the Production and Service interiors, their Staff roles, the posts by Tier and the part of the effect each role carries."
+}

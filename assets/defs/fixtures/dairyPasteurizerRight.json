@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "dairy",
+  "category": "machines",
+  "name": {
+    "en": "Pasteuriser (milk on the right)",
+    "fr": "Pasteurisateur (arrivée à droite)"
+  },
+  "model": "dairy-interior-pasteurizer-right",
+  "footprint": [1, 1],
+  "price": 900,
+  "minTier": 2,
+  "wear": 0.1,
+  "role": "machine",
+  "flow": ["right"],
+  "yield": 0.15,
+  "yieldGroup": "cream",
+  "assigns": "creamMaker",
+  "family": "pasteurizer",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

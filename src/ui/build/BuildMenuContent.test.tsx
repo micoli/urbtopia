@@ -146,7 +146,12 @@ describe('build menu sections', () => {
     expect(sections[11]).toContain(t('building.mill'));
     expect(sections[12]).toContain(t('building.nature-cliff-steps-rock'));
     expect(sections[13]).toContain(t('building.park'));
-    for (const category of ['education', 'administration', 'culture', 'health', 'safety'] as const) expect(sections[8]).toContain(`<h4 class="build-category">${t(`service.${category}`)}</h4>`);
+    for (const category of ['education', 'administration', 'health', 'safety'] as const) expect(sections[8]).toContain(`<h4 class="build-category">${t(`service.${category}`)}</h4>`);
+    // Culture is one section, in Leisure, with the museums, the theater, the concert hall and the community hall.
+    const cultureHeading = `<h4 class="build-category">${t('service.culture')}</h4>`;
+    expect(sections[8]).not.toContain(cultureHeading);
+    expect(sections[9]!.split(cultureHeading)).toHaveLength(2);
+    for (const type of ['theater', 'concertHall', 'communityHall', 'orsayMuseum'] as const) expect(sections[9]).toContain(t(`building.${type}`));
     for (const type of (Object.keys(BUILDING_SPECS) as (keyof typeof BUILDING_SPECS)[]).filter(type => !annualEventOf(type))) {
       expect(html.split(`<span>${t(`building.${type}`)}</span>`)).toHaveLength(2);
       expect(html).toContain(`data-codex-id="${type}"`);

@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "workshop",
+  "category": "plumbing",
+  "name": {
+    "en": "Cross pipe",
+    "fr": "Tuyau en croix"
+  },
+  "model": "factory-floor-pipe-cross",
+  "footprint": [1, 1],
+  "price": 35,
+  "minTier": 1,
+  "wear": 0.04,
+  "role": "pipe",
+  "flow": ["front", "back", "right", "left"]
+}

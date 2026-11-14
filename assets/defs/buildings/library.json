@@ -59,6 +59,14 @@
       "model": "buildings-library-4x2"
     }
   ],
+  "floorShell": {
+    "floor": "library-interior-floor",
+    "wall": "library-interior-wall",
+    "corner": "library-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  },
   "category": "education",
   "drawnToScale": true,
   "power": 2,

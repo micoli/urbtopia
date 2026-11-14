@@ -1,0 +1,32 @@
+export const meta = {
+  title: 'Intérieurs de production',
+  summary: "Aménagez la minoterie, l'atelier, la boulangerie, la laiterie et l'entrepôt de l'intérieur, et embauchez le personnel qui fait rapporter la disposition.",
+  order: 36,
+};
+
+## Ce que c'est
+
+Comme l'usine, la **minoterie**, l'**atelier**, la **boulangerie**, la **laiterie** et l'**entrepôt** ouvrent un intérieur : une pièce où l'on place des équipements. Il ne rapporte aucune recette et n'a aucun visiteur. Un intérieur vide laisse le bâtiment exactement comme avant ; un intérieur aménagé ajoute un **bonus** qui grandit avec le niveau du bâtiment. Ces intérieurs sont une fonctionnalité bêta : activez *Intérieurs de production* dans les réglages.
+
+## Une disposition, un métier
+
+- La **minoterie** demande de la force et de la tuyauterie : un moteur, des arbres et des engrenages font tourner les **meules**, et une pompe, entraînée par un moteur, pousse dans des tuyaux jusqu'à une **nettoyeuse** à l'entrée et à la sortie de chaque meule, une **ensacheuse** pour la farine ou un **réservoir d'huile** pour l'huile d'olive. Choisissez sur chaque meule si elle moud du blé ou des olives, puis affectez-lui un meunier : une fois le schéma complet, il moud seul et range la production à l'entrepôt.
+- L'**atelier** n'a **aucun bonus** de vitesse ni de rendement : son seul gain est une **file de production qui tourne seule**. De l'air pneumatique (un réservoir, une pompe et un moteur, par des tuyaux) alimente un **extracteur**, posé contre le mur du fond, et un **nettoyeur**, chacun par sa gauche ou sa droite. Choisissez sur l'extracteur le **matériau** qu'il prélève ; une chaîne le porte à travers le nettoyeur jusqu'à un **bac de stockage**. Un employé de **réassort** affecté au bac relance seul la production de ce matériau, la range à l'entrepôt et libère la file : sans lui, vous la gérez à la main.
+- La **boulangerie** et la **laiterie** font tourner une **chaîne** : des caisses voyagent sur des tapis depuis une machine contre le mur du fond, à travers les autres machines, jusqu'à une sortie au bord de la pièce. Le pétrin de la boulangerie prend la force et son four prend du gaz par le fluide ; la laiterie marche au fluide, de la cuve à lait au pasteurisateur puis à la cave d'affinage.
+- L'**entrepôt** fait courir une chaîne d'un quai de chargement, par un palan, jusqu'à un rayonnage.
+
+Une chaîne ne compte que si elle est ininterrompue de sa première machine à une sortie et que chaque machine est reliée. Une coupure, une force ou un gaz qui manque, ou un équipement en panne arrête ce qui se trouve en aval.
+
+## Le personnel : qui fait rapporter
+
+Chaque intérieur a ses propres rôles, embauchés comme le personnel d'un lieu : des frais de cinq jours de salaire une fois, puis un salaire par jour. Chaque rôle livre **sa part** de l'effet, au prorata des citoyens qui viennent vraiment travailler : un meunier donne la vitesse, un boulanger la vitesse de la boulangerie, un vendeur le rythme des ventes au comptoir, un fromager le rendement en fromage, un crémier le rendement en crème, un magasinier la place de l'entrepôt ; à l'atelier, l'employé de réassort ne donne aucun bonus, il gère la file. À la boulangerie, le boulanger et le vendeur sont **affectés à la main** : choisissez une recette sur un four et affectez-lui un boulanger, et sa vitesse compte pour cette recette seule ; choisissez un bien vendu sur un comptoir vitrine et affectez-lui un vendeur, et ses ventes et son rendement comptent pour ce bien seul. Dès que le meuble est atteint par la chaîne, ils travaillent seuls : le boulanger cuit la recette en continu et la range à l'entrepôt, le vendeur met le bien vendu au comptoir et en encaisse le produit. Un employé sert un seul meuble, et un employé non affecté ne fait rien mais est payé quand même. Un rôle non embauché ne livre rien, mais ne retire jamais ce que le bâtiment faisait avant.
+
+Un **technicien** (le « personnel technique », second type d'employé de l'atelier avec le réassort) répare les équipements usés à l'heure et ralentit leur usure, comme dans l'intérieur de l'usine.
+
+## Ce que cela coûte
+
+Les moteurs tirent de l'électricité sur la ville, un cinquième quand ils n'entraînent rien. Le personnel embauché occupe des emplois du bâtiment, et ses salaires sont payés chaque heure dans la limite de vos Urbs.
+
+## Les chiffres de votre ville
+
+<LiveRules id="productionInteriors" />

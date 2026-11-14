@@ -1039,6 +1039,11 @@
                 "minimum": 1,
                 "maximum": 9007199254740991
               },
+              "counterSlots": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
               "yield": {
                 "type": "integer",
                 "minimum": 1,
@@ -1391,6 +1396,41 @@
           "required": [
             "en",
             "fr"
+          ],
+          "additionalProperties": false
+        },
+        "floorShell": {
+          "type": "object",
+          "properties": {
+            "floor": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "wall": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "corner": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "cornerX": {
+              "type": "number"
+            },
+            "cornerZ": {
+              "type": "number"
+            },
+            "cornerRotation": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "floor",
+            "wall",
+            "corner",
+            "cornerX",
+            "cornerZ",
+            "cornerRotation"
           ],
           "additionalProperties": false
         },
@@ -2488,6 +2528,41 @@
         "kind": {
           "type": "string",
           "const": "facility"
+        },
+        "floorShell": {
+          "type": "object",
+          "properties": {
+            "floor": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "wall": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "corner": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "cornerX": {
+              "type": "number"
+            },
+            "cornerZ": {
+              "type": "number"
+            },
+            "cornerRotation": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "floor",
+            "wall",
+            "corner",
+            "cornerX",
+            "cornerZ",
+            "cornerRotation"
+          ],
+          "additionalProperties": false
         },
         "$schema": {
           "type": "string"

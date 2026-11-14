@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "bakery",
+  "category": "line",
+  "name": {
+    "en": "Display counter",
+    "fr": "Comptoir vitrine"
+  },
+  "model": "bakery-interior-counter-exit",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "exit",
+  "yield": 0.04,
+  "sales": 0.3,
+  "assigns": "seller",
+  "hatch": 0.3,
+  "power": 0.3,
+  "lineIn": ["front"]
+}

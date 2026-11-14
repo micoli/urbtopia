@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "mill",
+  "category": "machines",
+  "name": {
+    "en": "Millstone (output on the right)",
+    "fr": "Meule (sortie à droite)"
+  },
+  "model": "mill-interior-millstone-right",
+  "footprint": [1, 1],
+  "price": 450,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "machine",
+  "drive": ["front"],
+  "flow": ["back", "right"],
+  "speed": 0.25,
+  "assigns": "miller",
+  "family": "millstone"
+}

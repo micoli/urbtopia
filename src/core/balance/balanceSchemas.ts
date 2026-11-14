@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SANCTIONABLE_FACTOR_IDS } from '../environment/needFactors.ts';
-import { STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
+import { INTERIOR_FAMILIES_ALL, INTERIOR_PARTS_ALL, INTERIOR_ROLES_ALL, STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
 
 const count = z.int().min(0);
 const positive = z.number().positive();
@@ -24,7 +24,7 @@ export const economyBalanceSchema = z
   })
   .meta({ title: 'Economy balance', description: 'assets/defs/balance/economy.json: tax, market, Slot and Parcel prices, shops.' });
 
-const wages = z.record(z.string(), count).refine(wage => STAFF_ROLES_ALL.every(role => wage[role] !== undefined), 'needs a wage for every Staff role');
+const wages = z.record(z.string(), count).refine(wage => [...STAFF_ROLES_ALL, ...INTERIOR_ROLES_ALL].every(role => wage[role] !== undefined), 'needs a wage for every Staff role and every interior role');
 
 // What the Staff of a Venue costs and yields, the rules shared by every Venue, and its events.
 export const venuesBalanceSchema = z
@@ -46,7 +46,7 @@ export const venuesBalanceSchema = z
   .meta({ title: 'Venues balance', description: 'assets/defs/balance/venues.json: Staff wages and yields, shared Venue constants, events.' });
 
 // How big the interior of a Factory is by Tier, and the most speed and yield its Machines can add.
-export const factoryFloorBalanceSchema = z
+export const factoryInteriorBalanceSchema = z
   .strictObject({
     ...schemaField,
     gridSizes: z.array(z.int().min(1)).min(1),
@@ -55,6 +55,8 @@ export const factoryFloorBalanceSchema = z
     // Uses per hour of a Fixture that runs, which the wear is counted on, and the Technician posts by Tier.
     usagePerHour: positive,
     technicianPosts: z.array(count).min(1),
+    // The Restocker posts by Tier: each is assigned to a Machine.
+    restockerPosts: z.array(count).min(1),
     // The power of a Motor, the share of it a Motor draws with nothing to drive, and how many active Machines a Motor can drive at full speed.
     motorPower: positive,
     idlePowerShare: positive,
@@ -70,10 +72,33 @@ export const factoryFloorBalanceSchema = z
     boilerPowerSaving: positive,
     maxPowerSaving: positive,
   })
-  .meta({ title: 'Factory floor balance', description: 'assets/defs/balance/factoryFloor.json: the size of the Factory floor and the cap of the bonus its linked Machines add, by Factory Tier.' });
+  .meta({ title: 'Factory interior balance', description: 'assets/defs/balance/factoryInterior.json: the size of the Factory interior and the cap of the bonus its linked Machines add, by Factory Tier.' });
+
+// Which buildings have an interior of the Production or Service families, and the Staff roles they hire: each role fills posts by Tier and carries one part of the effect.
+export const interiorsBalanceSchema = z
+  .strictObject({
+    ...schemaField,
+    buildings: z.record(
+      z.string().min(1),
+      z.strictObject({
+        family: z.enum(INTERIOR_FAMILIES_ALL),
+        // The Citizens a city needs before the interior can be fitted out.
+        unlockCitizens: count.optional(),
+        // Service interiors: the size of the room and the most quality the furniture can add, by Tier.
+        service: z.strictObject({ gridSizes: z.array(z.int().min(1)).min(1), qualityCaps: z.array(positive).min(1) }).optional(),
+        // Hospital: the Well-being points that a Home it serves can gain, and the weight of each role in them.
+        care: z.strictObject({ points: positive, weights: z.strictObject({ carePrimary: share, careDoctor: share, careSurgeon: share }) }).optional(),
+        // Production interiors: the size of the room, the caps of the bonus its linked Machines add and the Technician posts, by Tier. A building with a Line also has the caps of what its Exits add to the sales over its Counter and to what it holds. The Dairy splits its yield into groups of Goods, each delivered by its own role. The Factory and the Packhouse keep theirs in their own files.
+        layout: z.strictObject({ gridSizes: z.array(z.int().min(1)).min(1), speedCaps: z.array(positive).min(1), yieldCaps: z.array(positive).min(1), technicianPosts: z.array(count).min(1), line: z.literal(true).optional(), salesCaps: z.array(positive).min(1).optional(), capacityCaps: z.array(positive).min(1).optional(), yieldGroups: z.record(z.string().min(1), z.array(z.string().min(1)).min(1)).optional(), yieldFromExits: z.literal(true).optional(), assignments: z.literal(true).optional(), autoWork: z.literal(true).optional(), laneSlowdown: z.number().min(0).optional(), extraProducers: z.array(count).min(1).optional(), milling: z.strictObject({ input: z.string().min(1), destinations: z.record(z.string().min(1), z.string().min(1)) }).optional(), feeds: z.array(z.strictObject({ from: z.string().min(1), to: z.string().min(1), max: z.int().min(1) })).optional() }).optional(),
+        // The roles of a Service interior may stand in the room as an avatar in costume, beside the Fixtures named.
+        roles: z.partialRecord(z.enum(INTERIOR_ROLES_ALL), z.strictObject({ part: z.enum(INTERIOR_PARTS_ALL), posts: z.array(count).min(1), avatar: z.strictObject({ model: z.string().min(1), beside: z.array(z.string().min(1)).min(1) }).optional() })),
+      }),
+    ),
+  })
+  .meta({ title: 'Interiors balance', description: 'assets/defs/balance/interiors.json: the Production and Service interiors, their Staff roles, the posts by Tier and the part of the effect each role carries.' });
 
 // How big the interior of a Packhouse is by Tier, the most speed and yield its Line can add, and what its Strappers, Scanners and Exits do.
-export const packhouseFloorBalanceSchema = z
+export const packhouseInteriorBalanceSchema = z
   .strictObject({
     ...schemaField,
     gridSizes: z.array(z.int().min(1)).min(1),
@@ -92,7 +117,7 @@ export const packhouseFloorBalanceSchema = z
     // The share of the wear that remains downstream of a Scanner.
     scannerWearFactor: z.number().gt(0).lt(1),
   })
-  .meta({ title: 'Packhouse floor balance', description: 'assets/defs/balance/packhouseFloor.json: the size of the Packhouse floor, the cap of the bonus its Line adds by Packhouse Tier, its Exits, Strappers and Scanners.' });
+  .meta({ title: 'Packhouse interior balance', description: 'assets/defs/balance/packhouseInterior.json: the size of the Packhouse interior, the cap of the bonus its Line adds by Packhouse Tier, its Exits, Strappers and Scanners.' });
 
 // How big the interior of a Home is by Tier, how its Comfort is weighed, and the most Well-being it can add by Tier.
 export const homeInteriorBalanceSchema = z

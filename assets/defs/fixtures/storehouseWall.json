@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "storehouse",
+  "category": "walls",
+  "name": {
+    "en": "Wall",
+    "fr": "Mur"
+  },
+  "model": "storehouse-interior-partition",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "partition": true,
+  "joins": {
+    "elbow": "storehouse-interior-partition-elbow",
+    "tee": "storehouse-interior-partition-tee",
+    "cross": "storehouse-interior-partition-cross"
+  }
+}

@@ -1,4 +1,4 @@
-import { FIXTURES, type FixtureId } from '../../core';
+import { FIXTURES, type FixtureId, type FixtureLimit } from '../../core';
 import { t } from '../../i18n/t';
 import { FlyoutItem } from '../layout/FlyoutItem';
 import { UrbsAmount } from '../common/UrbsAmount';
@@ -10,17 +10,19 @@ interface VenueFixtureItemProps {
   rank: number;
   selected: boolean;
   onChoose: () => void;
+  limit?: FixtureLimit;
 }
 
-export function VenueFixtureItem({ id, tier, rank, selected, onChoose }: VenueFixtureItemProps) {
+export function VenueFixtureItem({ id, tier, rank, selected, onChoose, limit }: VenueFixtureItemProps) {
   const picture = useFixturePicture(id);
   const { price, minTier, minRank = 1 } = FIXTURES[id];
   const lockedByTier = tier < minTier;
-  const locked = lockedByTier || rank < minRank;
+  const full = limit !== undefined && limit.count >= limit.max;
+  const locked = lockedByTier || rank < minRank || full;
   return (
     <FlyoutItem
       label={t(`venue.fixture.${id}`)}
-      badge={lockedByTier ? `${t('venue.tierNeeded')} ${minTier}` : locked ? `${t('venue.rankNeeded')} ${minRank}` : undefined}
+      badge={lockedByTier ? `${t('venue.tierNeeded')} ${minTier}` : rank < minRank ? `${t('venue.rankNeeded')} ${minRank}` : limit ? `${limit.count}/${limit.max}` : undefined}
       cost={<UrbsAmount value={price} />}
       preview={picture}
       selected={selected}

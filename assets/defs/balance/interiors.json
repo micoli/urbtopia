@@ -1,0 +1,203 @@
+{
+  "$schema": "../schemas/balance-interiors.schema.json",
+  "buildings": {
+    "mill": {
+      "family": "production",
+      "layout": {
+        "gridSizes": [5, 6, 7, 8, 9],
+        "speedCaps": [0.1, 0.18, 0.26, 0.34, 0.42],
+        "yieldCaps": [0.02, 0.04, 0.06, 0.08, 0.1],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "autoWork": true,
+        "extraProducers": [0, 0, 0, 1, 2],
+        "milling": {
+          "input": "cleaner",
+          "destinations": {
+            "flour": "bagger",
+            "oliveOil": "oilTank"
+          }
+        }
+      },
+      "roles": {
+        "miller": {
+          "part": "speed",
+          "posts": [1, 2, 3, 4, 5]
+        }
+      },
+      "unlockCitizens": 100
+    },
+    "workshop": {
+      "family": "production",
+      "layout": {
+        "gridSizes": [5, 6, 7, 8, 9],
+        "speedCaps": [0.01],
+        "yieldCaps": [0.01],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "line": true,
+        "autoWork": true
+      },
+      "roles": {
+        "restocker": {
+          "part": "restock",
+          "posts": [1, 1, 2, 2, 3]
+        }
+      },
+      "unlockCitizens": 50
+    },
+    "bakery": {
+      "family": "production",
+      "layout": {
+        "gridSizes": [6, 7, 8, 9, 10],
+        "speedCaps": [0.1, 0.2, 0.3, 0.4, 0.5],
+        "yieldCaps": [0.02, 0.04, 0.06, 0.08, 0.1],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "line": true,
+        "yieldFromExits": true,
+        "assignments": true,
+        "laneSlowdown": 0.5,
+        "feeds": [
+          {
+            "from": "mixer",
+            "to": "oven",
+            "max": 2
+          },
+          {
+            "from": "oven",
+            "to": "exit",
+            "max": 3
+          }
+        ],
+        "salesCaps": [0.1, 0.2, 0.3, 0.4, 0.5]
+      },
+      "roles": {
+        "baker": {
+          "part": "speed",
+          "posts": [0, 1, 1, 2, 2]
+        },
+        "seller": {
+          "part": "salesRate",
+          "posts": [0, 1, 2, 3, 3]
+        }
+      },
+      "unlockCitizens": 150
+    },
+    "dairy": {
+      "family": "production",
+      "layout": {
+        "gridSizes": [6, 7, 8, 9, 10],
+        "speedCaps": [0.05, 0.1, 0.15, 0.2, 0.25],
+        "yieldCaps": [0.1, 0.2, 0.3, 0.4, 0.5],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "line": true,
+        "autoWork": true,
+        "yieldGroups": {
+          "cheese": ["cheese", "goatCheese"],
+          "cream": ["cream"]
+        }
+      },
+      "roles": {
+        "cheesemaker": {
+          "part": "cheeseYield",
+          "posts": [0, 1, 1, 1, 2]
+        },
+        "creamMaker": {
+          "part": "creamYield",
+          "posts": [0, 1, 1, 1, 2]
+        },
+        "seller": {
+          "part": "salesRate",
+          "posts": [0, 1, 2, 3, 3]
+        }
+      },
+      "unlockCitizens": 200
+    },
+    "storehouse": {
+      "family": "production",
+      "layout": {
+        "gridSizes": [6, 6, 7, 7, 8, 8, 9, 9, 10, 10],
+        "speedCaps": [0.05],
+        "yieldCaps": [0.05],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "line": true,
+        "capacityCaps": [0.1, 0.1, 0.15, 0.15, 0.2, 0.2, 0.25, 0.25, 0.3, 0.3]
+      },
+      "roles": {
+        "stocker": {
+          "part": "capacity",
+          "posts": [0, 1, 1, 2, 2]
+        }
+      },
+      "unlockCitizens": 250
+    },
+    "school": {
+      "family": "service",
+      "roles": {
+        "teacher": {
+          "part": "schooling",
+          "posts": [1, 1, 2, 2, 3]
+        }
+      },
+      "unlockCitizens": 300,
+      "service": {
+        "gridSizes": [5, 5, 6, 6, 7, 7, 8, 8],
+        "qualityCaps": [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45]
+      }
+    },
+    "library": {
+      "family": "service",
+      "roles": {
+        "librarian": {
+          "part": "knowledge",
+          "posts": [1, 1, 2, 2, 3]
+        }
+      },
+      "unlockCitizens": 400,
+      "service": {
+        "gridSizes": [5, 6, 7, 8, 9],
+        "qualityCaps": [0.15, 0.25, 0.35, 0.45, 0.55]
+      }
+    },
+    "hospital": {
+      "family": "service",
+      "roles": {
+        "nurse": {
+          "part": "carePrimary",
+          "posts": [1, 2, 2, 3, 3],
+          "avatar": {
+            "model": "hospital-interior-character-nurse",
+            "beside": ["hospitalBed"]
+          }
+        },
+        "doctor": {
+          "part": "careDoctor",
+          "posts": [0, 1, 1, 2, 2],
+          "avatar": {
+            "model": "hospital-interior-character-doctor",
+            "beside": ["hospitalVitalsMonitor", "hospitalBed"]
+          }
+        },
+        "surgeon": {
+          "part": "careSurgeon",
+          "posts": [0, 0, 1, 1, 2],
+          "avatar": {
+            "model": "hospital-interior-character-surgeon",
+            "beside": ["hospitalOperatingTable"]
+          }
+        }
+      },
+      "unlockCitizens": 600,
+      "service": {
+        "gridSizes": [5, 5, 6, 6, 7, 7, 8, 8],
+        "qualityCaps": [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45]
+      },
+      "care": {
+        "points": 10,
+        "weights": {
+          "carePrimary": 0.5,
+          "careDoctor": 0.3,
+          "careSurgeon": 0.2
+        }
+      }
+    }
+  }
+}
