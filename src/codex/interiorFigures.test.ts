@@ -5,11 +5,12 @@ import { CODEX_INTERIOR_TYPES, interiorFigures, liveInteriorsOf } from './interi
 const state = newGame({ seed: 'interior-figures', now: 0 });
 
 describe('the figures of the Interiors page', () => {
-  it('gives every interior a room and a benefit for each Tier', () => {
+  it('gives every interior a room and a benefit for each Tier, but the Workshop, whose only gain is its queue', () => {
     for (const type of CODEX_INTERIOR_TYPES) {
       const figures = interiorFigures(state, type);
       expect(figures.room.length, type).toBeGreaterThan(0);
-      expect(figures.columns.length, type).toBeGreaterThan(0);
+      if (type === 'workshop') expect(figures.columns).toEqual([]);
+      else expect(figures.columns.length, type).toBeGreaterThan(0);
       for (const column of figures.columns) expect(column.values, `${type} ${column.label}`).toHaveLength(figures.room.length);
     }
   });

@@ -90,7 +90,7 @@ const RAIL_MODELS = [RAIL_STRAIGHT_MODEL, RAIL_CORNER_MODEL];
 const shellOf = (type: VenueType) => definitionOf(type).shell!;
 
 // The interior of a Factory has the same pieces as the interior of a Venue.
-type ProductionShellType = 'factory' | 'mill' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital';
+type ProductionShellType = 'factory' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital';
 
 const floorShellOf = (type: ProductionShellType = 'factory') => definitionOf(type).floorShell!;
 
@@ -107,6 +107,7 @@ export const VENUE_CORNER_PLACEMENT = {
   factory: interiorCornerOf(),
   packhouse: interiorCornerOf(),
   mill: interiorCornerOf('mill'),
+  workshop: interiorCornerOf('workshop'),
   bakery: interiorCornerOf('bakery'),
   dairy: interiorCornerOf('dairy'),
   storehouse: interiorCornerOf('storehouse'),
@@ -123,6 +124,7 @@ export const VENUE_SHELL_MODELS = {
   factory: { floor: modelFileOf(floorShellOf().floor), wall: modelFileOf(floorShellOf().wall), corner: modelFileOf(floorShellOf().corner) },
   packhouse: { floor: modelFileOf(floorShellOf().floor), wall: modelFileOf(floorShellOf().wall), corner: modelFileOf(floorShellOf().corner) },
   mill: { floor: modelFileOf(floorShellOf('mill').floor), wall: modelFileOf(floorShellOf('mill').wall), corner: modelFileOf(floorShellOf('mill').corner) },
+  workshop: { floor: modelFileOf(floorShellOf('workshop').floor), wall: modelFileOf(floorShellOf('workshop').wall), corner: modelFileOf(floorShellOf('workshop').corner) },
   bakery: { floor: modelFileOf(floorShellOf('bakery').floor), wall: modelFileOf(floorShellOf('bakery').wall), corner: modelFileOf(floorShellOf('bakery').corner) },
   dairy: { floor: modelFileOf(floorShellOf('dairy').floor), wall: modelFileOf(floorShellOf('dairy').wall), corner: modelFileOf(floorShellOf('dairy').corner) },
   storehouse: { floor: modelFileOf(floorShellOf('storehouse').floor), wall: modelFileOf(floorShellOf('storehouse').wall), corner: modelFileOf(floorShellOf('storehouse').corner) },

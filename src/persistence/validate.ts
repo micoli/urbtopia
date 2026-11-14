@@ -161,9 +161,11 @@ const isSavedFixture = (nextFixtureId: number) => (fixture: unknown): boolean =>
 const isSavedFocus = (fixture: Record<string, unknown>): boolean => {
   const { recipe, soldGood, assigned } = fixture;
   if (recipe === undefined && soldGood === undefined && assigned === undefined) return true;
-  const role = FIXTURES[fixture.type as keyof typeof FIXTURES].assigns;
+  const spec = FIXTURES[fixture.type as keyof typeof FIXTURES];
+  const role = spec.assigns;
   const isGood = (value: unknown) => typeof value === 'string' && Object.hasOwn(GOODS, value);
-  if (role === undefined) return false;
+  if (role === undefined) return spec.picks === true && soldGood === undefined && assigned === undefined && (recipe === undefined || (typeof recipe === 'string' && isMaterial(recipe)));
+  if (role === 'restocker') return recipe === undefined && soldGood === undefined && (assigned === undefined || assigned === true);
   if (recipe !== undefined && (!isProducerRole(role) || !(isGood(recipe) || (typeof recipe === 'string' && isMaterial(recipe))))) return false;
   if (soldGood !== undefined && (role !== 'seller' || !isGood(soldGood))) return false;
   return assigned === undefined || (assigned === true && (recipe !== undefined || soldGood !== undefined));
@@ -177,7 +179,7 @@ const isStaffAssignmentCovered = (interior: Record<string, unknown>): boolean =>
   const fixtures: unknown = interior.fixtures;
   if (!Array.isArray(fixtures)) return true;
   const hired = isRecord(interior.staff) ? interior.staff : {};
-  return (['baker', 'seller', 'cheesemaker', 'creamMaker', 'miller'] as const).every(role => fixtures.filter(fixture => isRecord(fixture) && fixture.assigned === true && FIXTURES[fixture.type as keyof typeof FIXTURES]?.assigns === role).length <= ((hired[role] as number | undefined) ?? 0));
+  return (['baker', 'seller', 'cheesemaker', 'creamMaker', 'miller', 'restocker'] as const).every(role => fixtures.filter(fixture => isRecord(fixture) && fixture.assigned === true && FIXTURES[fixture.type as keyof typeof FIXTURES]?.assigns === role).length <= ((hired[role] as number | undefined) ?? 0));
 };
 
 function isInteriorData(value: unknown, kind: string, type?: BuildingType): boolean {

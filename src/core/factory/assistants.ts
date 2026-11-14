@@ -2,7 +2,7 @@ import { emptyStack, stacksOf } from '../buildings/buildingSpecs';
 import { SHOP } from '../economy/economy';
 import { advanceBuilding } from '../economy/production';
 import { saleIntervalOf } from '../economy/shops';
-import { assignedRoleOf, focusOf, hasAssignments } from '../interiors/interiorAssignments';
+import { assignedRoleOf, hasAssignments, workFocusOf } from '../interiors/interiorAssignments';
 import { interiorLayoutOf, isProducerRole } from '../interiors/interiorStaff';
 import type { GameEvent } from '../engine/events';
 import type { Building, GameState, ShopStack, VenueFixture } from '../engine/state';
@@ -11,10 +11,20 @@ import { interiorLinksOf, suppliedGoodsOf } from './factoryInterior';
 import { MAX_TURNS, RESERVED_SLOTS, isError, queueItem, store, withBuilding, withFixture } from './restock';
 
 // The Fixtures the Staff of a Bakery or a Dairy is at work on: assigned, with their Recipe or their Sold Good, and reached by the Line. The layout results are cached by layout, so the Fixtures are read from the interior.
-const workingOf = (building: Building, role: 'producer' | 'seller'): VenueFixture[] => {
+const workingOf = (building: Building, role: 'producer' | 'seller'): VenueFixture[] => workingWithGoodOf(building, role).map(({ fixture }) => fixture);
+
+// The same Fixtures with the Good each one works on: for a Storage bin, the item picked on the Extractor that feeds it.
+const workingWithGoodOf = (building: Building, role: 'producer' | 'seller'): { fixture: VenueFixture; good: GoodId }[] => {
   if (!building.interior) return [];
-  const { lined } = interiorLinksOf(building.interior.fixtures);
-  return building.interior.fixtures.filter(fixture => fixture.assigned === true && assignedRoleOf(fixture) !== undefined && isProducerRole(assignedRoleOf(fixture)) === (role === 'producer') && lined.has(fixture.id) && focusOf(fixture) !== undefined && (role === 'producer' || suppliedGoodsOf(building.interior!.fixtures, fixture).has(fixture.soldGood!))).sort((a, b) => a.id - b.id);
+  const fixtures = building.interior.fixtures;
+  const { lined } = interiorLinksOf(fixtures);
+  return fixtures
+    .filter(fixture => fixture.assigned === true && assignedRoleOf(fixture) !== undefined && isProducerRole(assignedRoleOf(fixture)) === (role === 'producer') && lined.has(fixture.id) && (role === 'producer' || suppliedGoodsOf(fixtures, fixture).has(fixture.soldGood!)))
+    .flatMap(fixture => {
+      const good = workFocusOf(fixtures, fixture);
+      return good === undefined ? [] : [{ fixture, good }];
+    })
+    .sort((a, b) => a.fixture.id - b.fixture.id);
 };
 
 // A line takes longer for each other line at work: the Ovens share the Tier's pace instead of each running at the full one.
@@ -26,10 +36,12 @@ function bakerTurn(state: GameState, buildingId: number): { state: GameState; ch
   let changed = false;
   let blocked = false;
   let freedAt = state.lastSeen;
-  const ovens = workingOf(state.buildings.find(candidate => candidate.id === buildingId)!, 'producer');
+  const working = workingWithGoodOf(state.buildings.find(candidate => candidate.id === buildingId)!, 'producer');
+  const ovens = working.map(({ fixture }) => fixture);
+  const goodOf = new Map(working.map(({ fixture, good }) => [fixture.id, good]));
   for (const oven of ovens) {
     const building = current.buildings.find(candidate => candidate.id === buildingId)!;
-    const finished = building.queue.find(entry => entry.exitId === oven.id && entry.item === oven.recipe && entry.done);
+    const finished = building.queue.find(entry => entry.exitId === oven.id && entry.item === goodOf.get(oven.id) && entry.done);
     if (!finished) continue;
     const stored = store(current, finished);
     if (!stored) {
@@ -43,9 +55,9 @@ function bakerTurn(state: GameState, buildingId: number): { state: GameState; ch
   const turns = [...ovens].sort((a, b) => (a.restockedAt ?? -Infinity) - (b.restockedAt ?? -Infinity) || a.id - b.id);
   for (const oven of turns) {
     const building = current.buildings.find(candidate => candidate.id === buildingId)!;
-    if (building.queue.some(entry => entry.exitId === oven.id && entry.item === oven.recipe)) continue;
+    if (building.queue.some(entry => entry.exitId === oven.id && entry.item === goodOf.get(oven.id))) continue;
     if (building.queue.length >= building.slotCount - RESERVED_SLOTS) continue;
-    const queued = queueItem(current, building, oven.recipe!, freedAt, oven.id, lineFactorOf(building, ovens.length));
+    const queued = queueItem(current, building, goodOf.get(oven.id)!, freedAt, oven.id, lineFactorOf(building, ovens.length));
     if (isError(queued)) continue;
     current = withFixture(queued.state, buildingId, { ...oven, restockedAt: freedAt });
     changed = true;

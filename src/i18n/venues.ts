@@ -82,11 +82,12 @@ type VenueMessageKey =
   | 'interior.examples.legend'
   | 'interior.examples.factory'
   | 'interior.examples.mill'
+  | 'interior.examples.workshop'
   | 'interior.examples.bakery'
   | 'interior.examples.dairy'
   | 'interior.examples.packhouse'
   | 'interior.examples.storehouse'
-  | `interior.features.${'factory' | 'packhouse' | 'mill' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
+  | `interior.features.${'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
   | 'bakery.recipes.assembly'
   | 'bakery.recipes.limits'
   | 'bakery.recipes.bonuses'
@@ -119,6 +120,9 @@ type VenueMessageKey =
   | 'venue.assignRecipe'
   | 'venue.assignSoldGood'
   | 'venue.assignNone'
+  | 'venue.pickItem'
+  | 'venue.binItem'
+  | 'venue.binNoItem'
   | 'venue.assignStaff'
   | 'venue.assignRelease'
   | 'venue.assignAtWork'
@@ -139,7 +143,7 @@ type VenueMessageKey =
   | 'home.interior.comfort'
   | 'home.interior.wellbeing'
   | 'home.interior.wellbeingShort'
-  | `interior.open.${'factory' | 'packhouse' | 'mill' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
+  | `interior.open.${'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
   | 'factory.interior.linked'
   | 'factory.interior.speed'
   | 'factory.interior.yield'
@@ -389,6 +393,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.examples.legend': ["Pieces", "Pièces"],
   'interior.examples.factory': ["A Tank feeds a Pump that a Motor drives, and the Flow goes through a Pipe tee to a Mixing vat. A second Motor drives a Press through a Shaft. The Mixing vat stands beside that Motor and cools it, which raises the speed and the yield of the Press.", "Un réservoir alimente une pompe entraînée par un moteur, et le fluide passe par un té de tuyau jusqu’à la cuve de mélange. Un second moteur entraîne une presse par un arbre. La cuve de mélange est à côté de ce moteur et le refroidit, ce qui augmente la vitesse et le rendement de la presse."],
   'interior.examples.mill': ["A first Motor turns a Shaft that drives the Millstone. A second Motor drives the Pump, which pushes through the Pipes to the Cleaner where the grain comes in, the Millstone, then the Bagger that bags the flour or the Oil tank that stores the olive oil.", "Un premier moteur fait tourner un arbre qui entraîne la meule. Un second moteur entraîne la pompe, qui pousse dans les tuyaux jusqu’au nettoyeur où entre le grain, la meule, puis l’ensacheuse qui met la farine en sacs ou la cuve à huile qui stocke l’huile d’olive."],
+  'interior.examples.workshop': ["A Tank, a Pump and a Motor send the air through Pipes to the Extractor against the back wall and to the Cleaner. Conveyors carry the material from the Extractor to the Cleaner, then to the Storage bin, where a restocker keeps the queue running.", "Un réservoir, une pompe et un moteur envoient l’air par des tuyaux à l’extracteur contre le mur du fond et au nettoyeur. Des tapis portent le matériau de l’extracteur au nettoyeur, puis au bac de stockage, où un employé de réassort fait tourner la file."],
   'interior.examples.bakery': ["A Motor and a Shaft drive the Mixer against the back wall. A Tank, a Pump and a Motor bring the gas to the Oven. Conveyors carry the dough from the Mixer to the Oven, then the bread to the Counter, where it is sold.", "Un moteur et un arbre entraînent le pétrin contre le mur du fond. Un réservoir, une pompe et un moteur amènent le gaz au four. Des tapis portent la pâte du pétrin au four, puis le pain jusqu’au comptoir, où il est vendu."],
   'interior.examples.dairy': ["The Milk vat takes in the milk, and every Machine has its own Tank, Pump and Motor. Conveyors carry the milk to the Pasteuriser, then to the Cheese cellar, then to the Counter, where the cream and the cheese are sold.", "La cuve à lait reçoit le lait, et chaque machine a son réservoir, sa pompe et son moteur. Des tapis portent le lait au pasteurisateur, puis à la cave d’affinage, puis au comptoir, où la crème et le fromage sont vendus."],
   'interior.examples.packhouse': ["A Motor and a Shaft drive the Packer against the back wall. Conveyors carry the Packets down to the Exit, where a truck takes the crates away.", "Un moteur et un arbre entraînent l’emballeuse contre le mur du fond. Des tapis portent les paquets jusqu’à la sortie, où un camion emporte les caisses."],
@@ -396,6 +401,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.features.factory': ["Machines turn the Motor's Drive into speed and yield for the Factory's Slots. Link them with Shafts and Gears, add Flow for the Machines that need it, and cool the Motors with a Cooling vat. Each Machine can make any Good of the Factory: pick one, and a Restocker assigned to it stores what it makes in the Storehouse.", "Les machines transforment la force du moteur en vitesse et en rendement pour les emplacements de l'usine. Reliez-les par des arbres et des engrenages, ajoutez du fluide pour celles qui en ont besoin, et refroidissez les moteurs avec une cuve réfrigérante. Chaque machine peut fabriquer n'importe quel bien de l'usine : choisissez-en un, et un employé de réassort affecté le range à l'entrepôt."],
   'interior.features.packhouse': ["A Line carries Packets from the Machines to the Exits, which set the yield of the Packhouse. Keep every Machine linked and fed, and restock the Exits.", "Une chaîne porte les colis des machines jusqu'aux sorties, qui fixent le rendement du conditionnement. Gardez chaque machine reliée et alimentée, et réapprovisionnez les sorties."],
   'interior.features.mill': ["A Motor, Shafts and Gears drive the millstones, and a Pump drives the Pipes. Choose on each millstone what it grinds, wheat or olives: a Cleaner takes the grain in, a Bagger gives the flour out and an Oil tank the olive oil, all on the Pipes of the same Pump. A miller assigned to a complete millstone grinds on his own and stores the production in the Storehouse; without one, you collect it yourself.", "Un moteur, des arbres et des engrenages font tourner les meules, et une pompe alimente la tuyauterie. Choisissez sur chaque meule ce qu'elle moud, du blé ou des olives : une nettoyeuse fait entrer le grain, une ensacheuse sort la farine et un réservoir l'huile d'olive, tous sur la tuyauterie de la même pompe. Un meunier affecté à une meule complète moud seul et range la production à l'entrepôt ; sans lui, vous la récupérez vous-même."],
+  'interior.features.workshop': ["Pneumatic air feeds the machines: a Tank, a Pump and a Motor send it through Pipes to the Extractor, set against a wall, and to the Cleaner. A Line carries what the Extractor takes in, the material you picked on it, through the Cleaner to a Storage bin. A restocker assigned to the bin restarts the production of that material by himself and stores it in the Storehouse, so the queue of the Workshop runs on its own. Nothing is faster or richer: the gain is the queue.", "L'air pneumatique alimente les machines : un réservoir, une pompe et un moteur l'envoient par des tuyaux à l'extracteur, contre un mur, et au nettoyeur. Une chaîne porte ce que l'extracteur prélève, le matériau choisi dessus, à travers le nettoyeur jusqu'à un bac de stockage. Un employé de réassort affecté au bac relance seul la production de ce matériau et la range à l'entrepôt : la file de l'atelier tourne toute seule. Rien n'est plus rapide ni plus riche : le gain, c'est la file."],
   'interior.features.bakery': ["The Recipes of the Bakery: see below.", "Voir les recettes de la boulangerie."],
   'interior.features.dairy': ["A Line carries the milk from the vat through the Machines to an Exit. Cheesemakers and cream makers add the cheese and cream yield, and assigned to a Cheese cellar or a Pasteuriser with a Recipe they make it on their own and store it; a seller assigned to a Display counter sells what arrives on it.", "Une chaîne porte le lait de la cuve jusqu'à une sortie à travers les machines. Les fromagers et les crémiers ajoutent le rendement en fromage et en crème, et affectés à une cave d’affinage ou à un pasteurisateur avec une recette ils la fabriquent seuls et la rangent ; un vendeur affecté à un comptoir vitrine vend ce qui y arrive."],
   'interior.features.storehouse': ["A Line runs from a loading dock, by a hoist, to a shelf rack: each linked rack adds room to the Storehouse. A stocker adds the room bonus.", "Une chaîne court d'un quai de chargement, par un palan, jusqu'à un rayonnage : chaque rayonnage relié ajoute de la place à l'entrepôt. Un magasinier ajoute le bonus de place."],
@@ -424,6 +430,8 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.role.employee': ['Employee', 'Personnel de comptoir'],
   'interior.role.miller': ['Miller', 'Meunier'],
   'interior.roleEffect.miller': ['Turns the grain into flour faster: the speed bonus of the millstones', "Moud plus vite : le bonus de vitesse des meules"],
+  'interior.role.restocker': ['Restocker', 'Réassort'],
+  'interior.roleEffect.restocker': ['Restarts the production of the material of his bin and stores it, with no bonus to speed or yield', "Relance la production du matériau de son bac et la range, sans bonus de vitesse ni de rendement"],
   'interior.role.baker': ['Baker', 'Boulanger'],
   'interior.roleEffect.baker': ['Bakes faster: the speed bonus of the machines', "Cuit plus vite : le bonus de vitesse des machines"],
   'interior.role.seller': ['Seller', 'Vendeur'],
@@ -455,6 +463,9 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.assignRecipe': ['Recipe', 'Recette'],
   'venue.assignSoldGood': ['Sold Good', 'Bien vendu'],
   'venue.assignNone': ['None', 'Aucun'],
+  'venue.pickItem': ['Item extracted', 'Matériau extrait'],
+  'venue.binItem': ['Restocks {item}, picked on the Extractor upstream.', 'Réassort de {item}, choisi sur l’extracteur en amont.'],
+  'venue.binNoItem': ['No Extractor upstream has an item picked yet: choose one on an Extractor that feeds this bin.', 'Aucun extracteur en amont n’a encore de matériau : choisissez-en un sur un extracteur qui alimente ce bac.'],
   'venue.assignStaff': ['Assign a Staff ({role})', 'Affecter un employé ({role})'],
   'venue.assignRelease': ['Free the Staff ({role})', 'Libérer l’employé ({role})'],
   'venue.assignAtWork': ['A Staff ({role}) works here', 'Un employé ({role}) travaille ici'],
@@ -500,6 +511,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.open.factory': ['Open the Factory interior', "Ouvrir l'atelier de l'usine"],
   'interior.open.packhouse': ['Open the Packhouse interior', "Ouvrir l'atelier du conditionnement"],
   'interior.open.mill': ['Open the Mill interior', "Ouvrir l'atelier de la minoterie"],
+  'interior.open.workshop': ['Open the Workshop interior', "Ouvrir l'intérieur de l'atelier"],
   'interior.open.bakery': ['Open the Bakery interior', "Ouvrir l'atelier de la boulangerie"],
   'interior.open.dairy': ['Open the Dairy interior', "Ouvrir l'atelier de la laiterie"],
   'interior.open.storehouse': ['Open the Storehouse interior', "Ouvrir l'intérieur de l'entrepôt"],

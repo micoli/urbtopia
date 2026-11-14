@@ -14,6 +14,11 @@ const dairyFlow = (x: number, y: number, rotation: 1 | 3): ExampleFixture[] => (
   ? [at('dairyTank', x + 1, y, 1), at('dairyPump', x, y, 1), at('dairyMotor', x, y + 1, 2)]
   : [at('dairyTank', x - 1, y, 3), at('dairyPump', x, y, 3), at('dairyMotor', x, y - 1, 0)]);
 
+// The same, for a machine of a Workshop.
+const workshopFlow = (x: number, y: number, rotation: 1 | 3): ExampleFixture[] => (rotation === 1
+  ? [at('workshopTank', x + 1, y, 1), at('workshopPump', x, y, 1), at('workshopMotor', x, y + 1, 2)]
+  : [at('workshopTank', x - 1, y, 3), at('workshopPump', x, y, 3), at('workshopMotor', x, y - 1, 0)]);
+
 // Working set-ups of the Production interiors: what produces, what stores, what uses.
 // Rotation 0 faces the front of the room, then 1 faces left, 2 faces the back wall and 3 faces right.
 export interface InteriorExample {
@@ -30,6 +35,10 @@ export const INTERIOR_EXAMPLES: Partial<Record<BuildingType, InteriorExample>> =
   mill: { tier: 3, fixtures: [
     at('millMotor', 2, 2), at('millShaft', 2, 3), at('millstone', 2, 4, 2), at('millMotor', 4, 6, 2), at('millPump', 4, 5, 1), at('millPipeCross', 3, 5), at('millPipeCross', 2, 5),
     at('millPipe', 1, 5, 1), at('millCleaner', 0, 5, 1), at('millBagger', 2, 6), at('millOilTank', 3, 4, 2),
+  ] },
+  workshop: { tier: 1, fixtures: [
+    at('workshopExtractorRight', 0, 0), at('workshopConveyor', 0, 1), at('workshopCleanerRight', 0, 2), at('workshopConveyor', 0, 3), at('workshopBin', 0, 4),
+    ...workshopFlow(1, 0, 1), ...workshopFlow(1, 2, 1),
   ] },
   bakery: { tier: 3, fixtures: [
     at('bakeryMixer', 4, 0), at('bakeryShaft', 5, 0, 1), at('bakeryMotor', 6, 0, 1), at('bakeryTank', 2, 2, 3), at('bakeryPump', 3, 2, 3), at('bakeryMotor', 3, 1),

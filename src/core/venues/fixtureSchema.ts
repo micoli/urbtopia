@@ -99,7 +99,9 @@ export const fixtureSchema = z
       yieldGroup: z.string().min(1).optional(),
       capacity: z.number().positive().optional(),
       // The role of the Staff that is assigned to the Fixture by hand: a baker to an Oven, a cheesemaker to a Cheese cellar, a cream maker to a Pasteuriser, a seller to a Display counter.
-      assigns: z.enum(['baker', 'seller', 'cheesemaker', 'creamMaker', 'miller']).optional(),
+      assigns: z.enum(['baker', 'seller', 'cheesemaker', 'creamMaker', 'miller', 'restocker']).optional(),
+      // A Machine at the start of a Line on which the player picks the item that the Line carries: the Extractor of a Workshop.
+      picks: z.literal(true).optional(),
       // An Exit of a Line: how far from the middle of its tile, toward its back, the Packets are drawn to go before they vanish; left out, they go through the hatch of the wall.
       hatch: z.number().positive().optional(),
       // The electricity the Fixture draws while it stands in the room, besides what the Motors draw.

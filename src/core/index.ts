@@ -229,7 +229,7 @@ export { serviceFurnitureQuality, serviceGridSizeOf, serviceQualityCapOf, servic
 export { avatarOfRole, interiorAvatarModels, avatarsOfBuilding, type InteriorAvatars, hiredInteriorOf, interiorUnlockCitizensOf, serviceLayoutOf, interiorDeclarationOf, interiorFillRateFrom, interiorLayoutOf, interiorPartPresence, interiorRoleShare, isProducerRole, interiorFamilyOf, interiorPostsOf, interiorPostsOfBuilding, interiorRolesOf, interiorWagesPerHour, minTierOfInteriorRole, partOfRole, totalInteriorStaff } from './interiors/interiorStaff';
 export type { InteriorFamily, InteriorPart } from './interiors/interiorStaff';
 export { fixtureLimitOf, type FixtureLimit } from './interiors/interiorLimits';
-export { assignedFixturesOf, assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, hasAssignments } from './interiors/interiorAssignments';
+export { assignedFixturesOf, assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, hasAssignments, carriedItemOf, picksItem, workFocusOf } from './interiors/interiorAssignments';
 export { hireInteriorStaff, releaseInteriorStaff } from './interiors/interiorStaffCommands';
 export { challengeReward, clearChallenge, completeChallenge, findChallengeClaim, isChallengeStockComplete, remainingOf, setAsideForChallenge, setAsideOf, startChallenge } from './challenges/challengeStock';
 export { CHALLENGE_REWARD_MULTIPLIER } from './challenges/types';

@@ -5,7 +5,10 @@ import {
 } from '../core';
 import type { MessageKey } from '../i18n/messages';
 
-export const PRODUCTION_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse'];
+export const PRODUCTION_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'workshop', 'bakery', 'dairy', 'storehouse'];
+
+// The interiors with no bonus to speed, yield, sales or room: their gain is the queue that runs by itself.
+const QUEUE_ONLY_TYPES: readonly BuildingType[] = ['workshop'];
 
 export const SERVICE_INTERIOR_TYPES: readonly BuildingType[] = ['school', 'library', 'hospital'];
 
@@ -63,6 +66,7 @@ const byTier = (type: BuildingType, value: (tier: number) => number): number[] =
 const productionColumns = (type: BuildingType): BenefitColumn[] => {
   const caps = (tier: number) => interiorCapsOfType(type, tier);
   const columns: BenefitColumn[] = [];
+  if (QUEUE_ONLY_TYPES.includes(type)) return columns;
   if (type !== 'storehouse') columns.push({ label: 'factory.interior.speed', format: 'percent', values: byTier(type, tier => caps(tier).speed) }, { label: 'factory.interior.yield', format: 'percent', values: byTier(type, tier => caps(tier).yield) });
   if (caps(1).sales !== undefined) columns.push({ label: 'codex.interiors.sales', format: 'percent', values: byTier(type, tier => caps(tier).sales ?? 0) });
   if (caps(1).capacity !== undefined) columns.push({ label: 'codex.interiors.capacity', format: 'percent', values: byTier(type, tier => caps(tier).capacity ?? 0) });
@@ -110,7 +114,7 @@ const liveBenefitsOf = (state: GameState, building: Building): LiveBenefit[] => 
     ];
   }
   const bonus = interiorBonusOfBuilding(building);
-  return PRODUCTION_BENEFITS.flatMap(({ label, format, read }) => {
+  return PRODUCTION_BENEFITS.filter(({ format }) => !QUEUE_ONLY_TYPES.includes(building.type) || format === 'power').flatMap(({ label, format, read }) => {
     const value = read(bonus);
     return value === undefined ? [] : [{ label, format, value }];
   });

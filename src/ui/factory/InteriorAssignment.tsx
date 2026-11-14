@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
-import { assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, isItemUnlocked, isProducerRole, type Building, type GoodId, type VenueFixture } from '../../core';
+import { assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, isItemUnlocked, isProducerRole, picksItem, type Building, type GoodId, type VenueFixture } from '../../core';
 import { itemName } from '../../i18n/itemName';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
 import { Dropdown } from '../common/Dropdown';
 import { useGame } from '../common/hooks';
+import { ItemChoice } from './ItemChoice';
+import { RestockerAssignment } from './RestockerAssignment';
 
 interface InteriorAssignmentProps {
   building: Building;
@@ -20,8 +22,10 @@ export function InteriorAssignment({ building, fixture }: InteriorAssignmentProp
   const goods = useMemo(() => focusGoodsOf(building, fixture), [building, fixture]);
   // The Goods the city has unlocked, as one string: the panel does not draw again for every tick of the game.
   const unlocked = useGame(store => goods.filter(good => isItemUnlocked(store.state, good)).join(','));
-  if (role === undefined) return null;
+  if (role === undefined && !picksItem(fixture)) return null;
   const send = gameStore.getState().send;
+  if (role === undefined) return <ItemChoice building={building} fixture={fixture} />;
+  if (role === 'restocker') return <RestockerAssignment building={building} fixture={fixture} />;
   const choice = focusOf(fixture);
   const options = [{ value: NONE, label: t('venue.assignNone') }, ...goods.map(good => ({ value: good as string, label: itemName(good), disabled: !unlocked.split(',').includes(good) }))];
   const noSupply = role === 'seller' && goods.length === 0;

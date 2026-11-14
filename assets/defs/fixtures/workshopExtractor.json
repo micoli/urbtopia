@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "workshop",
+  "category": "machines",
+  "name": {
+    "en": "Extractor (air feed on the left)",
+    "fr": "Extracteur (alimentation pneumatique à gauche)"
+  },
+  "model": "workshop-interior-extractor",
+  "footprint": [1, 1],
+  "price": 700,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "machine",
+  "flow": ["left"],
+  "picks": true,
+  "family": "extractor",
+  "lineOut": ["front"]
+}

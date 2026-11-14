@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "workshop",
+  "category": "plumbing",
+  "name": {
+    "en": "Straight pipe",
+    "fr": "Tuyau droit"
+  },
+  "model": "factory-floor-pipe-straight",
+  "footprint": [1, 1],
+  "price": 20,
+  "minTier": 1,
+  "wear": 0.04,
+  "role": "pipe",
+  "flow": ["front", "back"]
+}

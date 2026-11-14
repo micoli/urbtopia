@@ -1,16 +1,17 @@
 export const meta = {
   title: 'Production interiors',
-  summary: 'Fit out the Mill, the Bakery, the Dairy and the Storehouse from the inside, and hire the Staff who make the layout pay.',
+  summary: 'Fit out the Mill, the Workshop, the Bakery, the Dairy and the Storehouse from the inside, and hire the Staff who make the layout pay.',
   order: 36,
 };
 
 ## What they are
 
-Like the Factory, the **Mill**, the **Bakery**, the **Dairy** and the **Storehouse** open an interior: a room where you place Fixtures. It earns no Takings and has no Visitors. An empty interior leaves the building exactly as it was; a fitted one adds a **bonus** that grows with the building's Tier. These interiors are a beta feature: switch on *Production interiors* in the Settings.
+Like the Factory, the **Mill**, the **Workshop**, the **Bakery**, the **Dairy** and the **Storehouse** open an interior: a room where you place Fixtures. It earns no Takings and has no Visitors. An empty interior leaves the building exactly as it was; a fitted one adds a **bonus** that grows with the building's Tier. These interiors are a beta feature: switch on *Production interiors* in the Settings.
 
 ## One layout, one job
 
 - The **Mill** needs Drive and Pipes: a Motor, Shafts and Gears turn the **Millstones**, and a Pump, driven by a Motor, pushes through Pipes to a **Cleaner** at the intake and to the output of each Millstone, a **Bagger** for flour or an **Oil tank** for olive oil. Choose on each Millstone whether it grinds wheat or olives, then assign a miller to it: once the schema is complete, he grinds on his own and stores the production in the Storehouse.
+- The **Workshop** has **no bonus** to speed or yield: its only gain is a **production queue that runs by itself**. Pneumatic air (a Tank, a Pump and a Motor, through Pipes) feeds an **Extractor**, set against the back wall, and a **Cleaner**, each on its left or its right. Pick on the Extractor the **material** it takes in; a Line carries it through the Cleaner to a **Storage bin**. A **restocker** assigned to the bin restarts the production of that material by himself, stores it in the Storehouse and frees the queue: without one, you run the queue by hand.
 - The **Bakery** and the **Dairy** run a **Line**: crates travel on Conveyors from a Machine against the back wall, through the other Machines, to an Exit on the edge of the room. The Bakery's Mixer takes Drive and its Oven takes gas by Flow; the Dairy runs on Flow, from the Milk vat through the Pasteuriser to the Cheese cellar.
 - The **Storehouse** runs a Line from a Loading dock, by a Hoist, to a Rack.
 
@@ -20,7 +21,7 @@ A Line only counts when it is unbroken from its first Machine to an Exit, and ev
 
 Each interior has its own roles, hired like the Staff of a Venue: a fee of five days of wages once, then a wage by the day. Every role delivers **its own part** of the effect, in proportion to the Citizens who actually come to work: a miller gives the speed, a baker the speed of the Bakery, a seller the pace of sales over its Counter, a cheesemaker the Cheese yield, a cream maker the Cream yield, a stocker the room of the Storehouse. In the Bakery, the baker and the seller are **assigned by hand**: pick a Recipe on an Oven and assign a baker to it, and its speed counts for that Recipe only; pick a Sold Good on a Display counter and assign a seller to it, and its sales and yield count for that Good only. Once the Fixture is reached by the Line, they work on their own: the baker keeps baking the Recipe and stores it in the Storehouse, the seller stocks the Sold Good on the Counter and collects what it earns. One Staff serves one Fixture, and a Staff left unassigned does nothing but is paid all the same. A role you do not hire delivers nothing, but never takes away what the building did before.
 
-A **Technician** repairs worn Fixtures by the hour and slows their wear, as in the Factory interior.
+A **Technician** (the technical staff, the second kind of Workshop employee next to the restocker) repairs worn Fixtures by the hour and slows their wear, as in the Factory interior. In the Workshop the restocker gives no bonus: he runs the queue.
 
 ## What they cost
 

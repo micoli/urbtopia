@@ -1,0 +1,17 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "workshop",
+  "category": "plumbing",
+  "name": {
+    "en": "Elbow pipe",
+    "fr": "Tuyau coudé"
+  },
+  "model": "factory-floor-pipe-elbow",
+  "footprint": [1, 1],
+  "price": 25,
+  "minTier": 1,
+  "wear": 0.04,
+  "role": "pipe",
+  "flow": ["front", "right"]
+}

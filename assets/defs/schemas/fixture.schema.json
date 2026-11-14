@@ -1011,7 +1011,8 @@
             "mill",
             "bakery",
             "dairy",
-            "storehouse"
+            "storehouse",
+            "workshop"
           ]
         },
         "$schema": {
@@ -1248,8 +1249,13 @@
             "seller",
             "cheesemaker",
             "creamMaker",
-            "miller"
+            "miller",
+            "restocker"
           ]
+        },
+        "picks": {
+          "type": "boolean",
+          "const": true
         },
         "hatch": {
           "type": "number",

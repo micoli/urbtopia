@@ -677,7 +677,7 @@ export const linePathsOf = memoized((allFixtures): readonly LinePath[] => {
       paths.push({ source: source.id, points: [...points, toward(current, 'back', FIXTURES[current.type].hatch ?? HATCH)], ...(baked && good ? { baked: { from: baked.from, good } } : {}) });
       return;
     }
-    const baking = isProducerRole(FIXTURES[current.type].assigns) && current.recipe !== undefined ? { from: points.length - 1, good: current.recipe } : baked;
+    const baking = (isProducerRole(FIXTURES[current.type].assigns) || FIXTURES[current.type].picks === true) && current.recipe !== undefined ? { from: points.length - 1, good: current.recipe } : baked;
     for (const id of nexts) {
       const next = byId.get(id);
       if (next) walk(source, next, [...points, centre(next)], new Set([...seen, id]), baking);
@@ -870,7 +870,7 @@ export function interiorBenefitsOf(allFixtures: readonly VenueFixture[], fixture
     coolsMachines: new Set(vatMotors.flatMap(motor => [...(context.drive.served.get(motor.id)?.handed ?? [])].filter(id => context.linked.has(id)))).size,
     doubled: spec.coolant !== undefined && context.heated(fixture),
     heatsVats: circuit.length,
-    variety: spec.venue === 'packhouse' ? 0 : interiorBalance.varietyYield * Math.max(0, kindsOf(context.machines) - 1),
+    variety: spec.venue === 'packhouse' || spec.venue === 'workshop' ? 0 : interiorBalance.varietyYield * Math.max(0, kindsOf(context.machines) - 1),
     powerSaving: spec.heat ? interiorBalance.boilerPowerSaving : 0,
   };
 }

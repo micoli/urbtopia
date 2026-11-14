@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "workshop",
+  "category": "plumbing",
+  "name": {
+    "en": "Pump",
+    "fr": "Pompe"
+  },
+  "model": "factory-floor-pump",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "pump",
+  "drive": ["right"],
+  "flow": ["front", "back"]
+}

@@ -3,10 +3,10 @@
 export const STAFF_ROLES_ALL = ['manager', 'employee', 'technician', 'security', 'cashier', 'stocker', 'receptionist', 'housekeeper', 'cook', 'kitchenAssistant', 'maitreD', 'waiter', 'bartender'] as const;
 
 // The Staff of a Production interior or a Service interior (a Technician is counted apart, as in the Factory interior).
-export const INTERIOR_ROLES_ALL = ['miller', 'baker', 'seller', 'cheesemaker', 'creamMaker', 'stocker', 'teacher', 'librarian', 'nurse', 'doctor', 'surgeon'] as const;
+export const INTERIOR_ROLES_ALL = ['miller', 'baker', 'seller', 'cheesemaker', 'creamMaker', 'restocker', 'stocker', 'teacher', 'librarian', 'nurse', 'doctor', 'surgeon'] as const;
 
 // What a role of an interior carries: one part of the interior's effect.
-export const INTERIOR_PARTS_ALL = ['speed', 'salesRate', 'cheeseYield', 'creamYield', 'capacity', 'schooling', 'knowledge', 'carePrimary', 'careDoctor', 'careSurgeon'] as const;
+export const INTERIOR_PARTS_ALL = ['speed', 'salesRate', 'cheeseYield', 'creamYield', 'capacity', 'schooling', 'restock', 'knowledge', 'carePrimary', 'careDoctor', 'careSurgeon'] as const;
 
 export const INTERIOR_FAMILIES_ALL = ['production', 'service'] as const;
 
@@ -24,7 +24,7 @@ export const PACKHOUSE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power'
 export const LINE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'plumbing', 'machines', 'line', 'walls'];
 
 // The Production interiors that share the engine of the Factory interior, by the kind of their Fixtures.
-export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse'] as const;
+export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse', 'workshop'] as const;
 
 // The Service interiors, by the kind of their Fixtures.
 export const SERVICE_INTERIOR_KINDS = ['school', 'library', 'hospital'] as const;

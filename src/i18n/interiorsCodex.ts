@@ -1,8 +1,8 @@
 const texts = {
   'codex.productionInteriors.title': ['Production interiors', 'Intérieurs de production'],
   'codex.productionInteriors.intro': [
-    'The Factory, the Packhouse, the Mill, the Bakery, the Dairy and the Storehouse can be fitted out from the inside. Motors, Machines and Lines add speed, yield, sales or room to the building. The figures below come straight from the rules, and the last part of each interior shows what yours brings right now.',
-    'L’usine, le conditionnement, la minoterie, la boulangerie, la laiterie et l’entrepôt peuvent être aménagés de l’intérieur. Moteurs, machines et chaînes ajoutent de la vitesse, du rendement, des ventes ou de la place au bâtiment. Les chiffres ci-dessous viennent directement des règles, et la dernière partie de chaque intérieur montre ce que le vôtre apporte en ce moment.',
+    'The Factory, the Packhouse, the Mill, the Workshop, the Bakery, the Dairy and the Storehouse can be fitted out from the inside. Motors, Machines and Lines add speed, yield, sales or room to the building. The figures below come straight from the rules, and the last part of each interior shows what yours brings right now.',
+    'L’usine, le conditionnement, la minoterie, l’atelier, la boulangerie, la laiterie et l’entrepôt peuvent être aménagés de l’intérieur. Moteurs, machines et chaînes ajoutent de la vitesse, du rendement, des ventes ou de la place au bâtiment. Les chiffres ci-dessous viennent directement des règles, et la dernière partie de chaque intérieur montre ce que le vôtre apporte en ce moment.',
   ],
   'codex.serviceInteriors.title': ['Service interiors', 'Intérieurs de service'],
   'codex.serviceInteriors.intro': [
