@@ -1,6 +1,6 @@
-import { useId, useState } from 'react';
+import { useId } from 'react';
 import { useStore } from 'zustand';
-import { FIXTURE_CATEGORIES, fixtureIdsInCategory, fixtureLimitOf, type Building, type FixtureCategory, type FixtureVenue } from '../../core';
+import { FIXTURE_CATEGORIES, fixtureIdsInCategory, fixtureLimitOf, type Building, type FixtureVenue } from '../../core';
 import { t } from '../../i18n/t';
 import { venueStore } from '../../store/venueStore';
 import { AccordionSection } from '../common/AccordionSection';
@@ -20,7 +20,9 @@ export function VenueBuildMenu({ tier, rank, venueType, building }: VenueBuildMe
   const select = useStore(venueStore, store => store.selectFixture);
   const choose = useStore(venueStore, store => store.chooseFixture);
   const categories = FIXTURE_CATEGORIES[venueType];
-  const [opened, setOpened] = useState<FixtureCategory | null>(categories[0]!);
+  const stored = useStore(venueStore, store => store.openSection);
+  const opened = stored === undefined ? categories[0]! : stored;
+  const setOpened = useStore(venueStore, store => store.setOpenSection);
   const menuId = useId();
   const open = opened === null || categories.includes(opened) ? opened : categories[0]!;
   return (

@@ -79,7 +79,7 @@ type TableFigures = Omit<InteriorFigures, 'unlocked'>;
 // The tables come from the rules alone: worked out once for each interior.
 const tables = new Map<BuildingType, TableFigures>();
 
-function tablesOf(type: BuildingType): TableFigures {
+export function tablesOf(type: BuildingType): TableFigures {
   const known = tables.get(type);
   if (known) return known;
   const service = interiorFamilyOf(type) === 'service';

@@ -122,9 +122,10 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
         if (venueType === 'home') scene.setFloorModel(parquetModelOf(interior.building.interior?.parquet));
         scene.setFixtures([...interior.fixtures]);
         scene.setTrucks(isPackhouse(interior.building) ? linkedExitsOf(interior.fixtures) : NO_EXITS);
-        scene.setLine(hasLineInterior(interior.building) ? linePathsOf(interior.fixtures) : NO_PATHS, 1 + interiorBonusOfBuilding(interior.building).speed);
+        const pace = 1 + interiorBonusOfBuilding(interior.building).speed;
+        scene.setLine(hasLineInterior(interior.building) ? linePathsOf(interior.fixtures) : NO_PATHS, pace);
         scene.setAvatars(hasServiceInterior(interior.building) ? avatarsOfBuilding(interior.building) : []);
-        scene.setMotion(hasProductionInterior(interior.building) ? interiorMotionOf(interior.fixtures) : new Map(), 1 + interiorBonusOfBuilding(interior.building).speed);
+        scene.setMotion(hasProductionInterior(interior.building) ? interiorMotionOf(interior.fixtures) : new Map(), pace);
       }
       showCrowd();
       showSelection();

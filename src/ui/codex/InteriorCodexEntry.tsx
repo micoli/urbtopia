@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { interiorFigures, liveInteriorsOf } from '../../codex/interiorFigures';
-import type { BuildingType, GameState } from '../../core';
+import { liveInteriorsOf, tablesOf } from '../../codex/interiorFigures';
+import { isInteriorUnlocked, type BuildingType, type GameState } from '../../core';
 import type { MessageKey } from '../../i18n/messages';
 import { t } from '../../i18n/t';
 import { InteriorExampleGrid } from '../factory/InteriorExampleGrid';
@@ -15,7 +15,9 @@ interface InteriorCodexEntryProps {
 }
 
 export function InteriorCodexEntry({ state, type }: InteriorCodexEntryProps) {
-  const figures = useMemo(() => interiorFigures(state, type), [state, type]);
+  // The tables come from the rules alone, so the figures change only when the interior unlocks, not at every tick of the game.
+  const unlocked = isInteriorUnlocked(state, type);
+  const figures = useMemo(() => ({ ...tablesOf(type), unlocked }), [type, unlocked]);
   const live = useMemo(() => liveInteriorsOf(state, type), [state, type]);
   const { example } = figures;
   return (
