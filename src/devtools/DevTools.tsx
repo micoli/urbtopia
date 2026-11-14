@@ -18,10 +18,11 @@ import { ReleaseNotesDevButton } from './ReleaseNotesDevButton';
 import { giveItem } from './giveItem';
 import { giveAllItems, MAX_DEV_ITEM_QUANTITY } from './giveAllItems';
 import './devtools.css';
+import {ButtonRow} from "../ui/common/ButtonRow.tsx";
 
 export default function DevTools() {
   const [open, setOpen] = useState(false);
-  const [quantity, setQuantity] = useState('1000');
+  const [quantity, setQuantity] = useState('10');
   const [granted, setGranted] = useState<number | null>(null);
   const [filter, setFilter] = useState('');
   const [grantedItem, setGrantedItem] = useState<string | null>(null);
@@ -69,13 +70,19 @@ export default function DevTools() {
           <AdvisorContextSection />
           <DevToolsSection id="warehouse" title="Entrepôt" icon="production">
             <p>{Object.keys(MATERIALS).length} matériaux · {Object.keys(GOODS).length} biens</p>
+            <ButtonRow align="stretch" spaced>
+              <ActionButton variant="primary" disabled={!valid || readOnly} onClick={grant}>Tout ajouter à l’entrepôt</ActionButton>
+              <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearWarehouse, 'L’entrepôt a été vidé.')}>Vider l’entrepôt</ActionButton>
+              <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearMaterials, 'Tous les matériaux ont été vidés.')}>Vider tous les matériaux</ActionButton>
+              <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearGoods, 'Tous les biens ont été vidés.')}>Vider tous les biens</ActionButton>
+            </ButtonRow>
             <label htmlFor="devtools-quantity">Quantité à ajouter par objet</label>
             <input id="devtools-quantity" type="number" min="1" max={MAX_DEV_ITEM_QUANTITY} step="1" value={quantity} onChange={(event) => { setQuantity(event.target.value); setGranted(null); setCleared(null); setGrantedItem(null); }} />
-            <ActionButton variant="primary" disabled={!valid || readOnly} onClick={grant}>Tout ajouter à l’entrepôt</ActionButton>
             <small>Inclut les objets verrouillés, sans limite de capacité.</small>
-            <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearWarehouse, 'L’entrepôt a été vidé.')}>Vider l’entrepôt</ActionButton>
-            <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearMaterials, 'Tous les matériaux ont été vidés.')}>Vider tous les matériaux</ActionButton>
-            <ActionButton variant="danger" disabled={readOnly} onClick={() => clear(clearGoods, 'Tous les biens ont été vidés.')}>Vider tous les biens</ActionButton>
+            <label htmlFor="devtools-filter">Filtrer les matériaux et biens</label>
+            <input id="devtools-filter" type="search" placeholder="Nom…" value={filter} onChange={(event) => setFilter(event.target.value)} />
+            <ItemButtons title="Matériaux" items={Object.keys(MATERIALS) as ItemId[]} filter={filter} disabled={!valid || readOnly} onGive={grantOne} />
+            <ItemButtons title="Biens" items={Object.keys(GOODS) as ItemId[]} filter={filter} disabled={!valid || readOnly} onGive={grantOne} />
           </DevToolsSection>
           <DevToolsSection id="annualEvents" title="Événements annuels" icon="calendar">
             <label htmlFor="devtools-annual-event-date">Date des événements annuels</label>
@@ -86,12 +93,6 @@ export default function DevTools() {
           </DevToolsSection>
           <DevToolsSection id="releaseNotes" title="Notes de release" icon="info">
             <ReleaseNotesDevButton onDone={() => setOpen(false)} />
-          </DevToolsSection>
-          <DevToolsSection id="items" title="Matériaux et biens" icon="market">
-            <label htmlFor="devtools-filter">Filtrer les matériaux et biens</label>
-            <input id="devtools-filter" type="search" placeholder="Nom…" value={filter} onChange={(event) => setFilter(event.target.value)} />
-            <ItemButtons title="Matériaux" items={Object.keys(MATERIALS) as ItemId[]} filter={filter} disabled={!valid || readOnly} onGive={grantOne} />
-            <ItemButtons title="Biens" items={Object.keys(GOODS) as ItemId[]} filter={filter} disabled={!valid || readOnly} onGive={grantOne} />
           </DevToolsSection>
         </DevToolsWindow>
       ) : null}
