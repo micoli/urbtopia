@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, interiorFamilyOf, interiorPostsOf, interiorPostsOfBuilding, jobsOf, newGame, type Building, type Command, type GameState } from '../index';
-import { flagOfCommandIn } from '../../featureFlags/featureFlags';
 import { interiorRoleShare, interiorRolesOf, interiorWagesPerHour, partOfRole, totalInteriorStaff } from './interiorStaff';
 import { payInteriorStaff } from './interiorStaffCommands';
 import { STAFF, hireFeeOf } from '../venues/staff';
@@ -115,16 +114,6 @@ describe('paying the Staff', () => {
 
   it('pays nothing to a city with no Staff', () => {
     expect(payInteriorStaff(city(), 0, 3_600_000).urbs).toBe(100_000);
-  });
-});
-
-describe('the flags of the families', () => {
-  it('gate the Staff commands by the family of the building', () => {
-    expect(flagOfCommandIn(hire(1, 'baker'), city())).toBe('productionInterior');
-    expect(flagOfCommandIn(hire(2, 'teacher'), city())).toBe('serviceInterior');
-    expect(flagOfCommandIn(release(2, 'teacher'), city())).toBe('serviceInterior');
-    expect(flagOfCommandIn(hire(3, 'baker'), city())).toBeUndefined();
-    expect(flagOfCommandIn({ type: 'Collect', buildingId: 1 } as Command, city())).toBeUndefined();
   });
 });
 

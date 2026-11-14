@@ -12,7 +12,7 @@ Extends [ADR 0070](0070-interiors-come-in-three-families-venue-production-and-se
 - **A Line on Flow.** Pneumatic air comes from a Tank, a Pump and a Motor through Pipes, as in the Dairy. An **Extractor** stands against the back wall and takes the air on its left or its right (two Fixtures); a **Line** of Conveyors carries what it extracts through a **Cleaner**, also fed on its left or its right, to a **Storage bin**.
 - **The item is picked on the Extractor** among the materials the Workshop produces (`picks` in the Fixture file). The Storage bin carries the item picked on the Extractor upstream of it, the lowest id first.
 - **Staff: two kinds.** The **restocker** is assigned to a Storage bin, one to one, as a baker to an Oven; once the bin is reached by the Line and an item reaches it, he keeps one production of that item in the queue and stores each finished one in the Storehouse, with the rules of ADR 0069 (the last free Slot stays for the player, a full Storehouse waits). The **Technician** is the one of the other Production interiors. The restocker role carries the `restock` part, which no code reads: it gives no bonus.
-- **Unlock and limits.** The interior opens at 50 Citizens behind the `productionInterior` flag. Bins are limited by the production Slots, like the Ovens.
+- **Unlock and limits.** The interior opens at 50 Citizens. Bins are limited by the production Slots, like the Ovens.
 
 ## Why
 

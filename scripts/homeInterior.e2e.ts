@@ -4,7 +4,6 @@ test('a Home is furnished from its panel and its Comfort follows the layout', as
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => {
-    localStorage.setItem('urbtopia-flags', JSON.stringify({ homeInterior: true }));
     localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', taxBadgeThreshold: 1, layout: 'C' }));
   });
   await page.goto('/?e2e');

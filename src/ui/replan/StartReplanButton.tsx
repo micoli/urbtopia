@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
 import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
 import { BlockedReason } from '../common/BlockedReason';
@@ -15,7 +14,6 @@ export function StartReplanButton() {
   const toggleStats = useUi((store) => store.toggleStats);
   const settingsOpen = useUi((store) => store.settingsOpen);
   const toggleSettings = useUi((store) => store.toggleSettings);
-  const enabled = useFeatureFlag('replan');
   const select = useUi((store) => store.select);
   const chooseTool = useUi((store) => store.chooseTool);
   const refusal = startRefusal(state, saveConflict);
@@ -29,7 +27,6 @@ export function StartReplanButton() {
     chooseTool({ kind: 'replanArea', start: null, horizontalFirst: true });
   };
 
-  if (!enabled) return null;
   return (
     <>
       <ActionButton disabled={refusal !== null || state.replan !== undefined} onClick={() => setAsking(true)}>{t('replan.start')}</ActionButton>

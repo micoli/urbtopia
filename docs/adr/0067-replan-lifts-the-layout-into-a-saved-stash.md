@@ -30,5 +30,4 @@ A player unhappy with their City can **Replan** a zone of it: the button of the 
 - Placement rules that tie an object to another (a Bridge to its Water or network, a Boat to its Marina, a Crossing to its Road, the last access of a Building) are suspended while lifting and not checked again at exit. Only the placement rules of each object (free tile, owned Parcel, rotation) apply while placing.
 - The Parcels do not change during a Replan: whatever left the map fits back in the same space.
 - The Stash offers no "put back in place" and the map shows no ghost of the starting layout: the player replans from what they see; only Cancel returns to the start.
-- The Replan ships behind the `replan` feature flag. Only `StartReplan` is gated: a Replan already under way can always be placed, finished or cancelled, so switching the flag off never strands a City.
 - Automatic layout suggestions are out of this version. The Advisor (ADR 0056) stays a text writer.

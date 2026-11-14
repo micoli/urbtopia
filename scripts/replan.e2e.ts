@@ -31,7 +31,6 @@ test('a City is replanned from its Cities row: lifted into the Stash, cancelled,
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.addInitScript(() => {
-    localStorage.setItem('urbtopia-flags', JSON.stringify({ replan: true }));
     localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
   });
   await page.goto('/?e2e');
@@ -116,7 +115,6 @@ test('a City is replanned from its Cities row: lifted into the Stash, cancelled,
 test('a long press on a Stash item drops it for its price or puts it off to the Later section', async ({ page }) => {
   test.setTimeout(120_000);
   await page.addInitScript(() => {
-    localStorage.setItem('urbtopia-flags', JSON.stringify({ replan: true }));
     localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' }));
   });
   await page.goto('/?e2e');

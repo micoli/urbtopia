@@ -8,7 +8,6 @@ const context = vi.hoisted(() => ({ state: null as GameState | null }));
 vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
 }));
-vi.mock('../../featureFlags/useFeatureFlag', () => ({ useFeatureFlag: () => true }));
 
 const homes = [10, 11, 12, 13].map(id => ({ ...createBuilding(id, 'home', 40 + id, 30, 0), tier: 6 }));
 

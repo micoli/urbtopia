@@ -10,8 +10,7 @@ import {
     isTransitStopType,
     isUtilityType,
     kindOf,
-    type Building,
-    walkDestinationOf
+    type Building
 } from '../../core';
 import { t } from '../../i18n/t';
 import { ReachToggle } from '../common/ReachToggle';

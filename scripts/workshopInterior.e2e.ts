@@ -5,7 +5,6 @@ test('the Workshop interior opens from the Workshop panel with the example set-u
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => {
     localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', taxBadgeThreshold: 1, layout: 'C' }));
-    localStorage.setItem('urbtopia-flags', JSON.stringify({ productionInterior: true }));
   });
   await page.goto('/?e2e');
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
