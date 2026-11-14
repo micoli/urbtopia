@@ -222,6 +222,7 @@ type VenueMessageKey =
   | 'venue.family.bakery'
   | 'venue.family.sea'
   | 'venue.family.farm'
+  | 'venue.family.vegetable'
   | 'venue.family.orchard'
   | 'venue.family.sweet'
   | 'venue.hint.emptyShelf'
@@ -284,7 +285,8 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.family.bakery': ['Bakery', 'Boulangerie'],
   'venue.family.sea': ['Sea', 'Mer'],
   'venue.family.farm': ['Eggs', 'Œufs'],
-  'venue.family.orchard': ['Orchard', 'Verger'],
+  'venue.family.vegetable': ['Vegetables', 'Légumes'],
+  'venue.family.orchard': ['Fruits', 'Fruits'],
   'venue.family.sweet': ['Sweet', 'Douceurs'],
   'venue.hint.emptyShelf': ['Empty shelf: it sells nothing.', 'Rayon vide : il ne vend rien.'],
   'venue.hint.noBath': ['No bathroom within reach: this room counts for nothing.', 'Pas de salle de bain à portée : cette chambre ne compte pas.'],

@@ -1,4 +1,18 @@
-import { greenProfileOf, isArenaType, isAttraction, isShowType, isSportVenueType, isStadiumType, sportRulesOf, isFacilityType, isTransitStopType, isUtilityType, kindOf, type Building } from '../../core';
+import {
+    greenProfileOf,
+    isArenaType,
+    isAttraction,
+    isShowType,
+    isSportVenueType,
+    isStadiumType,
+    sportRulesOf,
+    isFacilityType,
+    isTransitStopType,
+    isUtilityType,
+    kindOf,
+    type Building,
+    walkDestinationOf
+} from '../../core';
 import { t } from '../../i18n/t';
 import { ReachToggle } from '../common/ReachToggle';
 import { TownHallPanel } from '../politics/TownHallPanel';
@@ -32,7 +46,7 @@ export function BuildingUsage({ building }: { building: Building }) {
       {isTransitStopType(building.type) ? <StopNameField building={building} /> : null}
       {isTransitStopType(building.type) ? <StopLineButtons building={building} /> : null}
       {isEcologicalBuilding ? <EcologicalBuildingPanel building={building} /> : null}
-      <SportCourtVisitors building={building} />
+      {walkDestinationOf(building) === 'sport' && <SportCourtVisitors building={building} />}
       {isSportVenueType(building.type) ? <ReachToggle /> : null}
       {isAttraction(building) ? <AttractionPanel building={building} /> : null}
       {isArenaType(building.type) && !isAttraction(building) ? <ArenaPanel building={building} /> : null}

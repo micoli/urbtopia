@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { advance, createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type Rotation, type StaffRole } from '../index';
 import { GOOD_ENTRIES } from '../economy/items';
-import { INGREDIENTS, INGREDIENT_FAMILIES, RESTAURANT, dishPrice, frontCellOf, menuSlotsOf, seatingOf, varietyOf } from './restaurant';
+import { INGREDIENTS, INGREDIENT_FAMILIES, RESTAURANT, dishPrice, frontCellOf, menuOf, menuSlotsOf, seatingOf, varietyOf } from './restaurant';
 import { FIXTURES, fixtureIdsInCategory } from './fixtures';
 import { venueBoundaries, venuePerformance } from './venues';
 
@@ -102,6 +102,7 @@ describe('Menu', () => {
     expect(failure(fitted(), { type: 'SetMenu', buildingId: 1, menu: ['planks'] })).toBe('error.unknownCommand');
     expect(failure(fitted(), { type: 'SetMenu', buildingId: 1, menu: ['milk', 'milk'] })).toBe('error.unknownCommand');
     expect(failure(fitted(), { type: 'SetMenu', buildingId: 1, menu: ['wheat'] })).toBe('error.unknownCommand');
+    expect(failure(fitted(), { type: 'SetMenu', buildingId: 1, menu: ['flour'] })).toBe('error.unknownCommand');
     expect(restaurant(withMenu(fitted(), ['milk', 'bread'])).venue!.menu).toEqual(['milk', 'bread']);
   });
 
@@ -114,7 +115,21 @@ describe('Menu', () => {
     const food = GOOD_ENTRIES.filter(({ category }) => category === 'food').map(({ id }) => id);
     expect(food.filter(id => !INGREDIENTS.includes(id))).toEqual([]);
     expect(new Set(INGREDIENTS).size).toBe(INGREDIENTS.length);
-    expect(Object.keys(INGREDIENT_FAMILIES)).toHaveLength(6);
+    expect(Object.keys(INGREDIENT_FAMILIES)).toHaveLength(7);
+  });
+
+  it('offers the vegetables and the fruits that grow on the farms, and no flour', () => {
+    for (const item of ['tomato', 'carrot', 'lettuce', 'pumpkin', 'apple', 'orange', 'watermelon']) {
+      expect(INGREDIENTS, item).toContain(item);
+      expect(failure(fitted(), { type: 'SetMenu', buildingId: 1, menu: [item as never] })).toBeNull();
+    }
+    expect(INGREDIENTS).not.toContain('flour');
+    for (const grain of ['wheat', 'rice']) expect(INGREDIENTS).not.toContain(grain);
+  });
+
+  it('drops a saved Menu item that is no longer served', () => {
+    const saved = restaurant(withMenu(fitted(), ['milk', 'bread'])).venue!;
+    expect(menuOf({ ...saved, menu: ['flour', 'milk'] as never })).toEqual(['milk']);
   });
 
   it('pleases more Diners the more families it mixes, up to a cap', () => {
