@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
+import { AutoplayerFirstSequencer } from './build/autoplayerFirstSequencer.ts';
 import { guideMdx } from './build/guideMdx.ts';
 import { guideDevFallback } from './build/guideDevFallback.ts';
 import { stampServiceWorker } from './build/stampServiceWorker.ts';
@@ -19,6 +20,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     retry: 2,
+    sequence: { sequencer: AutoplayerFirstSequencer },
     include: [
         'src/**/*.test.ts',
         'src/**/*.test.tsx',
