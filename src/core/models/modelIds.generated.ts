@@ -1499,4 +1499,16 @@ export type ModelId =
   | 'vehicles-trawler-large'
   | 'vehicles-wagon'
   | 'vehicles-yacht'
-  | 'venue-roller-coaster-4x6-7f';
+  | 'venue-roller-coaster-4x6-7f'
+  | 'workshop-interior-bin'
+  | 'workshop-interior-cleaner'
+  | 'workshop-interior-cleaner-right'
+  | 'workshop-interior-extractor'
+  | 'workshop-interior-extractor-right'
+  | 'workshop-interior-floor'
+  | 'workshop-interior-partition'
+  | 'workshop-interior-partition-cross'
+  | 'workshop-interior-partition-elbow'
+  | 'workshop-interior-partition-tee'
+  | 'workshop-interior-wall'
+  | 'workshop-interior-wall-corner';

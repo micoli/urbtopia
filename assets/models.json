@@ -25918,5 +25918,125 @@
       "height": 4
     },
     "rotationOffset": 90
+  },
+  "workshop-interior-bin": {
+    "file": "workshop-interior/bin",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "workshop-interior-cleaner": {
+    "file": "workshop-interior/cleaner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "workshop-interior-cleaner-right": {
+    "file": "workshop-interior/cleaner-right",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "workshop-interior-extractor": {
+    "file": "workshop-interior/extractor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "workshop-interior-extractor-right": {
+    "file": "workshop-interior/extractor-right",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "workshop-interior-floor": {
+    "file": "workshop-interior/floor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "workshop-interior-partition": {
+    "file": "workshop-interior/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "workshop-interior-partition-cross": {
+    "file": "workshop-interior/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "workshop-interior-partition-elbow": {
+    "file": "workshop-interior/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "workshop-interior-partition-tee": {
+    "file": "workshop-interior/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "workshop-interior-wall": {
+    "file": "workshop-interior/wall",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "workshop-interior-wall-corner": {
+    "file": "workshop-interior/wall-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
   }
 }
