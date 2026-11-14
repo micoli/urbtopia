@@ -14,7 +14,7 @@ export function venueActionsOf(panel: VenuePanelId | null, toggle: (panel: Venue
     entry('staff', 'citizens', t('venue.staff')),
     ...(type === 'restaurant' ? [entry('menu', 'utensils', t('venue.menu'))] : []),
     entry('events', 'trophy', t('venue.events')),
-    entry('takings', 'money', t('venue.takings'), 'market.png'),
+    ...(type === 'hotel' || type === 'arcade' ? [entry('management', 'book', t('venue.management'))] : [entry('takings', 'money', t('venue.takings'), 'market.png')]),
     { id: 'back', icon: 'undo', label: t('venue.menu.back'), pressed: false, disabled: false, guided: false, onClick: back },
   ];
 }

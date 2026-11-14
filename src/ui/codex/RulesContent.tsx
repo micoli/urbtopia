@@ -8,6 +8,7 @@ import { ClimateRules } from './ClimateRules';
 import { CropEconomyRules } from './CropEconomyRules';
 import { DayCycleRules } from './DayCycleRules';
 import { EnergyProductionRules } from './EnergyProductionRules';
+import { InteriorsRules } from './InteriorsRules';
 import { KnowledgeRules } from './KnowledgeRules';
 import { MarketRules } from './MarketRules';
 import { PoliticsRules } from './PoliticsRules';
@@ -43,6 +44,7 @@ const RULES: Record<CodexPage, ComponentType<RulesProps>> = {
   annualEvents: AnnualEventsRules,
   climate: ClimateRules,
   staff: StaffRules,
+  interiors: InteriorsRules,
   politics: PoliticsRules,
 };
 

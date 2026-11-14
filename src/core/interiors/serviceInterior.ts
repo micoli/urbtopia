@@ -26,10 +26,20 @@ function saturate(total: number, cap: number): number {
 }
 
 // The quality the furniture of a Service interior adds, from nothing to the cap of its Tier, before any Staff comes to work.
+const furnitureQualities = new WeakMap<readonly VenueFixture[], Map<string, number>>();
+
 export function serviceFurnitureQuality(building: Pick<Building, 'type' | 'tier' | 'interior'>): number {
-  const fixtures: readonly VenueFixture[] = building.interior?.fixtures ?? [];
+  const fixtures = building.interior?.fixtures;
+  if (!fixtures) return 0;
+  const perKey = furnitureQualities.get(fixtures) ?? new Map<string, number>();
+  furnitureQualities.set(fixtures, perKey);
+  const key = `${building.type}:${building.tier}`;
+  const known = perKey.get(key);
+  if (known !== undefined) return known;
   const total = fixtures.reduce((sum, fixture) => sum + (FIXTURES[fixture.type].quality ?? 0), 0);
-  return total === 0 ? 0 : saturate(total, capOf(building.type, building.tier));
+  const quality = total === 0 ? 0 : saturate(total, capOf(building.type, building.tier));
+  perKey.set(key, quality);
+  return quality;
 }
 
 const qualities = new WeakMap<GameState, Map<string, number>>();

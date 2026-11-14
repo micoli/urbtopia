@@ -14,7 +14,6 @@ vi.mock('../common/ReachToggle.tsx', () => ({ ReachToggle: () => null }));
 
 vi.mock('../factory/InteriorButton', () => ({ InteriorButton: () => null }));
 
-vi.mock('../tutorial/VenueTutorialReplay', () => ({ VenueTutorialReplay: () => null }));
 
 vi.mock('../common/DrawerPanel', () => ({
   DrawerPanel: Object.assign(({ children }: { children?: React.ReactNode }) => <div>{children}</div>, {

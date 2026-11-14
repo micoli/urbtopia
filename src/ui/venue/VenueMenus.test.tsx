@@ -41,6 +41,11 @@ describe('Venue main menu', () => {
     expect(actions.every(action => !action.pressed && !action.disabled)).toBe(true);
   });
 
+  it('puts the Management in place of the Takings in a Hotel and an Arcade, as in the other interiors', () => {
+    for (const type of ['hotel', 'arcade'] as const) expect(venueActionsOf(null, () => {}, () => {}, type).map(action => action.id)).toEqual(['build', 'staff', 'events', 'management', 'back']);
+    expect(venueActionsOf(null, () => {}, () => {}, 'supermarket').map(action => action.id)).toContain('takings');
+  });
+
   it('presses the button of the open panel only, and asks for the panel it stands for', () => {
     const toggled: string[] = [];
     const actions = venueActionsOf('staff', panel => toggled.push(panel), () => {});

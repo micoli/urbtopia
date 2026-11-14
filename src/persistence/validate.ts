@@ -390,8 +390,11 @@ function isDonation(donation: unknown): boolean {
   return isRecord(donation) && typeof donation.id === 'string' && UUID.test(donation.id) && isInt(donation.value, 1) && (donation.accountId === undefined || typeof donation.accountId === 'string');
 }
 
+// The tutorials of the Factory, the Mill and the School interiors were removed: a city saved with one still loads, and the entry is ignored.
+const REMOVED_VENUE_TUTORIALS = ['factory', 'mill', 'school'];
+
 function isVenueTutorials(value: unknown): boolean {
-  return isRecord(value) && Object.entries(value).every(([type, step]) => (VENUE_TUTORIAL_TYPES as string[]).includes(type) && (step === null || isVenueTutorialStep(type, step)));
+  return isRecord(value) && Object.entries(value).every(([type, step]) => REMOVED_VENUE_TUTORIALS.includes(type) || ((VENUE_TUTORIAL_TYPES as string[]).includes(type) && (step === null || isVenueTutorialStep(type, step))));
 }
 
 const LAYOUT_ENTRIES: Record<string, (item: unknown) => boolean> = {

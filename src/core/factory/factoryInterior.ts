@@ -752,13 +752,13 @@ export const runningMachinesOf = memoized((allFixtures): readonly VenueFixture[]
 });
 
 // What the Motors of a Packhouse interior ask of the city's power, as those of a Factory interior do: all of it when the Machines they drive run, a share of it at rest.
-function packhousePowerOf(allFixtures: readonly VenueFixture[]): number {
+const packhousePowerOf = memoized((allFixtures): number => {
   const { fixtures, drive } = reportOf(allFixtures);
   const motors = fixtures.filter(fixture => roleOf(fixture) === 'motor');
   if (motors.length === 0) return 0;
   const busy = Math.min(1, drive.received.size / (motors.length * interiorBalance.motorCapacity));
   return motors.length * interiorBalance.motorPower * (interiorBalance.idlePowerShare + (1 - interiorBalance.idlePowerShare) * busy);
-}
+});
 
 // What the Motors of a building's floor ask of the city's power.
 export const interiorPowerOfBuilding = (building: Pick<Building, 'type' | 'tier' | 'interior'>): number => {
@@ -892,10 +892,14 @@ const NO_FIXTURES: readonly VenueFixture[] = [];
 export const interiorFixturesOf = (building: Pick<Building, 'interior'>): readonly VenueFixture[] => building.interior?.fixtures ?? NO_FIXTURES;
 
 // The Fixtures from which Packets can reach a Fixture through the Line. The report is cached by layout, so they are read from the interior itself.
-export function interiorUpstreamOf(allFixtures: readonly VenueFixture[], id: number): VenueFixture[] {
-  const { next } = reportOf(allFixtures).line;
+const feedersOf = memoized((allFixtures): ReadonlyMap<number, readonly number[]> => {
   const feeders = new Map<number, number[]>();
-  for (const [from, targets] of next) for (const target of targets) feeders.set(target, [...(feeders.get(target) ?? []), from]);
+  for (const [from, targets] of reportOf(allFixtures).line.next) for (const target of targets) feeders.set(target, [...(feeders.get(target) ?? []), from]);
+  return feeders;
+});
+
+export function interiorUpstreamOf(allFixtures: readonly VenueFixture[], id: number): VenueFixture[] {
+  const feeders = feedersOf(allFixtures);
   const seen = new Set<number>();
   const queue = [id];
   while (queue.length > 0) for (const feeder of feeders.get(queue.shift()!) ?? []) if (!seen.has(feeder)) {

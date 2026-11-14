@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { serviceFurnitureQuality, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { formatPercent } from './formatPercent';
@@ -9,7 +10,7 @@ interface ServiceStatsProps {
 
 // What sits at the top of the main menu of a Service interior: the Urbs and the quality its furniture adds, before the Staff deliver it.
 export function ServiceStats({ building }: ServiceStatsProps) {
-  const quality = serviceFurnitureQuality(building);
+  const quality = useMemo(() => serviceFurnitureQuality(building), [building.type, building.tier, building.interior]);
   return (
     <>
       <UrbsStat />

@@ -97,6 +97,10 @@ export const interiorPostsOfBuilding = (building: Pick<Building, 'type' | 'tier'
   return interiorPostsOf(building.type, role, building.tier);
 };
 
+// The model files of every avatar a hired role can have in a room.
+export const interiorAvatarModels = (): string[] =>
+  Object.values(DECLARATIONS).flatMap(declaration => Object.values(declaration.roles).flatMap(role => (role?.avatar ? [modelFileOf(role.avatar.model)] : [])));
+
 export const avatarOfRole = (type: BuildingType, role: InteriorRole): { model: string; beside: readonly string[] } | undefined => {
   const avatar = DECLARATIONS[type]?.roles[role]?.avatar;
   return avatar && { ...avatar, model: modelFileOf(avatar.model) };

@@ -18,21 +18,21 @@ test('the Factory interior opens from the Factory panel and shows what the layou
       { id: 3, type: 'factoryPress', x: 3, y: 5, rotation: 2 },
     ];
     const factory = { ...createBuilding(50, 'factory', 64, 64, 0), tier: 5, interior: { fixtures, nextFixtureId: 10 } };
-    gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [factory], nextId: 51, adaptationUntil: 0, venueTutorials: { arcade: null, supermarket: null, factory: null } });
+    gameStore.getState().replaceState({ ...state, urbs: 100_000, buildings: [factory], nextId: 51, adaptationUntil: 0, venueTutorials: { arcade: null, supermarket: null } });
     uiStore.getState().select(50);
   });
   await page.getByRole('button', { name: "Ouvrir l'atelier de l'usine" }).click();
-  const stats = page.locator('.dock-stat');
-  await expect(stats.filter({ hasText: 'Machines reliées' })).toContainText('1 / 1');
-  await expect(stats.filter({ hasText: 'Vitesse' })).toContainText('+20 %');
-  await expect(stats.filter({ hasText: 'Électricité des moteurs' })).toBeVisible();
+  const stat = (title: string) => page.locator(`.dock-stat--rates [title="${title}"]`);
+  await expect(stat('Machines reliées')).toContainText('1 / 1');
+  await expect(stat('Vitesse')).toContainText('+20 %');
+  await expect(stat('Électricité des moteurs')).toBeVisible();
   await page.evaluate(async () => {
     const { gameStore } = await import('../src/store/gameStore.ts');
     const state = gameStore.getState().state;
     const factory = state.buildings.find(building => building.id === 50)!;
     gameStore.getState().replaceState({ ...state, buildings: state.buildings.map(building => (building.id === 50 ? { ...factory, interior: { ...factory.interior!, fixtures: factory.interior!.fixtures.filter(fixture => fixture.type !== 'factoryShaft') } } : building)) });
   });
-  await expect(stats.filter({ hasText: 'Machines reliées' })).toContainText('0 / 1');
-  await expect(stats.filter({ hasText: 'Vitesse' })).toContainText('+0 %');
+  await expect(stat('Machines reliées')).toContainText('0 / 1');
+  await expect(stat('Vitesse')).toContainText('+0 %');
   expect(errors).toEqual([]);
 });

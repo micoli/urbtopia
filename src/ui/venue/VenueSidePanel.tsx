@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { hasProductionInterior, hasServiceInterior, type Building } from '../../core';
+import { hasProductionInterior, hasServiceInterior, isVenue, type Building } from '../../core';
 import { venueStore } from '../../store/venueStore';
 import { PanelHeader } from '../common/PanelHeader';
 import { useVenueFixtureSelected, VenueFixturePanel } from './VenueFixturePanel';
@@ -31,7 +31,7 @@ export function VenueSidePanel({ venue }: VenueSidePanelProps) {
   return (
     <aside className="side-panel">
       <PanelHeader title={title} onClose={closePanel} debugNode={venue} />
-      {panel === 'management' ? <InteriorManagement factory={venue} /> : panel === 'parquet' ? <HomeParquet home={venue} /> : hasProductionInterior(venue) || hasServiceInterior(venue) ? <InteriorStaff factory={venue} /> : <VenuePanelContent venue={venue} />}
+      {panel === 'management' && !isVenue(venue) ? <InteriorManagement factory={venue} /> : panel === 'parquet' ? <HomeParquet home={venue} /> : hasProductionInterior(venue) || hasServiceInterior(venue) ? <InteriorStaff factory={venue} /> : <VenuePanelContent venue={venue} />}
     </aside>
   );
 }

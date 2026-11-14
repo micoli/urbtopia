@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, dispatch, newGame, type Building, type Command, type GameState, type StaffRole, type VenueFixture } from '../index';
-import { canReplayVenueTutorial, isVenueStepDone, progressVenueTutorials } from './venueTutorial';
+import { createBuilding, dispatch, newGame, type Building, type Command, type GameState, type StaffRole } from '../index';
+import { canReplayVenueTutorial, isVenueStepDone } from './venueTutorial';
 
 const venueBuilding = (id: number, type: 'arcade' | 'supermarket', extra: Partial<Building['venue'] & object> = {}): Building => {
   const building = createBuilding(id, type, 55 + id * 6, 50, 0);
@@ -41,7 +41,7 @@ describe('Venue tutorial start', () => {
 
   it('creates no guided entry for a game started with the bypass', () => {
     const state = newGame({ seed: 'bypass', now: 0, venueTutorials: false });
-    expect(state.venueTutorials).toEqual({ arcade: null, supermarket: null, factory: null });
+    expect(state.venueTutorials).toEqual({ arcade: null, supermarket: null });
   });
 });
 
@@ -99,60 +99,5 @@ describe('Skip and replay', () => {
     const done = city([venueBuilding(1, 'arcade', { fixtures: [{ id: 1, type: 'barrelClimber', x: 2, y: 3, rotation: 0 }], nextFixtureId: 2, staff: { employee: 1 }, collected: 3 })], { venueTutorials: { arcade: null } });
     expect(canReplayVenueTutorial(done, 'arcade')).toBe(false);
     expect(send(done, { type: 'ReplayVenueTutorial', venueType: 'arcade' }).venueTutorials?.arcade).toBeNull();
-  });
-});
-
-describe('Factory interior tutorial', () => {
-  const factory = (fixtures: NonNullable<Building['interior']>['fixtures'] = []): Building => ({ ...createBuilding(1, 'factory', 55, 50, 0), interior: { fixtures, nextFixtureId: 100 } });
-  const fixture = (id: number, type: 'factoryMotor' | 'factoryShaft' | 'factoryPress', x: number, y: number, rotation: 0 | 2 = 0) => ({ id, type, x, y, rotation });
-  const started = (building: Building) => send(city([building]), { type: 'SkipTutorial' }).venueTutorials?.factory;
-
-  it('starts at the Motor once the interior of a Factory is in use, and not before', () => {
-    expect(started(factory())).toBe('motor');
-    expect(started({ ...createBuilding(1, 'factory', 55, 50, 0) })).toBeUndefined();
-  });
-
-  it('goes on to the Drive once a Motor is placed, and to the Flow once a Machine is linked', () => {
-    expect(started(factory([fixture(1, 'factoryMotor', 3, 3)]))).toBe('drive');
-    expect(started(factory([fixture(1, 'factoryMotor', 3, 3), fixture(2, 'factoryShaft', 3, 4), fixture(3, 'factoryPress', 3, 5, 2)]))).toBe('flow');
-  });
-});
-
-const millLayout: VenueFixture[] = [
-  { id: 1, type: 'millMotor', x: 2, y: 2, rotation: 0 }, { id: 2, type: 'millShaft', x: 2, y: 3, rotation: 0 }, { id: 3, type: 'millstone', x: 2, y: 4, rotation: 2 }, { id: 4, type: 'millMotor', x: 4, y: 6, rotation: 2 },
-  { id: 5, type: 'millPump', x: 4, y: 5, rotation: 1 }, { id: 6, type: 'millPipeCross', x: 3, y: 5, rotation: 0 }, { id: 7, type: 'millPipeCross', x: 2, y: 5, rotation: 0 }, { id: 8, type: 'millPipe', x: 1, y: 5, rotation: 1 },
-  { id: 9, type: 'millCleaner', x: 0, y: 5, rotation: 1 }, { id: 10, type: 'millBagger', x: 2, y: 6, rotation: 2 }, { id: 11, type: 'millOilTank', x: 3, y: 4, rotation: 0 },
-];
-
-describe('the Mill interior tutorial', () => {
-  const mill = (interior?: Building['interior']): GameState => ({
-    ...newGame({ seed: 'mill-tutorial', now: 0 }), tutorial: null, buildings: [{ ...createBuilding(1, 'mill', 55, 50, 0), tier: 3, ...(interior ? { interior } : {}) }],
-  });
-
-  it('starts once the interior has been used, and follows the Motor, the Drive and the miller', () => {
-    expect(progressVenueTutorials(mill()).venueTutorials?.mill).toBeUndefined();
-    const started = progressVenueTutorials(mill({ fixtures: [], nextFixtureId: 1 }));
-    expect(started.venueTutorials?.mill).toBe('motor');
-    const driven = progressVenueTutorials(mill({ fixtures: [{ id: 1, type: 'millMotor', x: 2, y: 2, rotation: 0 }, { id: 2, type: 'millShaft', x: 2, y: 3, rotation: 0 }, { id: 3, type: 'millstone', x: 2, y: 4, rotation: 2 }], nextFixtureId: 4 }));
-    expect(driven.venueTutorials?.mill).toBe('flow');
-    const piped = progressVenueTutorials(mill({ fixtures: [...millLayout], nextFixtureId: 20 }));
-    expect(piped.venueTutorials?.mill).toBe('miller');
-    const done = progressVenueTutorials({ ...piped, buildings: piped.buildings.map(building => ({ ...building, interior: { ...building.interior!, staff: { miller: 1 } } })) });
-    expect(done.venueTutorials?.mill).toBeNull();
-  });
-});
-
-describe('the School interior tutorial', () => {
-  const school = (interior?: Building['interior']): GameState => ({
-    ...newGame({ seed: 'school-tutorial', now: 0 }), tutorial: null, buildings: [{ ...createBuilding(1, 'school', 55, 50, 0), tier: 3, ...(interior ? { interior } : {}) }],
-  });
-
-  it('starts once the interior has been used, and follows the furniture and the teacher', () => {
-    expect(progressVenueTutorials(school()).venueTutorials?.school).toBeUndefined();
-    expect(progressVenueTutorials(school({ fixtures: [], nextFixtureId: 1 })).venueTutorials?.school).toBe('furniture');
-    const furnished = progressVenueTutorials(school({ fixtures: [{ id: 1, type: 'schoolDesk', x: 1, y: 1, rotation: 0 }], nextFixtureId: 2 }));
-    expect(furnished.venueTutorials?.school).toBe('teacher');
-    const done = progressVenueTutorials({ ...furnished, buildings: furnished.buildings.map(building => ({ ...building, interior: { ...building.interior!, staff: { teacher: 1 } } })) });
-    expect(done.venueTutorials?.school).toBeNull();
   });
 });

@@ -1,16 +1,11 @@
-import { interiorBenefitsOf, interiorLinksOf } from '../factory/factoryInterior';
 import { FIXTURES } from '../venues/fixtures';
 import { hasStock } from '../venues/supermarket';
 import { hiredOf } from '../venues/staff';
-import { totalInteriorStaff } from '../interiors/interiorStaff';
 import type { Building, GameState } from '../engine/state';
 
 export const VENUE_TUTORIAL_STEPS = {
   arcade: ['place', 'fixture', 'employee', 'collect'],
   supermarket: ['place', 'checkout', 'shelf', 'stock', 'cashier', 'collect'],
-  factory: ['motor', 'drive', 'flow', 'cooling'],
-  mill: ['motor', 'drive', 'flow', 'miller'],
-  school: ['furniture', 'teacher'],
 } as const;
 
 export type VenueTutorialType = keyof typeof VENUE_TUTORIAL_STEPS;
@@ -26,33 +21,11 @@ export const stepsOfVenueTutorial = (type: VenueTutorialType): readonly VenueTut
 export const isVenueTutorialStep = (type: string, step: unknown): boolean =>
   hasVenueTutorial(type) && (stepsOfVenueTutorial(type) as readonly unknown[]).includes(step);
 
-// The Buildings a tutorial follows: the Venues of its type, or the Factories, Mills and Schools whose interior has been used.
+// The Buildings a tutorial follows: the Venues of its type.
 const sitesOf = (state: GameState, type: VenueTutorialType): Building[] =>
-  state.buildings.filter(building => building.type === type && (type === 'factory' || type === 'mill' || type === 'school' ? building.interior !== undefined : building.venue !== undefined));
-
-function isDoneInInterior(building: Building, step: VenueTutorialStep): boolean {
-  const fixtures = building.interior?.fixtures ?? [];
-  const { linked, problems } = interiorLinksOf(fixtures);
-  const linkedMachines = fixtures.filter(fixture => linked.has(fixture.id));
-  switch (step) {
-    case 'motor':
-      return fixtures.some(fixture => FIXTURES[fixture.type].role === 'motor');
-    case 'drive':
-      return fixtures.some(fixture => FIXTURES[fixture.type].drive !== undefined && FIXTURES[fixture.type].role === 'machine' && (linked.has(fixture.id) || !(problems.get(fixture.id) ?? []).some(problem => problem !== 'noFlow' && problem !== 'tankFull')));
-    case 'flow':
-      return linkedMachines.some(fixture => FIXTURES[fixture.type].flow !== undefined);
-    case 'miller':
-      return totalInteriorStaff(building) > 0;
-    case 'cooling':
-      return fixtures.some(fixture => FIXTURES[fixture.type].role === 'motor' && interiorBenefitsOf(fixtures, fixture).cooling > 0);
-    default:
-      return false;
-  }
-}
+  state.buildings.filter(building => building.type === type && building.venue !== undefined);
 
 const isDoneIn = (building: Building, step: VenueTutorialStep): boolean => {
-  if (building.type === 'factory' || building.type === 'mill') return isDoneInInterior(building, step);
-  if (building.type === 'school') return step === 'furniture' ? (building.interior?.fixtures.length ?? 0) > 0 : step === 'teacher' && totalInteriorStaff(building) > 0;
   const venue = building.venue!;
   switch (step) {
     case 'place':

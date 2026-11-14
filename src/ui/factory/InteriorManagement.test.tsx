@@ -53,20 +53,27 @@ describe('InteriorManagement features', () => {
   });
 });
 
-describe('InteriorManagement of a Dairy', () => {
-  it('lists every kind of Line', () => {
-    const html = renderToStaticMarkup(<InteriorManagement factory={{ ...createBuilding(1, 'dairy', 55, 50, 0), tier: 3 }} />);
-    expect(html).toContain('Cream line');
-    expect(html).toContain('Cheese line');
-    expect(html).toContain('Full line');
-    expect(html).toContain('Conveyor elbow');
+describe('InteriorManagement examples', () => {
+  it('offers an example of set-up for an interior that has machines', () => {
+    const html = renderToStaticMarkup(<InteriorManagement factory={{ ...createBuilding(1, 'mill', 55, 50, 0), tier: 3 }} />);
+    expect(html).toContain('Examples of set-ups');
+  });
+
+  it('offers none for an interior without one', () => {
+    const html = renderToStaticMarkup(<InteriorManagement factory={{ ...createBuilding(1, 'school', 55, 50, 0), tier: 3 }} />);
+    expect(html).not.toContain('Examples of set-ups');
   });
 });
 
-describe('InteriorManagement of a Packhouse', () => {
-  it('lists the joiners and splitters of its Line', () => {
-    const html = renderToStaticMarkup(<InteriorManagement factory={{ ...createBuilding(1, 'packhouse', 55, 50, 0), tier: 3 }} />);
-    expect(html).toContain('Straight joining conveyor');
-    expect(html).toContain('Splitting conveyor');
+describe('InteriorManagement indicators', () => {
+  it('writes out the indicators of the interior at the top, with their names', () => {
+    const html = renderToStaticMarkup(<InteriorManagement factory={{ ...createBuilding(1, 'mill', 55, 50, 0), tier: 3 }} />);
+    for (const label of ['Machines linked', 'Speed', 'Yield', 'Power drawn by the Motors']) expect(html, label).toContain(label);
+    expect(html.indexOf('Speed')).toBeLessThan(html.indexOf('Examples of set-ups'));
+  });
+
+  it('shows the quality of the furniture for a Service interior', () => {
+    const html = renderToStaticMarkup(<InteriorManagement factory={{ ...createBuilding(1, 'school', 55, 50, 0), tier: 3 }} />);
+    expect(html).toContain('Quality');
   });
 });

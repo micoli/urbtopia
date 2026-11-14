@@ -76,23 +76,24 @@ type VenueMessageKey =
   | 'venue.recipes'
   | 'venue.management'
   | 'interior.features'
-  | 'interior.conveyors'
-  | 'dairy.lines'
-  | 'dairy.lines.cream'
-  | 'dairy.lines.cheese'
-  | 'dairy.lines.both'
+  | 'interior.examples.show'
+  | 'interior.examples.title'
+  | 'interior.examples.tier'
+  | 'interior.examples.legend'
+  | 'interior.examples.factory'
+  | 'interior.examples.mill'
+  | 'interior.examples.bakery'
+  | 'interior.examples.dairy'
+  | 'interior.examples.packhouse'
+  | 'interior.examples.storehouse'
   | `interior.features.${'factory' | 'packhouse' | 'mill' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
   | 'bakery.recipes.assembly'
-  | 'bakery.recipes.drive'
-  | 'bakery.recipes.gas'
-  | 'bakery.recipes.line'
   | 'bakery.recipes.limits'
   | 'bakery.recipes.bonuses'
   | 'bakery.recipes.mixer'
   | 'bakery.recipes.oven'
   | 'bakery.recipes.counter'
   | 'bakery.recipes.caps'
-  | 'bakery.recipes.staffParts'
   | 'bakery.recipes.now'
   | 'bakery.recipes.consumption'
   | 'bakery.recipes.power'
@@ -382,11 +383,16 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.recipes': ["Recipes", "Recettes"],
   'venue.management': ['Management', 'Gestion'],
   'interior.features': ['What it does', 'Fonctionnalités'],
-  'interior.conveyors': ['Conveyor pieces', 'Pièces de tapis'],
-  'dairy.lines': ['Lines', 'Chaînes'],
-  'dairy.lines.cream': ['Cream line: Milk vat, Pasteuriser, Conveyors, then a Display counter. It adds the cream yield.', 'Chaîne de crème : cuve à lait, pasteurisateur, tapis, puis un comptoir vitrine. Elle ajoute du rendement en crème.'],
-  'dairy.lines.cheese': ['Cheese line: Milk vat, Cheese cellar, Conveyors, then a Display counter. It adds the cheese yield.', 'Chaîne de fromage : cuve à lait, cave d’affinage, tapis, puis un comptoir vitrine. Elle ajoute du rendement en fromage.'],
-  'dairy.lines.both': ['Full line: Milk vat, Pasteuriser, Cheese cellar, Conveyors, then a Display counter. It adds both yields.', 'Chaîne complète : cuve à lait, pasteurisateur, cave d’affinage, tapis, puis un comptoir vitrine. Elle ajoute les deux rendements.'],
+  'interior.examples.show': ["Examples of set-ups", "Exemples de montages"],
+  'interior.examples.title': ["Example set-up", "Exemple de montage"],
+  'interior.examples.tier': ["Room of a Tier {tier} building", "Salle d’un bâtiment de niveau {tier}"],
+  'interior.examples.legend': ["Pieces", "Pièces"],
+  'interior.examples.factory': ["A Tank feeds a Pump that a Motor drives, and the Flow goes through a Pipe tee to a Mixing vat. A second Motor drives a Press through a Shaft. The Mixing vat stands beside that Motor and cools it, which raises the speed and the yield of the Press.", "Un réservoir alimente une pompe entraînée par un moteur, et le fluide passe par un té de tuyau jusqu’à la cuve de mélange. Un second moteur entraîne une presse par un arbre. La cuve de mélange est à côté de ce moteur et le refroidit, ce qui augmente la vitesse et le rendement de la presse."],
+  'interior.examples.mill': ["A first Motor turns a Shaft that drives the Millstone. A second Motor drives the Pump, which pushes through the Pipes to the Cleaner where the grain comes in, the Millstone, then the Bagger that bags the flour or the Oil tank that stores the olive oil.", "Un premier moteur fait tourner un arbre qui entraîne la meule. Un second moteur entraîne la pompe, qui pousse dans les tuyaux jusqu’au nettoyeur où entre le grain, la meule, puis l’ensacheuse qui met la farine en sacs ou la cuve à huile qui stocke l’huile d’olive."],
+  'interior.examples.bakery': ["A Motor and a Shaft drive the Mixer against the back wall. A Tank, a Pump and a Motor bring the gas to the Oven. Conveyors carry the dough from the Mixer to the Oven, then the bread to the Counter, where it is sold.", "Un moteur et un arbre entraînent le pétrin contre le mur du fond. Un réservoir, une pompe et un moteur amènent le gaz au four. Des tapis portent la pâte du pétrin au four, puis le pain jusqu’au comptoir, où il est vendu."],
+  'interior.examples.dairy': ["The Milk vat takes in the milk, and every Machine has its own Tank, Pump and Motor. Conveyors carry the milk to the Pasteuriser, then to the Cheese cellar, then to the Counter, where the cream and the cheese are sold.", "La cuve à lait reçoit le lait, et chaque machine a son réservoir, sa pompe et son moteur. Des tapis portent le lait au pasteurisateur, puis à la cave d’affinage, puis au comptoir, où la crème et le fromage sont vendus."],
+  'interior.examples.packhouse': ["A Motor and a Shaft drive the Packer against the back wall. Conveyors carry the Packets down to the Exit, where a truck takes the crates away.", "Un moteur et un arbre entraînent l’emballeuse contre le mur du fond. Des tapis portent les paquets jusqu’à la sortie, où un camion emporte les caisses."],
+  'interior.examples.storehouse': ["A Motor drives the Loading dock where the Goods come in, and another one drives the Hoist. Conveyors carry the crates to the Rack, which stores them: every linked Rack adds room to the Storehouse.", "Un moteur entraîne le quai de chargement où entrent les biens, et un autre entraîne le palan. Des tapis portent les caisses jusqu’au rayonnage, qui les stocke : chaque rayonnage relié ajoute de la place à l’entrepôt."],
   'interior.features.factory': ["Machines turn the Motor's Drive into speed and yield for the Factory's Slots. Link them with Shafts and Gears, add Flow for the Machines that need it, and cool the Motors with a Cooling vat. Each Machine can make any Good of the Factory: pick one, and a Restocker assigned to it stores what it makes in the Storehouse.", "Les machines transforment la force du moteur en vitesse et en rendement pour les emplacements de l'usine. Reliez-les par des arbres et des engrenages, ajoutez du fluide pour celles qui en ont besoin, et refroidissez les moteurs avec une cuve réfrigérante. Chaque machine peut fabriquer n'importe quel bien de l'usine : choisissez-en un, et un employé de réassort affecté le range à l'entrepôt."],
   'interior.features.packhouse': ["A Line carries Packets from the Machines to the Exits, which set the yield of the Packhouse. Keep every Machine linked and fed, and restock the Exits.", "Une chaîne porte les colis des machines jusqu'aux sorties, qui fixent le rendement du conditionnement. Gardez chaque machine reliée et alimentée, et réapprovisionnez les sorties."],
   'interior.features.mill': ["A Motor, Shafts and Gears drive the millstones, and a Pump drives the Pipes. Choose on each millstone what it grinds, wheat or olives: a Cleaner takes the grain in, a Bagger gives the flour out and an Oil tank the olive oil, all on the Pipes of the same Pump. A miller assigned to a complete millstone grinds on his own and stores the production in the Storehouse; without one, you collect it yourself.", "Un moteur, des arbres et des engrenages font tourner les meules, et une pompe alimente la tuyauterie. Choisissez sur chaque meule ce qu'elle moud, du blé ou des olives : une nettoyeuse fait entrer le grain, une ensacheuse sort la farine et un réservoir l'huile d'olive, tous sur la tuyauterie de la même pompe. Un meunier affecté à une meule complète moud seul et range la production à l'entrepôt ; sans lui, vous la récupérez vous-même."],
@@ -397,16 +403,12 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.features.library': ["Furniture adds quality, up to a cap that rises with the Tier. A librarian adds the Knowledge the Library gives to the homes it serves. Furniture never wears.", "Le mobilier ajoute de la qualité, jusqu'à un plafond qui monte avec le niveau. Un bibliothécaire ajoute le savoir que la bibliothèque donne aux logements desservis. Le mobilier ne s'use jamais."],
   'interior.features.hospital': ["Furniture adds quality, up to a cap that rises with the Tier. Nurses, doctors and surgeons each bring a part of the care, which adds Well-being to the homes served. Furniture never wears.", "Le mobilier ajoute de la qualité, jusqu'à un plafond qui monte avec le niveau. Infirmiers, médecins et chirurgiens apportent chacun une part des soins, qui ajoute du bien-être aux logements desservis. Le mobilier ne s'use jamais."],
   'bakery.recipes.assembly': ["Assembly", "Montage"],
-  'bakery.recipes.drive': ["Drive: a Motor turns a Shaft that ends on the right side of the Dough mixer.", "Entraînement : un moteur fait tourner un arbre qui aboutit sur le côté droit du pétrin."],
-  'bakery.recipes.gas': ["Gas: a Tank feeds a Pump, driven by a Motor, whose Pipes end on the left side of the Oven.", "Gaz : une cuve alimente une pompe, entraînée par un moteur, dont les tuyaux aboutissent sur le côté gauche du four."],
-  'bakery.recipes.line': ["Line: the Dough mixer stands against the back wall and its Line leaves by the front. Conveyors carry the dough to the Oven, then from the Oven to the Display counters.", "Chaîne : le pétrin se place contre le mur du fond et sa chaîne part par l’avant. Des tapis portent la pâte au four, puis du four aux comptoirs vitrine."],
   'bakery.recipes.limits': ["One Mixer feeds up to {mixer} Ovens, and one Oven up to {oven} Display counters; past that, a Fixture gets no Packets.", "Un pétrin alimente au plus {mixer} fours, et un four au plus {oven} comptoirs vitrine ; au-delà, une pièce ne reçoit rien."],
   'bakery.recipes.bonuses': ["Bonuses", "Bonus"],
   'bakery.recipes.mixer': ["Dough mixer: speed {value}", "Pétrin : vitesse {value}"],
   'bakery.recipes.oven': ["Tunnel oven: speed {value}", "Four tunnel : vitesse {value}"],
   'bakery.recipes.counter': ["Display counter: sales {value}, yield {yield}, draws {power} of power", "Comptoir vitrine : ventes {value}, rendement {yield}, consomme {power} d’électricité"],
   'bakery.recipes.caps': ["Caps at this Tier: speed {speed}, yield {yield}, sales {sales}.", "Plafonds à ce Tier : vitesse {speed}, rendement {yield}, ventes {sales}."],
-  'bakery.recipes.staffParts': ["The baker is assigned to an Oven and carries its speed for its Recipe; the seller is assigned to a Display counter and carries its sales and its yield for its Sold Good. Staff left unassigned do nothing.", "Le boulanger est affecté à un four et porte sa vitesse pour sa recette ; le vendeur est affecté à un comptoir vitrine et porte ses ventes et son rendement pour son bien vendu. Le personnel non affecté ne fait rien."],
   'bakery.recipes.now': ["Now: speed {speed}, yield {yield}, sales {sales}.", "Actuellement : vitesse {speed}, rendement {yield}, ventes {sales}."],
   'bakery.recipes.consumption': ["Consumption", "Consommations"],
   'bakery.recipes.power': ["Power drawn by the Motors and the Counters: {value}", "Électricité des moteurs et des comptoirs : {value}"],

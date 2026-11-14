@@ -1,40 +1,37 @@
-import { useMemo } from 'react';
-import { FIXTURES, interiorBonusOfBuilding, interiorFixturesOf, interiorLinksOf, interiorPowerOfBuilding, type Building } from '../../core';
+import type { Building } from '../../core';
 import { t } from '../../i18n/t';
 import { formatPercent } from './formatPercent';
+import { Icon } from '../common/Icon';
 import { UrbsStat } from '../common/UrbsStat';
+import { useInteriorIndicators } from './useInteriorIndicators';
 
 interface InteriorStatsProps {
   factory: Building;
 }
 
-// What sits at the top of the main menu of a Factory interior: the Urbs, the Machines that are linked and the bonus they bring.
+// What sits at the top of the main menu of a Factory interior: the Urbs, then in one box the Machines that are linked, the bonus they bring and the power the Motors draw.
 export function InteriorStats({ factory }: InteriorStatsProps) {
-  const fixtures = interiorFixturesOf(factory);
-  const { machines, linked, bonus, power } = useMemo(() => ({
-    machines: fixtures.filter(fixture => FIXTURES[fixture.type].role === 'machine').length,
-    linked: interiorLinksOf(fixtures).linked.size,
-    bonus: interiorBonusOfBuilding({ type: factory.type, tier: factory.tier, interior: factory.interior }),
-    power: interiorPowerOfBuilding({ type: factory.type, tier: factory.tier, interior: factory.interior }),
-  }), [fixtures, factory.type, factory.tier, factory.interior]);
+  const { machines, linked, speed, yield: yieldBonus, power } = useInteriorIndicators(factory);
   return (
     <>
       <UrbsStat />
-      <div className="dock-stat" title={t('factory.interior.linked')}>
-        <span className="dock-stat-value">{linked} / {machines}</span>
-        <span className="dock-stat-label">{t('factory.interior.linked')}</span>
-      </div>
-      <div className="dock-stat" title={t('factory.interior.speed')}>
-        <span className="dock-stat-value">{formatPercent(bonus.speed)}</span>
-        <span className="dock-stat-label">{t('factory.interior.speed')}</span>
-      </div>
-      <div className="dock-stat" title={t('factory.interior.yield')}>
-        <span className="dock-stat-value">{formatPercent(bonus.yield)}</span>
-        <span className="dock-stat-label">{t('factory.interior.yield')}</span>
-      </div>
-      <div className="dock-stat" title={t('factory.interior.power')}>
-        <span className="dock-stat-value">{power.toFixed(1)}</span>
-        <span className="dock-stat-label">{t('factory.interior.power')}</span>
+      <div className="dock-stat dock-stat--rates">
+        <span className="dock-rate" title={t('factory.interior.linked')}>
+          <Icon name="production" />
+          {linked} / {machines}
+        </span>
+        <span className="dock-rate" title={t('factory.interior.speed')}>
+          <Icon name="trend" />
+          {formatPercent(speed)}
+        </span>
+        <span className="dock-rate" title={t('factory.interior.yield')}>
+          <Icon name="yield" />
+          {formatPercent(yieldBonus)}
+        </span>
+        <span className="dock-rate" title={t('factory.interior.power')}>
+          <Icon name="power" />
+          {power.toFixed(1)}
+        </span>
       </div>
     </>
   );

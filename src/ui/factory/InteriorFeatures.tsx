@@ -1,6 +1,5 @@
 import type { Building } from '../../core';
 import { t } from '../../i18n/t';
-import { InteriorDairyLines } from './InteriorDairyLines';
 import type { MessageKey } from '../../i18n/messages';
 
 interface InteriorFeaturesProps {
@@ -13,7 +12,6 @@ export function InteriorFeatures({ building }: InteriorFeaturesProps) {
     <>
       <h3>{t('interior.features')}</h3>
       <p className="note">{t(`interior.features.${building.type}` as MessageKey)}</p>
-      {building.type === 'dairy' ? <InteriorDairyLines /> : null}
     </>
   );
 }

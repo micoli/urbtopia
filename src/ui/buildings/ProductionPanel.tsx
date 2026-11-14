@@ -21,7 +21,6 @@ import { SalesStacks } from './SalesStacks';
 import { StockCount } from './StockCount';
 import { Icon } from '../common/Icon';
 import { InteriorButton } from '../factory/InteriorButton';
-import { VenueTutorialReplay } from '../tutorial/VenueTutorialReplay';
 
 interface ProductionPanelProps {
   building: Building;
@@ -62,7 +61,6 @@ export function ProductionPanel({ building }: ProductionPanelProps) {
 
   return <DrawerPanel>
       <InteriorButton building={building} />
-      <VenueTutorialReplay building={building} />
       <PowerShortageNote />
       <FirstUseHint id="production">{t('hint.production')}</FirstUseHint>
       <SlotList>
