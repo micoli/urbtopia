@@ -37,7 +37,6 @@ const DOCK_ROOF = 0.95;
 const DOCK_DEPTH = 0.42;
 const MACHINE_ROOF = 1.1;
 const STAFF_SCALE = 0.7;
-const STAFF_DISTANCE = 0.85;
 // Staff stand on the corner of their Fixture, not in front of it.
 const CORNER_MARGIN = 0.09;
 

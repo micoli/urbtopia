@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advance, createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type GoodId, type Rotation, type VenueFixture } from '../index';
+import { advance, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type GoodId, type Rotation, type VenueFixture } from '../index';
 
 const T0 = 1_700_000_000_000;
 
