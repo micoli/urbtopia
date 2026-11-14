@@ -12,6 +12,7 @@
   "price": 250,
   "minTier": 1,
   "wear": 0.02,
+  "tint": "#b5a23a",
   "role": "machine",
   "flow": ["front"],
   "family": "oilTank"
