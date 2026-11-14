@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { hasServiceInterior, type Building } from '../../core';
+import { hasProductionInterior, hasServiceInterior, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { venueStore } from '../../store/venueStore';
 import { Dock } from '../layout/Dock';
@@ -7,6 +7,7 @@ import type { NavAction } from '../layout/useNavActions';
 import { VenueFlyout } from '../venue/VenueFlyout';
 import { VenuePlacementHint } from '../venue/VenuePlacementHint';
 import { VenueSidePanel } from '../venue/VenueSidePanel';
+import { BreakerSwitch } from './BreakerSwitch';
 import { InteriorStats } from './InteriorStats';
 import { ServiceStats } from './ServiceStats';
 
@@ -27,7 +28,9 @@ export function InteriorMenus({ factory }: InteriorMenusProps) {
   return (
     <>
       <VenuePlacementHint />
-      <Dock actions={actions} header={hasServiceInterior(factory) ? <ServiceStats building={factory} /> : <InteriorStats factory={factory} />} bottomId="back" />
+      <Dock actions={actions} header={hasServiceInterior(factory) ? <ServiceStats building={factory} /> : <InteriorStats factory={factory} />} bottomId="back">
+        {hasProductionInterior(factory) ? <BreakerSwitch building={factory} /> : null}
+      </Dock>
       <VenueFlyout venue={factory} />
       <VenueSidePanel venue={factory} />
     </>

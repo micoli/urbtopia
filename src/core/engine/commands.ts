@@ -38,7 +38,7 @@ import { sellsTickets } from '../tourism/tourists';
 import { cancelEvent, collectTakings, scheduleEvent, hireStaff, isVenue, moveFixture, releaseStaff, repairFixture, placeFixture, removeFixture, setVenuePrice, setMenu, setShelfGood, stockShelf, unstockShelf } from '../venues/venues';
 import { queueItem } from '../factory/restock';
 import { assignInteriorStaff, setInteriorFocus, unassignInteriorStaff } from '../interiors/interiorAssignments';
-import { repairAllInteriorFixtures, assignInteriorRestocker, hireInteriorRestocker, setExitRestock, unassignInteriorRestocker, hireInteriorTechnician, releaseInteriorRestocker, moveInteriorFixture, placeInteriorFixture, releaseInteriorTechnician, removeInteriorFixture, repairInteriorFixture, setHomeParquet } from '../factory/interiorCommands';
+import { setInteriorBreaker, repairAllInteriorFixtures, assignInteriorRestocker, hireInteriorRestocker, setExitRestock, unassignInteriorRestocker, hireInteriorTechnician, releaseInteriorRestocker, moveInteriorFixture, placeInteriorFixture, releaseInteriorTechnician, removeInteriorFixture, repairInteriorFixture, setHomeParquet } from '../factory/interiorCommands';
 import { hireInteriorStaff, releaseInteriorStaff } from '../interiors/interiorStaffCommands';
 import { bridgeAt, bridgeClearanceFailure, bridgeRoadKeys, bridgeLosesCrossing, bridgeRamps, bridgeUpgradeCost, spanKeys, bridgesOf, moveBridge, placeBridge, refundOf, roadBridgesAt, upgradedBridges, withoutBridge } from '../water/bridges';
 import type { CropId } from '../farming/crops';
@@ -109,6 +109,7 @@ export type Command =
   | { readonly type: 'RepaintBuilding'; readonly buildingId: number; readonly colorVariant: ColorVariant }
   | { readonly type: 'EquipHome'; readonly buildingId: number; readonly equipment: 'insulation' }
   | { readonly type: 'EquipSolarPanels'; readonly buildingId: number }
+  | { readonly type: 'SetInteriorBreaker'; readonly buildingId: number; readonly off: boolean }
   | { readonly type: 'SetCoalEnabled'; readonly buildingId: number; readonly enabled: boolean }
   | { readonly type: 'RenameStop'; readonly buildingId: number; readonly name: string }
   | { readonly type: 'SetBusLine'; readonly id?: number; readonly stops: number[]; readonly loop?: boolean }
@@ -538,6 +539,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return repairAllInteriorFixtures(state, command.buildingId);
     case 'SetHomeParquet':
       return setHomeParquet(state, command.buildingId, command.parquet);
+    case 'SetInteriorBreaker':
+      return setInteriorBreaker(state, command.buildingId, command.off);
     case 'HireInteriorTechnician':
       return hireInteriorTechnician(state, command.buildingId);
     case 'ReleaseInteriorTechnician':

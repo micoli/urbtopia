@@ -77,6 +77,7 @@ type VenueMessageKey =
   | 'venue.recipes'
   | 'venue.management'
   | 'interior.features'
+  | 'interior.breaker'
   | 'interior.examples.show'
   | 'interior.examples.title'
   | 'interior.examples.tier'
@@ -390,6 +391,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.recipes': ["Recipes", "Recettes"],
   'venue.management': ['Management', 'Gestion'],
   'interior.features': ['What it does', 'Fonctionnalités'],
+  'interior.breaker': ['Circuit breaker', 'Disjoncteur'],
   'interior.examples.show': ["Examples of set-ups", "Exemples de montages"],
   'interior.examples.title': ["Example set-up", "Exemple de montage"],
   'interior.examples.tier': ["Room of a Tier {tier} building", "Salle d’un bâtiment de niveau {tier}"],

@@ -180,6 +180,8 @@ export interface Building extends Coord {
   colorVariant?: ColorVariant;
   storedEnergy?: number;
   coalEnabled?: boolean;
+  // Production interiors: the breaker is off, so the interior draws no power and runs nothing.
+  breakerOff?: boolean;
   name?: string;
   venue?: VenueData;
   interior?: InteriorData;

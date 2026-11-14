@@ -10,9 +10,11 @@ interface DockProps {
   header?: ReactNode;
   // The action kept apart at the bottom of the dock.
   bottomId?: string;
+  // Controls that follow the actions, such as the breaker of an interior.
+  children?: ReactNode;
 }
 
-export function Dock({ actions: provided, header, bottomId = 'settings' }: DockProps) {
+export function Dock({ actions: provided, header, bottomId = 'settings', children }: DockProps) {
   const cityActions = useNavActions();
   const actions = provided ?? cityActions;
   const bottomAction = actions.find((action) => action.id === bottomId);
@@ -29,6 +31,7 @@ export function Dock({ actions: provided, header, bottomId = 'settings' }: DockP
         .map((action) => (
           <NavActionButton key={action.id} action={action} variant="dock" />
         ))}
+      {children}
       {bottomAction ? (
         <div className="dock__bottom">
           <NavActionButton action={bottomAction} variant="dock" />

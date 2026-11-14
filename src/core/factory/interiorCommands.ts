@@ -190,6 +190,15 @@ export function setHomeParquet(state: GameState, buildingId: number, parquet: nu
   return { state: withInterior(state, home, { ...interiorOf(home), parquet }), events: [] };
 }
 
+// The breaker cuts all the power of a Production interior: it draws none and runs nothing until it is switched back on.
+export function setInteriorBreaker(state: GameState, buildingId: number, off: boolean): CommandOutcome {
+  const building = state.buildings.find(candidate => candidate.id === buildingId);
+  if (!building || !hasProductionInterior(building)) return { key: 'error.unknownBuilding' };
+  const switched: Building = off ? { ...building, breakerOff: true } : { ...building, breakerOff: undefined };
+  if (!off) delete switched.breakerOff;
+  return { state: { ...state, buildings: state.buildings.map(candidate => (candidate === building ? switched : candidate)) }, events: [] };
+}
+
 export function repairInteriorFixture(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {
   const factory = hostOf(state, buildingId);
   if (!factory) return { key: 'error.unknownBuilding' };

@@ -14,6 +14,8 @@ import { clampPan, nextZoom, pinchZoom } from './venueZoom';
 import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } from './renderBudget';
 
 const TAP_DISTANCE = 6;
+const SUN_INTENSITY = 2.2;
+const SKY_INTENSITY = 1.1;
 const SELECTION_COLOR = 0x4da3ff;
 const WARNING_COLOR = 0xff9500;
 const BROKEN_COLOR = 0xe5484d;
@@ -118,6 +120,9 @@ export class VenueScene {
   private shellModels: { floor: string; wall: string; corner: string };
   private cornerPlacement: { x: number; z: number; rotation: number };
 
+  private readonly sun = new THREE.DirectionalLight(0xfff2d6, SUN_INTENSITY);
+  private readonly sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, SKY_INTENSITY);
+
   constructor(private canvas: HTMLCanvasElement, private size: number, private tier = 1, venueType: FixtureVenue = 'arcade', seed = 1) {
     this.shellModels = VENUE_SHELL_MODELS[venueType];
     this.cornerPlacement = VENUE_CORNER_PLACEMENT[venueType];
@@ -127,10 +132,8 @@ export class VenueScene {
     this.renderer.toneMapping = THREE.NeutralToneMapping;
     this.renderer.toneMappingExposure = 0.9;
     this.scene.background = new THREE.Color(0x232838);
-    const sun = new THREE.DirectionalLight(0xfff2d6, 2.2);
-    sun.position.set(6, 12, 8);
-    const sky = new THREE.HemisphereLight(0xcfe0ff, 0x8a7a64, 1.1);
-    this.scene.add(sun, sky, this.shell, this.fixtureRoot, this.tokensRoot, this.truckRoot, this.line.root, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
+    this.sun.position.set(6, 12, 8);
+    this.scene.add(this.sun, this.sky, this.shell, this.fixtureRoot, this.tokensRoot, this.truckRoot, this.line.root, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
     this.ready = this.library.ensure([...Object.values(this.shellModels), ...(venueType === 'home' ? PARQUET_MODELS : []), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...(FIXTURES[id].truck ? [FIXTURES[id].truck!] : []), ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
@@ -191,6 +194,13 @@ export class VenueScene {
     if (JSON.stringify(avatars) === JSON.stringify(this.avatars)) return;
     this.avatars = avatars;
     this.rebuildTokens();
+  }
+
+  // The light of the room, as a share of its full level: a room whose power is cut stays dim.
+  setLightLevel(level: number): void {
+    this.sun.intensity = SUN_INTENSITY * level;
+    this.sky.intensity = SKY_INTENSITY * level;
+    this.dirty = true;
   }
 
   // The Fixtures of a Factory interior that run, and the way they turn.

@@ -761,8 +761,8 @@ const packhousePowerOf = memoized((allFixtures): number => {
 });
 
 // What the Motors of a building's floor ask of the city's power.
-export const interiorPowerOfBuilding = (building: Pick<Building, 'type' | 'tier' | 'interior'>): number => {
-  if (!building.interior) return 0;
+export const interiorPowerOfBuilding = (building: Pick<Building, 'type' | 'tier' | 'interior' | 'breakerOff'>): number => {
+  if (!building.interior || building.breakerOff) return 0;
   return building.type === 'packhouse' ? packhousePowerOf(building.interior.fixtures) : interiorBonusOf(building.interior.fixtures, building.tier, building.type).power;
 };
 
@@ -1041,8 +1041,8 @@ function assignedBonusUncached(building: Pick<Building, 'type' | 'tier' | 'inter
 }
 
 // The bonus of a building's floor; for a Packhouse, the one that applies to the packed Goods `item` when it is given.
-export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'interior'>, item?: ItemId): InteriorBonus {
-  if (!building.interior) return NO_BONUS;
+export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'interior' | 'breakerOff'>, item?: ItemId): InteriorBonus {
+  if (!building.interior || building.breakerOff) return NO_BONUS;
   if (interiorDeclarationOf(building.type)) {
     const layout = interiorLayoutOf(building.type);
     if (layout?.assignments) return assignedBonusOf(building, item);

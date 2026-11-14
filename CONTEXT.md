@@ -503,6 +503,10 @@ _Avoid_: Gearbox, junction
 The fluid a Tank holds and a Pump sends through Pipes to the Machines. A Pump takes the fluid in at its back and pushes it out of its front, and only does so when it is handed Drive like a Machine; without a Pump, a Tank gives nothing. A Tank feeds at most three Cooling vats; the ones past that, the highest ids first, get no Flow.
 _Avoid_: Water (the city's water network), pressure
 
+**Breaker**:
+The switch in the main menu of a Production interior that cuts all its power. Off, the interior draws nothing from the city's electricity Demand, every Fixture stops (no bonus, no wear, no Restocker at work, no motion) and the building produces as it would with an empty floor; on again, everything resumes as it was. Its Staff and Fixtures stay and are paid and kept all the same.
+_Avoid_: Power switch, shutdown
+
 **Interior economy**:
 What a Factory interior costs and brings. Each Motor draws power from the city's electricity Demand, a fifth of it with nothing to drive. A Motor drives three Machines or Pumps, linked or not; the ones beyond that, the highest ids first, are overloaded: they stop and show red until a Motor is added or one is taken off. An active Machine (a linked one) adds its own speed and yield, and each kind of Machine that runs beyond the first adds a little yield. The bonuses count in full up to half the cap of the Factory's Tier, then every Machine adds less than the one before, and they never reach the cap.
 _Avoid_: Upkeep, running cost

@@ -22,6 +22,8 @@ const interiorOf = (venueId: number): Interior | undefined => {
 };
 
 // The same empty lists each time, so that the scene sees nothing change.
+// The share of its light a room keeps when its breaker is off.
+const BREAKER_OFF_LIGHT = 0.3;
 const NO_EXITS: readonly VenueFixture[] = [];
 const NO_PATHS: readonly LinePath[] = [];
 
@@ -119,13 +121,14 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       const interior = interiorOf(venueId);
       if (interior) {
         scene.setSize(sizeOf(interior, venueType));
+        scene.setLightLevel(interior.building.breakerOff ? BREAKER_OFF_LIGHT : 1);
         if (venueType === 'home') scene.setFloorModel(parquetModelOf(interior.building.interior?.parquet));
         scene.setFixtures([...interior.fixtures]);
         scene.setTrucks(isPackhouse(interior.building) || interior.building.type === 'recyclingPlant' ? linkedExitsOf(interior.fixtures) : NO_EXITS);
         const pace = 1 + interiorBonusOfBuilding(interior.building).speed;
-        scene.setLine(hasLineInterior(interior.building) ? linePathsOf(interior.fixtures) : NO_PATHS, pace);
+        scene.setLine(hasLineInterior(interior.building) && !interior.building.breakerOff ? linePathsOf(interior.fixtures) : NO_PATHS, pace);
         scene.setAvatars(hasServiceInterior(interior.building) ? avatarsOfBuilding(interior.building) : []);
-        scene.setMotion(hasProductionInterior(interior.building) ? interiorMotionOf(interior.fixtures) : new Map(), pace);
+        scene.setMotion(hasProductionInterior(interior.building) && !interior.building.breakerOff ? interiorMotionOf(interior.fixtures) : new Map(), pace);
       }
       showCrowd();
       showSelection();

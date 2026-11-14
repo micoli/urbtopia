@@ -304,3 +304,4 @@ export type { DropGroup } from './replan';
 export type { TileLayer } from './replan';
 export { isReplanSummaryEmpty, replanSummary } from './replan';
 export type { ReplanSummary } from './replan';
+export { isProductionInteriorKind } from './venues/venueVocabulary';
