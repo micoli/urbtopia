@@ -28,3 +28,18 @@ describe('searchResults', () => {
     expect(searchResults(searchIndexOf('en'), 'waste').map(result => result.path)).toContain('en/mechanics/waste/');
   });
 });
+
+describe('searchResults in the page texts', () => {
+  it('finds a word that appears only in the body of an article', () => {
+    const items = [{ path: 'a/', title: 'Waste', summary: 'Collection', section: 'Mechanics', body: 'Trucks reach the Incinerator by road.' }, item('Bakery')];
+    expect(searchResults(items, 'incinerator').map(result => result.path)).toEqual(['a/']);
+    expect(searchResults(items, 'cinerator')).toEqual([]);
+  });
+});
+
+describe('searchResults for the production chains', () => {
+  it('finds the production chains page from an item it shows', () => {
+    expect(searchResults(searchIndexOf('fr'), 'planche').map(result => result.path)).toContain('fr/mechanics/chains/');
+    expect(searchResults(searchIndexOf('fr'), 'bois').map(result => result.path)).toContain('fr/mechanics/chains/');
+  });
+});

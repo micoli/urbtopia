@@ -2,7 +2,9 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 import { CODEX_ENTRIES, CODEX_SECTIONS, type CodexId } from '../../codex/catalog';
 import { favoriteKeyOf, favoriteTargetOf, type FavoriteTarget } from '../../codex/favorites';
-import { matchesSearch } from '../../codex/matchesSearch';
+import { pageSearchKeywords } from '../../codex/pageSearchKeywords';
+import { documentScore } from '../../codex/documentSearch';
+import { useArticleBodies } from './useArticleBodies';
 import { CODEX_PAGES, type CodexPage } from '../../codex/pages';
 import { ARTICLES, translationOf, type Article } from '../../guide/content/articles';
 import type { ArticleLinker } from '../../guide/content/articleLinker';
@@ -54,9 +56,11 @@ export function CodexPanel() {
   const { manifest, failed, retry } = useCodexManifest();
   const entry = CODEX_ENTRIES.find(entry => entry.id === selected)!;
   const detail = useRef<HTMLElement>(null);
-  const filteredEntries = CODEX_ENTRIES.filter(item => matchesSearch(`${t(item.name)} ${t(item.description)} ${t(item.section)}`, search));
-  const filteredPages = CODEX_PAGES.filter(item => !isRulesWrittenUp(item.id) && matchesSearch(`${t(item.title)} ${t(item.description)} ${t(item.section)}`, search));
-  const filteredArticles = ARTICLES.filter(item => matchesSearch(`${translationOf(item, language).meta.title} ${translationOf(item, language).meta.summary}`, search));
+  const articleBodies = useArticleBodies(ARTICLES, language, searching);
+  const matches = (document: Parameters<typeof documentScore>[0]) => documentScore(document, search) !== null;
+  const filteredEntries = CODEX_ENTRIES.filter(item => matches({ title: t(item.name), summary: t(item.description), section: t(item.section) }));
+  const filteredPages = CODEX_PAGES.filter(item => !isRulesWrittenUp(item.id) && matches({ title: t(item.title), summary: t(item.description), section: t(item.section), keywords: pageSearchKeywords(item.id) }));
+  const filteredArticles = ARTICLES.filter(item => matches({ title: translationOf(item, language).meta.title, summary: translationOf(item, language).meta.summary, body: articleBodies.get(item) }));
   const hasResults = !searching || filteredEntries.length > 0 || filteredPages.length > 0 || filteredArticles.length > 0;
   const labelOfFavorite = (target: FavoriteTarget): string => {
     if (target.kind === 'article') return translationOf(target.article, language).meta.title;
@@ -67,7 +71,7 @@ export function CodexPanel() {
   const favorites = favoriteKeys
     .flatMap(key => favoriteTargetOf(key, ARTICLES) ?? [])
     .map(target => ({ target, label: labelOfFavorite(target), current: favoriteKeyOf(target) === favoriteKeyOf(currentTarget) }))
-    .filter(({ label }) => matchesSearch(label, search));
+    .filter(({ label }) => matches({ title: label }));
   const Page = page ? CODEX_PAGE_COMPONENTS[page] : null;
   const pageTitle = article ? translationOf(article, language).meta.title : page ? t(CODEX_PAGES.find(item => item.id === page)!.title) : t(entry.name);
 
