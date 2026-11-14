@@ -18,7 +18,7 @@ export function InteriorRoleStaff({ building, role }: InteriorRoleStaffProps) {
   return (
     <div className="venue-staff">
       <div className="venue-staff__label">
-        <strong>{t(`interior.role.${role}`)}</strong> <small className="staff-badge">{hired}/{posts}</small>
+        <strong>{t(`interior.role.${role}`)} · {hired}/{posts}</strong>
         <span className="note note--muted">{t(`interior.roleEffect.${role}`)} · <UrbsAmount value={STAFF.dailyWage[role]} /> {t('venue.wage')}</span>
         <span className="note note--muted">{locked ? `${t('venue.tierNeeded')} ${minTierOfInteriorRole(building.type, role)}` : <>{t('venue.hireFee')} <UrbsAmount value={hireFeeOf(role)} /></>}</span>
       </div>
