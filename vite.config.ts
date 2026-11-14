@@ -20,6 +20,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     retry: 2,
+    execArgv: ['--no-experimental-webstorage'],
     sequence: { sequencer: AutoplayerFirstSequencer },
     include: [
         'src/**/*.test.ts',
