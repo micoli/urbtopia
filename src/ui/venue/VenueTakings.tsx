@@ -4,6 +4,7 @@ import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { NumberStepper } from '../common/NumberStepper';
+import { ProgressBar } from '../common/ProgressBar';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { VenueHotelStats } from './VenueHotelStats';
 import { useVenuePerformance } from './useVenuePerformance';
@@ -31,6 +32,7 @@ export function VenueTakings({ building, editable = false }: VenueTakingsProps) 
       <DrawerPanel.LabelValue label={t('venue.serviceRate')} value={`${Math.round(performance.layout.counterRate * 100)} %`} />
       {type === 'hotel' ? null : <DrawerPanel.LabelValue label={t(`venue.served.${type}`)} value={performance.served.toFixed(1)} />}
       <DrawerPanel.LabelValue label={t('venue.rank')} value={rank >= MAX_RANK || nextAt === undefined ? `${rank}` : `${rank} · ${Math.floor(earnedOf(building.venue))} / ${nextAt}`} />
+      {nextAt === undefined ? <ProgressBar value={1} max={1} label={t('venue.rank')} /> : <ProgressBar value={earnedOf(building.venue)} max={nextAt} label={t('venue.rank')} />}
       <DrawerPanel.LabelValue label={t('venue.earnings')} value={<UrbsAmount value={performance.earningsPerHour} />} />
       {editable && hasManager && hiredOf(building.venue, 'manager') > 0 ? (
         <NumberStepper label={t(`venue.price.${type}`)} value={priceOf(building.venue)} min={VENUE.minPrice} max={VENUE.maxPrice} onChange={price => gameStore.getState().send({ type: 'SetVenuePrice', buildingId: building.id, price })} />

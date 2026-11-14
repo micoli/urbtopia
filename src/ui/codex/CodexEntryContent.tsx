@@ -9,6 +9,7 @@ import { AnnualEventFacts } from './AnnualEventFacts';
 import { BuildLimitFacts } from './BuildLimitFacts';
 import { CropFacts } from './CropFacts';
 import { LevelFacts } from './LevelFacts';
+import { VenueRankFacts } from './VenueRankFacts';
 
 interface CodexEntryContentProps {
   entry: CodexEntry;
@@ -32,6 +33,7 @@ export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
       {isCrop(entry.id) ? <CropFacts crop={entry.id} /> : null}
       <BuildLimitFacts id={entry.id} />
       <AnnualEventFacts id={entry.id} />
+      <VenueRankFacts id={entry.id} />
       <h4>{t('codex.gallery')}</h4>
       {manifest && <div className="codex-gallery">
         {entry.levels.map(level => (

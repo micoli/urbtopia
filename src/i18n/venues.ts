@@ -49,6 +49,12 @@ type VenueMessageKey =
   | 'codex.fact.grid'
   | 'codex.fact.posts'
   | 'codex.fact.takingsCap'
+  | 'codex.venueRanks.title'
+  | 'codex.venueRanks.intro'
+  | 'codex.venueRanks.start'
+  | 'codex.venueRanks.earned'
+  | 'codex.venueRanks.events'
+  | 'codex.venueRanks.fixtures'
   | 'codex.fact.fixtures'
   | 'codex.fact.interiorGrid'
   | 'codex.fact.interiorSpeedCap'
@@ -364,6 +370,12 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'codex.fact.grid': ['Interior', 'Intérieur'],
   'codex.fact.posts': ['Staff posts', 'Postes de personnel'],
   'codex.fact.takingsCap': ['Takings cap', 'Plafond des recettes'],
+  'codex.venueRanks.title': ['Ranks', 'Rangs'],
+  'codex.venueRanks.intro': ['A Venue earns its Rank by trading: it never costs Urbs and it is kept when the building is upgraded.', 'Un établissement gagne son rang en exploitant : cela ne coûte jamais d’Urbs et le rang est conservé quand le bâtiment est amélioré.'],
+  'codex.venueRanks.start': ['Every Venue starts here.', 'Tout établissement commence ici.'],
+  'codex.venueRanks.earned': ['Reached after {amount} Urbs of net earnings since it opened.', 'Atteint après {amount} Urbs de bénéfices nets depuis l’ouverture.'],
+  'codex.venueRanks.events': ['Events open.', 'Les événements s’ouvrent.'],
+  'codex.venueRanks.fixtures': ['New Fixtures: {fixtures}.', 'Nouveaux meubles : {fixtures}.'],
   'codex.fact.interiorGrid': ['Factory interior', 'Atelier'],
   'codex.fact.interiorSpeedCap': ['Interior speed bonus, up to', 'Bonus de vitesse de l’intérieur, jusqu’à'],
   'codex.fact.interiorYieldCap': ['Interior yield bonus, up to', 'Bonus de rendement de l’intérieur, jusqu’à'],
