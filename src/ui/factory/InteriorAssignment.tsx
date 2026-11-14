@@ -3,11 +3,11 @@ import { assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, isItemUnlocked, isP
 import { itemName } from '../../i18n/itemName';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
-import { ActionButton } from '../common/ActionButton';
 import { Dropdown } from '../common/Dropdown';
 import { useGame } from '../common/hooks';
 import { ItemChoice } from './ItemChoice';
 import { RestockerAssignment } from './RestockerAssignment';
+import { StaffAssignSwitch } from './StaffAssignSwitch';
 
 interface InteriorAssignmentProps {
   building: Building;
@@ -43,10 +43,7 @@ export function InteriorAssignment({ building, fixture }: InteriorAssignmentProp
         />
       </div>
       {noSupply ? <p className="note note--warn">{t('venue.assignNoSupply')}</p> : null}
-      {fixture.assigned ? <p className="note note--muted">{t('venue.assignAtWork').replace('{role}', t(`interior.role.${role}`))}</p> : null}
-      {fixture.assigned
-        ? <ActionButton onClick={() => send({ type: 'UnassignInteriorStaff', buildingId: building.id, fixtureId: fixture.id })}>{t('venue.assignRelease').replace('{role}', t(`interior.role.${role}`))}</ActionButton>
-        : <ActionButton disabled={choice === undefined || free <= 0} onClick={() => send({ type: 'AssignInteriorStaff', buildingId: building.id, fixtureId: fixture.id })}>{t('venue.assignStaff').replace('{role}', t(`interior.role.${role}`))}</ActionButton>}
+      <StaffAssignSwitch building={building} fixture={fixture} role={role} blocked={choice === undefined || free <= 0} />
     </div>
   );
 }

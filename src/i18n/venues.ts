@@ -114,9 +114,6 @@ type VenueMessageKey =
   | 'venue.roleEffect.restocker'
   | 'venue.restock'
   | 'venue.restockNone'
-  | 'venue.restockAssign'
-  | 'venue.restockRelease'
-  | 'venue.restockAtWork'
   | 'venue.assignRecipe'
   | 'venue.assignSoldGood'
   | 'venue.assignNone'
@@ -124,7 +121,6 @@ type VenueMessageKey =
   | 'venue.binItem'
   | 'venue.binNoItem'
   | 'venue.assignStaff'
-  | 'venue.assignRelease'
   | 'venue.assignAtWork'
   | 'venue.restockerFree'
   | 'venue.attractiveness'
@@ -461,9 +457,6 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.roleEffect.restocker': ['Keeps the production of a Restock going and stores it', 'Relance la production d’un réassort et la range à l’entrepôt'],
   'venue.restock': ['Restock', 'Réassort'],
   'venue.restockNone': ['No restock', 'Aucun réassort'],
-  'venue.restockAssign': ['Assign a Restocker', 'Affecter un employé de réassort'],
-  'venue.restockRelease': ['Free the Restocker', 'Libérer l’employé de réassort'],
-  'venue.restockAtWork': ['A Restocker works here', 'Un employé de réassort travaille ici'],
   'venue.assignRecipe': ['Recipe', 'Recette'],
   'venue.assignSoldGood': ['Sold Good', 'Bien vendu'],
   'venue.assignNone': ['None', 'Aucun'],
@@ -471,7 +464,6 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.binItem': ['Restocks {item}, picked on the Extractor upstream.', 'Réassort de {item}, choisi sur l’extracteur en amont.'],
   'venue.binNoItem': ['No Extractor upstream has an item picked yet: choose one on an Extractor that feeds this bin.', 'Aucun extracteur en amont n’a encore de matériau : choisissez-en un sur un extracteur qui alimente ce bac.'],
   'venue.assignStaff': ['Assign a Staff ({role})', 'Affecter un employé ({role})'],
-  'venue.assignRelease': ['Free the Staff ({role})', 'Libérer l’employé ({role})'],
   'venue.assignAtWork': ['A Staff ({role}) works here', 'Un employé ({role}) travaille ici'],
   'venue.restockerFree': ['Free Restockers', 'Employés de réassort libres'],
   'venue.role.security': ['Security', 'Sécurité'],

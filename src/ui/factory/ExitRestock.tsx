@@ -2,9 +2,9 @@ import { FIXTURES, isItemUnlocked, isRestockable, packSizeOf, producibleItems, t
 import { itemName } from '../../i18n/itemName';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
-import { ActionButton } from '../common/ActionButton';
 import { Dropdown } from '../common/Dropdown';
 import { useGame } from '../common/hooks';
+import { SwitchField } from '../common/SwitchField';
 
 interface ExitRestockProps {
   packhouse: Building;
@@ -20,6 +20,7 @@ export function ExitRestock({ packhouse, fixture }: ExitRestockProps) {
   const size = FIXTURES[fixture.type].packSize;
   const goods = producibleItems(packhouse.type).filter(item => packhouse.type === 'factory' || packSizeOf(item) === size) as GoodId[];
   const options = [{ value: NONE, label: t('venue.restockNone') }, ...goods.map(good => ({ value: good as string, label: itemName(good), disabled: !isItemUnlocked(state, good) }))];
+  const role = t('interior.role.restocker');
   const free = (packhouse.interior?.restockers ?? 0) - (packhouse.interior?.fixtures.filter(other => other.restocker).length ?? 0);
   return (
     <div className="venue-stock">
@@ -32,10 +33,13 @@ export function ExitRestock({ packhouse, fixture }: ExitRestockProps) {
           onChange={good => send({ type: 'SetExitRestock', buildingId: packhouse.id, fixtureId: fixture.id, good: good === NONE ? null : (good as GoodId) })}
         />
       </div>
-      {fixture.restocker ? <p className="note note--muted">{t('venue.restockAtWork')}</p> : null}
-      {fixture.restocker
-        ? <ActionButton onClick={() => send({ type: 'UnassignInteriorRestocker', buildingId: packhouse.id, fixtureId: fixture.id })}>{t('venue.restockRelease')}</ActionButton>
-        : <ActionButton disabled={!fixture.restock || free <= 0} onClick={() => send({ type: 'AssignInteriorRestocker', buildingId: packhouse.id, fixtureId: fixture.id })}>{t('venue.restockAssign')}</ActionButton>}
+      <SwitchField
+        label={t('venue.assignStaff').replace('{role}', role)}
+        description={fixture.restocker ? t('venue.assignAtWork').replace('{role}', role) : undefined}
+        checked={Boolean(fixture.restocker)}
+        disabled={!fixture.restocker && (!fixture.restock || free <= 0)}
+        onChange={assigned => send({ type: assigned ? 'AssignInteriorRestocker' : 'UnassignInteriorRestocker', buildingId: packhouse.id, fixtureId: fixture.id })}
+      />
     </div>
   );
 }
