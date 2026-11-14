@@ -39,6 +39,7 @@ export const INGREDIENT_FAMILIES = {
   farm: ['henEgg', 'duckEgg'],
   // The vegetables and the fruits that grow on the farms, besides what the orchards give.
   vegetable: ['beet', 'carrot', 'corn', 'lettuce', 'mushroom', 'pumpkin', 'tomato'],
+  grain: ['wheat', 'rice'],
   orchard: ['cherry', 'apple', 'orange', 'watermelon', 'bushBerries', 'olive', 'oliveOil'],
   sweet: ['honey'],
 } as const satisfies Record<string, readonly ItemId[]>;

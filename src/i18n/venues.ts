@@ -143,7 +143,7 @@ type VenueMessageKey =
   | 'home.interior.comfort'
   | 'home.interior.wellbeing'
   | 'home.interior.wellbeingShort'
-  | `interior.open.${'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
+  | `interior.open.${'arcade' | 'supermarket' | 'hotel' | 'restaurant' | 'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
   | 'factory.interior.linked'
   | 'factory.interior.speed'
   | 'factory.interior.yield'
@@ -223,6 +223,7 @@ type VenueMessageKey =
   | 'venue.family.sea'
   | 'venue.family.farm'
   | 'venue.family.vegetable'
+  | 'venue.family.grain'
   | 'venue.family.orchard'
   | 'venue.family.sweet'
   | 'venue.hint.emptyShelf'
@@ -286,6 +287,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.family.sea': ['Sea', 'Mer'],
   'venue.family.farm': ['Eggs', 'Œufs'],
   'venue.family.vegetable': ['Vegetables', 'Légumes'],
+  'venue.family.grain': ['Grains', 'Céréales'],
   'venue.family.orchard': ['Fruits', 'Fruits'],
   'venue.family.sweet': ['Sweet', 'Douceurs'],
   'venue.hint.emptyShelf': ['Empty shelf: it sells nothing.', 'Rayon vide : il ne vend rien.'],
@@ -510,6 +512,10 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'home.interior.comfort': ['Comfort', 'Confort'],
   'home.interior.wellbeing': ['Well-being', 'Bien-être'],
   'home.interior.wellbeingShort': ['Well-being', 'bien-être'],
+  'interior.open.arcade': ['Open the Arcade interior', "Ouvrir l'intérieur de la salle d'arcade"],
+  'interior.open.supermarket': ['Open the Supermarket interior', "Ouvrir l'intérieur du supermarché"],
+  'interior.open.hotel': ['Open the Hotel interior', "Ouvrir l'intérieur de l'hôtel"],
+  'interior.open.restaurant': ['Open the Restaurant interior', "Ouvrir l'intérieur du restaurant"],
   'interior.open.factory': ['Open the Factory interior', "Ouvrir l'atelier de l'usine"],
   'interior.open.packhouse': ['Open the Packhouse interior', "Ouvrir l'atelier du conditionnement"],
   'interior.open.mill': ['Open the Mill interior', "Ouvrir l'atelier de la minoterie"],

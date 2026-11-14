@@ -101,7 +101,6 @@ describe('Menu', () => {
   it('serves only edible Goods and Materials', () => {
     expect(failure(fitted(), { type: 'SetMenu', buildingId: 1, menu: ['planks'] })).toBe('error.unknownCommand');
     expect(failure(fitted(), { type: 'SetMenu', buildingId: 1, menu: ['milk', 'milk'] })).toBe('error.unknownCommand');
-    expect(failure(fitted(), { type: 'SetMenu', buildingId: 1, menu: ['wheat'] })).toBe('error.unknownCommand');
     expect(failure(fitted(), { type: 'SetMenu', buildingId: 1, menu: ['flour'] })).toBe('error.unknownCommand');
     expect(restaurant(withMenu(fitted(), ['milk', 'bread'])).venue!.menu).toEqual(['milk', 'bread']);
   });
@@ -115,16 +114,16 @@ describe('Menu', () => {
     const food = GOOD_ENTRIES.filter(({ category }) => category === 'food').map(({ id }) => id);
     expect(food.filter(id => !INGREDIENTS.includes(id))).toEqual([]);
     expect(new Set(INGREDIENTS).size).toBe(INGREDIENTS.length);
-    expect(Object.keys(INGREDIENT_FAMILIES)).toHaveLength(7);
+    expect(Object.keys(INGREDIENT_FAMILIES)).toHaveLength(8);
   });
 
-  it('offers the vegetables and the fruits that grow on the farms, and no flour', () => {
+  it('offers the vegetables, the fruits and the grains that grow on the farms, and no flour', () => {
     for (const item of ['tomato', 'carrot', 'lettuce', 'pumpkin', 'apple', 'orange', 'watermelon']) {
       expect(INGREDIENTS, item).toContain(item);
       expect(failure(fitted(), { type: 'SetMenu', buildingId: 1, menu: [item as never] })).toBeNull();
     }
     expect(INGREDIENTS).not.toContain('flour');
-    for (const grain of ['wheat', 'rice']) expect(INGREDIENTS).not.toContain(grain);
+    for (const grain of ['wheat', 'rice']) expect(failure(fitted(), { type: 'SetMenu', buildingId: 1, menu: [grain as never] })).toBeNull();
   });
 
   it('drops a saved Menu item that is no longer served', () => {
