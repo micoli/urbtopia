@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>GLB viewer</title>
+<link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+<aside>
+  <input id="filter" type="search" placeholder="Filter models" autocomplete="off" />
+  <ul id="models"></ul>
+</aside>
+<main>
+  <div id="stage"><canvas id="canvas"></canvas></div>
+  <footer>
+    <label>Tone <select id="tone"></select></label>
+    <label><input id="shadows" type="checkbox" checked /> Shadows</label>
+    <label><input id="night" type="checkbox" /> Night</label>
+    <label><input id="grid" type="checkbox" checked /> Grid</label>
+    <button id="frame" type="button">Frame</button>
+    <span id="info"></span>
+  </footer>
+</main>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

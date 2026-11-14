@@ -66,9 +66,10 @@ Then open the index: **http://127.0.0.1:5170/**. It lists every service below wi
 
 | Service | URL | Started by |
 |---|---|---|
-| Dev index | http://127.0.0.1:5170/ | `npm run db:start` |
+| Dev index | http://127.0.0.1:5170/ | `npm run db:start`, or `pitchfork start ur/dev-index` for the index alone |
 | Game | http://localhost:5175/ | `pitchfork start ur/dev` |
 | Assets editor | http://localhost:5181/ | `pitchfork start ur/assets-editor` |
+| GLB viewer | http://localhost:5190/ | `pitchfork start ur/glb-viewer` |
 | Casino simulator | http://localhost:5182/ | `pitchfork start ur/casino-sim` |
 | Pitchfork dashboard | http://localhost:3120/ | pitchfork (start and stop daemons from there too) |
 | Supabase Studio | http://127.0.0.1:54323/ | `npm run db:start` |
