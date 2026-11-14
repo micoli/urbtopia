@@ -5,7 +5,11 @@ import {
 } from '../core';
 import type { MessageKey } from '../i18n/messages';
 
-export const CODEX_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse', 'school', 'library', 'hospital'];
+export const PRODUCTION_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse'];
+
+export const SERVICE_INTERIOR_TYPES: readonly BuildingType[] = ['school', 'library', 'hospital'];
+
+export const CODEX_INTERIOR_TYPES: readonly BuildingType[] = [...PRODUCTION_INTERIOR_TYPES, ...SERVICE_INTERIOR_TYPES];
 
 const DEFAULT_TIERS = 5;
 

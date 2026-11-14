@@ -1,8 +1,13 @@
 const texts = {
-  'codex.interiors.title': ['Interiors', 'Intérieurs'],
-  'codex.interiors.intro': [
-    'Some buildings can be fitted out from the inside. Machines, furniture and Staff add speed, yield, room or quality to the building. The figures below come straight from the rules, and the last part of each interior shows what yours brings right now.',
-    'Certains bâtiments peuvent être aménagés de l’intérieur. Machines, mobilier et personnel ajoutent de la vitesse, du rendement, de la place ou de la qualité au bâtiment. Les chiffres ci-dessous viennent directement des règles, et la dernière partie de chaque intérieur montre ce que le vôtre apporte en ce moment.',
+  'codex.productionInteriors.title': ['Production interiors', 'Intérieurs de production'],
+  'codex.productionInteriors.intro': [
+    'The Factory, the Packhouse, the Mill, the Bakery, the Dairy and the Storehouse can be fitted out from the inside. Motors, Machines and Lines add speed, yield, sales or room to the building. The figures below come straight from the rules, and the last part of each interior shows what yours brings right now.',
+    'L’usine, le conditionnement, la minoterie, la boulangerie, la laiterie et l’entrepôt peuvent être aménagés de l’intérieur. Moteurs, machines et chaînes ajoutent de la vitesse, du rendement, des ventes ou de la place au bâtiment. Les chiffres ci-dessous viennent directement des règles, et la dernière partie de chaque intérieur montre ce que le vôtre apporte en ce moment.',
+  ],
+  'codex.serviceInteriors.title': ['Service interiors', 'Intérieurs de service'],
+  'codex.serviceInteriors.intro': [
+    'The School, the Library and the Hospital can be furnished from the inside. Furniture adds quality, up to a cap that rises with the Tier, and Staff deliver it to the homes served. The figures below come straight from the rules, and the last part of each interior shows what yours brings right now.',
+    'L’école, la bibliothèque et l’hôpital peuvent être meublés de l’intérieur. Le mobilier ajoute de la qualité, jusqu’à un plafond qui monte avec le niveau, et le personnel la délivre aux logements desservis. Les chiffres ci-dessous viennent directement des règles, et la dernière partie de chaque intérieur montre ce que le vôtre apporte en ce moment.',
   ],
   'codex.interiors.unlockOpen': ['Open: the city has the {citizens} Citizens it needs.', 'Ouvert : la ville a les {citizens} habitants requis.'],
   'codex.interiors.unlockLocked': ['Opens once the city has {citizens} Citizens.', 'S’ouvre quand la ville compte {citizens} habitants.'],

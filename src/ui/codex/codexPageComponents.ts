@@ -7,7 +7,8 @@ import { ClimatePage } from './ClimatePage';
 import { CropEconomyPage } from './CropEconomyPage';
 import { DayCyclePage } from './DayCyclePage';
 import { EnergyProductionPage } from './EnergyProductionPage';
-import { InteriorsPage } from './InteriorsPage';
+import { ProductionInteriorsPage } from './ProductionInteriorsPage';
+import { ServiceInteriorsPage } from './ServiceInteriorsPage';
 import { KnowledgePage } from './KnowledgePage';
 import { MarketRulesPage } from './MarketRulesPage';
 import { PoliticsPage } from './PoliticsPage';
@@ -39,5 +40,6 @@ export const CODEX_PAGE_COMPONENTS: Record<CodexPage, ComponentType> = {
   annualEvents: AnnualEventsPage,
   climate: ClimatePage,
   staff: StaffPage,
-  interiors: InteriorsPage,
+  productionInteriors: ProductionInteriorsPage,
+  serviceInteriors: ServiceInteriorsPage,
 };

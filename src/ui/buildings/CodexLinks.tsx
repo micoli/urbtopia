@@ -1,4 +1,4 @@
-import { FACILITIES, isFacilityType, isHomeType, isVenueType, staffRolesOf, TRANSIT_REACH_STOP_TYPES, wasteKindOf, type Building } from '../../core';
+import { FACILITIES, hasProductionInterior, hasServiceInterior, isFacilityType, isHomeType, isVenueType, staffRolesOf, TRANSIT_REACH_STOP_TYPES, wasteKindOf, type Building } from '../../core';
 import { solarCodexIdOf, type CodexId } from '../../codex/catalog';
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
@@ -23,6 +23,8 @@ export function CodexLinks({ building }: { building: Building }) {
       {extendsOrUsesTransitReach(building) && <CodexLinkButton title={t('codex.transitReach.title')} onOpen={() => openCodex(undefined, 'transitReach')} />}
       {isFacilityType(building.type) && FACILITIES[building.type].category === 'education' && <CodexLinkButton title={t('codex.knowledge.title')} onOpen={() => openCodex(undefined, 'knowledge')} />}
       {hasStaff(building) && <CodexLinkButton title={t('codex.staff.title')} onOpen={() => openCodex(undefined, 'staff')} />}
+      {hasProductionInterior(building) && <CodexLinkButton title={t('codex.productionInteriors.title')} onOpen={() => openCodex(undefined, 'productionInteriors')} />}
+      {hasServiceInterior(building) && <CodexLinkButton title={t('codex.serviceInteriors.title')} onOpen={() => openCodex(undefined, 'serviceInteriors')} />}
       {wasteKindOf(building.type) && <CodexLinkButton title={t('codex.waste.title')} onOpen={() => openCodex(undefined, 'waste')} />}
     </>
   );
