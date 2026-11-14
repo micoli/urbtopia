@@ -51,6 +51,10 @@ export const INTERIOR_EXAMPLES: Partial<Record<BuildingType, InteriorExample>> =
   packhouse: { tier: 2, fixtures: [
     at('packhousePacker', 4, 0), at('packhouseShaft', 5, 0, 1), at('packhouseMotor', 6, 0, 1), at('packhouseConveyor', 4, 1), at('packhouseConveyor', 4, 2), at('packhouseConveyor', 4, 3), at('packhouseConveyor', 4, 4), at('packhouseConveyor', 4, 5), at('packhouseExitCrate', 4, 6, 2),
   ] },
+  recyclingPlant: { tier: 1, fixtures: [
+    at('recyclingPlantIntake', 0, 0), at('recyclingPlantShaft', 1, 0, 1), at('recyclingPlantMotor', 2, 0, 1), at('recyclingPlantSorter', 0, 1), at('recyclingPlantShaft', 1, 1, 1), at('recyclingPlantMotor', 2, 1, 1),
+    at('recyclingPlantShredder', 0, 2), at('recyclingPlantShaft', 1, 2, 1), at('recyclingPlantMotor', 2, 2, 1), at('recyclingPlantConveyor', 0, 3), at('recyclingPlantExit', 0, 4, 2),
+  ] },
   storehouse: { tier: 5, fixtures: [
     at('storehouseDock', 4, 0), at('storehouseShaft', 5, 0, 1), at('storehouseMotor', 6, 0, 1), at('storehouseConveyor', 4, 1), at('storehouseHoist', 4, 2), at('storehouseShaft', 5, 2, 1),
     at('storehouseMotor', 6, 2, 1), at('storehouseConveyor', 4, 3), at('storehouseConveyor', 4, 4), at('storehouseConveyor', 4, 5), at('storehouseConveyor', 4, 6), at('storehouseRack', 4, 7, 2),

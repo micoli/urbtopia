@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "recyclingPlant",
+  "category": "machines",
+  "name": {
+    "en": "Glass crusher (Drive on the left)",
+    "fr": "Concasseuse à verre (prise à gauche)"
+  },
+  "model": "recycling-interior-crusher-left",
+  "footprint": [1, 1],
+  "price": 1600,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["left"],
+  "family": "crusher",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

@@ -34,7 +34,7 @@ export function advanceInteriors(state: GameState, from: number, to: number, sup
   const boundary = (to + (state.timeOffset ?? 0)) % VENUE.hourMs === 0;
   let urbs = state.urbs;
   const buildings = state.buildings.map(building => {
-    if (!hasInterior(building) || !isVenuePowered(state, building, supplied)) return building;
+    if (!hasInterior(building) || building.breakerOff || !isVenuePowered(state, building, supplied)) return building;
     const { interior } = building;
     const usage = new Map([...interiorUsageWeightsOf(interior.fixtures)].map(([id, weight]) => [id, interiorBalance.usagePerHour * weight]));
     const owed = Math.min(urbs, (interior.restockers ?? 0) * restockerWagePerHour() * hours);

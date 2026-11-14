@@ -35,6 +35,9 @@
 .codex-unlock { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-8) var(--space-12); }
 .codex-unlock strong { color: var(--color-caution); }
 .codex-unlock strong[data-available='true'] { color: var(--color-positive); }
+.codex-venue-ranks { margin: 0; display: grid; gap: var(--space-8); }
+.codex-venue-ranks dt { font-weight: var(--font-weight-bold); }
+.codex-venue-ranks dd { margin: 0; }
 .codex-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-16); }
 .codex-gallery figure { margin: 0; border-radius: var(--radius-xl); overflow: hidden; background: var(--white-a08); }
 .codex-gallery img { display: block; width: 100%; max-width: 256px; height: auto; margin-inline: auto; }

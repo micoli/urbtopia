@@ -43,7 +43,7 @@ export const RESERVED_SLOTS = 1;
 // The Exits whose Restocker is at work: a Restocker for each, a Restock and a Line that is Linked. The layout results are cached by layout, so the Exits are read from the floor itself.
 const workingExitsOf = (building: Building, urbs: number): VenueFixture[] => {
   const hired = building.interior?.restockers ?? 0;
-  if (!building.interior || urbs < hired * restockerWagePerHour()) return [];
+  if (!building.interior || building.breakerOff || urbs < hired * restockerWagePerHour()) return [];
   const linked = new Set(restockableOf(building.interior.fixtures, building.type).map((fixture) => fixture.id));
   return building.interior.fixtures.filter((fixture) => linked.has(fixture.id) && fixture.restocker && fixture.restock).sort((a, b) => a.id - b.id).slice(0, hired);
 };

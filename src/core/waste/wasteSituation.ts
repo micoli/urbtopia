@@ -79,9 +79,9 @@ function averageRouteOf(homes: ReadonlyMap<number, HomeWaste>, facilityIds: read
 
 // What the route adds to the cost of a Home, apart from the Pedestrian surcharge.
 function distanceSurchargeOf(home: HomeWaste, facilities: ReadonlyMap<number, FacilityWaste>): number {
-  const kind = home.facilityId === null ? null : facilities.get(home.facilityId)?.kind;
-  if (!kind || home.distance === null) return 0;
-  const factor = 1 + home.distance / WASTE_FACILITIES[kind].collectionDistance;
+  const facility = home.facilityId === null ? undefined : facilities.get(home.facilityId);
+  if (!facility || home.distance === null) return 0;
+  const factor = 1 + home.distance / facility.collectionDistance;
   return home.cost * (1 - 1 / factor);
 }
 

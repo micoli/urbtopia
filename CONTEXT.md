@@ -436,6 +436,30 @@ _Avoid_: Output, outlet, door
 A worker of a Packhouse interior, hired from it like a Technician (a one-off fee of five days of wages, then a daily wage in Urbs, a number of posts set by the Packhouse's Tier) and assigned by hand to one Exit. While its Line is Linked and its Exit has a Restock, it keeps one production of that Good in the Packhouse's queue and sends each finished one to the Storehouse. It always works, whatever the Commute does, unless the wage cannot be paid, and is not one of the Packhouse's Jobs. An unassigned Restocker is paid all the same.
 _Avoid_: Stocker (a Supermarket role), Technician, auto-production
 
+**Recycling interior**:
+The Service interior of a Recycling plant, opened from its side panel in the same Management view as a Venue and built on the engine of the Packhouse interior: a 3D room whose grid grows with the plant's Tier, where the player places Fixtures. It is not a Venue. Unlike the other Service interiors it raises the plant's Collection distance and its Waste capacity, and its Fixtures wear. An empty interior leaves the plant exactly as it was; the gains count only for Recycling lines, and are capped by the plant's Tier. Its only Staff is a Technician, paid by the city like the Staff of any Service interior.
+_Avoid_: Sorting floor, Packhouse interior
+
+**Recycling line**:
+A Line of a Recycling interior that carries Waste, in one direction, from an Intake through a Sorter and a Recycler to a Collection exit, by Conveyors. It is complete only when unbroken in that order and every Machine on it is powered by Drive and not broken down; only a complete Recycling line counts. Waste shown on it is a picture, never counted.
+_Avoid_: Packing line, Belt
+
+**Intake**:
+The Machine at the start of a Recycling line, standing against the back wall of a Recycling interior, on the tile along it and facing the room, that needs Drive and puts Waste on the line. It comes in a right-handed version (Drive enters on its right side) and a left-handed one.
+_Avoid_: Entry, Packer
+
+**Sorter**:
+A Machine that a Recycling line passes through, taking Waste in on one side and giving it out on the opposite side; it needs Drive, entering on its right side or, in its left-handed version, on its left side. A Recycling line needs one before its Recycler.
+_Avoid_: Sorting machine
+
+**Recycler**:
+One of three Machines of a Recycling line that follows a Sorter: the Shredder, the Smelting furnace or the Glass crusher, each with a right-handed and a left-handed version like the Sorter. Waste is not typed, so the three differ only by what they add up to: each Recycler on a complete Recycling line extends the plant's Collection distance by 1.5 tiles, and the plant gains a Waste capacity bonus when all three kinds are on complete lines.
+_Avoid_: Processor
+
+**Collection exit**:
+The end of a Recycling line: an Exit of a Recycling interior, standing against any edge on the tile along it, that delivers the Waste to a truck waiting outside. There is one kind, with no size. Each Collection exit on a complete Recycling line adds 50 Waste units to the plant's daily capacity, in addition to its Tier's.
+_Avoid_: Output, Crate exit
+
 **Restock**:
 The packed Good that the player chooses on an Exit, of the size of that Exit, for its Restocker to keep producing. It only drives the Restocker; the Slots stay free for manual productions.
 _Avoid_: Recipe (the Oven's choice in a Bakery), repeat
@@ -456,7 +480,7 @@ A Fixture a Line passes through, like a Strapper, that checks Packets and lowers
 _Avoid_: Quality control, inspector
 
 **Home interior**:
-The interior of one sample dwelling of a Home (its Comfort applies to the whole Home whatever its number of Citizens), opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Home's Tier, where the player places Fixtures of everyday life (bed, table, chair, stove, sink, bathroom, television, bookcase, wall paintings…) and chooses the floor. It is not a Venue: it has no Staff, Jobs, Takings, Visitors, Rank or events, and its Fixtures have no Condition. An empty interior leaves the Home exactly as it was; the only effect of a furnished one is its Comfort. It opens once the city has 700 Citizens. The floor is one of four parquets, a free choice; paintings hang on the back walls instead of standing on a tile.
+The interior of one sample dwelling of a Home (its Comfort applies to the whole Home whatever its number of Citizens), opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the Home's Tier, where the player places Fixtures of everyday life (bed, table, chair, stove, sink, bathroom, television, bookcase, wall paintings…) and chooses the floor. It is not a Venue: it has no Staff, Jobs, Takings, Visitors, Rank or events, and its Fixtures have no Condition. An empty interior leaves the Home exactly as it was; the only effect of a furnished one is its Comfort. It opens once the city has 700 Citizens. The floor is one of four parquets, a free choice; paintings hang on the back walls instead of standing on a tile. Every other interior (Production and Service) offers the same four parquets as an option, and keeps the floor of its kind until one is chosen.
 _Avoid_: Venue, room (a Hotel's Room is a bed with a bathroom), apartment
 
 **Comfort**:
@@ -478,6 +502,10 @@ _Avoid_: Gearbox, junction
 **Flow**:
 The fluid a Tank holds and a Pump sends through Pipes to the Machines. A Pump takes the fluid in at its back and pushes it out of its front, and only does so when it is handed Drive like a Machine; without a Pump, a Tank gives nothing. A Tank feeds at most three Cooling vats; the ones past that, the highest ids first, get no Flow.
 _Avoid_: Water (the city's water network), pressure
+
+**Breaker**:
+The switch in the main menu of a Production interior that cuts all its power. Off, the interior draws nothing from the city's electricity Demand, every Fixture stops (no bonus, no wear, no Restocker at work, no motion) and the building produces as it would with an empty floor; on again, everything resumes as it was. Its Staff and Fixtures stay and are paid and kept all the same.
+_Avoid_: Power switch, shutdown
 
 **Interior economy**:
 What a Factory interior costs and brings. Each Motor draws power from the city's electricity Demand, a fifth of it with nothing to drive. A Motor drives three Machines or Pumps, linked or not; the ones beyond that, the highest ids first, are overloaded: they stop and show red until a Motor is added or one is taken off. An active Machine (a linked one) adds its own speed and yield, and each kind of Machine that runs beyond the first adds a little yield. The bonuses count in full up to half the cap of the Factory's Tier, then every Machine adds less than the one before, and they never reach the cap.

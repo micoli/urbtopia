@@ -1,0 +1,19 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "recyclingPlant",
+  "category": "machines",
+  "name": {
+    "en": "Intake (Drive on the right)",
+    "fr": "Entrée (prise à droite)"
+  },
+  "model": "recycling-interior-intake",
+  "footprint": [1, 1],
+  "price": 800,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["right"],
+  "family": "intake",
+  "lineOut": ["front"]
+}

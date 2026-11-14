@@ -37,6 +37,17 @@ export interface InteriorLayout {
   extraProducers?: number[];
   // A Millstone works when the Pump that feeds it also feeds a Machine of the family `input` and the one of the family that `destinations` names for its Recipe.
   milling?: { input: string; destinations: Record<string, string> };
+  // Recycling plant: the Waste capacity each Exit adds, the capacity all three kinds of Recycler add together, the Collection distance each Recycler adds, and the most Exits, Sorters and Recyclers by Tier.
+  recycling?: RecyclingBalance;
+}
+
+export interface RecyclingBalance {
+  exitCapacity: number;
+  allKindsCapacity: number;
+  recyclerDistance: number;
+  exitLimits: number[];
+  sorterLimits: number[];
+  recyclerLimits: number[];
 }
 
 export interface ServiceLayout {

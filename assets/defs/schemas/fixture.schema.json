@@ -1012,7 +1012,8 @@
             "bakery",
             "dairy",
             "storehouse",
-            "workshop"
+            "workshop",
+            "recyclingPlant"
           ]
         },
         "$schema": {

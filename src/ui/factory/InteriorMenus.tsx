@@ -1,5 +1,5 @@
 import { useStore } from 'zustand';
-import { hasServiceInterior, type Building } from '../../core';
+import { hasProductionInterior, hasServiceInterior, type Building } from '../../core';
 import { t } from '../../i18n/t';
 import { venueStore } from '../../store/venueStore';
 import { Dock } from '../layout/Dock';
@@ -7,6 +7,7 @@ import type { NavAction } from '../layout/useNavActions';
 import { VenueFlyout } from '../venue/VenueFlyout';
 import { VenuePlacementHint } from '../venue/VenuePlacementHint';
 import { VenueSidePanel } from '../venue/VenueSidePanel';
+import { BreakerSwitch } from './BreakerSwitch';
 import { InteriorStats } from './InteriorStats';
 import { ServiceStats } from './ServiceStats';
 
@@ -21,13 +22,16 @@ export function InteriorMenus({ factory }: InteriorMenusProps) {
   const actions: NavAction[] = [
     { id: 'build', icon: 'build', label: t('dock.build'), image: 'bulldozer.png', pressed: panel === 'build', disabled: false, guided: false, onClick: () => togglePanel('build') },
     { id: 'staff', icon: 'citizens', label: t('venue.staff'), pressed: panel === 'staff', disabled: false, guided: false, onClick: () => togglePanel('staff') },
+    { id: 'parquet', icon: 'sparkles', label: t('home.interior.parquet'), pressed: panel === 'parquet', disabled: false, guided: false, onClick: () => togglePanel('parquet') },
     { id: 'management', icon: 'book', label: t('venue.management'), pressed: panel === 'management', disabled: false, guided: false, onClick: () => togglePanel('management') },
     { id: 'back', icon: 'undo', label: t('venue.menu.back'), pressed: false, disabled: false, guided: false, onClick: close },
   ];
   return (
     <>
       <VenuePlacementHint />
-      <Dock actions={actions} header={hasServiceInterior(factory) ? <ServiceStats building={factory} /> : <InteriorStats factory={factory} />} bottomId="back" />
+      <Dock actions={actions} header={hasServiceInterior(factory) ? <ServiceStats building={factory} /> : <InteriorStats factory={factory} />} bottomId="back">
+        {hasProductionInterior(factory) ? <BreakerSwitch building={factory} /> : null}
+      </Dock>
       <VenueFlyout venue={factory} />
       <VenueSidePanel venue={factory} />
     </>

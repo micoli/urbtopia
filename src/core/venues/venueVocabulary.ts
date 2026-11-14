@@ -24,7 +24,7 @@ export const PACKHOUSE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power'
 export const LINE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'plumbing', 'machines', 'line', 'walls'];
 
 // The Production interiors that share the engine of the Factory interior, by the kind of their Fixtures.
-export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse', 'workshop'] as const;
+export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse', 'workshop', 'recyclingPlant'] as const;
 
 // The Service interiors, by the kind of their Fixtures.
 export const SERVICE_INTERIOR_KINDS = ['school', 'library', 'hospital'] as const;

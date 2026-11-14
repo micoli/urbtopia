@@ -13,7 +13,7 @@ const allowedErrorsOf = (term: string): number => {
 };
 
 // Optimal string alignment distance: a swap of two neighbouring letters counts for one error.
-function editDistance(a: string, b: string, limit: number): number {
+export function editDistance(a: string, b: string, limit: number): number {
   if (Math.abs(a.length - b.length) > limit) return limit + 1;
   const rows: number[][] = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array<number>(b.length).fill(0)]);
   for (let j = 1; j <= b.length; j++) rows[0]![j] = j;

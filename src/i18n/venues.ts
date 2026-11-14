@@ -40,6 +40,7 @@ type VenueMessageKey =
   | 'error.notUpstream'
   | 'venue.assignNoSupply'
   | 'error.fixtureLimitReached'
+  | 'error.recyclingLimitReached'
   | 'error.noFocus'
   | 'error.staffAlreadyAssigned'
   | 'error.noFreeStaff'
@@ -48,6 +49,12 @@ type VenueMessageKey =
   | 'codex.fact.grid'
   | 'codex.fact.posts'
   | 'codex.fact.takingsCap'
+  | 'codex.venueRanks.title'
+  | 'codex.venueRanks.intro'
+  | 'codex.venueRanks.start'
+  | 'codex.venueRanks.earned'
+  | 'codex.venueRanks.events'
+  | 'codex.venueRanks.fixtures'
   | 'codex.fact.fixtures'
   | 'codex.fact.interiorGrid'
   | 'codex.fact.interiorSpeedCap'
@@ -76,6 +83,7 @@ type VenueMessageKey =
   | 'venue.recipes'
   | 'venue.management'
   | 'interior.features'
+  | 'interior.breaker'
   | 'interior.examples.show'
   | 'interior.examples.title'
   | 'interior.examples.tier'
@@ -87,7 +95,8 @@ type VenueMessageKey =
   | 'interior.examples.dairy'
   | 'interior.examples.packhouse'
   | 'interior.examples.storehouse'
-  | `interior.features.${'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
+  | 'interior.examples.recyclingPlant'
+  | `interior.features.${'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'recyclingPlant' | 'school' | 'library' | 'hospital'}`
   | 'bakery.recipes.assembly'
   | 'bakery.recipes.limits'
   | 'bakery.recipes.bonuses'
@@ -131,6 +140,7 @@ type VenueMessageKey =
   | 'venue.fixtureEarnings'
   | 'venue.manage'
   | 'home.interior.open'
+  | 'interior.floor.default'
   | 'home.interior.parquet'
   | `home.interior.parquet.${string}`
   | 'blocked.furnish'
@@ -139,11 +149,15 @@ type VenueMessageKey =
   | 'home.interior.comfort'
   | 'home.interior.wellbeing'
   | 'home.interior.wellbeingShort'
-  | `interior.open.${'arcade' | 'supermarket' | 'hotel' | 'restaurant' | 'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'school' | 'library' | 'hospital'}`
+  | `interior.open.${'arcade' | 'supermarket' | 'hotel' | 'restaurant' | 'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'recyclingPlant' | 'school' | 'library' | 'hospital'}`
   | 'factory.interior.linked'
   | 'factory.interior.speed'
   | 'factory.interior.yield'
   | 'factory.interior.power'
+  | 'factory.interior.sales'
+  | 'factory.interior.capacity'
+  | 'factory.interior.wasteCapacity'
+  | 'factory.interior.reach'
   | 'factory.interior.motorLoad'
   | 'factory.interior.benefit.own'
   | 'factory.interior.benefit.cooled'
@@ -347,6 +361,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'error.restockerAlreadyAssigned': ['A Restocker is already assigned here.', 'Un employé de réassort est déjà affecté ici.'],
   'error.noFreeRestocker': ['No Restocker is free: hire one or release another Exit.', 'Aucun employé de réassort n’est libre : embauchez-en un ou libérez une autre sortie.'],
   'error.fixtureLimitReached': ['The Bakery has no Slot left for another one: buy a Slot to fit more.', 'La boulangerie n’a plus d’emplacement pour un autre : achetez un emplacement pour en ajouter.'],
+  'error.recyclingLimitReached': ['The Recycling plant has all the Collection exits, Sorters or Recyclers its Tier allows: upgrade the plant to fit more.', 'L’usine de recyclage a toutes les sorties camion, trieuses ou recycleuses que son niveau permet : améliorez-la pour en ajouter.'],
   'error.notUpstream': ['No Oven upstream of this counter bakes that Good.', 'Aucun four en amont de ce comptoir ne cuit ce bien.'],
   'venue.assignNoSupply': ['No Oven upstream bakes a Recipe yet: choose one on an Oven that feeds this counter.', 'Aucun four en amont ne cuit encore de recette : choisissez-en une sur un four qui alimente ce comptoir.'],
   'error.notAssignable': ['This Fixture takes no Staff.', 'Ce meuble ne prend pas de personnel.'],
@@ -359,6 +374,12 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'codex.fact.grid': ['Interior', 'Intérieur'],
   'codex.fact.posts': ['Staff posts', 'Postes de personnel'],
   'codex.fact.takingsCap': ['Takings cap', 'Plafond des recettes'],
+  'codex.venueRanks.title': ['Ranks', 'Rangs'],
+  'codex.venueRanks.intro': ['A Venue earns its Rank by trading: it never costs Urbs and it is kept when the building is upgraded.', 'Un établissement gagne son rang en exploitant : cela ne coûte jamais d’Urbs et le rang est conservé quand le bâtiment est amélioré.'],
+  'codex.venueRanks.start': ['Every Venue starts here.', 'Tout établissement commence ici.'],
+  'codex.venueRanks.earned': ['Reached after {amount} Urbs of net earnings since it opened.', 'Atteint après {amount} Urbs de bénéfices nets depuis l’ouverture.'],
+  'codex.venueRanks.events': ['Events open.', 'Les événements s’ouvrent.'],
+  'codex.venueRanks.fixtures': ['New Fixtures: {fixtures}.', 'Nouveaux meubles : {fixtures}.'],
   'codex.fact.interiorGrid': ['Factory interior', 'Atelier'],
   'codex.fact.interiorSpeedCap': ['Interior speed bonus, up to', 'Bonus de vitesse de l’intérieur, jusqu’à'],
   'codex.fact.interiorYieldCap': ['Interior yield bonus, up to', 'Bonus de rendement de l’intérieur, jusqu’à'],
@@ -387,6 +408,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.recipes': ["Recipes", "Recettes"],
   'venue.management': ['Management', 'Gestion'],
   'interior.features': ['What it does', 'Fonctionnalités'],
+  'interior.breaker': ['Circuit breaker', 'Disjoncteur'],
   'interior.examples.show': ["Examples of set-ups", "Exemples de montages"],
   'interior.examples.title': ["Example set-up", "Exemple de montage"],
   'interior.examples.tier': ["Room of a Tier {tier} building", "Salle d’un bâtiment de niveau {tier}"],
@@ -398,10 +420,12 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.examples.dairy': ["The Milk vat takes in the milk, and every Machine has its own Tank, Pump and Motor. Conveyors carry the milk to the Pasteuriser, then to the Cheese cellar, then to the Counter, where the cream and the cheese are sold.", "La cuve à lait reçoit le lait, et chaque machine a son réservoir, sa pompe et son moteur. Des tapis portent le lait au pasteurisateur, puis à la cave d’affinage, puis au comptoir, où la crème et le fromage sont vendus."],
   'interior.examples.packhouse': ["A Motor and a Shaft drive the Packer against the back wall. Conveyors carry the Packets down to the Exit, where a truck takes the crates away.", "Un moteur et un arbre entraînent l’emballeuse contre le mur du fond. Des tapis portent les paquets jusqu’à la sortie, où un camion emporte les caisses."],
   'interior.examples.storehouse': ["A Motor drives the Loading dock where the Goods come in, and another one drives the Hoist. Conveyors carry the crates to the Rack, which stores them: every linked Rack adds room to the Storehouse.", "Un moteur entraîne le quai de chargement où entrent les biens, et un autre entraîne le palan. Des tapis portent les caisses jusqu’au rayonnage, qui les stocke : chaque rayonnage relié ajoute de la place à l’entrepôt."],
+  'interior.examples.recyclingPlant': ["A Motor and a Shaft drive each Machine: the Intake against the back wall takes the Waste in, the Sorter sorts it, the Shredder breaks it up. Conveyors carry the Waste from one to the next and down to the Collection exit, where a truck takes it away.", "Un moteur et un arbre entraînent chaque machine : l’entrée contre le mur du fond reçoit les déchets, la trieuse les trie, la broyeuse les broie. Des tapis portent les déchets de l’une à l’autre jusqu’à la sortie camion, où un camion les emporte."],
   'interior.features.factory': ["Machines turn the Motor's Drive into speed and yield for the Factory's Slots. Link them with Shafts and Gears, add Flow for the Machines that need it, and cool the Motors with a Cooling vat. Each Machine can make any Good of the Factory: pick one, and a Restocker assigned to it stores what it makes in the Storehouse.", "Les machines transforment la force du moteur en vitesse et en rendement pour les emplacements de l'usine. Reliez-les par des arbres et des engrenages, ajoutez du fluide pour celles qui en ont besoin, et refroidissez les moteurs avec une cuve réfrigérante. Chaque machine peut fabriquer n'importe quel bien de l'usine : choisissez-en un, et un employé de réassort affecté le range à l'entrepôt."],
   'interior.features.packhouse': ['A Line carries Packets from a Packer against the back wall, through the Conveyors, Strappers and Scanners, to the Exits. Linked Machines raise the speed of the Slots that pack a size of Goods, and the Exits set the yield. Keep every Machine linked and fed, and restock the Exits.', "Une chaîne porte les colis d'une emballeuse contre le mur du fond, par les tapis, les cercleuses et les scanners, jusqu'aux sorties. Les machines reliées accélèrent les emplacements qui emballent une taille de biens, et les sorties fixent le rendement. Gardez chaque machine reliée et alimentée, et réapprovisionnez les sorties."],
   'interior.features.mill': ['A Motor, Shafts and Gears drive the millstones, and a Pump drives the Pipes. Choose on each millstone what it grinds, wheat or olives: a Cleaner takes the grain in, a Bagger gives the flour out and an Oil tank the olive oil, all on the Pipes of the same Pump. Linked millstones add speed to the Mill, up to a cap that rises with the Tier, and millers deliver it. A miller assigned to a complete millstone grinds on his own and stores the production in the Storehouse; without one, you collect it yourself.', "Un moteur, des arbres et des engrenages font tourner les meules, et une pompe alimente la tuyauterie. Choisissez sur chaque meule ce qu'elle moud, du blé ou des olives : une nettoyeuse prend le grain en entrée, une ensacheuse rend la farine et un réservoir d'huile l'huile d'olive, tous sur les tuyaux de la même pompe. Les meules reliées ajoutent de la vitesse à la minoterie, jusqu'à un plafond qui monte avec le niveau, et les meuniers la délivrent. Un meunier affecté à une meule complète moud seul et range la production à l'entrepôt ; sans lui, vous la collectez vous-même."],
   'interior.features.workshop': ["Pneumatic air feeds the machines: a Tank, a Pump and a Motor send it through Pipes to the Extractor, set against a wall, and to the Cleaner. A Line carries what the Extractor takes in, the material you picked on it, through the Cleaner to a Storage bin. A restocker assigned to the bin restarts the production of that material by himself and stores it in the Storehouse, so the queue of the Workshop runs on its own. Nothing is faster or richer: the gain is the queue.", "L'air pneumatique alimente les machines : un réservoir, une pompe et un moteur l'envoient par des tuyaux à l'extracteur, contre un mur, et au nettoyeur. Une chaîne porte ce que l'extracteur prélève, le matériau choisi dessus, à travers le nettoyeur jusqu'à un bac de stockage. Un employé de réassort affecté au bac relance seul la production de ce matériau et la range à l'entrepôt : la file de l'atelier tourne toute seule. Rien n'est plus rapide ni plus riche : le gain, c'est la file."],
+  'interior.features.recyclingPlant': ["Only a complete Recycling line counts: an Intake against the back wall, a Sorter, a Recycler (Shredder, Smelting furnace or Glass crusher) and a Collection exit, joined by Conveyors, every Machine driven by a Motor. Each Collection exit adds to the Waste the plant takes in each day, with a bonus when the three kinds of Recycler are all at work, and each Recycler widens the distance the plant collects from. Machines wear: hire a Technician to repair them.", "Seule une chaîne de recyclage complète compte : une entrée contre le mur du fond, une trieuse, une recycleuse (broyeuse, four de fonte ou concasseuse à verre) et une sortie camion, reliées par des tapis, chaque machine entraînée par un moteur. Chaque sortie camion augmente les déchets que l’usine absorbe chaque jour, avec un bonus quand les trois sortes de recycleuses travaillent, et chaque recycleuse élargit la distance de collecte de l’usine. Les machines s’usent : embauchez un technicien pour les réparer."],
   'interior.features.bakery': ['A Line carries the dough from the Mixer through an Oven to a Display counter. Mixers and Ovens add speed, Display counters add sales and yield, each up to a cap that rises with the Tier, and bakers and sellers deliver them. Assign a baker to an Oven with a Recipe and a seller to a Display counter: they bake, store and sell on their own. The Recipes and the bonuses are detailed below.', "Une chaîne porte la pâte du pétrin à un comptoir vitrine en passant par un four. Pétrins et fours ajoutent de la vitesse, les comptoirs vitrine des ventes et du rendement, chacun jusqu'à un plafond qui monte avec le niveau, et les boulangers et les vendeurs les délivrent. Affectez un boulanger à un four avec une recette et un vendeur à un comptoir vitrine : ils cuisent, rangent et vendent seuls. Les recettes et les bonus sont détaillés ci-dessous."],
   'interior.features.dairy': ["A Line carries the milk from the vat through the Machines to an Exit. Cheesemakers and cream makers add the cheese and cream yield, and assigned to a Cheese cellar or a Pasteuriser with a Recipe they make it on their own and store it; a seller assigned to a Display counter sells what arrives on it.", "Une chaîne porte le lait de la cuve jusqu'à une sortie à travers les machines. Les fromagers et les crémiers ajoutent le rendement en fromage et en crème, et affectés à une cave d’affinage ou à un pasteurisateur avec une recette ils la fabriquent seuls et la rangent ; un vendeur affecté à un comptoir vitrine vend ce qui y arrive."],
   'interior.features.storehouse': ["A Line runs from a loading dock, by a hoist, to a shelf rack: each linked rack adds room to the Storehouse. A stocker adds the room bonus.", "Une chaîne court d'un quai de chargement, par un palan, jusqu'à un rayonnage : chaque rayonnage relié ajoute de la place à l'entrepôt. Un magasinier ajoute le bonus de place."],
@@ -495,6 +519,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'service.interior.quality': ['Quality', 'Qualité'],
   'blocked.interior': ['Its interior opens at {citizens} Citizens.', "Son intérieur s'ouvre à {citizens} habitants."],
   'blocked.furnish': ['Furnishing opens at {citizens} Citizens.', "L'aménagement s'ouvre à {citizens} habitants."],
+  'interior.floor.default': ['Original floor', "Sol d'origine"],
   'home.interior.parquet': ['Floor', 'Parquet'],
   'home.interior.parquet.light': ['Light oak', 'Chêne clair'],
   'home.interior.parquet.honey': ['Honey', 'Miel'],
@@ -515,12 +540,17 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.open.bakery': ['Open the Bakery interior', "Ouvrir l'atelier de la boulangerie"],
   'interior.open.dairy': ['Open the Dairy interior', "Ouvrir l'atelier de la laiterie"],
   'interior.open.storehouse': ['Open the Storehouse interior', "Ouvrir l'intérieur de l'entrepôt"],
+  'interior.open.recyclingPlant': ['Open the Recycling plant interior', "Ouvrir l'intérieur de l'usine de recyclage"],
   'interior.open.school': ['Open the School interior', "Ouvrir l'intérieur de l'école"],
   'interior.open.library': ['Open the Library interior', "Ouvrir l'intérieur de la bibliothèque"],
   'interior.open.hospital': ['Open the Hospital interior', "Ouvrir l'intérieur de l'hôpital"],
   'factory.interior.linked': ['Machines linked', 'Machines reliées'],
   'factory.interior.speed': ['Speed', 'Vitesse'],
   'factory.interior.yield': ['Yield', 'Rendement'],
+  'factory.interior.sales': ['Sales rate', 'Cadence de vente'],
+  'factory.interior.capacity': ['Storage capacity', 'Capacité de stockage'],
+  'factory.interior.wasteCapacity': ['Waste capacity per day', 'Capacité de déchets par jour'],
+  'factory.interior.reach': ['Collection distance (tiles)', 'Distance de collecte (cases)'],
   'factory.interior.problem.tankFull': ['Its Tank already feeds three Cooling vats: add a Tank, or take a vat off this one.', 'Son réservoir alimente déjà trois cuves réfrigérantes : ajoutez un réservoir, ou retirez une cuve de celui-ci.'],
   'factory.interior.problem.overloaded': ['Its Motor drives too many Machines and Pumps, so it is stopped: add a Motor or take one off.', 'Son moteur entraîne trop de machines et de pompes, elle est donc arrêtée : ajoutez un moteur ou retirez-en une.'],
   'factory.interior.motorOverloaded': ['{count} stopped: the Motor cannot drive them.', '{count} à l’arrêt : le moteur ne peut pas les entraîner.'],

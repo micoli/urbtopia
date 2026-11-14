@@ -4,6 +4,7 @@ import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
 import { Dropdown } from '../common/Dropdown';
+import { ItemLabel } from '../common/ItemLabel';
 import { useGame } from '../common/hooks';
 import { Icon } from '../common/Icon';
 
@@ -35,7 +36,7 @@ export function VenueShelfStock({ venueId, fixture }: VenueShelfStockProps) {
               value={fixture.good}
               placeholder="—"
               disabled={locked}
-              options={options.map(good => ({ value: good, label: `${itemName(good)} · ${Math.floor(goods[good] ?? 0)} ${t('venue.inStorage')}` }))}
+              options={options.map(good => ({ value: good, label: <ItemLabel item={good}>{`${itemName(good)} · ${Math.floor(goods[good] ?? 0)} ${t('venue.inStorage')}`}</ItemLabel> }))}
               onChange={good => send({ type: 'SetShelfGood', buildingId: venueId, fixtureId: fixture.id, good })}
             />
           </div>

@@ -80,9 +80,22 @@ python tools/blender/bl.py --script tools/blender/render_views.py -- --input ass
 
 and show `sheet.png` with `Read`.
 
-### Game control render
+### Game render in the GLB viewer
 
-The Blender viewport is not what the player sees. Before accepting a building, render it as the game shows it: orthographic isometric camera, the game's warm sun and sky light, no cast shadows (the game has none yet), neutral tone mapping, on a grass tile:
+The GLB viewer renders managed models with the game's own code (`ModelLibrary`, `dayLighting`, neutral tone mapping, sun shadows, isometric camera). It reloads by itself when a `.glb` or tone texture is written, so after each generation the page already shows the new result.
+
+Start it once with the `glb-viewer` preview server (`.claude/launch.json`, port 5190) or `npm run glb-viewer`, and never stop it. Open the building, or several to compare, with the model keys in the URL hash:
+
+```
+http://localhost:5190/#buildings/<id>
+http://localhost:5190/#buildings/<id>,buildings/<other-id>
+```
+
+Then screenshot the page with the browser tools. Orbit with the mouse, wheel to zoom; the footer toggles Tone, Shadows, Night, Grid and shows triangles and size in tiles. Prefer it over the Blender-based game render below.
+
+### Game control render (Blender approximation)
+
+The Blender viewport is not what the player sees. When the viewer is not available, render it as the game shows it: orthographic isometric camera, the game's warm sun and sky light, no cast shadows (the game has none yet), neutral tone mapping, on a grass tile:
 
 ```bash
 python tools/blender/bl.py --script .claude/skills/create-building-model/scripts/game_render.py -- --input assets/managed-models/buildings/<id>/<id>.glb --out $CLAUDE_JOB_DIR/tmp/game --size 512

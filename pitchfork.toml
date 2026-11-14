@@ -19,6 +19,20 @@ ready_http = "http://localhost:5181/"
 boot_start = false
 retry = false
 
+[daemons.dev-index]
+run = "docker compose up index"
+dir = "."
+ready_http = "http://127.0.0.1:5170/"
+boot_start = false
+retry = false
+
+[daemons.glb-viewer]
+run = "npm run glb-viewer"
+dir = "."
+ready_http = "http://localhost:5190/"
+boot_start = false
+retry = false
+
 [daemons.back-office]
 run = "npm run back-office"
 dir = "."

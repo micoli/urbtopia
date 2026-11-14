@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "recyclingPlant",
+  "category": "machines",
+  "name": {
+    "en": "Sorter (Drive on the right)",
+    "fr": "Trieuse (prise à droite)"
+  },
+  "model": "recycling-interior-sorter",
+  "footprint": [1, 1],
+  "price": 1000,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["right"],
+  "family": "sorter",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

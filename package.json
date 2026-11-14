@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build && node scripts/prerender-guide.ts",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tools/back-office",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tools/back-office && tsc --noEmit -p tools/glb-viewer",
     "lint": "eslint src build scripts tools",
     "test": "vitest run",
     "saves:update": "UPDATE_SAVES=1 vitest run src/saves",
@@ -32,6 +32,7 @@
     "test:visual:update": "playwright test --config playwright.visual.config.ts --update-snapshots",
     "assets:prototypes": "node scripts/prototype-assets.ts",
     "assets:editor": "vite --config tools/assets-editor/vite.config.ts --host",
+    "glb-viewer": "vite --config tools/glb-viewer/vite.config.ts",
     "back-office": "vite --config tools/back-office/vite.config.ts",
     "casino:sim": "vite --config prototypes/casino-sim/vite.config.ts --host",
     "preview": "vite preview",

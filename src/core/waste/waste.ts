@@ -9,6 +9,7 @@ import { hourOf, recyclingPlantPowerRatios } from './wastePower';
 import { componentsOf, pedestrianDistances, pedestrianTileDistances, roadLinks, routeDistances, tilesOfBuilding, outsideNeighbours, type RoadComponents, type RoadLinks } from './wasteLinks';
 import { wasteReductionOf } from '../politics/ordinanceEffects';
 import { layoutOf } from '../buildings/buildingIndex';
+import { recyclingGainsOf } from '../factory/factoryInterior';
 import { WASTE, WASTE_FACILITIES, WASTE_KINDS, WASTE_REQUIRED_FROM_CITIZENS, homeWasteProduction, wasteCapacity, wasteKindOf, type WasteKind } from './wasteBalance';
 
 export type WasteCause = 'noFacility' | 'capacityFull' | 'beyondMaxDistance' | 'noRoadLink' | 'beyondCarryingDistance' | 'facilityStopped';
@@ -29,6 +30,8 @@ export interface FacilityWaste {
   kind: WasteKind;
   capacity: number;
   nominalCapacity: number;
+  // The Collection distance of the facility: its kind's, plus what the Recyclers of a Recycling plant add.
+  collectionDistance: number;
   powerRatio: number;
   processed: number;
   cost: number;
@@ -49,6 +52,7 @@ export interface WasteReport {
 interface FacilityGeometry {
   building: Building;
   kind: WasteKind;
+  collectionDistance: number;
   roadComponents: ReadonlySet<number>;
   // The shortest route, in tiles, from the facility to each Road tile within its Collection distance.
   routes: ReadonlyMap<string, number>;
@@ -64,7 +68,7 @@ interface ReachingFacility {
 }
 
 const stateCache = new WeakMap<GameState, WasteReport>();
-const cache = new WeakMap<object, { roads: GameState['roads']; roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; paying: boolean; adapting: boolean; hour: number; reduction: number; power: string; report: WasteReport }>();
+const cache = new WeakMap<object, { roads: GameState['roads']; roundabouts: GameState['roundabouts']; pedestrianWays: GameState['pedestrianWays']; paying: boolean; adapting: boolean; hour: number; reduction: number; power: string; recycling: string; report: WasteReport }>();
 
 function adjacentMoundGroups(mounds: readonly Building[]): Building[][] {
   const tilesOf = new Map(mounds.map(mound => [mound.id, tilesOfBuilding(mound)]));
@@ -90,6 +94,9 @@ function adjacentMoundGroups(mounds: readonly Building[]): Building[][] {
   return groups;
 }
 
+// The Collection distance of a facility, in whole tiles: the Recyclers of the complete Recycling lines of a Recycling plant add to it.
+export const collectionDistanceOf = (building: Building, kind: WasteKind): number => Math.floor(WASTE_FACILITIES[kind].collectionDistance + (kind === 'recyclingPlant' ? recyclingGainsOf(building).collectionDistance : 0));
+
 function facilityGeometries(state: GameState, components: RoadComponents, links: RoadLinks): FacilityGeometry[] {
   const facilities = state.buildings.flatMap(building => {
     const kind = wasteKindOf(building.type);
@@ -112,7 +119,8 @@ function facilityGeometries(state: GameState, components: RoadComponents, links:
     const own = kind === 'mound' ? groupSources.get(building.id)! : null;
     const sources = own?.sources ?? adjacentRoads(tilesOfBuilding(building));
     const reachable = own?.components ?? new Set([...sources.keys()].flatMap(key => components.get(key) ?? []));
-    return { building, kind, roadComponents: reachable, routes: routeDistances(links, sources, WASTE_FACILITIES[kind].collectionDistance) };
+    const collectionDistance = collectionDistanceOf(building, kind);
+    return { building, kind, collectionDistance, roadComponents: reachable, routes: routeDistances(links, sources, collectionDistance) };
   });
 }
 
@@ -124,7 +132,7 @@ interface HomeRoutes {
 }
 
 function linkOf(facility: FacilityGeometry, home: HomeRoutes, components: RoadComponents): Link {
-  const { collectionDistance } = WASTE_FACILITIES[facility.kind];
+  const { collectionDistance } = facility;
   if ([...home.roads].some(component => facility.roadComponents.has(component))) {
     const lengths = home.roadKeys.flatMap(key => facility.routes.get(key) ?? []);
     return lengths.length > 0 ? { carried: false, distance: Math.min(...lengths) } : 'tooFar';
@@ -171,9 +179,9 @@ function computeReport(state: GameState, paying: boolean, powerRatios: ReadonlyM
   });
   const results = new Map<number, HomeWaste>();
   const facilityResults = new Map<number, FacilityWaste>(facilities.map(({ building, kind, roadComponents: reachable }) => {
-    const nominalCapacity = wasteCapacity(kind, building.tier);
+    const nominalCapacity = wasteCapacity(kind, building.tier) + (kind === 'recyclingPlant' ? recyclingGainsOf(building).capacity : 0);
     const powerRatio = powerRatios.get(building.id) ?? 1;
-    return [building.id, { kind, capacity: nominalCapacity * powerRatio, nominalCapacity, powerRatio, processed: 0, cost: 0, linked: reachable.size > 0 }];
+    return [building.id, { kind, capacity: nominalCapacity * powerRatio, nominalCapacity, collectionDistance: collectionDistanceOf(building, kind), powerRatio, processed: 0, cost: 0, linked: reachable.size > 0 }];
   }));
   const isRunning = (facility: FacilityGeometry) => paying && facilityResults.get(facility.building.id)!.powerRatio > 0;
 
@@ -182,7 +190,8 @@ function computeReport(state: GameState, paying: boolean, powerRatios: ReadonlyM
       for (const facility of facilities.filter(candidate => candidate.kind === kind).sort((a, b) => a.building.id - b.building.id)) {
         const served = facilityResults.get(facility.building.id)!;
         if (!isRunning(facility)) continue;
-        const { tariff, collectionDistance } = WASTE_FACILITIES[kind];
+        const { tariff } = WASTE_FACILITIES[kind];
+        const { collectionDistance } = facility;
         const candidates = homeData
           .filter(data => !results.has(data.home.id))
           .flatMap(data => {
@@ -238,11 +247,13 @@ function layoutReport(state: GameState): WasteReport {
   const reduction = wasteReductionOf(state);
   const powerRatios = recyclingPlantPowerRatios(state);
   const power = [...powerRatios].join(';');
+  // The interior of a Recycling plant is not part of the layout, yet its complete lines change what the plant takes in and how far it collects.
+  const recycling = state.buildings.filter(building => building.type === 'recyclingPlant').map(building => `${building.id}:${recyclingGainsOf(building).capacity}:${recyclingGainsOf(building).collectionDistance}`).join(';');
   const layout = layoutOf(state.buildings);
   const cached = cache.get(layout);
-  if (cached && cached.adapting === adapting && cached.hour === hour && cached.roads === state.roads && cached.roundabouts === state.roundabouts && cached.pedestrianWays === state.pedestrianWays && cached.paying === paying && cached.reduction === reduction && cached.power === power) return cached.report;
+  if (cached && cached.adapting === adapting && cached.hour === hour && cached.roads === state.roads && cached.roundabouts === state.roundabouts && cached.pedestrianWays === state.pedestrianWays && cached.paying === paying && cached.reduction === reduction && cached.power === power && cached.recycling === recycling) return cached.report;
   const report = computeReport(state, paying, powerRatios);
-  cache.set(layout, { roads: state.roads, roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, paying, adapting, hour, reduction, power, report });
+  cache.set(layout, { roads: state.roads, roundabouts: state.roundabouts, pedestrianWays: state.pedestrianWays, paying, adapting, hour, reduction, power, recycling, report });
   return report;
 }
 

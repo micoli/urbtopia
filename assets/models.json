@@ -25060,6 +25060,126 @@
     "license": "Own work",
     "flush": true
   },
+  "recycling-interior-crusher": {
+    "file": "recycling-interior/crusher",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "recycling-interior-crusher-left": {
+    "file": "recycling-interior/crusher-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "recycling-interior-exit": {
+    "file": "recycling-interior/exit",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "recycling-interior-furnace": {
+    "file": "recycling-interior/furnace",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "recycling-interior-furnace-left": {
+    "file": "recycling-interior/furnace-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "recycling-interior-intake": {
+    "file": "recycling-interior/intake",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "recycling-interior-intake-left": {
+    "file": "recycling-interior/intake-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "recycling-interior-shredder": {
+    "file": "recycling-interior/shredder",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "recycling-interior-shredder-left": {
+    "file": "recycling-interior/shredder-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "recycling-interior-sorter": {
+    "file": "recycling-interior/sorter",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "recycling-interior-sorter-left": {
+    "file": "recycling-interior/sorter-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "recycling-interior-truck": {
+    "file": "recycling-interior/truck",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "restaurant-bar": {
     "file": "restaurant/bar",
     "source": "managed",
