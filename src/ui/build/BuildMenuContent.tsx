@@ -1,4 +1,4 @@
-import { Fragment, useId, useState } from 'react';
+import { Fragment, useId, useMemo, useState } from 'react';
 import { SURFACE, BUILDING_SPECS, HOUSING_REGIONS, housingRegionOf, type HousingRegion, type BuildingType, ECOLOGY_UNLOCKS, ECOLOGY, FACILITIES, annualEventOf, isBuildableAt, isFacilityType, totalCitizens, placementCost, isHomeType, solarInstallCostOf, PEDESTRIAN_ACCESS_COST, undergroundUnlocked } from '../../core';
 import { t } from '../../i18n/t';
 import { matchesSearch } from '../../codex/matchesSearch';
@@ -48,14 +48,18 @@ export function BuildMenuContent() {
     const image = manifest?.images[codexImageKey(id, 1, variant)];
     return image ? `${import.meta.env.BASE_URL}codex/${image}` : undefined;
   };
+  const visibleSections = useMemo(() => BUILDING_SECTIONS.map(section => ({
+    ...section,
+    types: section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0) && isBuildableAt(type, now)),
+  })).filter(section => section.types.length), [citizens, now]);
+  const results = useMemo(
+    () => (query.trim() === '' ? [] : visibleSections.flatMap(section => section.types).filter(type => matchesSearch(t(`building.${type}`), query))),
+    [visibleSections, query],
+  );
   if (!flyout) return null;
   if (underground && flyout !== 'roads') return <Note tone="muted">{t('level.nothingToBuild')}</Note>;
 
   if (flyout === 'build') {
-    const visibleSections = BUILDING_SECTIONS.map(section => ({
-      ...section,
-      types: section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0) && isBuildableAt(type, now)),
-    })).filter(section => section.types.length);
     const activeSection = openSection === null || visibleSections.some(section => section.title === openSection) ? openSection : visibleSections[0]?.title;
     const selectSection = (section: BuildSection) => {
       const next = activeSection === section ? null : section;
@@ -83,7 +87,6 @@ export function BuildMenuContent() {
         />
     );
     const searching = query.trim() !== '';
-    const results = searching ? visibleSections.flatMap(section => section.types).filter(type => matchesSearch(t(`building.${type}`), query)) : [];
     return (
       <>
         <FirstUseHint id="build">{t('hint.build')}</FirstUseHint>
