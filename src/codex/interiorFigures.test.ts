@@ -19,6 +19,16 @@ describe('the figures of the Interiors page', () => {
     for (const type of CODEX_INTERIOR_TYPES) expect(interiorFigures(state, type).example !== undefined, type).toBe(type in INTERIOR_EXAMPLES);
   });
 
+  it('lists the Recycling plant with its limits by Tier and the gains of its complete lines', () => {
+    const figures = interiorFigures(state, 'recyclingPlant');
+    expect(figures.columns.map(({ label }) => label)).toEqual(['codex.interiors.collectionExits', 'codex.interiors.sorters', 'codex.interiors.recyclers']);
+    expect(figures.example).toBeDefined();
+    const plant = { ...createBuilding(1, 'recyclingPlant', 55, 50, 0), interior: { nextFixtureId: 100, fixtures: INTERIOR_EXAMPLES.recyclingPlant!.fixtures.map((fixture, index) => ({ id: index + 1, ...fixture })) } };
+    const [live] = liveInteriorsOf({ ...state, buildings: [plant] }, 'recyclingPlant');
+    expect(live!.benefits.map(({ label }) => label)).toEqual(['codex.interiors.wasteCapacity', 'codex.interiors.collectionDistance']);
+    expect(live!.benefits.every(({ value }) => value > 0)).toBe(true);
+  });
+
   it('reads the Staff posts of an interior from the rules', () => {
     expect(interiorFigures(state, 'hospital').roles.map(({ role }) => role)).toEqual(['nurse', 'doctor', 'surgeon']);
     expect(interiorFigures(state, 'factory').roles).toEqual([]);

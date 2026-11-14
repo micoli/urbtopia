@@ -1,12 +1,12 @@
 export const meta = {
   title: 'Intérieurs de production',
-  summary: "Aménagez la minoterie, l'atelier, la boulangerie, la laiterie et l'entrepôt de l'intérieur, et embauchez le personnel qui fait rapporter la disposition.",
+  summary: "Aménagez la minoterie, l'atelier, la boulangerie, la laiterie, l'entrepôt, l'atelier de conditionnement et l'usine de recyclage de l'intérieur, et embauchez le personnel qui fait rapporter la disposition.",
   order: 36,
 };
 
 ## Ce que c'est
 
-Comme l'usine, la **minoterie**, l'**atelier**, la **boulangerie**, la **laiterie** et l'**entrepôt** ouvrent un intérieur : une pièce où l'on place des équipements. Il ne rapporte aucune recette et n'a aucun visiteur. Un intérieur vide laisse le bâtiment exactement comme avant ; un intérieur aménagé ajoute un **bonus** qui grandit avec le niveau du bâtiment. Ces intérieurs sont une fonctionnalité bêta : activez *Intérieurs de production* dans les réglages.
+Comme l'usine, la **minoterie**, l'**atelier**, la **boulangerie**, la **laiterie**, l'**entrepôt**, l'**atelier de conditionnement** et l'**usine de recyclage** ouvrent un intérieur : une pièce où l'on place des équipements. Il ne rapporte aucune recette et n'a aucun visiteur. Un intérieur vide laisse le bâtiment exactement comme avant ; un intérieur aménagé ajoute un **bonus** qui grandit avec le niveau du bâtiment. Ces intérieurs sont une fonctionnalité bêta : activez *Intérieurs de production* dans les réglages.
 
 ## Une disposition, un métier
 
@@ -14,6 +14,8 @@ Comme l'usine, la **minoterie**, l'**atelier**, la **boulangerie**, la **laiteri
 - L'**atelier** n'a **aucun bonus** de vitesse ni de rendement : son seul gain est une **file de production qui tourne seule**. De l'air pneumatique (un réservoir, une pompe et un moteur, par des tuyaux) alimente un **extracteur**, posé contre le mur du fond, et un **nettoyeur**, chacun par sa gauche ou sa droite. Choisissez sur l'extracteur le **matériau** qu'il prélève ; une chaîne le porte à travers le nettoyeur jusqu'à un **bac de stockage**. Un employé de **réassort** affecté au bac relance seul la production de ce matériau, la range à l'entrepôt et libère la file : sans lui, vous la gérez à la main.
 - La **boulangerie** et la **laiterie** font tourner une **chaîne** : des caisses voyagent sur des tapis depuis une machine contre le mur du fond, à travers les autres machines, jusqu'à une sortie au bord de la pièce. Le pétrin de la boulangerie prend la force et son four prend du gaz par le fluide ; la laiterie marche au fluide, de la cuve à lait au pasteurisateur puis à la cave d'affinage.
 - L'**entrepôt** fait courir une chaîne d'un quai de chargement, par un palan, jusqu'à un rayonnage.
+- L'**atelier de conditionnement** fait courir une chaîne de colis : une **emballeuse** contre le mur du fond, entraînée par un moteur par des arbres et des engrenages, les envoie sur des tapis, à travers des **cercleuses** (aussi entraînées) et des **contrôleurs**, jusqu'à une **sortie** d'une seule taille : caisses, cartons ou palettes. Seules les emballeuses et les cercleuses dont les colis sortent par une sortie d'une taille accélèrent les emplacements qui emballent cette taille de produits, et chaque cercleuse après la première ajoute un peu de rendement. Un contrôleur réduit de moitié l'usure des équipements en aval. Un niveau n'autorise qu'un certain nombre de sorties de chaque taille. Un employé de **réassort** affecté à une sortie range la production terminée et lance seul la suivante.
+- L'**usine de recyclage** prend les déchets d'une **entrée** contre le mur du fond, à travers une **trieuse**, puis une **recycleuse** (une broyeuse, un four de fonte ou une concasseuse à verre), jusqu'à une **sortie camion**. Chaque machine est entraînée par un moteur. Chaque sortie d'une chaîne complète ajoute aux déchets que l'usine absorbe chaque jour, et chaque recycleuse ajoute à sa distance de collecte : voir *Aménager l'usine de recyclage* dans la page des déchets.
 
 Une chaîne ne compte que si elle est ininterrompue de sa première machine à une sortie et que chaque machine est reliée. Une coupure, une force ou un gaz qui manque, ou un équipement en panne arrête ce qui se trouve en aval.
 

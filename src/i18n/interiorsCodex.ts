@@ -1,8 +1,8 @@
 const texts = {
   'codex.productionInteriors.title': ['Production interiors', 'Intérieurs de production'],
   'codex.productionInteriors.intro': [
-    'The Factory, the Packhouse, the Mill, the Workshop, the Bakery, the Dairy and the Storehouse can be fitted out from the inside. Motors, Machines and Lines add speed, yield, sales or room to the building. The figures below come straight from the rules, and the last part of each interior shows what yours brings right now.',
-    'L’usine, le conditionnement, la minoterie, l’atelier, la boulangerie, la laiterie et l’entrepôt peuvent être aménagés de l’intérieur. Moteurs, machines et chaînes ajoutent de la vitesse, du rendement, des ventes ou de la place au bâtiment. Les chiffres ci-dessous viennent directement des règles, et la dernière partie de chaque intérieur montre ce que le vôtre apporte en ce moment.',
+    'The Factory, the Packhouse, the Mill, the Workshop, the Bakery, the Dairy, the Storehouse and the Recycling plant can be fitted out from the inside. Motors, Machines and Lines add speed, yield, sales or room to the building, and the Recycling plant adds Waste capacity and Collection distance. The figures below come straight from the rules, and the last part of each interior shows what yours brings right now.',
+    'L’usine, le conditionnement, la minoterie, l’atelier, la boulangerie, la laiterie, l’entrepôt et l’usine de recyclage peuvent être aménagés de l’intérieur. Moteurs, machines et chaînes ajoutent de la vitesse, du rendement, des ventes ou de la place au bâtiment, et l’usine de recyclage ajoute de la capacité de déchets et de la distance de collecte. Les chiffres ci-dessous viennent directement des règles, et la dernière partie de chaque intérieur montre ce que le vôtre apporte en ce moment.',
   ],
   'codex.serviceInteriors.title': ['Service interiors', 'Intérieurs de service'],
   'codex.serviceInteriors.intro': [
@@ -21,6 +21,11 @@ const texts = {
   'codex.interiors.sales': ['Sales rate', 'Cadence de vente'],
   'codex.interiors.capacity': ['Room for Goods', 'Place pour les biens'],
   'codex.interiors.exits': ['Exits of each size', 'Sorties de chaque taille'],
+  'codex.interiors.collectionExits': ['Collection exits', 'Sorties camion'],
+  'codex.interiors.sorters': ['Sorters', 'Trieuses'],
+  'codex.interiors.recyclers': ['Recyclers', 'Recycleuses'],
+  'codex.interiors.wasteCapacity': ['Waste added a day (units)', 'Déchets ajoutés par jour (unités)'],
+  'codex.interiors.collectionDistance': ['Collection distance added (tiles)', 'Distance de collecte ajoutée (cases)'],
   'codex.interiors.quality': ['Quality of the service', 'Qualité du service'],
   'codex.interiors.staff': ['Staff', 'Personnel'],
   'codex.interiors.staffHelp': ['Posts that can be hired at each Tier, from Tier 1.', 'Postes qui peuvent être pourvus à chaque niveau, dès le niveau 1.'],

@@ -1,11 +1,11 @@
 import {
-  interiorBonusOfBuilding, interiorCapsOfType, interiorDeclarationOf, interiorExampleOf, interiorFamilyOf, interiorGridSizeOfType, interiorUnlockCitizensOf, isInteriorUnlocked, packhouseExitLimitOf,
+  interiorBonusOfBuilding, interiorCapsOfType, interiorDeclarationOf, interiorExampleOf, interiorFamilyOf, interiorGridSizeOfType, interiorUnlockCitizensOf, isInteriorUnlocked, packhouseExitLimitOf, recyclingGainsOf, recyclingLimitsOf,
   serviceFurnitureQuality, serviceGridSizeOf, serviceQualityCapOf, serviceQualityOf,
   type Building, type BuildingType, type GameState, type InteriorExample, type InteriorPart, type InteriorRole,
 } from '../core';
 import type { MessageKey } from '../i18n/messages';
 
-export const PRODUCTION_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'workshop', 'bakery', 'dairy', 'storehouse'];
+export const PRODUCTION_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'workshop', 'bakery', 'dairy', 'storehouse', 'recyclingPlant'];
 
 // The interiors with no bonus to speed, yield, sales or room: their gain is the queue that runs by itself.
 const QUEUE_ONLY_TYPES: readonly BuildingType[] = ['workshop'];
@@ -66,6 +66,11 @@ const byTier = (type: BuildingType, value: (tier: number) => number): number[] =
 const productionColumns = (type: BuildingType): BenefitColumn[] => {
   const caps = (tier: number) => interiorCapsOfType(type, tier);
   const columns: BenefitColumn[] = [];
+  if (type === 'recyclingPlant') return [
+    { label: 'codex.interiors.collectionExits', format: 'count', values: byTier(type, tier => recyclingLimitsOf(tier).exits) },
+    { label: 'codex.interiors.sorters', format: 'count', values: byTier(type, tier => recyclingLimitsOf(tier).sorters) },
+    { label: 'codex.interiors.recyclers', format: 'count', values: byTier(type, tier => recyclingLimitsOf(tier).recyclers) },
+  ];
   if (QUEUE_ONLY_TYPES.includes(type)) return columns;
   if (type !== 'storehouse') columns.push({ label: 'factory.interior.speed', format: 'percent', values: byTier(type, tier => caps(tier).speed) }, { label: 'factory.interior.yield', format: 'percent', values: byTier(type, tier => caps(tier).yield) });
   if (caps(1).sales !== undefined) columns.push({ label: 'codex.interiors.sales', format: 'percent', values: byTier(type, tier => caps(tier).sales ?? 0) });
@@ -111,6 +116,13 @@ const liveBenefitsOf = (state: GameState, building: Building): LiveBenefit[] => 
     return [
       { label: 'codex.interiors.furniture', format: 'percent', value: serviceFurnitureQuality(building) },
       ...parts.map((part): LiveBenefit => ({ label: `codex.interiors.part.${part}`, format: 'percent', value: serviceQualityOf(state, building, part) })),
+    ];
+  }
+  if (building.type === 'recyclingPlant') {
+    const gains = recyclingGainsOf(building);
+    return [
+      { label: 'codex.interiors.wasteCapacity', format: 'count', value: gains.capacity },
+      { label: 'codex.interiors.collectionDistance', format: 'count', value: gains.collectionDistance },
     ];
   }
   const bonus = interiorBonusOfBuilding(building);
