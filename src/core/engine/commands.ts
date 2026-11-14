@@ -246,6 +246,7 @@ export type ErrorKey =
   | 'error.notAssignable'
   | 'error.notUpstream'
   | 'error.fixtureLimitReached'
+  | 'error.recyclingLimitReached'
   | 'error.noFocus'
   | 'error.staffAlreadyAssigned'
   | 'error.noFreeStaff'

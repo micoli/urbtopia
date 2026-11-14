@@ -47,6 +47,14 @@
       }
     }
   ],
+  "floorShell": {
+    "floor": "workshop-interior-floor",
+    "wall": "workshop-interior-wall",
+    "corner": "workshop-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  },
   "category": "waste",
   "drawnToScale": true,
   "power": 2,

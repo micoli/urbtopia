@@ -436,6 +436,30 @@ _Avoid_: Output, outlet, door
 A worker of a Packhouse interior, hired from it like a Technician (a one-off fee of five days of wages, then a daily wage in Urbs, a number of posts set by the Packhouse's Tier) and assigned by hand to one Exit. While its Line is Linked and its Exit has a Restock, it keeps one production of that Good in the Packhouse's queue and sends each finished one to the Storehouse. It always works, whatever the Commute does, unless the wage cannot be paid, and is not one of the Packhouse's Jobs. An unassigned Restocker is paid all the same.
 _Avoid_: Stocker (a Supermarket role), Technician, auto-production
 
+**Recycling interior**:
+The Service interior of a Recycling plant, opened from its side panel in the same Management view as a Venue and built on the engine of the Packhouse interior: a 3D room whose grid grows with the plant's Tier, where the player places Fixtures. It is not a Venue. Unlike the other Service interiors it raises the plant's Collection distance and its Waste capacity, and its Fixtures wear. An empty interior leaves the plant exactly as it was; the gains count only for Recycling lines, and are capped by the plant's Tier. Its only Staff is a Technician, paid by the city like the Staff of any Service interior.
+_Avoid_: Sorting floor, Packhouse interior
+
+**Recycling line**:
+A Line of a Recycling interior that carries Waste, in one direction, from an Intake through a Sorter and a Recycler to a Collection exit, by Conveyors. It is complete only when unbroken in that order and every Machine on it is powered by Drive and not broken down; only a complete Recycling line counts. Waste shown on it is a picture, never counted.
+_Avoid_: Packing line, Belt
+
+**Intake**:
+The Machine at the start of a Recycling line, standing against the back wall of a Recycling interior, on the tile along it and facing the room, that needs Drive and puts Waste on the line. It comes in a right-handed version (Drive enters on its right side) and a left-handed one.
+_Avoid_: Entry, Packer
+
+**Sorter**:
+A Machine that a Recycling line passes through, taking Waste in on one side and giving it out on the opposite side; it needs Drive, entering on its right side or, in its left-handed version, on its left side. A Recycling line needs one before its Recycler.
+_Avoid_: Sorting machine
+
+**Recycler**:
+One of three Machines of a Recycling line that follows a Sorter: the Shredder, the Smelting furnace or the Glass crusher, each with a right-handed and a left-handed version like the Sorter. Waste is not typed, so the three differ only by what they add up to: each Recycler on a complete Recycling line extends the plant's Collection distance by 1.5 tiles, and the plant gains a Waste capacity bonus when all three kinds are on complete lines.
+_Avoid_: Processor
+
+**Collection exit**:
+The end of a Recycling line: an Exit of a Recycling interior, standing against any edge on the tile along it, that delivers the Waste to a truck waiting outside. There is one kind, with no size. Each Collection exit on a complete Recycling line adds 50 Waste units to the plant's daily capacity, in addition to its Tier's.
+_Avoid_: Output, Crate exit
+
 **Restock**:
 The packed Good that the player chooses on an Exit, of the size of that Exit, for its Restocker to keep producing. It only drives the Restocker; the Slots stay free for manual productions.
 _Avoid_: Recipe (the Oven's choice in a Bakery), repeat

@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "recyclingPlant",
+  "category": "machines",
+  "name": {
+    "en": "Smelting furnace (Drive on the right)",
+    "fr": "Four de fonte (prise à droite)"
+  },
+  "model": "recycling-interior-furnace",
+  "footprint": [1, 1],
+  "price": 1800,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["right"],
+  "family": "furnace",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

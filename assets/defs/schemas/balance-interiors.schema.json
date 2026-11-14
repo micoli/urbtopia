@@ -241,6 +241,59 @@
                   ],
                   "additionalProperties": false
                 }
+              },
+              "recycling": {
+                "type": "object",
+                "properties": {
+                  "exitCapacity": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "allKindsCapacity": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "recyclerDistance": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "exitLimits": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "sorterLimits": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "recyclerLimits": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                "required": [
+                  "exitCapacity",
+                  "allKindsCapacity",
+                  "recyclerDistance",
+                  "exitLimits",
+                  "sorterLimits",
+                  "recyclerLimits"
+                ],
+                "additionalProperties": false
               }
             },
             "required": [

@@ -14,7 +14,7 @@ import { interiorLayoutOf } from '../interiors/interiorStaff';
 import { withoutAssignment } from '../interiors/interiorAssignments';
 import { fixtureLimitOf } from '../interiors/interiorLimits';
 import { PARQUETS, canHangOnWall, hangsOnWall, homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
-import { interiorGridSizeOf, interiorGridSizeOfType, packSizeOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factoryInterior';
+import { interiorGridSizeOf, interiorGridSizeOfType, packSizeOf, packhouseExitLimitOf, packhouseGridSizeOf, recyclingLimitsOf } from './factoryInterior';
 import { producibleItems, type GoodId } from '../economy/items';
 import { isItemUnlocked } from '../progression/unlocks';
 import { restockerPostsOf, technicianPostsOf } from './interiorWear';
@@ -76,8 +76,8 @@ const startsALine = (type: FixtureId): boolean => FIXTURES[type].role === 'machi
 
 // The turns a Fixture of a Packhouse interior can take on a cell of the edge of a floor of a given size, with its back to that edge: a Packer stands against the back wall
 // only, an Exit against any of the four edges. None for a Fixture that stands anywhere, and none for a cell where it cannot stand.
-// An Exit of the Packhouse stands against a wall; the Exit of the other Line interiors, a Counter, stands anywhere.
-const needsAWall = (type: FixtureId): boolean => (FIXTURES[type].role === 'exit' && FIXTURES[type].venue === 'packhouse') || startsALine(type);
+// An Exit of the Packhouse or of the Recycling plant stands against a wall; the Exit of the other Line interiors, a Counter, stands anywhere.
+const needsAWall = (type: FixtureId): boolean => (FIXTURES[type].role === 'exit' && (FIXTURES[type].venue === 'packhouse' || FIXTURES[type].venue === 'recyclingPlant')) || startsALine(type);
 
 const wallTurnsOf = (type: FixtureId, cell: { x: number; y: number }, size: number): readonly Rotation[] => {
   if (!needsAWall(type)) return [];
@@ -107,6 +107,16 @@ const withInterior = (state: GameState, factory: InteriorHost, interior: Interio
   buildings: state.buildings.map(candidate => (candidate === factory ? { ...factory, interior } : candidate)),
 });
 
+// A Recycling interior takes as many Exits, Sorters and Recyclers as its Tier allows.
+const recyclingLimitReached = (host: InteriorHost, type: FixtureId): boolean => {
+  const limits = recyclingLimitsOf(host.tier);
+  const family = FIXTURES[type].family;
+  const kind = FIXTURES[type].role === 'exit' ? 'exits' : family === 'sorter' ? 'sorters' : family === 'shredder' || family === 'furnace' || family === 'crusher' ? 'recyclers' : undefined;
+  if (!kind) return false;
+  const placed = interiorOf(host).fixtures.filter(other => (kind === 'exits' ? FIXTURES[other.type].role === 'exit' : kind === 'sorters' ? FIXTURES[other.type].family === 'sorter' : ['shredder', 'furnace', 'crusher'].includes(FIXTURES[other.type].family ?? ''))).length;
+  return placed >= limits[kind];
+};
+
 export function placeInteriorFixture(state: GameState, buildingId: number, type: FixtureId, x: number, y: number, rotation: Rotation): CommandOutcome {
   const factory = hostOf(state, buildingId);
   if (!factory) return { key: 'error.unknownBuilding' };
@@ -119,6 +129,7 @@ export function placeInteriorFixture(state: GameState, buildingId: number, type:
   const fixture = { type, x, y, rotation };
   if (!canStandOnInterior(factory, fixture)) return { key: 'error.tilesOccupied' };
   if (factory.type === 'packhouse' && FIXTURES[type].role === 'exit' && interiorOf(factory).fixtures.filter(other => FIXTURES[other.type].packSize === FIXTURES[type].packSize).length >= packhouseExitLimitOf(factory.tier)) return { key: 'error.exitLimitReached' };
+  if (factory.type === 'recyclingPlant' && recyclingLimitReached(factory, type)) return { key: 'error.recyclingLimitReached' };
   const price = FIXTURES[type].price;
   if (state.urbs < price) return { key: 'error.notEnoughUrbs' };
   const interior = interiorOf(factory);

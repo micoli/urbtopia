@@ -1,4 +1,4 @@
-import { FACILITIES, WASTE_FACILITIES, cityKnowledge, citizensOf, facilityCapacity, facilityRadius, reachLoad, serviceCoverage, wasteKindOf, type Building, type FacilityType, isHomeType } from '../../core';
+import { FACILITIES, WASTE_FACILITIES, cityKnowledge, collectionDistanceOf, citizensOf, facilityCapacity, facilityRadius, reachLoad, serviceCoverage, wasteKindOf, type Building, type FacilityType, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { ReachToggle } from '../common/ReachToggle.tsx';
@@ -24,7 +24,7 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
   const knowledge = FACILITIES[building.type].category === 'education' ? cityKnowledge(state) : null;
   return <DrawerPanel>
         {wasteKind
-          ? <DrawerPanel.LabelValue label={t('facility.collectionDistance')} value={WASTE_FACILITIES[wasteKind].collectionDistance}/>
+          ? <DrawerPanel.LabelValue label={t('facility.collectionDistance')} value={collectionDistanceOf(building, wasteKind)}/>
           : <DrawerPanel.LabelValue label={t('facility.reach')} value={radius === null ? t('placement.cityWide') : `${2 * radius} × ${2 * radius}`}/>}
         {(radius !== null || hasNuisance) && <ReachToggle />}
         {isWaste

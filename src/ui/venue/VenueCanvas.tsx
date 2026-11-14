@@ -121,7 +121,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
         scene.setSize(sizeOf(interior, venueType));
         if (venueType === 'home') scene.setFloorModel(parquetModelOf(interior.building.interior?.parquet));
         scene.setFixtures([...interior.fixtures]);
-        scene.setTrucks(isPackhouse(interior.building) ? linkedExitsOf(interior.fixtures) : NO_EXITS);
+        scene.setTrucks(isPackhouse(interior.building) || interior.building.type === 'recyclingPlant' ? linkedExitsOf(interior.fixtures) : NO_EXITS);
         const pace = 1 + interiorBonusOfBuilding(interior.building).speed;
         scene.setLine(hasLineInterior(interior.building) ? linePathsOf(interior.fixtures) : NO_PATHS, pace);
         scene.setAvatars(hasServiceInterior(interior.building) ? avatarsOfBuilding(interior.building) : []);
