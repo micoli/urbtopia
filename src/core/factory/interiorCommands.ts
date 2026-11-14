@@ -186,7 +186,8 @@ export function setInteriorParquet(state: GameState, buildingId: number, parquet
   const host = hostOf(state, buildingId);
   if (!host) return { key: 'error.unknownBuilding' };
   if (isHomeType(host.type) && !isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
-  const { parquet: _previous, ...interior } = interiorOf(host);
+  const interior = { ...interiorOf(host) };
+  delete interior.parquet;
   if (parquet === undefined) return { state: withInterior(state, host, interior), events: [] };
   if (!Number.isInteger(parquet) || parquet < 0 || parquet >= PARQUETS.length) return { key: 'error.unknownCommand' };
   return { state: withInterior(state, host, { ...interior, parquet }), events: [] };
