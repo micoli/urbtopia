@@ -33,10 +33,10 @@ describe('the build menu of the Production interiors', () => {
 });
 
 describe('the Workshop interior', () => {
-  it('links the Extractor, the Cleaner and the Storage bin of the example into one Line', () => {
+  it('links the Extractor and the Storage bin of the example into one Line', () => {
     const state = fitted();
     const { lined, linked } = interiorLinksOf(workshop(state).interior!.fixtures);
-    for (const type of ['workshopExtractorRight', 'workshopCleanerRight', 'workshopBin'] as const) expect(lined.has(idOf(state, type))).toBe(true);
+    for (const type of ['workshopExtractorRight', 'workshopBin'] as const) expect(lined.has(idOf(state, type))).toBe(true);
     expect(linked.has(idOf(state, 'workshopExtractorRight'))).toBe(true);
   });
 

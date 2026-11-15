@@ -23,6 +23,7 @@ export const INTERIOR_EXAMPLES: Partial<Record<BuildingType, InteriorExample>> =
   ] },
   mill: { tier: 1, fixtures: [
     at('millMotor', 0, 0), at('millstone', 0, 1, 2), at('millMotor', 2, 3, 2), at('millPump', 2, 2, 1), at('millPipeCross', 1, 2), at('millPipeCross', 0, 2),
+    at('millCleaner', 1, 1), at('millBagger', 0, 3, 2),
   ] },
   workshop: { tier: 1, fixtures: [
     at('workshopExtractorRight', 0, 0), at('workshopBin', 0, 1), at('workshopPump', 1, 0, 1), at('workshopTank', 2, 0, 1), at('workshopMotor', 1, 1, 2),
@@ -30,8 +31,9 @@ export const INTERIOR_EXAMPLES: Partial<Record<BuildingType, InteriorExample>> =
   bakery: { tier: 2, fixtures: [
     at('bakeryMixer', 5, 0), at('bakeryMotor', 6, 0, 1), at('bakeryOven', 5, 1), at('bakeryPump', 4, 1, 3), at('bakeryTank', 3, 1, 3), at('bakeryMotor', 4, 0), at('bakeryCounter', 5, 2, 2),
   ] },
-  dairy: { tier: 1, fixtures: [
-    at('dairyMilkVat', 0, 0), at('dairyPump', 1, 0, 1), at('dairyTank', 2, 0, 1), at('dairyMotor', 1, 1, 2), at('dairyCounter', 0, 1, 2),
+  dairy: { tier: 3, fixtures: [
+    at('dairyMilkVat', 4, 0), at('dairyPump', 5, 0, 1), at('dairyTank', 6, 0, 1), at('dairyMotor', 5, 1, 2), at('dairyConveyor', 4, 1), at('dairyPasteurizer', 4, 2),
+    at('dairyPump', 3, 2, 3), at('dairyTank', 2, 2, 3), at('dairyMotor', 3, 1), at('dairyCounter', 4, 3, 2),
   ] },
   packhouse: { tier: 1, fixtures: [
     at('packhousePacker', 1, 0), at('packhouseMotor', 2, 0, 1), at('packhouseConveyorElbowRight', 1, 1), at('packhouseExitCrate', 0, 1, 3),
