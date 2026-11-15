@@ -1,3 +1,4 @@
+import { reachableCells, worldOf } from './venueAgents';
 import { FIXTURES, fixtureTiles, type Coord, type FixtureId, type VenueFixture } from '../core';
 
 export type FigureKind = 'gamer' | 'queue' | 'employee' | 'diner';
@@ -33,8 +34,9 @@ const facingTo = (from: Coord, to: Coord): number => Math.atan2(to.x - from.x, t
 export function planCrowd(input: CrowdInput): Figure[] {
   const { size, entrance, fixtures } = input;
   const taken = new Set<string>([keyOf(entrance), ...fixtures.flatMap(fixtureTiles).map(keyOf)]);
+  const reachable = reachableCells(worldOf(size, entrance, fixtures));
   const inside = (cell: Coord) => cell.x >= 0 && cell.y >= 0 && cell.x < size && cell.y < size;
-  const free = (cell: Coord) => inside(cell) && !taken.has(keyOf(cell));
+  const free = (cell: Coord) => inside(cell) && !taken.has(keyOf(cell)) && reachable.has(keyOf(cell));
   const figures: Figure[] = [];
   const add = (kind: FigureKind, cell: Coord, target: Coord) => {
     if (figures.length >= CROWD.maxFigures || !free(cell)) return false;
@@ -58,7 +60,7 @@ export function planCrowd(input: CrowdInput): Figure[] {
   const seats = fixtures.filter(fixture => inUse(fixture) && isSeat(fixture)).sort((a, b) => a.id - b.id);
   const games = fixtures.filter(fixture => inUse(fixture) && !isSeat(fixture) && !hasSeat(fixture)).sort((a, b) => a.id - b.id);
   for (const seat of seats) {
-    if (figures.length >= CROWD.maxFigures) break;
+    if (figures.length >= CROWD.maxFigures || !AROUND.some(offset => reachable.has(keyOf({ x: seat.x + offset.x, y: seat.y + offset.y })))) continue;
     const front = FRONT[seat.rotation % 4]!;
     figures.push({ kind: 'diner', x: seat.x, y: seat.y, facing: facingTo(seat, { x: seat.x + front.x, y: seat.y + front.y }) });
   }

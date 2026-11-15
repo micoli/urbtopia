@@ -65,4 +65,13 @@ describe('Venue crowd', () => {
     expect(figures.filter(figure => figure.kind === 'diner')).toEqual([{ kind: 'diner', x: 2, y: 1, facing: Math.atan2(0, 1) }]);
     expect(figures.filter(figure => figure.kind === 'gamer')).toHaveLength(1);
   });
+
+  it('puts nobody in a room that no door opens on, and somebody in it once a doorway does', () => {
+    const wallsOf = (type: VenueFixture['type']) => [fixture(10, 'arcadeWall', 0, 2, 0), fixture(11, 'arcadeWall', 1, 2, 0), fixture(12, type, 2, 2, 0), fixture(13, 'arcadeWall', 3, 2, 0), fixture(14, 'arcadeWall', 4, 2, 0), fixture(15, 'arcadeWall', 5, 2, 0)];
+    const base = { size: 6, entrance: { x: 3, y: 0 }, saturation: 1, demandRatio: 1, employees: 0 };
+    const closed = planCrowd({ ...base, fixtures: [...wallsOf('arcadeWall'), fixture(1, 'billiard', 1, 4)], usageByFixture: new Map([[1, 3]]) });
+    expect(closed).toHaveLength(0);
+    const open = planCrowd({ ...base, fixtures: [...wallsOf('arcadeDoorway'), fixture(1, 'billiard', 1, 4)], usageByFixture: new Map([[1, 3]]) });
+    expect(open.filter(figure => figure.kind === 'gamer')).toHaveLength(1);
+  });
 });

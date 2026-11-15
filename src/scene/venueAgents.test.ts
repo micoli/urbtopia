@@ -37,6 +37,14 @@ describe('Venue paths', () => {
     expect(findPath(world([{ x: 2, y: 3 }]), { x: 3, y: 1 }, { x: 2, y: 3 })).not.toBeNull();
   });
 
+  it('lets a seated diner finish the meal and leave', () => {
+    const seat = { kind: 'diner' as const, x: 2, y: 3, facing: 0 };
+    const [diner] = fill([seat], { initial: true, spawns: 0 }, [], world([{ x: 2, y: 3 }])).agents;
+    expect(diner!.mode).toBe('seated');
+    const later = run(diner!, world([{ x: 2, y: 3 }]), AGENTS.mealSeconds[1] + 1);
+    expect(later === null || later.mode === 'leaving').toBe(true);
+  });
+
   it('goes in and out through the entrance only', () => {
     const inside = findPath(world(), { x: 3, y: -1 }, { x: 1, y: 3 })!;
     expect(inside[0]).toEqual({ x: 3, y: 0 });

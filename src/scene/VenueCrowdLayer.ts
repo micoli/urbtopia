@@ -3,7 +3,7 @@ import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { FIXTURES, fixtureTiles, type Coord, type FixtureVenue, type VenueFixture, type VenueType } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
-import { clipSeconds, doorKey, makeWorld, pickClip, reconcile, repath, stepAgent, type Agent, type Dice, type World } from './venueAgents';
+import { clipSeconds, makeWorld, worldOf, pickClip, reconcile, repath, stepAgent, type Agent, type Dice, type World } from './venueAgents';
 import type { Figure } from './venueCrowd';
 
 const CROWD_SCALE = 0.7;
@@ -90,10 +90,8 @@ export class VenueCrowdLayer {
   }
 
   private rebuildWorld(): void {
-    const doorways = this.fixtures.filter(fixture => FIXTURES[fixture.type].passable);
-    const blocked = this.fixtures.filter(fixture => !FIXTURES[fixture.type].passable).flatMap(fixtureTiles);
-    const doors = new Map(doorways.flatMap(fixture => fixtureTiles(fixture).map(tile => [doorKey(tile), fixture.rotation % 2 === 0 ? 'y' : 'x'] as const)));
-    const taken = new Set([...blocked, ...doorways.flatMap(fixtureTiles)].map(cell => `${cell.x}:${cell.y}`));
+    const world = worldOf(this.size, this.entrance, this.fixtures);
+    const taken = new Set([...world.blocked, ...this.fixtures.filter(fixture => FIXTURES[fixture.type].passable).flatMap(fixtureTiles).map(cell => `${cell.x}:${cell.y}`)]);
     taken.add(`${this.entrance.x}:${this.entrance.y}`);
     const errands: Coord[] = [];
     for (const fixture of this.fixtures.filter(candidate => !FIXTURES[candidate.type].partition)) {
@@ -102,7 +100,7 @@ export class VenueCrowdLayer {
         .find(cell => cell.x >= 0 && cell.y >= 0 && cell.x < this.size && cell.y < this.size && !taken.has(`${cell.x}:${cell.y}`));
       if (front && !errands.some(cell => cell.x === front.x && cell.y === front.y)) errands.push(front);
     }
-    this.world = makeWorld(this.size, this.entrance, blocked, errands, doors);
+    this.world = { ...world, errands };
     this.agents = repath(this.agents, this.world);
   }
 

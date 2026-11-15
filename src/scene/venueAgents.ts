@@ -1,5 +1,5 @@
 import { nextRandom } from '../core/engine/random';
-import type { Coord } from '../core';
+import { FIXTURES, fixtureTiles, type Coord, type VenueFixture } from '../core';
 import type { Figure } from './venueCrowd';
 
 // The people of the interior are a visual projection of the aggregate model: they walk on the grid, play, wait and leave,
@@ -44,6 +44,7 @@ export function standPoint(figure: Figure): Coord {
 export const AGENTS = {
   speed: 1.15,
   playSeconds: [7, 16] as const,
+  mealSeconds: [9, 20] as const,
   idleSeconds: [6, 12] as const,
   errandSeconds: [2, 4] as const,
   waitPatience: 0.035,
@@ -70,10 +71,21 @@ export function roll(dice: Dice): number {
 
 const between = (dice: Dice, [low, high]: readonly [number, number]): number => low + roll(dice) * (high - low);
 
+const STEPS: readonly (readonly [number, number])[] = [[0, 1], [1, 0], [-1, 0], [0, -1]];
+
+// A person steps from a cell to the next one when the next is free (or is where they are going), a doorway is crossed along its axis only, and the only way out of the grid is the entrance.
+function canStep(world: World, current: Coord, next: Coord, to: Coord | null): boolean {
+  const door = outside(world);
+  const inGrid = next.x >= 0 && next.y >= 0 && next.x < world.size && next.y < world.size;
+  const walkable = keyOf(next) === keyOf(door) || (to !== null && keyOf(next) === keyOf(to)) || (inGrid && !world.blocked.has(keyOf(next)));
+  if (!walkable) return false;
+  const axis = next.y === current.y ? 'x' : 'y';
+  if ((world.doors.get(keyOf(next)) ?? axis) !== axis || (world.doors.get(keyOf(current)) ?? axis) !== axis) return false;
+  return next.y >= 0 || (next.x === door.x && current.x === door.x && current.y === world.entrance.y);
+}
+
 export function findPath(world: World, from: Coord, to: Coord): Coord[] | null {
   if (keyOf(from) === keyOf(to)) return [];
-  const door = outside(world);
-  const walkable = (cell: Coord) => keyOf(cell) === keyOf(door) || keyOf(cell) === keyOf(to) || (cell.x >= 0 && cell.y >= 0 && cell.x < world.size && cell.y < world.size && !world.blocked.has(keyOf(cell)));
   const previous = new Map<string, Coord | null>([[keyOf(from), null]]);
   const queue: Coord[] = [from];
   for (let head = 0; head < queue.length; head++) {
@@ -83,18 +95,30 @@ export function findPath(world: World, from: Coord, to: Coord): Coord[] | null {
       for (let step: Coord | null = current; step && keyOf(step) !== keyOf(from); step = previous.get(keyOf(step)) ?? null) path.unshift(step);
       return path;
     }
-    for (const [dx, dy] of [[0, 1], [1, 0], [-1, 0], [0, -1]] as const) {
+    for (const [dx, dy] of STEPS) {
       const next = { x: current.x + dx, y: current.y + dy };
-      if (previous.has(keyOf(next)) || !walkable(next)) continue;
-      const axis = dx === 0 ? 'y' : 'x';
-      if ((world.doors.get(keyOf(next)) ?? axis) !== axis || (world.doors.get(keyOf(current)) ?? axis) !== axis) continue;
-      // The only way out of the grid is through the entrance.
-      if (next.y < 0 && !(next.x === door.x && current.x === door.x && current.y === world.entrance.y)) continue;
+      if (previous.has(keyOf(next)) || !canStep(world, current, next, to)) continue;
       previous.set(keyOf(next), current);
       queue.push(next);
     }
   }
   return null;
+}
+
+// The cells of the room a person can walk to from the entrance, going around the walls and through the doorways.
+export function reachableCells(world: World): Set<string> {
+  const seen = new Set<string>([keyOf(world.entrance)]);
+  const queue: Coord[] = [world.entrance];
+  for (let head = 0; head < queue.length; head++) {
+    const current = queue[head]!;
+    for (const [dx, dy] of STEPS) {
+      const next = { x: current.x + dx, y: current.y + dy };
+      if (next.y < 0 || seen.has(keyOf(next)) || !canStep(world, current, next, null)) continue;
+      seen.add(keyOf(next));
+      queue.push(next);
+    }
+  }
+  return seen;
 }
 
 function routeTo(world: World, agent: Agent, goal: Coord): Agent {
@@ -109,7 +133,13 @@ export function makeWorld(size: number, entrance: Coord, blockedCells: readonly 
   return { size, entrance, blocked: new Set(blockedCells.map(keyOf)), doors, errands };
 }
 
-export const doorKey = keyOf;
+// The world of a room: its Fixtures block the cells they stand on, except the doorways of a wall, which are crossed across the wall.
+export function worldOf(size: number, entrance: Coord, fixtures: readonly VenueFixture[], errands: readonly Coord[] = []): World {
+  const doorways = fixtures.filter(fixture => FIXTURES[fixture.type].passable);
+  const blocked = fixtures.filter(fixture => !FIXTURES[fixture.type].passable).flatMap(fixtureTiles);
+  const doors = new Map(doorways.flatMap(fixture => fixtureTiles(fixture).map(tile => [keyOf(tile), fixture.rotation % 2 === 0 ? 'y' : 'x'] as const)));
+  return makeWorld(size, entrance, blocked, errands, doors);
+}
 
 const customerKinds = new Set<Figure['kind']>(['gamer', 'queue', 'diner']);
 
@@ -182,7 +212,7 @@ function arrive(agent: Agent, dice: Dice): Agent {
   const base = { ...agent, path: [], goal: null, facing: slot.facing };
   if (slot.kind === 'gamer') return { ...base, mode: 'playing', timer: between(dice, AGENTS.playSeconds) };
   if (slot.kind === 'queue') return { ...base, mode: 'waiting', timer: 0 };
-  if (slot.kind === 'diner') return { ...base, mode: 'seated', timer: 0 };
+  if (slot.kind === 'diner') return { ...base, mode: 'seated', timer: between(dice, AGENTS.mealSeconds) };
   return { ...base, mode: 'idle', timer: between(dice, AGENTS.idleSeconds) };
 }
 
@@ -209,7 +239,7 @@ export function stepAgent(agent: Agent, world: World, dt: number, dice: Dice, mo
     return arrive(current, dice);
   }
   const timer = current.timer - dt;
-  if (current.mode === 'playing') {
+  if (current.mode === 'playing' || current.mode === 'seated') {
     const satisfaction = current.satisfaction + (mood - current.satisfaction) * Math.min(1, AGENTS.playRecovery * dt * 4);
     return timer <= 0 ? leave(world, { ...current, satisfaction }) : { ...current, timer, satisfaction };
   }
