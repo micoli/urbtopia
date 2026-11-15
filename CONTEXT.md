@@ -840,6 +840,10 @@ _Avoid_: Onboarding, intro, walkthrough
 The short guided sequence started when the first Venue of a type is placed, teaching the player to make it earn. It never locks commands and can be skipped or replayed. Distinct from the Tutorial.
 _Avoid_: Onboarding, intro, walkthrough
 
+**Guided demonstration**:
+A replayable explanation of how an interior works, divided into detailed steps and played in a demonstration interior separate from the player's City. The player can pause playback and return to the previous step. An interior has one to three demonstrations: Simple teaches a first useful layout, Intermediate teaches combinations and constraints, and Advanced teaches optimization and diagnosis. These learning levels are independent of the building's Tier. Distinct from the Tutorial and a Venue tutorial.
+_Avoid_: Video (playback does not require a video file), Tier (a building's upgrade level)
+
 **Time skip**:
 The player action that advances game time by a set number of game hours, up to the end of a Tutorial step, or up to the next occurrence of a chosen Cycle hour of the Day cycle (Dawn 05:00, Noon 12:00, Dusk 22:00, Midnight 00:00). A skip to a Cycle hour that is already the current one goes to the next cycle, 2 real hours later. It always advances the economy as well and is refused during a Challenge.
 _Avoid_: Time warp, fast-forward
