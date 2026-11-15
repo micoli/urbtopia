@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useStore } from 'zustand';
 import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, hasAssignments, hasProductionInterior, hasServiceInterior, isBroken, isInteriorBuilding, isHomeType, repairCost, WEAR } from '../../core';
 import { t } from '../../i18n/t';
@@ -5,6 +6,7 @@ import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
+import { Dialog } from '../common/Dialog';
 import { useGame } from '../common/hooks';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { VenueShelfStock } from './VenueShelfStock';
@@ -30,6 +32,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
   const onFloor = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isInteriorBuilding(candidate)));
   const inHome = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isHomeType(candidate.type)));
   const inService = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && hasServiceInterior(candidate)));
+  const [confirmingSell, setConfirmingSell] = useState(false);
   const performance = useVenuePerformance(venueId);
   const earnings = fixture ? performance?.earningsByFixture.get(fixture.id) : undefined;
   const hints = fixture ? performance?.layout.hints.get(fixture.id) ?? [] : [];
@@ -37,9 +40,24 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
   const partition = FIXTURES[fixture.type].partition === true || inHome || inService;
   const { startMove, stopMove, selectPlaced } = venueStore.getState();
   const send = gameStore.getState().send;
+  const sell = () => {
+    send({ type: onFloor ? 'RemoveInteriorFixture' : 'RemoveFixture', buildingId: venueId, fixtureId: fixture.id });
+    selectPlaced(null);
+  };
+  const rotate = () => {
+    send({ type: onFloor ? 'MoveInteriorFixture' : 'MoveFixture', buildingId: venueId, fixtureId: fixture.id, x: fixture.x, y: fixture.y, rotation: ((fixture.rotation + 1) % 4) as 0 | 1 | 2 | 3 });
+  };
   return (
     <section className="venue-build">
       <h3>{t(`venue.fixture.${fixture.type}`)}</h3>
+      {movingId === null ? (
+        <PanelSection id="arrange" title={t('panel.section.arrange')}>
+          <ButtonRow align="stretch" spaced>
+            <ActionButton onClick={() => startMove(fixture.id)}><Icon name="move" /> {t('venue.move')}</ActionButton>
+            {FIXTURES[fixture.type].wall ? null : <ActionButton onClick={rotate}><Icon name="rotateRight" /> {t('venue.rotate')}</ActionButton>}
+          </ButtonRow>
+        </PanelSection>
+      ) : null}
       <PanelSection id="usage" title={t('panel.section.usage')}>
         {partition ? null : <p><strong>{t('venue.condition')}</strong>: {Math.round(conditionOf(fixture))} %</p>}
         {partition ? null : isBroken(fixture) ? <p className="note note--danger">{t('venue.broken')}</p> : conditionOf(fixture) < WEAR.breakdownBelow ? <p className="note note--warn">{t('venue.worn')}</p> : null}
@@ -56,20 +74,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
             <p className="note note--muted">{t('venue.moveHint')}</p>
             <ActionButton block onClick={stopMove}>{t('panel.close')}</ActionButton>
           </>
-        ) : (
-          <ButtonRow align="stretch" spaced>
-            <ActionButton onClick={() => startMove(fixture.id)}><Icon name="move" /> {t('venue.move')}</ActionButton>
-            {FIXTURES[fixture.type].wall ? null : <ActionButton onClick={() => send({ type: onFloor ? 'MoveInteriorFixture' : 'MoveFixture', buildingId: venueId, fixtureId: fixture.id, x: fixture.x, y: fixture.y, rotation: ((fixture.rotation + 1) % 4) as 0 | 1 | 2 | 3 })}><Icon name="rotateRight" /> {t('venue.rotate')}</ActionButton>}
-            <ActionButton
-              onClick={() => {
-                send({ type: onFloor ? 'RemoveInteriorFixture' : 'RemoveFixture', buildingId: venueId, fixtureId: fixture.id });
-                selectPlaced(null);
-              }}
-            >
-              <Icon name="trash" /> {t('panel.sell')} · +<UrbsAmount value={inHome ? homeFixtureRefund(fixture.type) : fixtureRefund(fixture.type)} />
-            </ActionButton>
-          </ButtonRow>
-        )}
+        ) : null}
       </PanelSection>
       {!inHome && !inService && Math.round(100-conditionOf(fixture)) > 2
           ? <ActionButton variant="primary" onClick={() => send({ type: onFloor ? 'RepairInteriorFixture' : 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>
@@ -77,6 +82,21 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
           </ActionButton>
           : null
       }
+      {movingId === null ? (
+        <ActionButton variant="danger" block onClick={() => setConfirmingSell(true)}>
+          <Icon name="trash" /> {t('panel.sell')} · +<UrbsAmount value={inHome ? homeFixtureRefund(fixture.type) : fixtureRefund(fixture.type)} />
+        </ActionButton>
+      ) : null}
+      {confirmingSell ? (
+        <Dialog role="alertdialog">
+          <Dialog.Title>{t('venue.sellConfirm.title')}</Dialog.Title>
+          <Dialog.Body>{t('venue.sellConfirm.body')}</Dialog.Body>
+          <Dialog.Actions>
+            <ActionButton onClick={() => setConfirmingSell(false)}>{t('sale.no')}</ActionButton>
+            <ActionButton variant="danger" onClick={() => { setConfirmingSell(false); sell(); }}>{t('sale.yes')}</ActionButton>
+          </Dialog.Actions>
+        </Dialog>
+      ) : null}
     </section>
   );
 }
