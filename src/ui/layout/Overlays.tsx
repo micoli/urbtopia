@@ -4,6 +4,7 @@ import { OnDemand } from './OnDemand';
 import { casinoStore } from '../../store/casinoStore';
 import { clubStore } from '../../store/clubStore';
 import { showDialogStore } from '../../store/showDialogStore';
+import { demonstrationStore } from '../../store/demonstrationStore';
 import { venueStore } from '../../store/venueStore';
 import { useAdvisor } from '../advisor/useAdvisor';
 import { BugReportWindow } from '../bugReport/BugReportWindow';
@@ -39,6 +40,7 @@ import { AnalyticsHud } from '../analytics/AnalyticsHud';
 import { AnalyticsReadout } from '../analytics/AnalyticsReadout';
 import { PickDotMarker } from '../system/PickDotMarker';
 
+const DemonstrationDialog = lazy(() => import('../demonstrations/DemonstrationDialog').then(module => ({ default: module.DemonstrationDialog })));
 const CityManagement = lazy(() => import('../stats/CityManagement').then((module) => ({ default: module.CityManagement })));
 const SocialWindow = lazy(() => import('../social/SocialWindow').then((module) => ({ default: module.SocialWindow })));
 const CodexDialog = lazy(() => import('../codex/CodexDialog').then((module) => ({ default: module.CodexDialog })));
@@ -66,6 +68,7 @@ export function Overlays() {
   const creditsOpen = useDialogs((store) => store.creditsOpen);
   const casinoOpen = useStore(casinoStore, (store) => store.casinoId !== null);
   const venueOpen = useStore(venueStore, (store) => store.venueId !== null);
+  const demonstrationOpen = useStore(demonstrationStore, store => store.buildingType !== null);
   const clubOpen = useStore(clubStore, (store) => store.buildingId !== null);
   const showOpen = useStore(showDialogStore, (store) => store.buildingId !== null);
   return (
@@ -78,6 +81,7 @@ export function Overlays() {
       <OnDemand when={codexOpen}><CodexDialog /></OnDemand>
       <OnDemand when={casinoOpen}><CasinoDialog /></OnDemand>
       <OnDemand when={venueOpen}><VenueDialog /></OnDemand>
+      <OnDemand when={demonstrationOpen}><DemonstrationDialog /></OnDemand>
       <OnDemand when={clubOpen}><ClubDialog /></OnDemand>
       <OnDemand when={showOpen}><ShowDialog /></OnDemand>
       <OnDemand when={marketOpen}><MarketModal /></OnDemand>

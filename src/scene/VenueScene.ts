@@ -801,6 +801,40 @@ export class VenueScene {
     return { x: Math.round((left + right) / 2), y: Math.round(bottom) };
   }
 
+  private animationPaused = false;
+
+  setAnimationPaused(paused: boolean): void {
+    this.animationPaused = paused;
+    this.lastFrame = performance.now();
+    this.dirty = true;
+  }
+
+  getView(): { x: number; y: number; zoom: number } {
+    return { x: this.pan.x, y: this.pan.z, zoom: this.zoom };
+  }
+
+  // Unlike recenter, keeps the turn of the view.
+  setView(x: number, y: number, zoom: number): void {
+    this.pan = { x, z: y };
+    this.zoom = zoom;
+    this.resize();
+  }
+
+  // The pan that centres the view on the middle of the given tiles.
+  panToTiles(tiles: readonly Coord[]): { x: number; y: number } {
+    const x = tiles.reduce((sum, tile) => sum + tile.x + 0.5, 0) / tiles.length;
+    const y = tiles.reduce((sum, tile) => sum + tile.y + 0.5, 0) / tiles.length;
+    return { x: x - this.size / 2, y: y - this.size / 2 };
+  }
+
+  recenter(x = 0, y = 0, zoom = 1): void {
+    this.pan = { x, z: y };
+    this.zoom = zoom;
+    this.yaw = Math.PI / 4;
+    this.yawTarget = this.yaw;
+    this.resize();
+  }
+
   private frame = (now: number): void => {
     const elapsed = now - this.lastFrame;
     if (!shouldRenderFrame(elapsed)) {
@@ -810,12 +844,14 @@ export class VenueScene {
     const delta = Math.min(0.1, Math.max(0, elapsed / 1000));
     this.lastFrame = now;
     this.turnTowardTarget(delta);
-    this.crowd.update(delta, this.camera);
-    this.motion.update(delta);
-    this.line.update(delta);
-    for (const mixer of this.staffMixers) mixer.update(delta);
-    for (const patrol of this.patrols) patrol.update(delta);
-    if (this.crowd.active || this.patrols.length > 0 || this.motion.active || this.line.active || this.staffMixers.length > 0) this.dirty = true;
+    if (!this.animationPaused) {
+      this.crowd.update(delta, this.camera);
+      this.motion.update(delta);
+      this.line.update(delta);
+      for (const mixer of this.staffMixers) mixer.update(delta);
+      for (const patrol of this.patrols) patrol.update(delta);
+    }
+    if (!this.animationPaused && (this.crowd.active || this.patrols.length > 0 || this.motion.active || this.line.active || this.staffMixers.length > 0)) this.dirty = true;
     if (this.dirty) {
       this.dirty = false;
       this.renderer.render(this.scene, this.camera);

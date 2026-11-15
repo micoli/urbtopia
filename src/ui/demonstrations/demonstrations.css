@@ -1,0 +1,37 @@
+.demonstration-dialog::backdrop { background: var(--black-a70); }
+.demonstration-dialog { position: fixed; inset: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); z-index: 201; margin: 0; width: auto; height: auto; max-width: none; max-height: none; border: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 16px; border-radius: var(--radius-lg); background: var(--color-surface-solid); color: var(--color-text); box-shadow: 0 16px 64px var(--black-a50); }
+.demonstration-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.demonstration-header h2 { margin: 0; font-size: 1.2rem; }
+.demonstration-dialog p { margin: 0; }
+.demonstration-controls { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.demonstration-controls select.demonstration-speed { flex: none; width: auto; padding-inline: 4px; }
+.demonstration-controls .switch-field { width: auto; margin-left: auto; padding-inline: var(--space-4); gap: var(--space-8); }
+.demonstration-icon-button { min-width: 44px; display: inline-grid; place-items: center; padding: 0; }
+.demonstration-step-select { position: relative; flex: 1; min-width: 0; overflow: hidden; border-radius: var(--radius-md); }
+.demonstration-controls select { position: relative; width: 100%; min-height: var(--tap, 44px); min-width: 0; max-width: 100%; color: inherit; background: transparent; border: 1px solid currentColor; border-radius: var(--radius-md); padding: 6px; font: inherit; }
+.demonstration-controls option { background: var(--color-surface-solid); }
+.demonstration-current { font-weight: 700; }
+.demonstration-content { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(270px, 1fr); gap: 16px; flex: 1; min-height: 0; }
+.demonstration-view { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-height: 0; }
+.demonstration-stage { flex: 1; position: relative; min-height: 320px; overflow: hidden; border-radius: var(--radius-xl); }
+.demonstration-progress { position: absolute; inset: 0; background: var(--white-a22); transform-origin: left; transform: scaleX(0); transition: transform 100ms linear; }
+@media (prefers-reduced-motion: reduce) { .demonstration-progress { transition: none; } }
+.demonstration-badge { position: absolute; top: 8px; left: 8px; max-width: calc(100% - 16px); padding: 4px 10px; border: 0; border-radius: var(--radius-pill); background: var(--black-a70); color: var(--color-text); font: inherit; font-size: var(--font-size-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer; }
+.demonstration-subtitle { position: absolute; left: 8px; right: 8px; bottom: 8px; margin: 0; padding: 8px 12px; border-radius: var(--radius-md); background: var(--black-a70); color: var(--color-text); font-size: var(--font-size-base); line-height: 1.4; text-align: center; pointer-events: none; }
+.demonstration-canvas-container { width: 100%; height: 100%; }
+.demonstration-canvas { display: block; width: 100%; height: 100%; min-height: 320px; touch-action: none; }
+.demonstration-loading { position: absolute; inset: 0; display: grid; place-items: center; background: var(--color-venue); }
+.demonstration-explanation { overflow: auto; padding: 0 6px; }
+.demonstration-explanation h3 { margin: 0 0 12px; }
+.demonstration-explanation dl { margin: 0; }
+.demonstration-explanation dt { font-weight: 700; margin-top: 12px; }
+.demonstration-explanation dd { margin: 4px 0 0; line-height: 1.5; }
+.demonstration-indicators { margin-top: 16px; border-top: 1px solid var(--white-a20); padding-top: 12px; }
+@media (max-width: 700px) {
+  .demonstration-dialog { padding: 10px; }
+  .demonstration-content { grid-template-columns: minmax(0, 1fr); flex: none; }
+  .demonstration-stage, .demonstration-canvas-container, .demonstration-canvas { height: 32vh; min-height: 230px; }
+  .demonstration-explanation { overflow: visible; }
+  .demonstration-subtitle { padding: 6px 10px; font-size: var(--font-size-sm); }
+  .demonstration-step-select { flex-basis: 100%; }
+}
