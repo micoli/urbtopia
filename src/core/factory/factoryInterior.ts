@@ -295,6 +295,34 @@ const reachableFrom = (source: number, next: ReadonlyMap<number, number[]>): Set
 
 // The Line, once every Machine feeds no more Fixtures than its limit: of those it reaches, the lowest ids are fed and the others are left out, and so is what only they lead to.
 function lineReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, linked: ReadonlySet<number>): LineReach {
+  const reach = feedLimitedReach(fixtures, at, linked);
+  const stage = requiredStageOf(fixtures);
+  return stage === undefined ? reach : throughStage(fixtures, reach, stage);
+}
+
+// The family a Line must pass through to count, for the building that these Fixtures belong to.
+const requiredStageOf = (fixtures: readonly VenueFixture[]): string | undefined => {
+  const first = fixtures[0];
+  return first === undefined ? undefined : interiorLayoutOf(FIXTURES[first.type].venue as BuildingType)?.requires;
+};
+
+// Keeps the Exits that Packets reach through a Fixture of the required family, and what leads to them.
+function throughStage(fixtures: readonly VenueFixture[], reach: LineReach, stage: string): LineReach {
+  const passed = new Set<number>();
+  for (const fixture of fixtures) if (reach.lined.has(fixture.id) && FIXTURES[fixture.type].family === stage) for (const id of reachableFrom(fixture.id, reach.next)) passed.add(id);
+  const lined = new Set(fixtures.filter(fixture => roleOf(fixture) === 'exit' && reach.lined.has(fixture.id) && passed.has(fixture.id)).map(fixture => fixture.id));
+  for (let grew = true; grew; ) {
+    grew = false;
+    for (const [id, targets] of reach.next) {
+      if (lined.has(id) || !reach.lined.has(id) || !targets.some(target => lined.has(target))) continue;
+      lined.add(id);
+      grew = true;
+    }
+  }
+  return { ...reach, lined };
+}
+
+function feedLimitedReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, linked: ReadonlySet<number>): LineReach {
   const limits = (fixture: VenueFixture) => interiorLayoutOf(FIXTURES[fixture.type].venue as BuildingType)?.feeds?.filter(feed => matches(fixture, feed.from)) ?? [];
   if (!fixtures.some(fixture => limits(fixture).length > 0)) return unlimitedLineReach(fixtures, at, linked);
   const overfed = new Set<number>();
@@ -657,7 +685,7 @@ function bonusOf(allFixtures: readonly VenueFixture[], tier: number, type: Build
 export interface LinePath {
   source: number;
   points: readonly { x: number; y: number }[];
-  // Bakery: the Good that the Packets have become once they have gone through an Oven, which is the point of the way where they turn into it, and the Good that arrives at the Exit.
+  // Bakery, Knitwear factory: the Good that the Packets have become once they have gone through an Oven or a Knitter, which is the point of the way where they turn into it, and the Good that arrives at the Exit: the Recipe of what they went through, not the Good the Exit sells.
   baked?: { from: number; good: string };
 }
 
@@ -678,7 +706,8 @@ export const linePathsOf = memoized((allFixtures): readonly LinePath[] => {
     const nexts = (line.next.get(current.id) ?? []).filter(id => line.lined.has(id) && !seen.has(id));
     if (nexts.length === 0) {
       if (roleOf(current) !== 'exit') return;
-      const good = current.soldGood ?? baked?.good;
+      if (current.soldGood !== undefined && baked !== undefined && baked.good !== current.soldGood) return;
+      const good = baked?.good ?? current.soldGood;
       paths.push({ source: source.id, points: [...points, toward(current, 'back', FIXTURES[current.type].hatch ?? HATCH)], ...(baked && good ? { baked: { from: baked.from, good } } : {}) });
       return;
     }
@@ -706,6 +735,8 @@ export type LineFault =
   | { kind: 'overfed'; fixture: VenueFixture }
   // The Fixture next to the entry sends no Packets at all, such as a Motor: a Conveyor must bring them from the Line.
   | { kind: 'noOutput'; fixture: VenueFixture }
+  // The Line reaches the Fixture without passing through the Fixture it requires, such as the Finisher of a Knitwear factory.
+  | { kind: 'missingStage'; fixture: VenueFixture }
   // Nothing at all lies next to the entry.
   | { kind: 'deadEnd'; cell: { x: number; y: number }; of: VenueFixture };
 
@@ -728,7 +759,7 @@ export function lineFaultOf(allFixtures: readonly VenueFixture[], start: VenueFi
       return { kind: lacksFlowOnly ? 'noFlow' : 'noDrive', fixture: current };
     }
     const entries = sides(current, 'lineIn');
-    if (entries.length === 0) return undefined;
+    if (entries.length === 0) return requiredStageOf(allFixtures) !== undefined && !allFixtures.some(fixture => seen.has(fixture.id) && FIXTURES[fixture.type].family === requiredStageOf(allFixtures)) ? { kind: 'missingStage', fixture: start } : undefined;
     const feeders = entries.flatMap(side => {
       const cell = cellAt(current, side);
       const neighbour = at.get(keyOf(cell.x, cell.y));

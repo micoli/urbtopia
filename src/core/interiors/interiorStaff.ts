@@ -25,6 +25,8 @@ export interface InteriorLayout {
   capacityCaps?: number[];
   yieldGroups?: Record<string, string[]>;
   feeds?: LineFeed[];
+  // A Line only counts when it passes through a Fixture of this family on its way to an Exit: the Finisher of a Knitwear factory.
+  requires?: string;
   // The yield comes from the Exits that Packets reach, not from the Machines.
   yieldFromExits?: true;
   // The Staff are assigned by hand to the Fixtures that carry their part: a baker to an Oven, a seller to a Display counter.

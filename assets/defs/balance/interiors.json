@@ -247,6 +247,7 @@
         "yieldFromExits": true,
         "assignments": true,
         "laneSlowdown": 0.5,
+        "requires": "finisher",
         "feeds": [
           {
             "from": "knitter",

@@ -10,7 +10,7 @@
   "model": "knitwear-interior-finisher",
   "footprint": [1, 1],
   "price": 900,
-  "minTier": 2,
+  "minTier": 1,
   "wear": 0.1,
   "role": "machine",
   "drive": ["right"],

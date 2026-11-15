@@ -215,6 +215,10 @@
                 ],
                 "additionalProperties": false
               },
+              "requires": {
+                "type": "string",
+                "minLength": 1
+              },
               "feeds": {
                 "type": "array",
                 "items": {

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { advance, assignedFixturesOf, createBuilding, dispatch, fixtureLimitOf, focusGoodsOf, freeStaffOf, interiorBonusOfBuilding, newGame, type Building, type Command, type FixtureId, type GameState, type GoodId, type Rotation } from '../index';
 import { recipeOf } from '../economy/items';
 import { checkGameState } from '../../persistence/validate';
-import { interiorLinksOf } from './factoryInterior';
+import { interiorLinksOf, lineFaultOf, linePathsOf } from './factoryInterior';
 
 const homes = [10, 11, 12, 13].map(id => ({ ...createBuilding(id, 'home', 40 + id, 30, 0), tier: 6 }));
 const city = (): GameState => ({
@@ -50,6 +50,21 @@ describe('the Line of a Knitwear factory interior', () => {
     expect(interiorLinksOf(factory(cut).interior!.fixtures).lined.has(counter)).toBe(false);
   });
 
+  it('is only complete through a Finisher: without one the Knitter and the Display counter are left out', () => {
+    const bare = apply(city(), place('knitwearKnitter', 4, 0), place('knitwearShaft', 5, 0, 1), place('knitwearMotor', 6, 0, 1), place('knitwearConveyor', 4, 1), place('knitwearConveyor', 4, 2), place('knitwearCounter', 4, 3, 2));
+    const { lined } = interiorLinksOf(factory(bare).interior!.fixtures);
+    expect(lined.size).toBe(0);
+    const counterOf = idOf(bare, 'knitwearCounter');
+    const fault = lineFaultOf(factory(bare).interior!.fixtures, fixtureOf(bare, counterOf));
+    expect(fault).toMatchObject({ kind: 'missingStage' });
+    expect(interiorLinksOf(factory(fitted).interior!.fixtures).lined.has(counter)).toBe(true);
+  });
+
+  it('offers the Finisher from the first Tier, so that the Line can run there', () => {
+    const first = { ...city(), buildings: city().buildings.map(candidate => (candidate.id === 1 ? { ...candidate, tier: 1 } : candidate)) };
+    expect(failure(first, place('knitwearFinisher', 4, 2))).toBeNull();
+  });
+
   it('takes a knitter on a Knitter, one to one, as many as there are production Slots', () => {
     const hired = apply(fitted, hire('knitter'), focus(knitter, 'sweater'));
     expect(failure(fitted, assign(knitter))).toBe('error.noFocus');
@@ -64,6 +79,41 @@ describe('the Line of a Knitwear factory interior', () => {
     expect(interiorBonusOfBuilding(factory(working), 'sweater').speed).toBeGreaterThan(0);
     expect(interiorBonusOfBuilding(factory(working), 'gloves').speed).toBe(0);
     expect(interiorBonusOfBuilding(factory(fitted), 'sweater').speed).toBe(0);
+  });
+});
+
+describe('the pieces that ride the Line of a Knitwear factory interior', () => {
+  // Two Knitters, one knitting sweaters and one gloves, whose Conveyors join before the Finisher and the Display counter.
+  const joined = apply(city(), place('knitwearMotor', 1, 0, 1), place('knitwearKnitter', 0, 0), place('knitwearCounter', 0, 3, 2), place('knitwearFinisher', 0, 2), place('knitwearMotor', 1, 2, 1),
+    place('knitwearKnitter', 4, 0), place('knitwearConveyorElbowRight', 4, 1), place('knitwearConveyor', 3, 1, 1), place('knitwearConveyor', 2, 1, 1), place('knitwearConveyor', 1, 1, 1),
+    place('knitwearConveyorJoinStraightRight', 0, 1), place('knitwearMotor', 5, 0, 1));
+
+  it('show what each Knitter knits when the Display counter has no Sold Good yet', () => {
+    const knitters = factory(joined).interior!.fixtures.filter(fixture => fixture.type === 'knitwearKnitter').sort((a, b) => a.id - b.id);
+    const picked = apply(joined, focus(knitters[0]!.id, 'sweater'), focus(knitters[1]!.id, 'gloves'));
+    const paths = linePathsOf(factory(picked).interior!.fixtures);
+    const goodOf = (source: number) => paths.find(path => path.source === source)?.baked?.good;
+    expect(goodOf(knitters[0]!.id)).toBe('sweater');
+    expect(goodOf(knitters[1]!.id)).toBe('gloves');
+  });
+});
+
+describe('the pieces after a splitting Conveyor', () => {
+  // The two Knitters of the joined Line, then a split after the Finisher: straight on to a Display counter that sells sweaters, and to the right to one that sells gloves.
+  const split = apply(city(), place('knitwearMotor', 1, 0, 1), place('knitwearKnitter', 0, 0), place('knitwearFinisher', 0, 2), place('knitwearMotor', 1, 2, 1), place('knitwearKnitter', 4, 0),
+    place('knitwearConveyorElbowRight', 4, 1), place('knitwearConveyor', 3, 1, 1), place('knitwearConveyor', 2, 1, 1), place('knitwearConveyor', 1, 1, 1), place('knitwearConveyorJoinStraightRight', 0, 1),
+    place('knitwearMotor', 5, 0, 1), place('knitwearConveyorSplitStraightRight', 0, 3), place('knitwearConveyorElbowRight', 1, 3, 3), place('knitwearCounter', 0, 4, 2), place('knitwearCounter', 1, 4, 2));
+
+  it('only ride on to the Display counter that sells them', () => {
+    const fixtures = factory(split).interior!.fixtures;
+    const knitters = fixtures.filter(fixture => fixture.type === 'knitwearKnitter').sort((a, b) => a.id - b.id);
+    const counters = fixtures.filter(fixture => fixture.type === 'knitwearCounter').sort((a, b) => a.x - b.x);
+    const picked = apply(split, focus(knitters[0]!.id, 'sweater'), focus(knitters[1]!.id, 'gloves'), focus(counters[0]!.id, 'sweater'), focus(counters[1]!.id, 'gloves'));
+    const paths = linePathsOf(factory(picked).interior!.fixtures);
+    expect(paths.map(path => path.baked?.good).sort()).toEqual(['gloves', 'sweater']);
+    const endOf = (good: string) => paths.find(path => path.baked?.good === good)!.points.at(-1)!.x;
+    expect(endOf('sweater')).toBeLessThan(1);
+    expect(endOf('gloves')).toBeGreaterThan(1);
   });
 });
 
