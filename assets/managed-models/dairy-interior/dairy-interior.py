@@ -4,7 +4,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall  # noqa: E402
+from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, wall_variants  # noqa: E402
 
 P = lpm.Palette([
     ("steel", "#c3c9d4", 0.5, 0.4), ("steel_dark", "#8a92a3", 0.5, 0.4), ("iron", "#4a4f5e", 0.4, 0.5), ("black", "#22242c", 0.0, 0.7),
@@ -131,9 +131,9 @@ def dairy_exit(rng):
               block("hatch_top", -0.3, 0.3, -0.16, -0.06, 0.6, 0.72, P["blue_dark"]), block("hatch_cap", -0.32, 0.32, -0.17, -0.05, 0.7, 0.74, P["blue"]),
               block("lamp_stem", 0.1, 0.14, -0.12, -0.08, 0.74, 0.78, P["steel_dark"]), block("lamp", 0.09, 0.15, -0.13, -0.07, 0.78, 0.84, P["green"])]
     parts += [block(f"curtain{k}", -0.22 + 0.088 * k, -0.22 + 0.088 * k + 0.08, -0.13, -0.11, 0.46, 0.6, P["belt"]) for k in range(5)]
-    parts += [block("case_base", -0.36, 0.36, -0.04, 0.5, 0.0, 0.36, P["milk"]), block("case_stripe", -0.37, 0.37, 0.46, 0.5, 0.0, 0.38, P["blue"]),
-              block("case_top", -0.37, 0.37, -0.04, 0.5, 0.36, 0.4, P["blue_dark"]),
-              block("case_post_l", -0.36, -0.32, 0.46, 0.5, 0.4, 0.74, P["blue"]), block("case_post_r", 0.32, 0.36, 0.46, 0.5, 0.4, 0.74, P["blue"]),
+    parts += [block("case_base", -0.36, 0.36, -0.04, 0.46, 0.0, 0.36, P["milk"]), block("case_stripe", -0.37, 0.37, 0.46, 0.5, 0.0, 0.4, P["blue"]),
+              block("case_top", -0.37, 0.37, -0.04, 0.46, 0.36, 0.4, P["blue_dark"]),
+              block("case_post_l", -0.36, -0.32, 0.46, 0.5, 0.4, 0.72, P["blue"]), block("case_post_r", 0.32, 0.36, 0.46, 0.5, 0.4, 0.72, P["blue"]),
               block("case_glass", -0.32, 0.32, 0.47, 0.49, 0.4, 0.7, P["glass"]), block("case_roof", -0.37, 0.37, -0.04, 0.5, 0.72, 0.76, P["blue_dark"]),
               disc("cheese_a", 0.08, 0.06, (-0.2, 0.2, 0.4), P["cheese"], 8), disc("cheese_b", 0.08, 0.06, (0.0, 0.2, 0.4), P["cheese_dark"], 8), disc("cheese_c", 0.08, 0.06, (0.2, 0.2, 0.4), P["cheese"], 8),
               block("bottle_a", 0.1, 0.16, 0.04, 0.1, 0.4, 0.5, P["milk"]), block("bottle_b", -0.16, -0.1, 0.04, 0.1, 0.4, 0.5, P["milk"])]
@@ -175,7 +175,7 @@ def white_corner(rng):
 
 def wall_set():
     return {"floor": tile_floor, "wall": white_wall, "partition": white_partition, "partition-elbow": white_junction("ES"), "partition-tee": white_junction("WES"),
-            "partition-cross": white_junction("ESWN"), "wall-corner": white_corner}
+            "partition-cross": white_junction("ESWN"), "wall-corner": white_corner, **wall_variants(P, "milk", "blue", "blue_dark", "steel_dark", "half")}
 
 
 if __name__ == "__main__":

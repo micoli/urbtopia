@@ -2,7 +2,7 @@
   "$schema": "../schemas/fixture.schema.json",
   "kind": "fixture",
   "venue": "recyclingPlant",
-  "category": "line",
+  "category": "machines",
   "name": {
     "en": "Collection exit",
     "fr": "Sortie camion"

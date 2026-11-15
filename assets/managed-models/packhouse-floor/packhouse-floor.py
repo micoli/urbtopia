@@ -51,12 +51,16 @@ def packer(rng):
     on top and a control panel, a mouth that pushes a packet onto the belt at BELT_Z, which ends on the front edge of the tile where the first Conveyor of the Line begins.
     The cabinet reaches the middle of the tile so that the shaft stub that brings the Drive in sticks out of its right side on the axis of the Shafts, in plain sight."""
     front = -0.6
-    parts = [block("body", -0.4, 0.4, front, 0.0, 0.26, 0.86, P["olive"]), block("body_band", -0.41, 0.41, front - 0.01, 0.0, 0.26, 0.3, P["olive_dark"]),
+    parts = [block("body_l", -0.4, -0.2, front, 0.0, 0.26, 0.86, P["olive"]), block("body_r", 0.2, 0.4, front, 0.0, 0.26, 0.86, P["olive"]),
+             block("body_low", -0.2, 0.2, front, 0.0, 0.26, 0.4, P["olive"]), block("body_up", -0.2, 0.2, front, 0.0, 0.6, 0.86, P["olive"]),
+             block("body_back", -0.2, 0.2, front + 0.25, 0.0, 0.4, 0.6, P["olive"]), block("mouth_back", -0.19, 0.19, front + 0.245, front + 0.25, 0.41, 0.59, P["black"]),
+             block("body_band", -0.41, 0.41, front - 0.01, 0.0, 0.26, 0.3, P["olive_dark"]),
              block("body_top", -0.41, 0.41, front - 0.01, 0.0, 0.84, 0.88, P["olive_dark"]),
-             block("hopper_base", -0.26, 0.26, -0.5, -0.1, 0.88, 0.96, P["steel_dark"]), block("hopper_lip", -0.3, 0.3, -0.54, 0.0, 0.96, 1.0, P["steel"]),
-             block("hopper_in", -0.24, 0.24, -0.48, -0.12, 0.99, 1.0, P["black"]),
-             block("mouth", -0.2, 0.2, front - 0.015, front, 0.36, 0.6, P["black"]), block("mouth_frame_t", -0.22, 0.22, front - 0.02, front, 0.6, 0.64, P["steel_dark"]),
-             block("mouth_frame_l", -0.22, -0.2, front - 0.02, front, 0.36, 0.6, P["steel_dark"]), block("mouth_frame_r", 0.2, 0.22, front - 0.02, front, 0.36, 0.6, P["steel_dark"]),
+             block("hopper_base", -0.26, 0.26, -0.5, -0.1, 0.88, 0.96, P["steel_dark"]), block("hopper_lip_f", -0.3, 0.3, -0.54, -0.5, 0.96, 1.0, P["steel"]), block("hopper_lip_b", -0.3, 0.3, -0.04, 0.0, 0.96, 1.0, P["steel"]),
+             block("hopper_lip_l", -0.3, -0.26, -0.5, -0.04, 0.96, 1.0, P["steel"]), block("hopper_lip_r", 0.26, 0.3, -0.5, -0.04, 0.96, 1.0, P["steel"]),
+             block("hopper_in", -0.26, 0.26, -0.5, -0.04, 0.96, 0.975, P["black"]),
+             block("mouth_frame_t", -0.22, 0.22, front - 0.02, front, 0.6, 0.64, P["steel_dark"]),
+             block("mouth_frame_l", -0.22, -0.2, front - 0.02, front, 0.4, 0.6, P["steel_dark"]), block("mouth_frame_r", 0.2, 0.22, front - 0.02, front, 0.4, 0.6, P["steel_dark"]),
              block("panel", 0.0, 0.34, front - 0.015, front, 0.66, 0.8, P["iron"]), block("screen", 0.03, 0.2, front - 0.02, front - 0.015, 0.7, 0.78, P["glass"]),
              block("button_red", 0.24, 0.28, front - 0.02, front - 0.015, 0.74, 0.78, P["red"]), block("button_green", 0.29, 0.33, front - 0.02, front - 0.015, 0.74, 0.78, P["green"]),
              block("lamp_stem", -0.3, -0.26, -0.3, -0.26, 1.0, 1.04, P["steel_dark"]), block("lamp", -0.31, -0.25, -0.31, -0.25, 1.04, 1.1, P["yellow"]),

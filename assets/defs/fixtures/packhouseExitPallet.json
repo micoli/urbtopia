@@ -2,7 +2,7 @@
   "$schema": "../schemas/fixture.schema.json",
   "kind": "fixture",
   "venue": "packhouse",
-  "category": "line",
+  "category": "machines",
   "name": {
     "en": "Pallet exit",
     "fr": "Sortie palettes"

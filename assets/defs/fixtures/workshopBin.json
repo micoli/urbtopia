@@ -2,7 +2,7 @@
   "$schema": "../schemas/fixture.schema.json",
   "kind": "fixture",
   "venue": "workshop",
-  "category": "line",
+  "category": "machines",
   "name": {
     "en": "Storage bin",
     "fr": "Bac de stockage"

@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "storehouse",
+  "category": "walls",
+  "name": {
+    "en": "Wall with a window",
+    "fr": "Mur à fenêtre"
+  },
+  "model": "storehouse-interior-wall-window",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "partition": true
+}

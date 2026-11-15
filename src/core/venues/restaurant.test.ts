@@ -225,7 +225,7 @@ describe('Ingredients from the Storehouse', () => {
 describe('Restaurant Fixtures', () => {
   it('model every Fixture the Restaurant uses', () => {
     const ids = Object.entries(FIXTURES).filter(([, spec]) => spec.venue === 'restaurant');
-    expect(ids).toHaveLength(10);
+    expect(ids).toHaveLength(12);
     expect(ids.every(([, spec]) => spec.model.length > 0)).toBe(true);
   });
 });

@@ -4,9 +4,10 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall  # noqa: E402
+from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, wall_variants  # noqa: E402
 
 P = lpm.Palette([
+    ("glass", "#cfeefa", 0.0, 0.2),
     ("steel", "#c3c9d4", 0.5, 0.4), ("steel_dark", "#8a92a3", 0.5, 0.4), ("iron", "#4a4f5e", 0.4, 0.5), ("black", "#22242c", 0.0, 0.7),
     ("brass", "#d4a83a", 0.6, 0.35), ("yellow", "#f4c430", 0.0, 0.7), ("green", "#5aae4a", 0.0, 0.7), ("blue", "#2f7de1", 0.0, 0.5),
     ("orange", "#f28c28", 0.0, 0.5), ("red", "#c4452f", 0.0, 0.6), ("white", "#f3f1ec", 0.0, 0.8),
@@ -93,7 +94,10 @@ def bin_store(rng):
              block("floor", -0.36, 0.36, -0.3, 0.38, 0.1, 0.16, P["wood_dark"]),
              block("wall_back", -0.36, 0.36, 0.34, 0.38, 0.16, 0.6, P["wood"]), block("wall_left", -0.38, -0.34, -0.3, 0.38, 0.16, 0.6, P["wood"]),
              block("wall_right", 0.34, 0.38, -0.3, 0.38, 0.16, 0.6, P["wood"]), block("wall_front", -0.36, 0.36, -0.32, -0.28, 0.16, 0.4, P["wood"]),
-             block("band_a", -0.39, 0.39, -0.33, 0.39, 0.26, 0.3, P["steel_dark"]), block("band_b", -0.39, 0.39, -0.33, 0.39, 0.46, 0.5, P["steel_dark"]),
+             block("band_a_l", -0.39, -0.38, -0.3, 0.39, 0.26, 0.3, P["steel_dark"]), block("band_a_r", 0.38, 0.39, -0.3, 0.39, 0.26, 0.3, P["steel_dark"]),
+             block("band_a_b", -0.39, 0.39, 0.38, 0.39, 0.26, 0.3, P["steel_dark"]), block("band_a_f", -0.38, 0.38, -0.33, -0.32, 0.26, 0.3, P["steel_dark"]),
+             block("band_b_l", -0.39, -0.38, -0.3, 0.39, 0.46, 0.5, P["steel_dark"]), block("band_b_r", 0.38, 0.39, -0.3, 0.39, 0.46, 0.5, P["steel_dark"]),
+             block("band_b_b", -0.39, 0.39, 0.38, 0.39, 0.46, 0.5, P["steel_dark"]),
              block("gate", -0.14, 0.14, -0.34, -0.3, 0.16, 0.34, P["iron"]), block("gate_handle", -0.05, 0.05, -0.36, -0.34, 0.28, 0.32, P["yellow"]),
              block("heap_a", -0.3, 0.3, -0.24, 0.3, 0.16, 0.38, P["ore"]), block("heap_b", -0.2, 0.2, -0.14, 0.2, 0.38, 0.5, P["ore"]),
              block("tag_post", 0.3, 0.34, -0.4, -0.36, 0.1, 0.5, P["iron"]), block("tag", 0.24, 0.4, -0.42, -0.4, 0.4, 0.54, P["white"]),
@@ -150,7 +154,7 @@ def brick_corner(rng):
 
 def wall_set():
     return {"floor": plank_floor, "wall": brick_wall, "partition": brick_partition, "partition-elbow": brick_junction("ES"), "partition-tee": brick_junction("WES"),
-            "partition-cross": brick_junction("ESWN"), "wall-corner": brick_corner}
+            "partition-cross": brick_junction("ESWN"), "wall-corner": brick_corner, **wall_variants(P, "brick", "steel_dark", "brick_dark", "iron", "half")}
 
 
 if __name__ == "__main__":

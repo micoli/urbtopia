@@ -29,7 +29,7 @@ def _band(name, x0, x1, y0, y1, color):
 
 def thick_wall(P, body, band, plinth, cap):
     """A wall block with a plinth and, when `band` is given, a coloured band on its inner face (-y)."""
-    parts = [block("body", -0.5, 0.5, -THICK, 0.0, 0.0, 1.0, P[body]), block("plinth", -0.5, 0.5, -THICK - 0.03, -THICK, 0.0, 0.12, P[plinth]),
+    parts = [block("body", -0.5, 0.5, -THICK, 0.0, 0.0, 0.97, P[body]), block("plinth", -0.5, 0.5, -THICK - 0.03, -THICK, 0.0, 0.12, P[plinth]),
              block("cap", -0.5, 0.5, -THICK, 0.0, 0.97, 1.0, P[cap])]
     return parts + _band("band", -0.5, 0.5, -THICK - 0.015, -THICK, None if band is None else P[band])
 
@@ -37,7 +37,7 @@ def thick_wall(P, body, band, plinth, cap):
 def partition_wall(P, body, band, plinth, cap):
     """A wall that divides the room, centred on its tile so that two of them cross into a T or a cross: plinth and band on both faces."""
     h = THICK / 2
-    parts = [block("body", -0.5, 0.5, -h, h, 0.0, 1.0, P[body]), block("cap", -0.5, 0.5, -h, h, 0.97, 1.0, P[cap]),
+    parts = [block("body", -0.5, 0.5, -h, h, 0.0, 0.97, P[body]), block("cap", -0.5, 0.5, -h, h, 0.97, 1.0, P[cap]),
              block("plinth_a", -0.5, 0.5, h, h + 0.03, 0.0, 0.12, P[plinth]), block("plinth_b", -0.5, 0.5, -h - 0.03, -h, 0.0, 0.12, P[plinth])]
     if band is None:
         return parts
@@ -48,10 +48,10 @@ def thick_window_wall(P, body, frame, glass, plinth, cap):
     """A partition with a framed window through it, its sill at 0.25 and its head at 0.8."""
     h = THICK / 2
     parts = [
-        block("left", -0.5, -0.3, -h, h, 0.0, 1.0, P[body]),
-        block("right", 0.3, 0.5, -h, h, 0.0, 1.0, P[body]),
+        block("left", -0.5, -0.3, -h, h, 0.0, 0.97, P[body]),
+        block("right", 0.3, 0.5, -h, h, 0.0, 0.97, P[body]),
         block("sill", -0.3, 0.3, -h, h, 0.0, 0.25, P[body]),
-        block("head", -0.3, 0.3, -h, h, 0.8, 1.0, P[body]),
+        block("head", -0.3, 0.3, -h, h, 0.8, 0.97, P[body]),
         block("glass", -0.3, 0.3, -0.01, 0.01, 0.25, 0.8, P[glass]),
         block("mullion", -0.015, 0.015, -0.03, 0.03, 0.25, 0.8, P[frame]),
         block("plinth_a", -0.5, 0.5, h, h + 0.03, 0.0, 0.12, P[plinth]),
@@ -61,6 +61,50 @@ def thick_window_wall(P, body, frame, glass, plinth, cap):
     for k, (x0, x1, z0, z1) in enumerate(((-0.32, -0.28, 0.23, 0.82), (0.28, 0.32, 0.23, 0.82), (-0.32, 0.32, 0.23, 0.27), (-0.32, 0.32, 0.78, 0.82))):
         parts.append(block(f"frame{k}", x0, x1, -h - 0.02, h + 0.02, z0, z1, P[frame]))
     return parts
+
+
+def thick_door_wall(P, body, frame, plinth, cap):
+    """A partition with a doorway through it and no door: two jambs, a head over the opening at 0.8 and a trim around it."""
+    h = THICK / 2
+    parts = [
+        block("jamb_l", -0.5, -0.22, -h, h, 0.0, 0.97, P[body]),
+        block("jamb_r", 0.22, 0.5, -h, h, 0.0, 0.97, P[body]),
+        block("head", -0.22, 0.22, -h, h, 0.8, 0.97, P[body]),
+        block("plinth_la", -0.5, -0.22, h, h + 0.03, 0.0, 0.12, P[plinth]), block("plinth_lb", -0.5, -0.22, -h - 0.03, -h, 0.0, 0.12, P[plinth]),
+        block("plinth_ra", 0.22, 0.5, h, h + 0.03, 0.0, 0.12, P[plinth]), block("plinth_rb", 0.22, 0.5, -h - 0.03, -h, 0.0, 0.12, P[plinth]),
+        block("cap", -0.5, 0.5, -h, h, 0.97, 1.0, P[cap]),
+        block("trim_l", -0.26, -0.21, -h - 0.02, h + 0.02, 0.0, 0.82, P[frame]),
+        block("trim_r", 0.21, 0.26, -h - 0.02, h + 0.02, 0.0, 0.82, P[frame]),
+        block("trim_head", -0.26, 0.26, -h - 0.02, h + 0.02, 0.76, 0.82, P[frame]),
+    ]
+    return parts
+
+
+def clip_band(band, top=0.47):
+    for vertex in band.data.vertices:
+        vertex.co.z = min(vertex.co.z, top)
+    band.data.update()
+    return band
+
+
+def half_height(parts):
+    """The walls of a kit at half the height, so that what stands behind them stays in view."""
+    return [clip_band(part) if part.name.startswith("band") else lpm.scale(part, sz=0.5) for part in parts]
+
+
+def wall_variants(P, body, band, plinth, cap, base):
+    """The wall models a kit lacks. A kit whose partitions are half height (`base` "half") gets full-height ones with their elbow, tee and cross, a doorway wall and a window
+    wall; a kit whose partitions are full height (`base` "full") gets half-height ones with their joins and a doorway wall."""
+    variants = {"wall-door": lambda rng: thick_door_wall(P, body, plinth, plinth, cap)}
+    if base == "half":
+        variants["wall-window"] = lambda rng: thick_window_wall(P, body, plinth, "glass", plinth, cap)
+        prefix, shape = "partition-full", lambda parts: parts
+    else:
+        prefix, shape = "partition-low", half_height
+    variants[prefix] = lambda rng: shape(partition_wall(P, body, band, plinth, cap))
+    for suffix, arms in (("elbow", "ES"), ("tee", "WES"), ("cross", "ESWN")):
+        variants[f"{prefix}-{suffix}"] = lambda rng, arms=arms: shape(junction_wall(P, body, band, plinth, cap, arms))
+    return variants
 
 
 def along(side, along0, along1, off0, off1, z0, z1, color, name):
@@ -73,10 +117,10 @@ def junction_wall(P, body, band, plinth, cap, arms):
     """The centre square of a partition with arms to the given sides (E, S, W, N), where two or more walls meet: an elbow, a T or a cross."""
     h = THICK / 2
     t = 0.03
-    parts = [block("centre", -h, h, -h, h, 0.0, 1.0, P[body]), block("centre_cap", -h, h, -h, h, 0.97, 1.0, P[cap])]
+    parts = [block("centre", -h, h, -h, h, 0.0, 0.97, P[body]), block("centre_cap", -h, h, -h, h, 0.97, 1.0, P[cap])]
     for side in "ESWN":
         if side in arms:
-            parts += [along(side, h, 0.5, -h, h, 0.0, 1.0, P[body], f"arm{side}"), along(side, h, 0.5, -h, h, 0.97, 1.0, P[cap], f"cap{side}")]
+            parts += [along(side, h, 0.5, -h, h, 0.0, 0.97, P[body], f"arm{side}"), along(side, h, 0.5, -h, h, 0.97, 1.0, P[cap], f"cap{side}")]
             for k, (o0, o1) in enumerate(((h, h + t), (-h - t, -h))):
                 parts.append(along(side, h, 0.5, o0, o1, 0.0, 0.12, P[plinth], f"plinth{side}{k}"))
             if band is not None:
@@ -93,7 +137,7 @@ def thick_corner(P, body, band, plinth, cap):
     """The post where two walls meet, on the outer corner of the floor: a square from the origin toward +x and -y."""
     inner = THICK + 0.03
     parts = [
-        block("post", 0.0, THICK, -THICK, 0.0, 0.0, 1.0, P[body]),
+        block("post", 0.0, THICK, -THICK, 0.0, 0.0, 0.97, P[body]),
         block("plinthx", 0.0, inner, -inner, -THICK, 0.0, 0.12, P[plinth]),
         block("plinthy", THICK, inner, -THICK, 0.0, 0.0, 0.12, P[plinth]),
         block("cap", 0.0, THICK, -THICK, 0.0, 0.97, 1.0, P[cap]),

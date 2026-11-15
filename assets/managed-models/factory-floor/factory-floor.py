@@ -4,7 +4,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall  # noqa: E402
+from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, wall_variants  # noqa: E402
 
 P = lpm.Palette([
     ("steel", "#c3c9d4", 0.5, 0.4), ("steel_dark", "#8a92a3", 0.5, 0.4), ("iron", "#4a4f5e", 0.4, 0.5), ("black", "#22242c", 0.0, 0.7),
@@ -143,8 +143,8 @@ def pipe_joint():
 
 
 def pipe_support(name, x, y):
-    return [block(f"{name}_pedestal", x - 0.05, x + 0.05, y - 0.05, y + 0.05, 0.0, PIPE_Z - 0.09, P["iron"]),
-            block(f"{name}_foot", x - 0.1, x + 0.1, y - 0.1, y + 0.1, 0.0, 0.03, P["iron"])]
+    return [block(f"{name}_pedestal", x - 0.05, x + 0.05, y - 0.05, y + 0.05, 0.03, PIPE_Z - 0.09, P["teal_dark"]),
+            block(f"{name}_foot", x - 0.12, x + 0.12, y - 0.12, y + 0.12, 0.0, 0.03, P["teal"])]
 
 
 def pipe_straight(rng):
@@ -369,7 +369,7 @@ def mirrored(builder):
 
 def wall_set():
     return {"floor": concrete_floor, "wall": plain_wall, "partition": plain_partition, "partition-elbow": plain_junction("ES"), "partition-tee": plain_junction("WES"),
-            "partition-cross": plain_junction("ESWN"), "wall-corner": plain_corner}
+            "partition-cross": plain_junction("ESWN"), "wall-corner": plain_corner, **wall_variants(P, "slate", "yellow", "iron", "steel_dark", "half")}
 
 
 if __name__ == "__main__":

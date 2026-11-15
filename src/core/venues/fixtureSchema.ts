@@ -20,6 +20,8 @@ const common = {
   loud: z.literal(true).optional(),
   // A wall only divides the room: it earns, serves and wears nothing.
   partition: z.literal(true).optional(),
+  // A wall with a doorway: people walk through it, across the wall, and no other way.
+  passable: z.literal(true).optional(),
   // The pieces a wall turns into where it meets other walls; a wall without them stays straight.
   joins: z.strictObject({ elbow: filled, tee: filled, cross: filled }).optional(),
   // Decoration: attractiveness it adds.

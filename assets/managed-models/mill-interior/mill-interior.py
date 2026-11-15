@@ -4,9 +4,10 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall  # noqa: E402
+from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, wall_variants  # noqa: E402
 
 P = lpm.Palette([
+    ("glass", "#cfeefa", 0.0, 0.2),
     ("steel", "#c3c9d4", 0.5, 0.4), ("steel_dark", "#8a92a3", 0.5, 0.4), ("iron", "#4a4f5e", 0.4, 0.5), ("black", "#22242c", 0.0, 0.7),
     ("brass", "#d4a83a", 0.6, 0.35), ("yellow", "#f4c430", 0.0, 0.7), ("green", "#5aae4a", 0.0, 0.7),
     ("wood", "#b98650", 0.0, 0.9), ("wood_dark", "#8a5a30", 0.0, 0.9), ("wood_light", "#d9b27c", 0.0, 0.9),
@@ -52,7 +53,7 @@ def millstone(rng):
              block("pipe_out_box", -0.4, -0.3, -0.1, 0.1, 0.26, 0.42, P["iron"])]
     for k, (x, y) in enumerate(((-0.24, -0.24), (0.24, -0.24), (0.24, 0.24), (-0.24, 0.24))):
         parts.append(block(f"post{k}", x - 0.025, x + 0.025, y - 0.025, y + 0.025, 0.4, 0.96, P["wood_dark"]))
-    parts += [lpm.prism("hopper", 4, 0.07, 0.3, at=(0, 0, 0.62), color=P["wood"], radius_top=0.36, rotate=45), lpm.prism("grain", 4, 0.34, 0.02, at=(0, 0, 0.9), color=P["wheat"], rotate=45),
+    parts += [lpm.prism("hopper", 4, 0.07, 0.3, at=(0, 0, 0.62), color=P["wood_dark"], radius_top=0.36, rotate=45), lpm.prism("grain", 4, 0.3, 0.05, at=(0, 0, 0.9), color=P["wheat"], rotate=45),
               block("rail_a", -0.27, 0.27, -0.27, -0.21, 0.92, 0.96, P["wood_dark"]), block("rail_b", -0.27, 0.27, 0.21, 0.27, 0.92, 0.96, P["wood_dark"]),
               block("rail_c", -0.27, -0.21, -0.27, 0.27, 0.92, 0.96, P["wood_dark"]), block("rail_d", 0.21, 0.27, -0.27, 0.27, 0.92, 0.96, P["wood_dark"]),
               block("shoe", -0.03, 0.03, -0.12, 0.0, 0.5, 0.58, P["wood_light"])]
@@ -128,7 +129,7 @@ def stone_corner(rng):
 
 def wall_set():
     return {"floor": plank_floor, "wall": stone_wall, "partition": stone_partition, "partition-elbow": stone_junction("ES"), "partition-tee": stone_junction("WES"),
-            "partition-cross": stone_junction("ESWN"), "wall-corner": stone_corner}
+            "partition-cross": stone_junction("ESWN"), "wall-corner": stone_corner, **wall_variants(P, "stone", "wood_dark", "stone_dark", "wood", "half")}
 
 
 if __name__ == "__main__":

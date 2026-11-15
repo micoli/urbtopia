@@ -2,7 +2,7 @@
   "$schema": "../schemas/fixture.schema.json",
   "kind": "fixture",
   "venue": "livestockFarm",
-  "category": "line",
+  "category": "machines",
   "name": {
     "en": "Collection exit",
     "fr": "Sortie de collecte"

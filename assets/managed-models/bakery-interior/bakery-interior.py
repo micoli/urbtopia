@@ -4,7 +4,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import THICK, block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall  # noqa: E402
+from venue_lib import THICK, block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, wall_variants  # noqa: E402
 
 P = lpm.Palette([
     ("steel", "#c3c9d4", 0.5, 0.4), ("steel_dark", "#8a92a3", 0.5, 0.4), ("iron", "#4a4f5e", 0.4, 0.5), ("black", "#22242c", 0.0, 0.7),
@@ -121,9 +121,9 @@ def counter_exit(rng):
     parts += [block("post_l", -0.28, -0.22, -h - 0.02, h + 0.02, 0.0, 0.58, P["terracotta_dark"]), block("post_r", 0.22, 0.28, -h - 0.02, h + 0.02, 0.0, 0.58, P["terracotta_dark"]),
               block("lintel", -0.3, 0.3, -h - 0.03, h + 0.03, 0.54, 0.6, P["terracotta"]),
               block("lamp_stem", 0.1, 0.14, -0.02, 0.02, 0.6, 0.64, P["steel_dark"]), block("lamp", 0.09, 0.15, -0.03, 0.03, 0.64, 0.7, P["green"])]
-    parts += [block("case_base", -0.36, 0.36, h + 0.01, 0.5, 0.0, 0.36, P["wood"]), block("case_front", -0.37, 0.37, 0.46, 0.5, 0.0, 0.38, P["wood_dark"]),
-              block("case_top", -0.37, 0.37, h + 0.01, 0.5, 0.36, 0.4, P["terracotta"]),
-              block("case_post_l", -0.36, -0.32, 0.46, 0.5, 0.4, 0.74, P["wood_dark"]), block("case_post_r", 0.32, 0.36, 0.46, 0.5, 0.4, 0.74, P["wood_dark"]),
+    parts += [block("case_base", -0.36, 0.36, h + 0.01, 0.46, 0.0, 0.36, P["wood"]), block("case_front", -0.37, 0.37, 0.46, 0.5, 0.0, 0.4, P["wood_dark"]),
+              block("case_top", -0.37, 0.37, h + 0.01, 0.46, 0.36, 0.4, P["terracotta"]),
+              block("case_post_l", -0.36, -0.32, 0.46, 0.5, 0.4, 0.72, P["wood_dark"]), block("case_post_r", 0.32, 0.36, 0.46, 0.5, 0.4, 0.72, P["wood_dark"]),
               block("case_glass", -0.32, 0.32, 0.47, 0.49, 0.4, 0.7, P["glass"]), block("case_roof", -0.37, 0.37, h + 0.01, 0.5, 0.72, 0.76, P["terracotta"]),
               block("shelf_loaf_a", -0.28, -0.1, 0.2, 0.36, 0.4, 0.46, P["bread"]), block("shelf_loaf_b", -0.06, 0.12, 0.2, 0.36, 0.4, 0.46, P["bread_dark"]),
               block("shelf_loaf_c", 0.14, 0.3, 0.2, 0.36, 0.4, 0.45, P["bread"])]
@@ -165,7 +165,7 @@ def cream_corner(rng):
 
 def wall_set():
     return {"floor": tile_floor, "wall": cream_wall, "partition": cream_partition, "partition-elbow": cream_junction("ES"), "partition-tee": cream_junction("WES"),
-            "partition-cross": cream_junction("ESWN"), "wall-corner": cream_corner}
+            "partition-cross": cream_junction("ESWN"), "wall-corner": cream_corner, **wall_variants(P, "cream", "terracotta", "terracotta_dark", "wood", "half")}
 
 
 if __name__ == "__main__":

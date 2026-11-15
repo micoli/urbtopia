@@ -98,6 +98,8 @@ export interface FixtureSpec {
   truck?: string;
   // A wall: it only divides the room, and earns, serves and wears nothing.
   partition?: true;
+  // A wall with a doorway that people walk through, across the wall.
+  passable?: true;
   joins?: { elbow: string; tee: string; cross: string };
 }
 
