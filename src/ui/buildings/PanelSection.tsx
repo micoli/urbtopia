@@ -4,7 +4,7 @@ import type { IconName } from '../common/iconRegistry';
 import type { PanelSectionId } from './panelSections';
 import { usePanelSection } from './usePanelSection';
 
-const ICON_BY_SECTION: Record<PanelSectionId, IconName> = { usage: 'production', modifications: 'repair', help: 'info' };
+const ICON_BY_SECTION: Record<PanelSectionId, IconName> = { usage: 'production', modifications: 'repair', help: 'info', arrange: 'move' };
 
 interface PanelSectionProps {
   id: PanelSectionId;
