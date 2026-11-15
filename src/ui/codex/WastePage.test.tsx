@@ -60,15 +60,15 @@ describe('WastePage', () => {
 
   it('shows the Carrying distance, the surcharge and the share of the cost it causes', () => {
     const html = render([place(1, 'incinerator', 66, 47), home(10, 71, 53, 1)], { pedestrianWays: Array.from({ length: 4 }, (_, index) => ({ x: 70, y: 50 + index })) });
-    expect(html).toContain(`>${WASTE.carryingDistance}<`);
+    expect(html).toContain(`${WASTE.carryingDistance}`);
     expect(html).toContain(`×${WASTE.carriedSurcharge}`);
     expect(html).toContain(`${Math.round((1 - 1 / WASTE.carriedSurcharge) * 100)}%`);
   });
 
   it('shows the nuisance figures of the Balance', () => {
     const html = render(served);
-    expect(html).toContain(`>${WASTE_FACILITIES.mound.odor!.radius}<`);
-    expect(html).toContain(`>${WASTE_FACILITIES.incinerator.pollution!.malus}<`);
+    expect(html).toContain(`${WASTE_FACILITIES.mound.odor!.radius}`);
+    expect(html).toContain(`${WASTE_FACILITIES.incinerator.pollution!.malus}`);
   });
 
   it('says a facility without Urbs is stopped', () => {

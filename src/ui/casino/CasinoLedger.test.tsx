@@ -6,9 +6,9 @@ import { CasinoLedger } from './CasinoLedger';
 describe('casino ledger', () => {
   it('shows what was spent, what was won and the net result since the window opened', () => {
     const html = renderToStaticMarkup(<CasinoLedger spent={120} won={95} />);
-    expect(html).toContain(`<dt>${t('casino.spent')}</dt>`);
-    expect(html).toContain(`<dt>${t('casino.earned')}</dt>`);
-    expect(html).toContain(`<dt>${t('casino.balance')}</dt>`);
+    expect(html).toContain(`<b>${t('casino.spent')}</b>`);
+    expect(html).toContain(`<b>${t('casino.earned')}</b>`);
+    expect(html).toContain(`<b>${t('casino.balance')}</b>`);
     expect(html).toContain('data-sign="-1"');
     expect(html).toContain('-25');
   });

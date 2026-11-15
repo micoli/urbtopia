@@ -12,5 +12,6 @@
   "price": 60,
   "minTier": 1,
   "partition": true,
+  "passable": true,
   "role": "decor"
 }

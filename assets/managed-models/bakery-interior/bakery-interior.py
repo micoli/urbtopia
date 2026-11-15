@@ -4,7 +4,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import THICK, block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall  # noqa: E402
+from venue_lib import THICK, block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, wall_variants  # noqa: E402
 
 P = lpm.Palette([
     ("steel", "#c3c9d4", 0.5, 0.4), ("steel_dark", "#8a92a3", 0.5, 0.4), ("iron", "#4a4f5e", 0.4, 0.5), ("black", "#22242c", 0.0, 0.7),
@@ -53,12 +53,12 @@ def mixer(rng):
     front = -0.6
     parts = [block("body", -0.4, 0.4, front, 0.0, 0.26, 0.8, P["cream"]), block("body_band", -0.41, 0.41, front - 0.01, 0.0, 0.26, 0.3, P["terracotta"]),
              block("body_top", -0.41, 0.41, front - 0.01, 0.0, 0.78, 0.82, P["terracotta_dark"]),
-             disc("bowl", 0.24, 0.16, (0.0, -0.28, 0.82), P["steel"], 14), disc("bowl_rim", 0.26, 0.03, (0.0, -0.28, 0.95), P["steel_dark"], 14),
-             disc("dough_ball", 0.2, 0.05, (0.0, -0.28, 0.93), P["dough"], 12),
+             lpm.lathe("bowl", [(0.0, 0.0), (0.24, 0.0), (0.26, 0.12), (0.2, 0.12), (0.2, 0.04), (0.0, 0.04)], segments=14, at=(0.0, -0.28, 0.82), color=P["steel"]),
+             disc("dough_ball", 0.17, 0.06, (0.0, -0.28, 0.86), P["dough"], 12),
              block("arm", -0.04, 0.04, -0.12, 0.0, 0.82, 1.1, P["cream_dark"]), block("head", -0.1, 0.1, -0.4, -0.04, 1.06, 1.14, P["cream"]),
              block("head_cap", -0.11, 0.11, -0.41, -0.03, 1.12, 1.16, P["terracotta_dark"]),
-             block("hopper_base", -0.2, 0.2, -0.1, 0.0, 0.82, 0.9, P["steel_dark"]), block("hopper_lip", -0.24, 0.24, -0.12, 0.0, 0.9, 0.94, P["steel"]),
-             block("hopper_in", -0.2, 0.2, -0.1, -0.02, 0.93, 0.94, P["white"]),
+             block("hopper_base", -0.2, 0.2, -0.1, 0.0, 0.82, 0.9, P["terracotta_dark"]), block("hopper_lip", -0.24, 0.24, -0.12, 0.0, 0.9, 0.94, P["terracotta"]),
+             block("hopper_in", -0.18, 0.18, -0.09, -0.03, 0.94, 0.96, P["white"]),
              block("mouth", -0.2, 0.2, front - 0.015, front, 0.36, 0.6, P["black"]), block("mouth_frame_t", -0.22, 0.22, front - 0.02, front, 0.6, 0.64, P["steel_dark"]),
              block("mouth_frame_l", -0.22, -0.2, front - 0.02, front, 0.36, 0.6, P["steel_dark"]), block("mouth_frame_r", 0.2, 0.22, front - 0.02, front, 0.36, 0.6, P["steel_dark"]),
              block("panel", 0.0, 0.34, front - 0.015, front, 0.66, 0.76, P["iron"]), block("screen", 0.03, 0.2, front - 0.02, front - 0.015, 0.68, 0.74, P["glass"]),
@@ -69,7 +69,7 @@ def mixer(rng):
     parts += [block("gearbox", 0.4, 0.46, -0.58, -0.42, 0.26, 0.42, P["iron"]), sideways(disc("stub", 0.04, 0.12, (0, 0, 0), P["steel"], 6), x=0.4, y=-0.5, z=DRIVE_Z)]
     pulley = [sideways(disc("pulley", 0.1, 0.04, (0, 0, 0), P["brass"], 10), x=0.46, y=-0.5, z=DRIVE_Z), sideways(disc("pulley_hub", 0.05, 0.08, (0, 0, 0), P["steel_dark"], 8), x=0.44, y=-0.5, z=DRIVE_Z),
               block("pulley_spoke", 0.46, 0.5, -0.59, -0.41, DRIVE_Z - 0.015, DRIVE_Z + 0.015, P["black"])]
-    hook = [disc("hook_rod", 0.025, 0.2, (0.0, -0.28, 0.95), P["steel"], 6), block("hook_a", -0.14, 0.14, -0.3, -0.26, 0.97, 1.0, P["steel"]), block("hook_b", -0.02, 0.02, -0.42, -0.14, 0.97, 1.0, P["steel"])]
+    hook = [disc("hook_rod", 0.025, 0.2, (0.0, -0.28, 0.9), P["steel"], 6), block("hook_a", -0.14, 0.14, -0.3, -0.26, 0.9, 0.97, P["steel_dark"]), block("hook_b", -0.02, 0.02, -0.42, -0.14, 0.9, 0.97, P["steel_dark"])]
     return shifted(parts, 0.5), {"spin-x": (shifted(pulley, 0.5), (0.46, 0.0, DRIVE_Z)), "spin-up": (shifted(hook, 0.5), (0.0, 0.22, 0.97))}
 
 
@@ -121,9 +121,9 @@ def counter_exit(rng):
     parts += [block("post_l", -0.28, -0.22, -h - 0.02, h + 0.02, 0.0, 0.58, P["terracotta_dark"]), block("post_r", 0.22, 0.28, -h - 0.02, h + 0.02, 0.0, 0.58, P["terracotta_dark"]),
               block("lintel", -0.3, 0.3, -h - 0.03, h + 0.03, 0.54, 0.6, P["terracotta"]),
               block("lamp_stem", 0.1, 0.14, -0.02, 0.02, 0.6, 0.64, P["steel_dark"]), block("lamp", 0.09, 0.15, -0.03, 0.03, 0.64, 0.7, P["green"])]
-    parts += [block("case_base", -0.36, 0.36, h + 0.01, 0.5, 0.0, 0.36, P["wood"]), block("case_front", -0.37, 0.37, 0.46, 0.5, 0.0, 0.38, P["wood_dark"]),
-              block("case_top", -0.37, 0.37, h + 0.01, 0.5, 0.36, 0.4, P["terracotta"]),
-              block("case_post_l", -0.36, -0.32, 0.46, 0.5, 0.4, 0.74, P["wood_dark"]), block("case_post_r", 0.32, 0.36, 0.46, 0.5, 0.4, 0.74, P["wood_dark"]),
+    parts += [block("case_base", -0.36, 0.36, h + 0.01, 0.46, 0.0, 0.36, P["wood"]), block("case_front", -0.37, 0.37, 0.46, 0.5, 0.0, 0.4, P["wood_dark"]),
+              block("case_top", -0.37, 0.37, h + 0.01, 0.46, 0.36, 0.4, P["terracotta"]),
+              block("case_post_l", -0.36, -0.32, 0.46, 0.5, 0.4, 0.72, P["wood_dark"]), block("case_post_r", 0.32, 0.36, 0.46, 0.5, 0.4, 0.72, P["wood_dark"]),
               block("case_glass", -0.32, 0.32, 0.47, 0.49, 0.4, 0.7, P["glass"]), block("case_roof", -0.37, 0.37, h + 0.01, 0.5, 0.72, 0.76, P["terracotta"]),
               block("shelf_loaf_a", -0.28, -0.1, 0.2, 0.36, 0.4, 0.46, P["bread"]), block("shelf_loaf_b", -0.06, 0.12, 0.2, 0.36, 0.4, 0.46, P["bread_dark"]),
               block("shelf_loaf_c", 0.14, 0.3, 0.2, 0.36, 0.4, 0.45, P["bread"])]
@@ -165,7 +165,7 @@ def cream_corner(rng):
 
 def wall_set():
     return {"floor": tile_floor, "wall": cream_wall, "partition": cream_partition, "partition-elbow": cream_junction("ES"), "partition-tee": cream_junction("WES"),
-            "partition-cross": cream_junction("ESWN"), "wall-corner": cream_corner}
+            "partition-cross": cream_junction("ESWN"), "wall-corner": cream_corner, **wall_variants(P, "cream", "terracotta", "terracotta_dark", "wood", "half")}
 
 
 if __name__ == "__main__":

@@ -4,9 +4,10 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import THICK, block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall  # noqa: E402
+from venue_lib import THICK, block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, wall_variants  # noqa: E402
 
 P = lpm.Palette([
+    ("glass", "#cfeefa", 0.0, 0.2),
     ("steel", "#c3c9d4", 0.5, 0.4), ("steel_dark", "#8a92a3", 0.5, 0.4), ("iron", "#4a4f5e", 0.4, 0.5), ("black", "#22242c", 0.0, 0.7),
     ("brass", "#d4a83a", 0.6, 0.35), ("red", "#e04848", 0.0, 0.7), ("green", "#5aae4a", 0.0, 0.7), ("yellow", "#f4c430", 0.0, 0.7), ("blue", "#2f7de1", 0.0, 0.5),
     ("wood", "#b98650", 0.0, 0.9), ("wood_dark", "#8a5a30", 0.0, 0.9), ("wood_light", "#d9b27c", 0.0, 0.9),
@@ -188,7 +189,7 @@ def plank_corner(rng):
 
 def wall_set():
     return {"floor": straw_floor, "wall": plank_wall, "partition": plank_partition, "partition-elbow": plank_junction("ES"), "partition-tee": plank_junction("WES"),
-            "partition-cross": plank_junction("ESWN"), "wall-corner": plank_corner}
+            "partition-cross": plank_junction("ESWN"), "wall-corner": plank_corner, **wall_variants(P, "wood", "barn_red", "wood_dark", "wood_dark", "half")}
 
 
 if __name__ == "__main__":

@@ -133,7 +133,7 @@ def furnace(rng):
     parts += [block("post_l", -0.3, -0.2, -0.25, 0.25, 0.3, 0.64, P["brick_dark"]), block("post_r", 0.2, 0.3, -0.25, 0.25, 0.3, 0.64, P["brick_dark"]),
               block("foot_l", -0.32, -0.2, -0.27, 0.27, 0.26, 0.32, P["iron"]), block("foot_r", 0.2, 0.32, -0.27, 0.27, 0.26, 0.32, P["iron"]),
               block("body", -0.32, 0.32, -0.27, 0.27, 0.64, 1.0, P["brick"]), block("body_band_low", -0.33, 0.33, -0.28, 0.28, 0.64, 0.7, P["iron"]),
-              block("body_band_high", -0.33, 0.33, -0.28, 0.28, 0.94, 1.0, P["iron"]),
+              block("body_band_high", -0.33, 0.33, -0.28, 0.28, 0.94, 1.0, P["steel"]),
               block("mouth_frame", -0.18, 0.18, -0.285, -0.27, 0.72, 0.92, P["iron"]), block("mouth", -0.15, 0.15, -0.29, -0.285, 0.75, 0.89, P["flame"]),
               block("mouth_slit", -0.15, 0.15, -0.292, -0.289, 0.81, 0.83, P["yellow"]),
               block("chimney", -0.1, 0.1, -0.1, 0.1, 1.0, CHIMNEY_Z - 0.04, P["ash"]), block("chimney_ring", -0.12, 0.12, -0.12, 0.12, CHIMNEY_Z - 0.06, CHIMNEY_Z - 0.02, P["iron"]),

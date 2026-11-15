@@ -10,6 +10,7 @@ import { CODEX_PAGES, type CodexPage } from '../../codex/pages';
 import { ARTICLES, translationOf, type Article } from '../../guide/content/articles';
 import type { ArticleLinker } from '../../guide/content/articleLinker';
 import { articleOfRules, isRulesWrittenUp } from '../../guide/routes';
+import { venueStore } from '../../store/venueStore';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { useUi } from '../common/hooks';
@@ -37,6 +38,7 @@ export function CodexPanel() {
   const close = useUi(store => store.closeCodex);
   const backdrop = useBackdropClose(event => {
     close();
+    if (venueStore.getState().venueId !== null) return;
     const nav = navButtonAt(event.clientX, event.clientY);
     if (nav && nav.dataset.action !== 'codex') nav.click();
   });
@@ -159,52 +161,54 @@ export function CodexPanel() {
   };
 
   return (
-    <dialog className="codex-dialog" ref={dialog} role="dialog" aria-labelledby={heading} aria-modal="true" onCancel={event => { event.preventDefault(); close(); }} {...backdrop} onKeyDown={event => event.stopPropagation()}>
-      <header className="codex-header">
-        <h2 id={heading}>{t('codex.title')}</h2>
-        <div className="codex-header-actions">
-          <CodexFavoriteButton target={currentTarget} />
-          <CodexGuideLink entry={entry} page={page} article={article} fixture={fixture} />
-          {showDetail && <button type="button" className="codex-back" onClick={() => {
-            setShowDetail(false);
-            requestAnimationFrame(() => dialog.current?.querySelector<HTMLButtonElement>('.codex-list [aria-current="true"]')?.focus());
-          }}>{t('codex.back')}</button>}
-          <CloseButton onClick={close} />
+    <dialog className="codex-backdrop" ref={dialog} role="dialog" aria-labelledby={heading} aria-modal="true" onCancel={event => { event.preventDefault(); close(); }} {...backdrop} onKeyDown={event => event.stopPropagation()}>
+      <div className="codex-dialog">
+        <header className="codex-header">
+          <h2 id={heading}>{t('codex.title')}</h2>
+          <div className="codex-header-actions">
+            <CodexFavoriteButton target={currentTarget} />
+            <CodexGuideLink entry={entry} page={page} article={article} fixture={fixture} />
+            {showDetail && <button type="button" className="codex-back" onClick={() => {
+              setShowDetail(false);
+              requestAnimationFrame(() => dialog.current?.querySelector<HTMLButtonElement>('.codex-list [aria-current="true"]')?.focus());
+            }}>{t('codex.back')}</button>}
+            <CloseButton onClick={close} />
+          </div>
+        </header>
+        <div className="codex-body" data-detail={showDetail}>
+          <nav className="codex-list" aria-label={t('codex.title')}>
+            <SearchField className="mb-3" label={t('codex.search')} value={search} onChange={setSearch} />
+            {!hasResults && <p className="codex-search-empty" role="status">{t('codex.searchEmpty')}</p>}
+            <CodexFavoritesNav idPrefix={heading} favorites={favorites} expanded={searching || favoritesOpen} onToggle={() => setFavoritesOpen(open => !open)} onChoose={openFavorite} />
+            <CodexArticleNav idPrefix={heading} articles={filteredArticles} language={language} current={article} forceOpen={searching} openGroup={openSection} onToggle={setOpenSection} onChoose={openArticle} />
+            {CODEX_SECTIONS.map(section => {
+              const sectionEntries = filteredEntries.filter(item => item.section === section);
+              const sectionPages = filteredPages.filter(item => item.section === section);
+              const sectionFixtures = searching && section === CODEX_PAGES.find(item => item.id === 'fixtures')!.section ? filteredFixtures : [];
+              if (searching && sectionEntries.length === 0 && sectionPages.length === 0 && sectionFixtures.length === 0) return null;
+              const expanded = searching || openSection === section;
+              const panelId = `${heading}-${section}`;
+              return (
+                <AccordionSection key={section} id={panelId} title={t(section)} expanded={expanded} chevron toggleClassName="codex-section-toggle" onToggle={() => setOpenSection(expanded ? '' : section)}>
+                  {sectionPages.map(item => <button key={item.id} type="button" aria-current={page === item.id && !fixture ? 'true' : undefined} onClick={() => openPage(item.id)}>{t(item.title)}</button>)}
+                  {sectionFixtures.map(item => <button key={item.id} type="button" aria-current={fixture === item.id ? 'true' : undefined} onClick={() => openFixture(item.id)}>{fixtureName(item.id)}</button>)}
+                  {sectionEntries.map(entry => (
+                    <button type="button" key={entry.id} aria-current={!pageOpen && selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
+                  ))}
+                </AccordionSection>
+              );
+            })}
+          </nav>
+          <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={pageTitle}>
+            <FixtureLinkContext.Provider value={id => ({ href: '#', onClick: event => { event.preventDefault(); openFixture(id); } })}>
+              {Page && <Page />}
+            </FixtureLinkContext.Provider>
+            {fixturePage && <FixturePageContent page={fixturePage} live={<FixtureLive page={fixturePage} />} />}
+            {article && <CodexArticle article={article} linker={linker} />}
+            {!pageOpen && <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
+            {!pageOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
+          </article>
         </div>
-      </header>
-      <div className="codex-body" data-detail={showDetail}>
-        <nav className="codex-list" aria-label={t('codex.title')}>
-          <SearchField className="mb-3" label={t('codex.search')} value={search} onChange={setSearch} />
-          {!hasResults && <p className="codex-search-empty" role="status">{t('codex.searchEmpty')}</p>}
-          <CodexFavoritesNav idPrefix={heading} favorites={favorites} expanded={searching || favoritesOpen} onToggle={() => setFavoritesOpen(open => !open)} onChoose={openFavorite} />
-          <CodexArticleNav idPrefix={heading} articles={filteredArticles} language={language} current={article} forceOpen={searching} openGroup={openSection} onToggle={setOpenSection} onChoose={openArticle} />
-          {CODEX_SECTIONS.map(section => {
-            const sectionEntries = filteredEntries.filter(item => item.section === section);
-            const sectionPages = filteredPages.filter(item => item.section === section);
-            const sectionFixtures = searching && section === CODEX_PAGES.find(item => item.id === 'fixtures')!.section ? filteredFixtures : [];
-            if (searching && sectionEntries.length === 0 && sectionPages.length === 0 && sectionFixtures.length === 0) return null;
-            const expanded = searching || openSection === section;
-            const panelId = `${heading}-${section}`;
-            return (
-              <AccordionSection key={section} id={panelId} title={t(section)} expanded={expanded} chevron toggleClassName="codex-section-toggle" onToggle={() => setOpenSection(expanded ? '' : section)}>
-                {sectionPages.map(item => <button key={item.id} type="button" aria-current={page === item.id && !fixture ? 'true' : undefined} onClick={() => openPage(item.id)}>{t(item.title)}</button>)}
-                {sectionFixtures.map(item => <button key={item.id} type="button" aria-current={fixture === item.id ? 'true' : undefined} onClick={() => openFixture(item.id)}>{fixtureName(item.id)}</button>)}
-                {sectionEntries.map(entry => (
-                  <button type="button" key={entry.id} aria-current={!pageOpen && selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
-                ))}
-              </AccordionSection>
-            );
-          })}
-        </nav>
-        <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={pageTitle}>
-          <FixtureLinkContext.Provider value={id => ({ href: '#', onClick: event => { event.preventDefault(); openFixture(id); } })}>
-            {Page && <Page />}
-          </FixtureLinkContext.Provider>
-          {fixturePage && <FixturePageContent page={fixturePage} live={<FixtureLive page={fixturePage} />} />}
-          {article && <CodexArticle article={article} linker={linker} />}
-          {!pageOpen && <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
-          {!pageOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}
-        </article>
       </div>
     </dialog>
   );

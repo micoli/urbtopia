@@ -63,13 +63,11 @@ function serviceRow(building: Building): InteriorEconomyRow {
   return { ...EMPTY_EFFECT, building, kind: 'service', wagesPerHour: interiorWagesPerHour(building), power: 0, quality: serviceFurnitureQuality(building) };
 }
 
-// The Venues and the interiors that have been fitted out, with what they cost to run and what they bring.
+// The Venues and the interiors with Fixtures or ongoing wages, with what they cost to run and what they bring.
 export function interiorEconomyRows(state: GameState): InteriorEconomyRow[] {
   return state.buildings.flatMap((building): InteriorEconomyRow[] => {
     if (isVenue(building)) return [venueRow(state, building)];
-    if (!hasFixtures(building)) return [];
-    if (hasProductionInterior(building)) return [productionRow(building)];
-    if (hasServiceInterior(building)) return [serviceRow(building)];
-    return [];
+    const row = hasProductionInterior(building) ? productionRow(building) : hasServiceInterior(building) ? serviceRow(building) : undefined;
+    return row && (hasFixtures(building) || row.wagesPerHour > 0) ? [row] : [];
   });
 }

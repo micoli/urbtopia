@@ -26,21 +26,34 @@ const isPartition = (fixture: VenueFixture): boolean => FIXTURES[fixture.type].p
 
 // A wall with no `joins` (a window wall) stays a straight piece along its own rotation: it can only be joined along that line.
 const reaches = (fixture: VenueFixture, side: Side): boolean => {
-  if (FIXTURES[fixture.type].joins) return true;
+  if (FIXTURES[fixture.type].joins || FIXTURES[fixture.type].passable) return true;
   const alongX = fixture.rotation % 2 === 0;
   return alongX ? side === 'east' || side === 'west' : side === 'north' || side === 'south';
 };
 
 const OPPOSITE: Record<Side, Side> = { east: 'west', west: 'east', south: 'north', north: 'south' };
 
-// The piece a wall takes from the walls around it: a lone wall keeps its rotation, joined walls make a straight run, an elbow, a T or a cross.
-export function partitionPieceOf(fixture: VenueFixture, fixtures: readonly VenueFixture[]): PartitionPiece {
+function armsOf(fixture: VenueFixture, fixtures: readonly VenueFixture[]): Side[] {
   const at = new Map<string, VenueFixture>();
   for (const other of fixtures) if (isPartition(other)) for (const tile of tilesOf(other)) at.set(`${tile.x},${tile.y}`, other);
-  const arms = SIDES.filter(({ side, x, y }) => {
+  return SIDES.filter(({ side, x, y }) => {
     const neighbour = at.get(`${fixture.x + x},${fixture.y + y}`);
     return neighbour !== undefined && reaches(neighbour, OPPOSITE[side]);
   }).map(({ side }) => side);
+}
+
+// The quarter turns of a wall with a doorway: it runs along the walls beside it, and keeps its own rotation when they do not say.
+export function doorwayTurnsOf(fixture: VenueFixture, fixtures: readonly VenueFixture[]): number {
+  const arms = armsOf(fixture, fixtures);
+  const alongX = arms.includes('east') || arms.includes('west');
+  const alongY = arms.includes('north') || arms.includes('south');
+  if (alongX === alongY) return fixture.rotation % 2;
+  return alongX ? 0 : 1;
+}
+
+// The piece a wall takes from the walls around it: a lone wall keeps its rotation, joined walls make a straight run, an elbow, a T or a cross.
+export function partitionPieceOf(fixture: VenueFixture, fixtures: readonly VenueFixture[]): PartitionPiece {
+  const arms = armsOf(fixture, fixtures);
   const alongX = arms.includes('east') || arms.includes('west');
   const alongY = arms.includes('north') || arms.includes('south');
   if (arms.length === 0) return { shape: 'straight', turns: fixture.rotation % 2 };

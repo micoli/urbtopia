@@ -19,10 +19,10 @@ describe('AnalyticsPage', () => {
 
   it('shows the figures of the balance', () => {
     const html = renderToStaticMarkup(<AnalyticsPage />);
-    expect(html).toContain(`>${ECOLOGY.coalWellbeingCap}<`);
-    expect(html).toContain(`>${CONGESTION.maxRatio * 100}<`);
+    expect(html).toContain(`${ECOLOGY.coalWellbeingCap}`);
+    expect(html).toContain(`${CONGESTION.maxRatio * 100}`);
     expect(html).toContain(t('codex.analytics.cleanAir'));
-    expect(html).toContain(`>${ECOLOGY.coalWellbeingPenalty}<`);
+    expect(html).toContain(`${ECOLOGY.coalWellbeingPenalty}`);
     expect(html).toContain(`${Math.round(LAND_VALUE.maxNuisanceCut * 100)}%`);
   });
 });

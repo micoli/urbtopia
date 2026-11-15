@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { avatarsOfBuilding, canPlaceFixture, canStandOnInterior, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, hasLineInterior, hasProductionInterior, hasServiceInterior, interiorBonusOfBuilding, interiorFixturesOf, lineFaultOf, linePathsOf, linkedExitsOf, interiorMotionOf, interiorOverloadedOf, interiorSizeOf, gridSizeOf, hangsOnWall, hiredOf, isBroken, isInteriorBuilding, isPackhouse, wallFacingOf, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type LinePath, type VenueFixture, type VenueType } from '../../core';
+import { avatarsOfBuilding, canPlaceFixture, canStandOnInterior, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, hasLineInterior, hasProductionInterior, hasServiceInterior, interiorBonusOfBuilding, interiorFixturesOf, lineFaultOf, linePathsOf, linkedExitsOf, interiorMotionOf, interiorOverloadedOf, interiorSizeOf, gridSizeOf, hangsOnWall, hiredOf, staffRolesOf, isBroken, isInteriorBuilding, isPackhouse, wallFacingOf, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type LinePath, type VenueFixture, type VenueType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
@@ -117,6 +117,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
         saturation: performance.capacity > 0 ? performance.served / performance.capacity : 0,
         demandRatio,
         employees: performance.powered && !performance.closed ? hiredOf(venue.venue, FRONT_ROLE[venueType as VenueType]) : 0,
+        ...(venueType === 'restaurant' ? { staff: performance.powered && !performance.closed ? staffRolesOf('restaurant').map(role => ({ role, count: hiredOf(venue.venue, role) })) : [] } : {}),
       }), performance.satisfaction);
     };
     const sync = () => {

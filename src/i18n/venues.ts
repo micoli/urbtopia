@@ -103,11 +103,16 @@ type VenueMessageKey =
   | 'bakery.recipes.assembly'
   | 'bakery.recipes.limits'
   | 'bakery.recipes.bonuses'
-  | 'bakery.recipes.mixer'
-  | 'bakery.recipes.oven'
-  | 'bakery.recipes.counter'
-  | 'bakery.recipes.caps'
-  | 'bakery.recipes.now'
+  | 'bakery.recipes.mixer.title'
+  | 'bakery.recipes.mixer.value'
+  | 'bakery.recipes.oven.title'
+  | 'bakery.recipes.oven.value'
+  | 'bakery.recipes.counter.title'
+  | 'bakery.recipes.counter.value'
+  | 'bakery.recipes.caps.title'
+  | 'bakery.recipes.caps.value'
+  | 'bakery.recipes.now.title'
+  | 'bakery.recipes.now.value'
   | 'bakery.recipes.consumption'
   | 'bakery.recipes.power'
   | 'bakery.recipes.wages'
@@ -212,6 +217,9 @@ type VenueMessageKey =
   | `venue.empty.${VenueType}`
   | 'venue.chooseFixture'
   | 'venue.placeHint'
+  | 'venue.placeWall.back'
+  | 'venue.placeWall.exterior'
+  | 'venue.placeWall.wall'
   | 'venue.moveHint'
   | 'venue.cap'
   | 'venue.tierNeeded'
@@ -448,11 +456,16 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'bakery.recipes.assembly': ["Assembly", "Montage"],
   'bakery.recipes.limits': ["One Mixer feeds up to {mixer} Ovens, and one Oven up to {oven} Display counters; past that, a Fixture gets no Packets.", "Un pétrin alimente au plus {mixer} fours, et un four au plus {oven} comptoirs vitrine ; au-delà, une pièce ne reçoit rien."],
   'bakery.recipes.bonuses': ["Bonuses", "Bonus"],
-  'bakery.recipes.mixer': ["Dough mixer: speed {value}", "Pétrin : vitesse {value}"],
-  'bakery.recipes.oven': ["Tunnel oven: speed {value}", "Four tunnel : vitesse {value}"],
-  'bakery.recipes.counter': ["Display counter: sales {value}, yield {yield}, draws {power} of power", "Comptoir vitrine : ventes {value}, rendement {yield}, consomme {power} d’électricité"],
-  'bakery.recipes.caps': ["Caps at this Tier: speed {speed}, yield {yield}, sales {sales}.", "Plafonds à ce Tier : vitesse {speed}, rendement {yield}, ventes {sales}."],
-  'bakery.recipes.now': ["Now: speed {speed}, yield {yield}, sales {sales}.", "Actuellement : vitesse {speed}, rendement {yield}, ventes {sales}."],
+  'bakery.recipes.mixer.title': ["Dough mixer", "Pétrin"],
+  'bakery.recipes.mixer.value': ["speed {value}", "vitesse {value}"],
+  'bakery.recipes.oven.title': ["Tunnel oven", "Four tunnel"],
+  'bakery.recipes.oven.value': ["speed {value}", "vitesse {value}"],
+  'bakery.recipes.counter.title': ["Display counter", "Comptoir vitrine"],
+  'bakery.recipes.counter.value': ["sales {value}, yield {yield}, draws {power} of power", "ventes {value}, rendement {yield}, consomme {power} d’électricité"],
+  'bakery.recipes.caps.title': ["Caps at this Tier.", "Plafonds à ce Tier"],
+  'bakery.recipes.caps.value': ["speed {speed}, yield {yield}, sales {sales}.", "vitesse {speed}, rendement {yield}, ventes {sales}."],
+  'bakery.recipes.now.title': ["Now", "Actuellement"],
+  'bakery.recipes.now.value': ["speed {speed}, yield {yield}, sales {sales}.", "vitesse {speed}, rendement {yield}, ventes {sales}."],
   'bakery.recipes.consumption': ["Consumption", "Consommations"],
   'bakery.recipes.power': ["Power drawn by the Motors and the Counters: {value}", "Électricité des moteurs et des comptoirs : {value}"],
   'bakery.recipes.wages': ["Staff wages now:", "Salaires actuels :"],
@@ -625,6 +638,9 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.empty.restaurant': ['No cooktop, table, chair or checkout: nobody can be served.', 'Pas de plaque, de table, de chaise ou de caisse : personne ne peut être servi.'],
   'venue.chooseFixture': ['Choose a Fixture to place, or tap one to edit it.', 'Choisissez un équipement à poser, ou touchez-en un pour le modifier.'],
   'venue.placeHint': ['Tap a free cell to place it (Shift to place several).', 'Touchez une case libre pour le poser (Maj pour en poser plusieurs).'],
+  'venue.placeWall.back': ['Place against the exterior back wall, facing into the room.', 'À poser contre le mur extérieur du fond, face à la pièce.'],
+  'venue.placeWall.exterior': ['Place against an exterior wall of the room, with its back to the wall.', 'À poser contre un mur extérieur de la pièce, dos au mur.'],
+  'venue.placeWall.wall': ['Hang on a wall of the room.', 'À accrocher sur un mur de la pièce.'],
   'venue.moveHint': ['Tap a free cell to move it there.', 'Touchez une case libre pour le déplacer.'],
   'venue.cap': ['Takings are full: collect them.', 'La caisse est pleine : encaissez.'],
   'venue.tierNeeded': ['Tier', 'Niveau'],

@@ -82,6 +82,7 @@ const evaluators = { arcade: evaluateArcade, supermarket: evaluateSupermarket, h
 const POWER_EPSILON = 1e-9;
 
 export function isVenuePowered(state: GameState, venue: Building, supplied?: ReadonlyMap<number, number>): boolean {
+  if (venue.breakerOff) return false;
   if (isAdapting(state)) return true;
   return ((supplied ?? energyStats(state).supplied).get(venue.id) ?? 0) >= economicPower(venue, energySavingOf(state)) - POWER_EPSILON;
 }

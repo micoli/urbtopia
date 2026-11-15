@@ -4,7 +4,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall  # noqa: E402
+from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, wall_variants  # noqa: E402
 
 P = lpm.Palette([
     ("steel", "#c3c9d4", 0.5, 0.4), ("steel_dark", "#8a92a3", 0.5, 0.4), ("iron", "#4a4f5e", 0.4, 0.5), ("black", "#22242c", 0.0, 0.7),
@@ -143,8 +143,8 @@ def pipe_joint():
 
 
 def pipe_support(name, x, y):
-    return [block(f"{name}_pedestal", x - 0.05, x + 0.05, y - 0.05, y + 0.05, 0.0, PIPE_Z - 0.09, P["iron"]),
-            block(f"{name}_foot", x - 0.1, x + 0.1, y - 0.1, y + 0.1, 0.0, 0.03, P["iron"])]
+    return [block(f"{name}_pedestal", x - 0.05, x + 0.05, y - 0.05, y + 0.05, 0.03, PIPE_Z - 0.09, P["teal_dark"]),
+            block(f"{name}_foot", x - 0.12, x + 0.12, y - 0.12, y + 0.12, 0.0, 0.03, P["teal"])]
 
 
 def pipe_straight(rng):
@@ -306,7 +306,7 @@ def turning_lathe_ccw(rng):
 
 def boiler(rng):
     """Boiler facing -y: the water comes in through the flanged pipe at the front, the drive comes in through the shaft stub at the back (it feeds the stoker), a chimney rises from the drum."""
-    parts = [block("base", -0.42, 0.42, -0.36, 0.36, 0.0, 0.2, P["brick"]), block("base_cap", -0.44, 0.44, -0.38, 0.38, 0.17, 0.2, P["iron"]),
+    parts = [block("base", -0.42, 0.42, -0.36, 0.36, 0.0, 0.17, P["brick"]), block("base_cap", -0.44, 0.44, -0.38, 0.38, 0.17, 0.2, P["iron"]),
              block("door", -0.2, 0.2, -0.375, -0.36, 0.04, 0.16, P["black"]), block("glow", -0.14, 0.14, -0.38, -0.375, 0.07, 0.13, P["flame"]),
              sideways(disc("drum", 0.28, 0.68, (0, 0, 0), P["copper"], 12), x=-0.34, z=0.48),
              sideways(disc("end_l", 0.3, 0.03, (0, 0, 0), P["brass"], 12), x=-0.36, z=0.48), sideways(disc("end_r", 0.3, 0.03, (0, 0, 0), P["brass"], 12), x=0.33, z=0.48),
@@ -369,7 +369,7 @@ def mirrored(builder):
 
 def wall_set():
     return {"floor": concrete_floor, "wall": plain_wall, "partition": plain_partition, "partition-elbow": plain_junction("ES"), "partition-tee": plain_junction("WES"),
-            "partition-cross": plain_junction("ESWN"), "wall-corner": plain_corner}
+            "partition-cross": plain_junction("ESWN"), "wall-corner": plain_corner, **wall_variants(P, "slate", "yellow", "iron", "steel_dark", "half")}
 
 
 if __name__ == "__main__":

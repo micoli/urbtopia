@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AGENTS, clipSeconds, findPath, makeWorld, pickClip, reconcile, repath, roll, standPoint, stepAgent, type Agent, type Dice, type World } from './venueAgents';
+import { AGENTS, clipSeconds, findPath, makeWorld, pickClip, reconcile, repath, roll, standPoint, stepAgent, worldOf, type Agent, type Dice, type World } from './venueAgents';
 import type { Figure } from './venueCrowd';
 
 const entrance = { x: 3, y: 0 };
@@ -20,6 +20,36 @@ describe('Venue paths', () => {
     expect(path.length).toBeGreaterThan(2);
     expect(path.some(cell => wall.some(blocked => blocked.x === cell.x && blocked.y === cell.y))).toBe(false);
     expect(path[path.length - 1]).toEqual({ x: 3, y: 2 });
+  });
+
+  it('crosses a wall only through its doorway, and only across the wall', () => {
+    const wall = [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }, { x: 5, y: 2 }];
+    const doors = new Map([['2:2', 'y' as const]]);
+    const through = makeWorld(6, entrance, wall, [], doors);
+    const path = findPath(through, { x: 2, y: 1 }, { x: 2, y: 3 })!;
+    expect(path).toEqual([{ x: 2, y: 2 }, { x: 2, y: 3 }]);
+    expect(findPath(makeWorld(6, entrance, wall, [], new Map([['2:2', 'x' as const]])), { x: 2, y: 1 }, { x: 2, y: 3 })).toBeNull();
+  });
+
+  it('sets a seated diner on its chair even though the chair is a Fixture', () => {
+    const seat = { kind: 'diner' as const, x: 2, y: 3, facing: 0 };
+    expect(standPoint(seat)).toEqual({ x: 2.5, y: 3.5 });
+    expect(findPath(world([{ x: 2, y: 3 }]), { x: 3, y: 1 }, { x: 2, y: 3 })).not.toBeNull();
+  });
+
+  it('lets a seated diner finish the meal and leave', () => {
+    const seat = { kind: 'diner' as const, x: 2, y: 3, facing: 0 };
+    const [diner] = fill([seat], { initial: true, spawns: 0 }, [], world([{ x: 2, y: 3 }])).agents;
+    expect(diner!.mode).toBe('seated');
+    const later = run(diner!, world([{ x: 2, y: 3 }]), AGENTS.mealSeconds[1] + 1);
+    expect(later === null || later.mode === 'leaving').toBe(true);
+  });
+
+  it('never walks through a wall: with no way to its slot a customer leaves instead', () => {
+    const shut = [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }, { x: 5, y: 2 }];
+    const [customer] = fill([slot('gamer', 2, 4)], { initial: false, spawns: 1 }, [], world(shut)).agents;
+    expect(customer!.mode).toBe('leaving');
+    expect(customer!.path).toEqual([]);
   });
 
   it('goes in and out through the entrance only', () => {
@@ -221,5 +251,15 @@ describe('Venue gestures', () => {
   it('holds a gesture for a few seconds', () => {
     expect(clipSeconds(0)).toBeGreaterThan(1);
     expect(clipSeconds(1)).toBeLessThan(5);
+  });
+});
+
+describe('Doorway orientation', () => {
+  it('runs along the walls beside it whatever its own rotation', () => {
+    const fixture = (id: number, type: 'restaurantWall' | 'restaurantDoorway', x: number, y: number, rotation: 0 | 1 = 0) => ({ id, type, x, y, rotation });
+    const column = [fixture(1, 'restaurantWall', 3, 1), fixture(2, 'restaurantDoorway', 3, 2, 0), fixture(3, 'restaurantWall', 3, 3)];
+    expect(worldOf(6, { x: 0, y: 0 }, column).doors.get('3:2')).toBe('x');
+    const row = [fixture(1, 'restaurantWall', 1, 2), fixture(2, 'restaurantDoorway', 2, 2, 1), fixture(3, 'restaurantWall', 3, 2)];
+    expect(worldOf(6, { x: 0, y: 0 }, row).doors.get('2:2')).toBe('y');
   });
 });

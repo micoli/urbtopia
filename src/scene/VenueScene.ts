@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { AvatarPatrol, patrolRoute } from './avatarPatrol';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, animalModelOfItem, isVenueType, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, animalModelOfItem, isVenueType, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, doorwayTurnsOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { RESTOCKER_MODEL, VENUE_STAFF_MODELS, venueCrowdModelsOf } from './venueCrowdModels';
@@ -66,6 +66,8 @@ const WALL_FACE = 0.06;
 const PARTITION_FACE = 0.03;
 const HUNG_FACES: readonly (readonly [number, number])[] = [[0, 1], [1, 0], [0, -1], [-1, 0]];
 
+const CORNER_OFFSETS: readonly Coord[] = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }];
+
 export class VenueScene {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
@@ -125,6 +127,10 @@ export class VenueScene {
   onGrab: (cell: Coord, fixtureId: number | null) => boolean = () => false;
   onGrabMove: (cell: Coord) => void = () => {};
   onDrop: (cell: Coord | null) => void = () => {};
+  // Where the selected piece of furniture ends on the screen, just below it, in pixels of the canvas; null when nothing is selected.
+  onSelectionAnchor: (anchor: { x: number; y: number } | null) => void = () => {};
+  private selectionTiles: readonly Coord[] = [];
+  private lastAnchor = '';
 
   private shellModels: { floor: string; wall: string; corner: string };
   private readonly defaultFloor: string;
@@ -299,6 +305,7 @@ export class VenueScene {
   }
 
   setSelection(tiles: readonly Coord[]): void {
+    this.selectionTiles = tiles;
     this.markTiles(this.selectionRoot, tiles, SELECTION_COLOR);
   }
 
@@ -406,7 +413,7 @@ export class VenueScene {
       const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
       const piece = spec.joins ? partitionPieceOf(fixture, this.lastFixtures) : undefined;
       const model = piece && piece.shape !== 'straight' ? spec.joins![piece.shape] : spec.model;
-      const rotation = (piece ? piece.turns * Math.PI / 2 : -fixture.rotation * Math.PI / 2);
+      const rotation = piece ? piece.turns * Math.PI / 2 : spec.passable ? doorwayTurnsOf(fixture, this.lastFixtures) * Math.PI / 2 : -fixture.rotation * Math.PI / 2;
       const object = spec.wall
         ? this.placeHung(model, fixture)
         : this.place(this.fixtureRoot, model, fixture.x + width / 2, fixture.y + depth / 2, rotation);
@@ -770,6 +777,30 @@ export class VenueScene {
     this.dirty = true;
   }
 
+  private publishSelectionAnchor(): void {
+    const anchor = this.selectionAnchor();
+    const key = anchor ? `${anchor.x},${anchor.y}` : '';
+    if (key === this.lastAnchor) return;
+    this.lastAnchor = key;
+    this.onSelectionAnchor(anchor);
+  }
+
+  private selectionAnchor(): { x: number; y: number } | null {
+    if (this.selectionTiles.length === 0) return null;
+    const width = this.canvas.clientWidth, height = this.canvas.clientHeight;
+    const corner = new THREE.Vector3();
+    let bottom = -Infinity, left = Infinity, right = -Infinity;
+    for (const tile of this.selectionTiles) {
+      for (const { x: dx, y: dz } of CORNER_OFFSETS) {
+        corner.set(tile.x + dx, 0, tile.y + dz).project(this.camera);
+        bottom = Math.max(bottom, (1 - corner.y) / 2 * height);
+        left = Math.min(left, (corner.x + 1) / 2 * width);
+        right = Math.max(right, (corner.x + 1) / 2 * width);
+      }
+    }
+    return { x: Math.round((left + right) / 2), y: Math.round(bottom) };
+  }
+
   private frame = (now: number): void => {
     const elapsed = now - this.lastFrame;
     if (!shouldRenderFrame(elapsed)) {
@@ -788,6 +819,7 @@ export class VenueScene {
     if (this.dirty) {
       this.dirty = false;
       this.renderer.render(this.scene, this.camera);
+      this.publishSelectionAnchor();
     }
     this.frameHandle = requestAnimationFrame(this.frame);
   };

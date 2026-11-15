@@ -27,6 +27,7 @@ export class ViewerScene {
   private showGrid = true
   private night = false
   private radius = 4
+  private readonly centre = new THREE.Vector3()
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
@@ -52,6 +53,9 @@ export class ViewerScene {
     this.controls = new OrbitControls(this.camera, canvas)
     this.controls.enableDamping = false
     this.controls.maxPolarAngle = Math.PI / 2 - 0.02
+    this.controls.zoomToCursor = false
+    canvas.addEventListener('dblclick', () => this.frame())
+    this.controls.addEventListener('end', () => this.pivotOnGround())
     this.applyLighting()
     this.renderer.setAnimationLoop(() => this.draw())
   }
@@ -108,13 +112,22 @@ export class ViewerScene {
     this.grid.visible = enabled
   }
 
+  // After a pan the view turns around the ground at the centre of the screen, which is the middle of the floor in view.
+  private pivotOnGround() {
+    const direction = this.camera.getWorldDirection(new THREE.Vector3())
+    if (direction.y > -1e-3) return
+    const distance = -this.camera.position.y / direction.y
+    this.controls.target.copy(this.camera.position).addScaledVector(direction, distance)
+    this.controls.update()
+  }
+
   frame() {
-    this.controls.target.set(0, Math.min(1, this.radius / 4), 0)
+    this.controls.target.set(this.centre.x, Math.min(1, this.radius / 4), this.centre.z)
     const distance = 100
     this.camera.position.set(
-      Math.sin(START_YAW) * Math.cos(ISO_PITCH) * distance,
+      Math.sin(START_YAW) * Math.cos(ISO_PITCH) * distance + this.centre.x,
       Math.sin(ISO_PITCH) * distance + this.controls.target.y,
-      Math.cos(START_YAW) * Math.cos(ISO_PITCH) * distance,
+      Math.cos(START_YAW) * Math.cos(ISO_PITCH) * distance + this.centre.z,
     )
     this.camera.zoom = 1
     this.controls.update()
@@ -125,6 +138,7 @@ export class ViewerScene {
     const box = new THREE.Box3().setFromObject(this.models)
     const size = box.getSize(new THREE.Vector3())
     this.radius = Math.max(2, Math.hypot(size.x, size.y, size.z) / 2)
+    if (!box.isEmpty()) box.getCenter(this.centre)
     const side = Math.ceil(Math.max(size.x, size.z) + 6)
     this.ground.scale.set(Math.max(side, size.x + 6), Math.max(side, size.z + 6), 1)
     this.scene.remove(this.grid)

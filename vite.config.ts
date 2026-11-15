@@ -14,6 +14,8 @@ const RELEASE_NAME = process.env.RELEASE_NAME ?? 'dev';
 
 export default defineConfig({
   base: './',
+  // Tabs are used by lazy dialogs: prebundle them before an overlay first opens.
+  optimizeDeps: { include: ['@radix-ui/react-tabs'] },
   define: { __BUILD_ID__: JSON.stringify(BUILD_ID), __RELEASE_NAME__: JSON.stringify(RELEASE_NAME) },
   plugins: [react(), guideMdx(), tailwindcss(), validateDefinitions(), stampServiceWorker(BUILD_ID), guideDevFallback(), reactDevtoolsProbe()],
   build: { rollupOptions: { input: { main: resolve(import.meta.dirname, 'index.html'), guide: resolve(import.meta.dirname, 'docs/index.html') } } },

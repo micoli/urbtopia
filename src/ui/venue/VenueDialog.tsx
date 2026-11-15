@@ -10,6 +10,7 @@ import { VenueCanvas } from './VenueCanvas';
 import { InteriorMenus } from '../factory/InteriorMenus';
 import { HomeMenus } from '../home/HomeMenus';
 import { VenueMenus } from './VenueMenus';
+import { VenueFixtureToolbar } from './VenueFixtureToolbar';
 import { VenueRotateButtons } from './VenueRotateButtons';
 
 export function VenueDialog() {
@@ -48,6 +49,7 @@ export function VenueDialog() {
       <VenueCanvas venueId={venueId} venueType={fixtureVenueOf(venue)} />
       <h2 className="venue-view__title">{t(`building.${venue.type}`)}</h2>
       {hasProductionInterior(venue) || hasServiceInterior(venue) ? <InteriorMenus factory={venue} /> : isHomeType(venue.type) ? <HomeMenus home={venue} /> : <VenueMenus venue={venue} />}
+      <VenueFixtureToolbar venueId={venueId} />
       <VenueRotateButtons />
     </div>
   );

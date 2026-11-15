@@ -4,7 +4,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall  # noqa: E402
+from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, wall_variants  # noqa: E402
 
 P = lpm.Palette([
     ("steel", "#c3c9d4", 0.5, 0.4), ("steel_dark", "#8a92a3", 0.5, 0.4), ("iron", "#4a4f5e", 0.4, 0.5), ("black", "#22242c", 0.0, 0.7),
@@ -148,7 +148,7 @@ def slate_corner(rng):
 
 def wall_set():
     return {"floor": concrete_floor, "wall": slate_wall, "partition": slate_partition, "partition-elbow": slate_junction("ES"), "partition-tee": slate_junction("WES"),
-            "partition-cross": slate_junction("ESWN"), "wall-corner": slate_corner}
+            "partition-cross": slate_junction("ESWN"), "wall-corner": slate_corner, **wall_variants(P, "slate", "orange", "iron", "steel_dark", "half")}
 
 
 if __name__ == "__main__":

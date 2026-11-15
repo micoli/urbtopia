@@ -109,6 +109,10 @@
           "type": "boolean",
           "const": true
         },
+        "passable": {
+          "type": "boolean",
+          "const": true
+        },
         "joins": {
           "type": "object",
           "properties": {
@@ -260,6 +264,10 @@
           "const": true
         },
         "partition": {
+          "type": "boolean",
+          "const": true
+        },
+        "passable": {
           "type": "boolean",
           "const": true
         },
@@ -418,6 +426,10 @@
           "const": true
         },
         "partition": {
+          "type": "boolean",
+          "const": true
+        },
+        "passable": {
           "type": "boolean",
           "const": true
         },
@@ -584,6 +596,10 @@
           "const": true
         },
         "partition": {
+          "type": "boolean",
+          "const": true
+        },
+        "passable": {
           "type": "boolean",
           "const": true
         },
@@ -776,6 +792,10 @@
           "type": "boolean",
           "const": true
         },
+        "passable": {
+          "type": "boolean",
+          "const": true
+        },
         "joins": {
           "type": "object",
           "properties": {
@@ -952,6 +972,10 @@
           "type": "boolean",
           "const": true
         },
+        "passable": {
+          "type": "boolean",
+          "const": true
+        },
         "joins": {
           "type": "object",
           "properties": {
@@ -1117,6 +1141,10 @@
           "const": true
         },
         "partition": {
+          "type": "boolean",
+          "const": true
+        },
+        "passable": {
           "type": "boolean",
           "const": true
         },

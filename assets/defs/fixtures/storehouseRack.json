@@ -2,7 +2,7 @@
   "$schema": "../schemas/fixture.schema.json",
   "kind": "fixture",
   "venue": "storehouse",
-  "category": "line",
+  "category": "machines",
   "name": {
     "en": "Rack",
     "fr": "Rayonnage"

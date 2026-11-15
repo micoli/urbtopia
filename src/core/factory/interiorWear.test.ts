@@ -3,7 +3,7 @@ import { advance, conditionOf, createBuilding, dispatch, newGame, type Building,
 import { fixtureRefund } from '../venues/venues';
 import { WEAR, repairCost } from '../venues/wear';
 import { STAFF } from '../venues/staff';
-import { interiorUsageOf, technicianPostsOf } from './interiorWear';
+import { advanceInteriors, interiorUsageOf, restockerWagePerHour, technicianPostsOf, technicianWagePerHour } from './interiorWear';
 
 const H = 3_600_000;
 let nextId = 1;
@@ -148,6 +148,16 @@ describe('the Technician of a Factory interior', () => {
     const mean = (state: GameState) => interiorOf(state).fixtures.reduce((total, fixture) => total + conditionOf(fixture), 0) / interiorOf(state).fixtures.length;
     expect(mean(withTechnician)).toBeGreaterThan(mean(without));
     expect(WEAR.technicianRepairRatio).toBeLessThan(1);
+  });
+
+  it.each(['off', 'unpowered', 'empty'] as const)('keeps paying hired Staff when the interior is %s without wearing or repairing', mode => {
+    const state = city(mode === 'empty' ? [] : running().map(fixture => ({ ...fixture, condition: 20 })), { technicians: 1, restockers: 1 });
+    if (mode === 'off') state.buildings = state.buildings.map(building => ({ ...building, breakerOff: true }));
+    if (mode === 'unpowered') state.adaptationUntil = 0;
+    const supplied = mode === 'unpowered' ? new Map([[1, 0]]) : undefined;
+    const later = advanceInteriors(state, 0, H, supplied);
+    expect(state.urbs - later.urbs).toBeCloseTo(technicianWagePerHour() + restockerWagePerHour(), 6);
+    expect(interiorOf(later)).toEqual(interiorOf(state));
   });
 
   it('is paid by the hour out of the Urbs of the city', () => {

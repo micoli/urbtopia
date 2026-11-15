@@ -1,15 +1,16 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, fixtureTiles, type Coord, type FixtureVenue, type VenueFixture, type VenueType } from '../core';
+import { FIXTURES, fixtureTiles, staffRolesOf, type Coord, type FixtureVenue, type VenueFixture, type VenueType } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
-import { clipSeconds, makeWorld, pickClip, reconcile, repath, stepAgent, type Agent, type Dice, type World } from './venueAgents';
+import { clipSeconds, makeWorld, worldOf, pickClip, reconcile, repath, stepAgent, type Agent, type Dice, type World } from './venueAgents';
 import type { Figure } from './venueCrowd';
 
 const CROWD_SCALE = 0.7;
 const BAR = { width: 0.46, height: 0.07, lift: 0.8, background: 0x10131c };
 const RECONCILE_EVERY = 0.9;
 const FADE = 0.2;
+const SEAT_DROP = 0.12;
 
 interface Visual {
   holder: THREE.Group;
@@ -89,8 +90,8 @@ export class VenueCrowdLayer {
   }
 
   private rebuildWorld(): void {
-    const blocked = this.fixtures.flatMap(fixtureTiles);
-    const taken = new Set(blocked.map(cell => `${cell.x}:${cell.y}`));
+    const world = worldOf(this.size, this.entrance, this.fixtures);
+    const taken = new Set([...world.blocked, ...this.fixtures.filter(fixture => FIXTURES[fixture.type].passable).flatMap(fixtureTiles).map(cell => `${cell.x}:${cell.y}`)]);
     taken.add(`${this.entrance.x}:${this.entrance.y}`);
     const errands: Coord[] = [];
     for (const fixture of this.fixtures.filter(candidate => !FIXTURES[candidate.type].partition)) {
@@ -99,7 +100,7 @@ export class VenueCrowdLayer {
         .find(cell => cell.x >= 0 && cell.y >= 0 && cell.x < this.size && cell.y < this.size && !taken.has(`${cell.x}:${cell.y}`));
       if (front && !errands.some(cell => cell.x === front.x && cell.y === front.y)) errands.push(front);
     }
-    this.world = makeWorld(this.size, this.entrance, blocked, errands);
+    this.world = { ...world, errands };
     this.agents = repath(this.agents, this.world);
   }
 
@@ -114,7 +115,8 @@ export class VenueCrowdLayer {
     const known = this.visuals.get(agent.id);
     if (known) return known;
     const models = agent.kind === 'employee' ? VENUE_STAFF_MODELS[this.venueType as VenueType] : VENUE_CUSTOMER_MODELS;
-    const model = models[agent.id % models.length]!;
+    const roleIndex = agent.slot?.role ? staffRolesOf(this.venueType as VenueType).indexOf(agent.slot.role) : -1;
+    const model = models[(roleIndex >= 0 ? roleIndex : agent.id) % models.length]!;
     const holder = new THREE.Group();
     const body = cloneModel(this.library.get(model));
     holder.add(body);
@@ -147,7 +149,7 @@ export class VenueCrowdLayer {
     for (const agent of this.agents) {
       alive.add(agent.id);
       const visual = this.visualOf(agent);
-      visual.holder.position.set(agent.x, 0, agent.y);
+      visual.holder.position.set(agent.x, agent.mode === 'seated' ? -SEAT_DROP : 0, agent.y);
       visual.holder.rotation.y = agent.facing;
       this.choose(visual, agent, delta);
       visual.mixer.update(delta * visual.speed);

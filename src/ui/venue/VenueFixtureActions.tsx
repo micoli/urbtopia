@@ -10,6 +10,7 @@ import { Dialog } from '../common/Dialog';
 import { useGame } from '../common/hooks';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { VenueShelfStock } from './VenueShelfStock';
+import { useFixtureCommands } from './useFixtureCommands';
 import { useVenuePerformance } from './useVenuePerformance';
 import { Icon } from '../common/Icon';
 import { ExitRestock } from '../factory/ExitRestock';
@@ -33,20 +34,14 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
   const inHome = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isHomeType(candidate.type)));
   const inService = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && hasServiceInterior(candidate)));
   const [confirmingSell, setConfirmingSell] = useState(false);
+  const { rotate, sell } = useFixtureCommands(venueId, fixture);
   const performance = useVenuePerformance(venueId);
   const earnings = fixture ? performance?.earningsByFixture.get(fixture.id) : undefined;
   const hints = fixture ? performance?.layout.hints.get(fixture.id) ?? [] : [];
   if (!fixture) return null;
   const partition = FIXTURES[fixture.type].partition === true || inHome || inService;
-  const { startMove, stopMove, selectPlaced } = venueStore.getState();
+  const { startMove, stopMove } = venueStore.getState();
   const send = gameStore.getState().send;
-  const sell = () => {
-    send({ type: onFloor ? 'RemoveInteriorFixture' : 'RemoveFixture', buildingId: venueId, fixtureId: fixture.id });
-    selectPlaced(null);
-  };
-  const rotate = () => {
-    send({ type: onFloor ? 'MoveInteriorFixture' : 'MoveFixture', buildingId: venueId, fixtureId: fixture.id, x: fixture.x, y: fixture.y, rotation: ((fixture.rotation + 1) % 4) as 0 | 1 | 2 | 3 });
-  };
   return (
     <section className="venue-build">
       <h3>{t(`venue.fixture.${fixture.type}`)}</h3>

@@ -4,7 +4,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 from model_lib import export_all, lpm  # noqa: E402
-from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, thick_window_wall  # noqa: E402
+from venue_lib import block, checker_floor, disc, junction_wall, partition_wall, thick_corner, thick_wall, thick_window_wall, wall_variants  # noqa: E402
 
 P = lpm.Palette([
     ("wall", "#e9e2d2", 0.0, 0.9), ("wall_cap", "#d6cdb8", 0.0, 0.9), ("plinth", "#5d8f6a", 0.0, 0.8),
@@ -49,7 +49,7 @@ def plank_floor(rng):
 
 
 def wall_set():
-    return {"floor": plank_floor, "wall": plain_wall, "partition": plain_partition, "partition-elbow": plain_junction("ES"), "partition-tee": plain_junction("WES"), "partition-cross": plain_junction("ESWN"), "wall-window": plain_window_wall, "wall-corner": plain_corner}
+    return {"floor": plank_floor, "wall": plain_wall, "partition": plain_partition, "partition-elbow": plain_junction("ES"), "partition-tee": plain_junction("WES"), "partition-cross": plain_junction("ESWN"), "wall-window": plain_window_wall, "wall-corner": plain_corner, **wall_variants(P, "wall", None, "plinth", "wall_cap", "full")}
 
 
 def sphere(name, radius, at, color, segments=6):

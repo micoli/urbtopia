@@ -20,7 +20,7 @@ export function InteriorMenus({ factory }: InteriorMenusProps) {
   const panel = useStore(venueStore, store => store.panel);
   const { togglePanel, close } = venueStore.getState();
   const actions: NavAction[] = [
-    { id: 'build', icon: 'build', label: t('dock.build'), image: 'bulldozer.png', pressed: panel === 'build', disabled: false, guided: false, onClick: () => togglePanel('build') },
+    { id: 'build', icon: 'build', label: t('dock.build'), pressed: panel === 'build', disabled: false, guided: false, onClick: () => togglePanel('build') },
     { id: 'staff', icon: 'citizens', label: t('venue.staff'), pressed: panel === 'staff', disabled: false, guided: false, onClick: () => togglePanel('staff') },
     { id: 'parquet', icon: 'sparkles', label: t('home.interior.parquet'), pressed: panel === 'parquet', disabled: false, guided: false, onClick: () => togglePanel('parquet') },
     { id: 'management', icon: 'book', label: t('venue.management'), pressed: panel === 'management', disabled: false, guided: false, onClick: () => togglePanel('management') },

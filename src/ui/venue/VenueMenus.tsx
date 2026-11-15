@@ -5,6 +5,7 @@ import { BottomBar } from '../layout/BottomBar';
 import { Dock } from '../layout/Dock';
 import { RadialMenu } from '../layout/RadialMenu';
 import { TopBar } from '../layout/TopBar';
+import { BreakerSwitch } from '../factory/BreakerSwitch';
 import { VenueFlyout } from './VenueFlyout';
 import { VenuePlacementHint } from './VenuePlacementHint';
 import { VenueMinimalStats } from './VenueMinimalStats';
@@ -46,7 +47,9 @@ export function VenueMenus({ venue, layout: forced }: VenueMenusProps) {
   return (
     <>
       <VenuePlacementHint />
-      <Dock actions={actions} header={<VenueStats venue={venue} />} bottomId="back" />
+      <Dock actions={actions} header={<VenueStats venue={venue} />} bottomId="back">
+        <BreakerSwitch building={venue} />
+      </Dock>
       <VenueFlyout venue={venue} />
       <VenueSidePanel venue={venue} />
     </>

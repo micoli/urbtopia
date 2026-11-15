@@ -11,17 +11,18 @@ import './tailwind.css';
 interface DialogRootProps {
     role?: 'dialog' | 'alertdialog';
     className?: string;
+    onClose?: () => void;
     children: ReactNode;
 }
 
-// Always open: the parent mounts it while it applies. Only its own buttons close it, never Escape or a click outside.
-function DialogRoot({ role = 'dialog', className, children }: DialogRootProps) {
+// Always open: the parent mounts it while it applies. Outside dismissal is opt-in; Escape stays disabled.
+function DialogRoot({ role = 'dialog', className, onClose, children }: DialogRootProps) {
     const title = findByType(children, DialogTitle);
     const body = findByType(children, DialogBody);
     const actions = findByType(children, DialogActions);
     const backdropClass = ['dialog-backdrop', className].filter(Boolean).join(' ');
     return (
-        <RadixDialog.Root open>
+        <RadixDialog.Root open onOpenChange={open => { if (!open) onClose?.(); }}>
             <RadixDialog.Overlay className={backdropClass}>
                 <RadixDialog.Content
                     className="dialog"
@@ -29,8 +30,8 @@ function DialogRoot({ role = 'dialog', className, children }: DialogRootProps) {
                     aria-modal="true"
                     aria-describedby={undefined}
                     onEscapeKeyDown={(event) => event.preventDefault()}
-                    onPointerDownOutside={(event) => event.preventDefault()}
-                    onInteractOutside={(event) => event.preventDefault()}
+                    onPointerDownOutside={(event) => { if (!onClose) event.preventDefault(); }}
+                    onInteractOutside={(event) => { if (!onClose) event.preventDefault(); }}
                 >
                     {title
                         ? <RadixDialog.Title asChild><h2>{title.props.children}</h2></RadixDialog.Title>

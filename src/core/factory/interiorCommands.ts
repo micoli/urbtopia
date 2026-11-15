@@ -1,5 +1,6 @@
 import { FIXTURES, isRestockable } from '../venues/fixtures';
 import { entranceCell } from '../venues/shared';
+import { isVenueType } from '../venues/profiles';
 import { fixtureRefund, fixtureTiles } from '../venues/venues';
 import { hireFeeOf } from '../venues/staff';
 import { repairCost, restored } from '../venues/wear';
@@ -77,7 +78,13 @@ const startsALine = (type: FixtureId): boolean => FIXTURES[type].role === 'machi
 // The turns a Fixture of a Packhouse interior can take on a cell of the edge of a floor of a given size, with its back to that edge: a Packer stands against the back wall
 // only, an Exit against any of the four edges. None for a Fixture that stands anywhere, and none for a cell where it cannot stand.
 // An Exit of the Packhouse or of the Recycling plant stands against a wall; the Exit of the other Line interiors, a Counter, stands anywhere.
-const needsAWall = (type: FixtureId): boolean => (FIXTURES[type].role === 'exit' && (FIXTURES[type].venue === 'packhouse' || FIXTURES[type].venue === 'recyclingPlant')) || startsALine(type);
+export const fixtureWallOf = (type: FixtureId): 'back' | 'exterior' | 'wall' | undefined => {
+  if (startsALine(type)) return 'back';
+  if (FIXTURES[type].role === 'exit' && (FIXTURES[type].venue === 'packhouse' || FIXTURES[type].venue === 'recyclingPlant')) return 'exterior';
+  return hangsOnWall(type) ? 'wall' : undefined;
+};
+
+const needsAWall = (type: FixtureId): boolean => fixtureWallOf(type) === 'back' || fixtureWallOf(type) === 'exterior';
 
 const wallTurnsOf = (type: FixtureId, cell: { x: number; y: number }, size: number): readonly Rotation[] => {
   if (!needsAWall(type)) return [];
@@ -193,10 +200,10 @@ export function setInteriorParquet(state: GameState, buildingId: number, parquet
   return { state: withInterior(state, host, { ...interior, parquet }), events: [] };
 }
 
-// The breaker cuts all the power of a Production interior: it draws none and runs nothing until it is switched back on.
+// The breaker cuts all the power of a Production interior or a Venue: it draws none and runs nothing until it is switched back on.
 export function setInteriorBreaker(state: GameState, buildingId: number, off: boolean): CommandOutcome {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
-  if (!building || !hasProductionInterior(building)) return { key: 'error.unknownBuilding' };
+  if (!building || !(hasProductionInterior(building) || isVenueType(building.type))) return { key: 'error.unknownBuilding' };
   const switched: Building = off ? { ...building, breakerOff: true } : { ...building, breakerOff: undefined };
   if (!off) delete switched.breakerOff;
   return { state: { ...state, buildings: state.buildings.map(candidate => (candidate === building ? switched : candidate)) }, events: [] };

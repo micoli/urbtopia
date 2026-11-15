@@ -2,7 +2,7 @@
   "$schema": "../schemas/fixture.schema.json",
   "kind": "fixture",
   "venue": "dairy",
-  "category": "line",
+  "category": "machines",
   "name": {
     "en": "Display counter",
     "fr": "Comptoir vitrine"

@@ -32,7 +32,7 @@ describe('TransitReachPage', () => {
   });
 
   it('reads the threshold from the balance data', () => {
-    expect(render(true)).toContain(`<dd>${TRANSIT_REACH.maxMinutes}</dd>`);
+    expect(render(true)).toContain(`</b>: ${TRANSIT_REACH.maxMinutes}</div>`);
   });
 
   it('counts the Home reached through transit', () => {

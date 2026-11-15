@@ -48,9 +48,11 @@ python tools/blender/bl.py --script assets/managed-models/buildings/<id>/<id>.py
 
 `build()` refuses an open mesh (every solid is checked, only window faces are exempt) and ends with `<id>.blend` and `<id>.glb`; the FBX and texture byproducts are discarded. A Python error names the fault; fix the recipe or the library and rerun.
 
-## 4. Show it in Blender, at every step
+## 4. Show it in the GLB viewer, at every step
 
-The user follows the creation in the live Blender. After **every** generation (the first one and each correction round), reload the building there in material shading and look at it. Load `mcp__blender__execute_blender_code` and `mcp__blender__look` with `ToolSearch` first.
+The user follows the creation in the GLB viewer (`http://localhost:5190/`, see "Game render in the GLB viewer" below), not in the live Blender. After **every** generation (the first one and each correction round), open the model there by its hash key (`#<folder>/<model>`, for example `#buildings/<id>` or `#textile-interior/spinner`), screenshot it and judge it. Generate headless (`bl.py`, or `blender --background --python <recipe>.py -- <model ids>`): the viewer reloads by itself when the `.glb` is written. Never stop the viewer.
+
+Load the live Blender only when the user asks for it or the viewer is unavailable. In that case, load `mcp__blender__execute_blender_code` and `mcp__blender__look` with `ToolSearch` first and follow the rest of this section.
 
 Before the first reload, tell the user once that the scene of the open Blender file will be replaced, and continue unless they object. Never call `bpy.ops.wm.read_factory_settings` in the live Blender: it unloads the MCP addon and drops the connection until the user restarts the server. To show several models together, import their `.glb` files (`bpy.ops.import_scene.gltf`) into the open scene, or build the comparison headless with `bl.py`. Then run:
 
