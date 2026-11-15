@@ -122,7 +122,9 @@ export function reachableCells(world: World): Set<string> {
 }
 
 function routeTo(world: World, agent: Agent, goal: Coord): Agent {
-  const route = findPath(world, cellOf(agent), goal) ?? [goal];
+  const route = findPath(world, cellOf(agent), goal);
+  // With no way to the goal nobody walks through a Fixture or a wall: an employee gives up the errand and a customer leaves.
+  if (!route) return agent.mode === 'errand' ? { ...agent, mode: 'idle', goal: null, path: [], timer: AGENTS.errandSeconds[1] } : { ...agent, mode: 'leaving', slot: null, goal: null, path: [] };
   const path = route.map(centre);
   const slot = agent.slot;
   if (slot && slot.x === goal.x && slot.y === goal.y && path.length > 0) path[path.length - 1] = standPoint(slot);

@@ -45,6 +45,13 @@ describe('Venue paths', () => {
     expect(later === null || later.mode === 'leaving').toBe(true);
   });
 
+  it('never walks through a wall: with no way to its slot a customer leaves instead', () => {
+    const shut = [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }, { x: 5, y: 2 }];
+    const [customer] = fill([slot('gamer', 2, 4)], { initial: false, spawns: 1 }, [], world(shut)).agents;
+    expect(customer!.mode).toBe('leaving');
+    expect(customer!.path).toEqual([]);
+  });
+
   it('goes in and out through the entrance only', () => {
     const inside = findPath(world(), { x: 3, y: -1 }, { x: 1, y: 3 })!;
     expect(inside[0]).toEqual({ x: 3, y: 0 });

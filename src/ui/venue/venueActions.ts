@@ -12,7 +12,7 @@ export function venueActionsOf(panel: VenuePanelId | null, toggle: (panel: Venue
   return [
     entry('build', 'build', t('dock.build'), 'bulldozer.png'),
     entry('staff', 'citizens', t('venue.staff')),
-    ...(type === 'restaurant' ? [entry('menu', 'utensils', t('venue.menu'))] : []),
+    ...(type === 'restaurant' ? [entry('menu', 'book', t('venue.menu'))] : []),
     entry('events', 'trophy', t('venue.events')),
     ...(type === 'hotel' || type === 'arcade' ? [entry('management', 'book', t('venue.management'))] : [entry('takings', 'money', t('venue.takings'), 'market.png')]),
     { id: 'back', icon: 'undo', label: t('venue.menu.back'), pressed: false, disabled: false, guided: false, onClick: back },
