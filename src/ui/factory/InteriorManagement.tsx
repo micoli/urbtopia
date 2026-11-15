@@ -6,7 +6,7 @@ import { openCodexLazily } from '../codex/openCodexLazily';
 import { InteriorExamples } from './InteriorExamples';
 import { InteriorFeatures } from './InteriorFeatures';
 import { InteriorIndicators } from './InteriorIndicators';
-import { InteriorRecipes } from './InteriorRecipes';
+import { BakeryInteriorRecipes } from './BakeryInteriorRecipes.tsx';
 import { InteriorRepairs } from './InteriorRepairs';
 import { wornOf } from './worn';
 
@@ -22,7 +22,8 @@ export function InteriorManagement({ factory }: InteriorManagementProps) {
     <section className="venue-build" aria-label={t('venue.management')}>
       <div className="venue-build__items">
         <InteriorIndicators factory={factory} />
-        {factory.type === 'bakery' ? <InteriorRecipes factory={factory} /> : <InteriorFeatures building={factory} />}
+        {factory.type === 'bakery' ? <BakeryInteriorRecipes factory={factory} /> : null}
+        <InteriorFeatures building={factory} />
         <InteriorExamples building={factory} />
         <InteriorRepairs buildingId={factory.id} repairs={repairs} />
         {page ? <CodexLinkButton title={t(`codex.${page}.title`)} onOpen={() => void openCodexLazily(page)} /> : null}
