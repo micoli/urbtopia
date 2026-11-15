@@ -306,7 +306,7 @@ def turning_lathe_ccw(rng):
 
 def boiler(rng):
     """Boiler facing -y: the water comes in through the flanged pipe at the front, the drive comes in through the shaft stub at the back (it feeds the stoker), a chimney rises from the drum."""
-    parts = [block("base", -0.42, 0.42, -0.36, 0.36, 0.0, 0.2, P["brick"]), block("base_cap", -0.44, 0.44, -0.38, 0.38, 0.17, 0.2, P["iron"]),
+    parts = [block("base", -0.42, 0.42, -0.36, 0.36, 0.0, 0.17, P["brick"]), block("base_cap", -0.44, 0.44, -0.38, 0.38, 0.17, 0.2, P["iron"]),
              block("door", -0.2, 0.2, -0.375, -0.36, 0.04, 0.16, P["black"]), block("glow", -0.14, 0.14, -0.38, -0.375, 0.07, 0.13, P["flame"]),
              sideways(disc("drum", 0.28, 0.68, (0, 0, 0), P["copper"], 12), x=-0.34, z=0.48),
              sideways(disc("end_l", 0.3, 0.03, (0, 0, 0), P["brass"], 12), x=-0.36, z=0.48), sideways(disc("end_r", 0.3, 0.03, (0, 0, 0), P["brass"], 12), x=0.33, z=0.48),
