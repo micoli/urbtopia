@@ -751,7 +751,7 @@ export const CATALOG = {
   'event.politicsDigest': ['The politics of the city moved while you were away: see the Town hall.', "La politique de la ville a bougé pendant votre absence : voyez la mairie."],
   'event.offlineTimeCapped': ['You were away for more than 48 h: the extra time was not counted.', "Vous étiez absent plus de 48 h : le temps en trop n'a pas été compté."],
   'event.buildingUpgraded': ['Building upgraded.', 'Bâtiment amélioré.'],
-  'event.productionCompleted': ['Production completed.', 'Production terminée.'],
+  'event.productionCompleted': ['Production completed', 'Production terminée'],
   'event.storageFull': ['The Storehouse is full: some output is still waiting.', "L'entrepôt est plein : une partie de la production attend encore."],
   'pack.Crate': ['Crate of {count} {crop}', "Caisse de {count} {crop}"],
   'pack.Box': ['Box of {count} {crop}', "Grande caisse de {count} {crop}"],

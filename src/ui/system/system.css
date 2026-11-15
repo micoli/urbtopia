@@ -8,6 +8,9 @@
   background: var(--color-surface);
   color: var(--color-text);
   z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
 }
 
 .credits-body {

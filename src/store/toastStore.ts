@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import type { GameEvent, GameState } from '../core';
+import type { GameEvent, GameState, ItemId } from '../core';
 import type { MessageKey } from '../i18n/messages';
 import { t } from '../i18n/t';
 
@@ -8,7 +8,9 @@ export interface ToastStore {
   text: string | null;
   // The building a toast is about: the player can jump to it.
   target: number | null;
-  show: (key: MessageKey) => void;
+  // The Good a toast shows as an icon after its text.
+  item: ItemId | null;
+  show: (key: MessageKey, item?: ItemId) => void;
   showText: (text: string, target?: number) => void;
   dismiss: () => void;
 }
@@ -17,9 +19,10 @@ export const toastStore = createStore<ToastStore>((set) => ({
   toast: null,
   text: null,
   target: null,
-  show: (key) => set({ toast: key, text: null, target: null }),
-  showText: (text, target) => set({ toast: null, text, target: target ?? null }),
-  dismiss: () => set({ toast: null, text: null, target: null }),
+  item: null,
+  show: (key, item) => set({ toast: key, text: null, target: null, item: item ?? null }),
+  showText: (text, target) => set({ toast: null, text, target: target ?? null, item: null }),
+  dismiss: () => set({ toast: null, text: null, target: null, item: null }),
 }));
 
 export function toastKeyForEvents(events: GameEvent[]): MessageKey | null {
@@ -55,11 +58,16 @@ function gatheringToast(events: readonly GameEvent[], state: GameState): { text:
 
 const GATHERING_TOASTS: readonly (MessageKey | null)[] = ['event.gatheringStarted', 'event.gatheringEnded', 'event.gatheringSettled'];
 
+function producedItem(events: readonly GameEvent[]): ItemId | undefined {
+  const event = events.find((candidate) => candidate.type === 'ProductionCompleted');
+  return event?.type === 'ProductionCompleted' ? event.item : undefined;
+}
+
 // Shows the toast of a batch of events; a Gathering's names its building, which the player can jump to.
 export function announceEvents(events: readonly GameEvent[], state: GameState): void {
   const key = toastKeyForEvents(events as GameEvent[]);
   if (!key) return;
   const gathering = GATHERING_TOASTS.includes(key) ? gatheringToast(events, state) : null;
   if (gathering) toastStore.getState().showText(gathering.text, gathering.target);
-  else toastStore.getState().show(key);
+  else toastStore.getState().show(key, key === 'event.productionCompleted' ? producedItem(events) : undefined);
 }
