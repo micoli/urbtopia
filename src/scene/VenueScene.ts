@@ -36,6 +36,9 @@ const OVEN_ROOF = 1.0;
 const OVEN_ROOF_DEPTH = 0.2;
 const CASE_ROOF = 0.76;
 const CASE_DEPTH = 0.3;
+// The Good a Display counter sells is drawn larger than the others and above the roof of its case, to be seen from afar.
+const CASE_ITEM_SCALE = 1.6;
+const CASE_ITEM_LIFT = 0.12;
 // The Good an Exit of a Packhouse restocks stands above the hatch of its dock; that of a Machine of a Factory, above the Machine.
 const DOCK_ROOF = 0.95;
 const DOCK_DEPTH = 0.42;
@@ -424,15 +427,16 @@ export class VenueScene {
       const centre = { x: fixture.x + width / 2, z: fixture.y + depth / 2 };
       const restockable = isRestockable(FIXTURES[fixture.type]);
       const spec = FIXTURES[fixture.type];
-      const good = spec.assigns === 'restocker' || spec.assigns === 'herder' ? workFocusOf(this.lastFixtures, fixture) : spec.family === 'pen' ? undefined : spec.picks ? fixture.recipe : restockable ? fixture.restock : focusOf(fixture);
+      const seller = spec.assigns === 'seller';
+      const good = seller ? fixture.soldGood : spec.assigns === 'restocker' || spec.assigns === 'herder' ? workFocusOf(this.lastFixtures, fixture) : spec.family === 'pen' ? undefined : spec.picks ? fixture.recipe : restockable ? fixture.restock : focusOf(fixture);
       const model = good === undefined ? null : itemModelOf(good);
       if (model && this.ensured(model)) {
         const token = new THREE.Group();
         token.add(cloneModel(this.library.get(model)));
-        token.scale.setScalar(ITEM_SCALE);
+        token.scale.setScalar(seller ? ITEM_SCALE * CASE_ITEM_SCALE : ITEM_SCALE);
         const back = turnedOffset(0, -1, fixture.rotation);
         const baker = isProducerRole(FIXTURES[fixture.type].assigns);
-        const [height, depth] = restockable || spec.picks || (FIXTURES[fixture.type].assigns === 'miller' || FIXTURES[fixture.type].assigns === 'spinner' || FIXTURES[fixture.type].assigns === 'herder') ? (FIXTURES[fixture.type].role === 'exit' ? [DOCK_ROOF, DOCK_DEPTH] : [MACHINE_ROOF, 0]) : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
+        const [height, depth] = seller ? [CASE_ROOF + CASE_ITEM_LIFT, CASE_DEPTH] : restockable || spec.picks || (FIXTURES[fixture.type].assigns === 'miller' || FIXTURES[fixture.type].assigns === 'spinner' || FIXTURES[fixture.type].assigns === 'herder') ? (FIXTURES[fixture.type].role === 'exit' ? [DOCK_ROOF, DOCK_DEPTH] : [MACHINE_ROOF, 0]) : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
         token.position.set(centre.x + back.x * depth, height, centre.z + back.z * depth);
         this.tokensRoot.add(token);
       }
