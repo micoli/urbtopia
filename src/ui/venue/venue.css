@@ -127,6 +127,12 @@
   z-index: 12;
 }
 
+.venue-hint__constraint {
+  display: block;
+  margin-top: var(--space-4);
+  font-weight: var(--font-weight-semibold);
+}
+
 .venue-hint button {
   padding: var(--space-4) var(--space-10);
   border: 0;

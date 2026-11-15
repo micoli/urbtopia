@@ -3,7 +3,7 @@ import { SHOP } from '../economy/economy';
 import { advanceBuilding } from '../economy/production';
 import { saleIntervalOf } from '../economy/shops';
 import { assignedRoleOf, hasAssignments, workFocusOf } from '../interiors/interiorAssignments';
-import { interiorLayoutOf, isProducerRole } from '../interiors/interiorStaff';
+import { interiorLayoutOf, interiorWagesPerHour, isProducerRole } from '../interiors/interiorStaff';
 import type { GameEvent } from '../engine/events';
 import type { Building, GameState, ShopStack, VenueFixture } from '../engine/state';
 import type { GoodId } from '../economy/items';
@@ -105,6 +105,8 @@ export function advanceAssistants(state: GameState, now: number): { state: GameS
   let current = state;
   const events: GameEvent[] = [];
   for (const id of ids) {
+    // As for Restockers, automatic work needs enough Urbs for one hour of the hired Staff.
+    if (current.urbs < interiorWagesPerHour(current.buildings.find(building => building.id === id)!)) continue;
     for (let turn = 0; turn < MAX_TURNS; turn++) {
       const result = bakerTurn(current, id);
       if (result.blocked && turn === 0) events.push({ type: 'StorageFull', buildingId: id });

@@ -18,7 +18,7 @@ export const minTierOfTechnician = (type: BuildingType = 'factory'): number => t
 
 export const technicianPostsOf = (tier: number, type: BuildingType = 'factory'): number => tierValue(technicianPostsTable(type), tier);
 
-const hasInterior = (building: Building): building is Building & { interior: InteriorData } => isProductionInteriorKind(building.type) && building.interior !== undefined && building.interior.fixtures.length > 0;
+const hasInterior = (building: Building): building is Building & { interior: InteriorData } => isProductionInteriorKind(building.type) && building.interior !== undefined;
 
 export const restockerPostsOf = (tier: number, type: BuildingType = 'packhouse'): number => tierValue(type === 'factory' ? interiorBalance.restockerPosts : packhouseBalance.restockerPosts, tier);
 
@@ -34,15 +34,16 @@ export function advanceInteriors(state: GameState, from: number, to: number, sup
   const boundary = (to + (state.timeOffset ?? 0)) % VENUE.hourMs === 0;
   let urbs = state.urbs;
   const buildings = state.buildings.map(building => {
-    if (!hasInterior(building) || building.breakerOff || !isVenuePowered(state, building, supplied)) return building;
+    if (!hasInterior(building)) return building;
     const { interior } = building;
-    const usage = new Map([...interiorUsageWeightsOf(interior.fixtures)].map(([id, weight]) => [id, interiorBalance.usagePerHour * weight]));
     const owed = Math.min(urbs, (interior.restockers ?? 0) * restockerWagePerHour() * hours);
     urbs -= owed;
     const hired = interior.technicians ?? 0;
     const due = hired * technicianWagePerHour() * hours;
     const wage = Math.min(urbs, due);
     urbs -= wage;
+    if (building.breakerOff || interior.fixtures.length === 0 || !isVenuePowered(state, building, supplied)) return building;
+    const usage = new Map([...interiorUsageWeightsOf(interior.fixtures)].map(([id, weight]) => [id, interiorBalance.usagePerHour * weight]));
     const technicians = hired > 0 && wage >= due ? hired : 0;
     let fixtures = wearFixtures(interior.fixtures, usage, hours, technicians);
     let rng = interior.rng;

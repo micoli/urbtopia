@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { advance, assignedRoleOf, createBuilding, dispatch, focusGoodsOf, hasAssignments, INTERIOR_EXAMPLES, newGame, type Building, type BuildingType, type Command, type GameState, type GoodId, type InteriorRole } from '../index';
+import { advanceAssistants } from './assistants';
 import { picksItem } from '../interiors/interiorAssignments';
 import { recipeOf } from '../economy/items';
 
@@ -63,6 +64,14 @@ describe('the Staff of every Production interior with assigned Staff', () => {
     it('works on its own while the breaker is on', () => {
       const state = staffedCity(type);
       expect(outputOf(run(state, 8 * HOUR))).not.toBe(outputOf(state));
+    });
+
+    it.each([0, 0.01])('does no automatic work with %s Urbs, then resumes when funded', urbs => {
+      const poor = { ...staffedCity(type), urbs };
+      const stopped = advanceAssistants(poor, HOUR).state;
+      expect(outputOf(stopped)).toBe(outputOf(poor));
+      const funded = { ...stopped, urbs: 100_000 };
+      expect(outputOf(advanceAssistants(funded, HOUR).state)).not.toBe(outputOf(funded));
     });
 
     it('does nothing while the breaker is off', () => {

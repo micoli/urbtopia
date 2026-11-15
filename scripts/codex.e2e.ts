@@ -23,7 +23,7 @@ for (const layout of ['A', 'B', 'C']) {
         await expect(dialog.locator('img')).toHaveCount(8);
         await expect(dialog.locator('img').first()).toBeVisible();
         if (mobile) {
-          const bounds = await dialog.boundingBox();
+          const bounds = await dialog.locator('.codex-dialog').boundingBox();
           expect(bounds!.x).toBeGreaterThanOrEqual(12);
           expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(378);
           const back = dialog.locator('.codex-header').getByRole('button', { name: 'Retour à la liste' });

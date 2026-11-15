@@ -18,7 +18,7 @@ export function InteriorExampleDialog({ building, onClose }: InteriorExampleDial
   if (!example) return null;
   const legend = distinctTypes(example.fixtures.map(fixture => fixture.type));
   return (
-    <Dialog className="interior-example">
+    <Dialog className="interior-example" onClose={onClose}>
       <Dialog.Title>{t('interior.examples.title')} · {t(`building.${building.type}`)}</Dialog.Title>
       <Dialog.Body>
         <p className="note">{t(`interior.examples.${building.type}` as MessageKey)}</p>

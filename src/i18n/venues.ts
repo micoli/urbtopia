@@ -217,6 +217,9 @@ type VenueMessageKey =
   | `venue.empty.${VenueType}`
   | 'venue.chooseFixture'
   | 'venue.placeHint'
+  | 'venue.placeWall.back'
+  | 'venue.placeWall.exterior'
+  | 'venue.placeWall.wall'
   | 'venue.moveHint'
   | 'venue.cap'
   | 'venue.tierNeeded'
@@ -635,6 +638,9 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.empty.restaurant': ['No cooktop, table, chair or checkout: nobody can be served.', 'Pas de plaque, de table, de chaise ou de caisse : personne ne peut être servi.'],
   'venue.chooseFixture': ['Choose a Fixture to place, or tap one to edit it.', 'Choisissez un équipement à poser, ou touchez-en un pour le modifier.'],
   'venue.placeHint': ['Tap a free cell to place it (Shift to place several).', 'Touchez une case libre pour le poser (Maj pour en poser plusieurs).'],
+  'venue.placeWall.back': ['Place against the exterior back wall, facing into the room.', 'À poser contre le mur extérieur du fond, face à la pièce.'],
+  'venue.placeWall.exterior': ['Place against an exterior wall of the room, with its back to the wall.', 'À poser contre un mur extérieur de la pièce, dos au mur.'],
+  'venue.placeWall.wall': ['Hang on a wall of the room.', 'À accrocher sur un mur de la pièce.'],
   'venue.moveHint': ['Tap a free cell to move it there.', 'Touchez une case libre pour le déplacer.'],
   'venue.cap': ['Takings are full: collect them.', 'La caisse est pleine : encaissez.'],
   'venue.tierNeeded': ['Tier', 'Niveau'],
