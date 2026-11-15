@@ -1,3 +1,1 @@
-import { createRoot } from 'react-dom/client';
-
-createRoot(document.createElement('div')).render(null);
+import 'react-dom/client';

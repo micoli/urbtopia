@@ -16,6 +16,8 @@ import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } 
 const TAP_DISTANCE = 6;
 const SUN_INTENSITY = 2.2;
 const SKY_INTENSITY = 1.1;
+const SUN_OFFSET = new THREE.Vector3(6, 12, 3);
+const SHADOW_MAP_SIZE = 2048;
 const SELECTION_COLOR = 0x4da3ff;
 const WARNING_COLOR = 0xff9500;
 const BROKEN_COLOR = 0xe5484d;
@@ -137,9 +139,15 @@ export class VenueScene {
     this.renderer.setPixelRatio(renderPixelRatio());
     this.renderer.toneMapping = THREE.NeutralToneMapping;
     this.renderer.toneMappingExposure = 0.9;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.scene.background = new THREE.Color(0x232838);
-    this.sun.position.set(6, 12, 8);
-    this.scene.add(this.sun, this.sky, this.shell, this.fixtureRoot, this.tokensRoot, this.truckRoot, this.line.root, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
+    this.sun.castShadow = true;
+    this.sun.shadow.mapSize.set(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+    this.sun.shadow.bias = -0.0004;
+    this.sun.shadow.normalBias = 0.03;
+    this.fitSun();
+    this.scene.add(this.sun, this.sun.target, this.sky, this.shell, this.fixtureRoot, this.tokensRoot, this.truckRoot, this.line.root, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
     this.ready = this.library.ensure([...Object.values(this.shellModels), ...(isVenueType(venueType) ? [] : PARQUET_MODELS), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...(FIXTURES[id].truck ? [FIXTURES[id].truck!] : []), ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
@@ -259,9 +267,25 @@ export class VenueScene {
     this.crowd.setPlan(plan, mood);
   }
 
+  setShadows(enabled: boolean): void {
+    this.sun.castShadow = enabled;
+    this.dirty = true;
+  }
+
+  // The sun stays on the same side of the room, and its shadow map covers the whole floor.
+  private fitSun(): void {
+    const centre = this.size / 2;
+    const reach = this.size * 0.8;
+    this.sun.target.position.set(centre, 0, centre);
+    this.sun.position.set(centre + SUN_OFFSET.x, SUN_OFFSET.y, centre + SUN_OFFSET.z);
+    Object.assign(this.sun.shadow.camera, { left: -reach, right: reach, top: reach, bottom: -reach, near: 1, far: 60 });
+    this.sun.shadow.camera.updateProjectionMatrix();
+  }
+
   setSize(size: number): void {
     if (size === this.size) return;
     this.size = size;
+    this.fitSun();
     this.crowd.setSize(size);
     this.buildShell();
     this.resize();
@@ -361,6 +385,7 @@ export class VenueScene {
     }
     this.place(this.cornerPost, this.shellModels.corner, this.cornerPlacement.x, this.cornerPlacement.z, this.cornerPlacement.rotation);
     this.shell.add(this.northWalls, this.westWalls, this.cornerPost);
+    for (const walls of [this.northWalls, this.westWalls, this.cornerPost]) this.castShadows(walls, false);
     this.showWalls();
     const mat = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), new THREE.MeshBasicMaterial({ color: ENTRANCE_COLOR }));
     mat.rotation.x = -Math.PI / 2;
@@ -415,6 +440,7 @@ export class VenueScene {
       if (fixture.assigned || fixture.restocker) this.placeStaff(fixture, centre);
     }
     this.placeAvatars();
+    this.castShadows(this.tokensRoot);
     this.dirty = true;
   }
 
@@ -512,8 +538,18 @@ export class VenueScene {
     holder.add(cloneModel(this.library.get(model)));
     holder.position.set(x, 0, z);
     holder.rotation.y = rotation;
+    this.castShadows(holder);
     parent.add(holder);
     return holder;
+  }
+
+  // The walls only receive: the sun shines from the left, through the west wall.
+  private castShadows(root: THREE.Object3D, casting = true): void {
+    root.traverse(node => {
+      if (!(node instanceof THREE.Mesh)) return;
+      node.castShadow = casting;
+      node.receiveShadow = true;
+    });
   }
 
   private clear(group: THREE.Group, disposeMarks = false): void {
