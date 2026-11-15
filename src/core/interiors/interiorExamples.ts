@@ -34,7 +34,7 @@ export const INTERIOR_EXAMPLES: Partial<Record<BuildingType, InteriorExample>> =
   ] },
   mill: { tier: 3, fixtures: [
     at('millMotor', 2, 2), at('millShaft', 2, 3), at('millstone', 2, 4, 2), at('millMotor', 4, 6, 2), at('millPump', 4, 5, 1), at('millPipeCross', 3, 5), at('millPipeCross', 2, 5),
-    at('millPipe', 1, 5, 1), at('millCleaner', 0, 5, 1), at('millBagger', 2, 6), at('millOilTank', 3, 4, 2),
+    at('millPipe', 1, 5, 1), at('millCleaner', 0, 5, 1), at('millBagger', 2, 6, 2), at('millOilTank', 3, 4),
   ] },
   workshop: { tier: 1, fixtures: [
     at('workshopExtractorRight', 0, 0), at('workshopConveyor', 0, 1), at('workshopCleanerRight', 0, 2), at('workshopConveyor', 0, 3), at('workshopBin', 0, 4),

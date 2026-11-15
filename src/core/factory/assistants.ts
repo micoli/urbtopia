@@ -100,7 +100,7 @@ const SELLER_TURNS = 20;
 
 // Runs the bakers and the sellers of every Bakery up to `now`, one production after the other, so that a long absence gives what the same time played would.
 export function advanceAssistants(state: GameState, now: number): { state: GameState; events: GameEvent[] } {
-  const ids = state.buildings.filter(building => hasAssignments(building) && building.interior && building.interior.fixtures.some(fixture => fixture.assigned === true)).map(building => building.id);
+  const ids = state.buildings.filter(building => hasAssignments(building) && !building.breakerOff && building.interior && building.interior.fixtures.some(fixture => fixture.assigned === true)).map(building => building.id);
   if (ids.length === 0) return { state, events: [] };
   let current = state;
   const events: GameEvent[] = [];
