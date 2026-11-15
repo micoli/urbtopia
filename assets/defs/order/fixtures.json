@@ -281,5 +281,13 @@
   "hospitalOperatingTable",
   "hospitalMedicineCabinet",
   "hospitalWaitingChair",
-  "hospitalWall"
+  "hospitalWall",
+  "textileMotor",
+  "textileShaft",
+  "textileGear",
+  "textileBevel",
+  "textileBevelTee",
+  "textileSpinner",
+  "textileSpinnerRight",
+  "textileWall"
 ]

@@ -457,6 +457,11 @@ function milledOf(fixtures: readonly VenueFixture[], flow: FlowReach, linked: Re
   return milled;
 }
 
+// The Spinners at work: linked, with a Recipe. A Spinner needs nothing but its Drive, so a Textile mill has no Line or Flow to complete.
+function spunOf(fixtures: readonly VenueFixture[], linked: ReadonlySet<number>): Set<number> {
+  return new Set(fixtures.filter(fixture => linked.has(fixture.id) && FIXTURES[fixture.type].family === 'spinner' && fixture.recipe !== undefined).map(fixture => fixture.id));
+}
+
 // What is worked out once for a list of Fixtures: Drive, Flow and Links. A floor's list is replaced, never changed, when the player edits it,
 // so each list is read once however many panels, bonuses and scenes ask.
 interface InteriorReport {
@@ -507,7 +512,7 @@ const reportOf = memoized((allFixtures): InteriorReport => {
     else problems.set(machine.id, lacking);
   }
   const line = lineReach(fixtures, at, linked);
-  const lined = new Set([...line.lined, ...milledOf(fixtures, flow, linked)]);
+  const lined = new Set([...line.lined, ...milledOf(fixtures, flow, linked), ...spunOf(fixtures, linked)]);
   return { fixtures, at, drive, powered, flow, line, links: { linked, jammed: drive.jammed, problems, lined, overfed: line.overfed } };
 });
 

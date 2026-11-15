@@ -1013,7 +1013,8 @@
             "dairy",
             "storehouse",
             "workshop",
-            "recyclingPlant"
+            "recyclingPlant",
+            "textileMill"
           ]
         },
         "$schema": {
@@ -1251,6 +1252,7 @@
             "cheesemaker",
             "creamMaker",
             "miller",
+            "spinner",
             "restocker"
           ]
         },

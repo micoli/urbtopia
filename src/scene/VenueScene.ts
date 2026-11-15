@@ -403,7 +403,7 @@ export class VenueScene {
         token.scale.setScalar(ITEM_SCALE);
         const back = turnedOffset(0, -1, fixture.rotation);
         const baker = isProducerRole(FIXTURES[fixture.type].assigns);
-        const [height, depth] = restockable || spec.picks || FIXTURES[fixture.type].assigns === 'miller' ? (FIXTURES[fixture.type].role === 'exit' ? [DOCK_ROOF, DOCK_DEPTH] : [MACHINE_ROOF, 0]) : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
+        const [height, depth] = restockable || spec.picks || (FIXTURES[fixture.type].assigns === 'miller' || FIXTURES[fixture.type].assigns === 'spinner') ? (FIXTURES[fixture.type].role === 'exit' ? [DOCK_ROOF, DOCK_DEPTH] : [MACHINE_ROOF, 0]) : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
         token.position.set(centre.x + back.x * depth, height, centre.z + back.z * depth);
         this.tokensRoot.add(token);
       }
@@ -455,7 +455,7 @@ export class VenueScene {
   // The Staff assigned to a Fixture stands on the diagonal of its corner, turned toward it: a seller behind its Display counter, on the shop side; a baker at the side of its Oven that its gas does not use. A miller is a plain worker, like a Restocker.
   private placeStaff(fixture: VenueFixture, centre: { x: number; z: number }): void {
     const spec = FIXTURES[fixture.type];
-    const model = isRestockable(spec) || spec.assigns === 'miller' ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
+    const model = isRestockable(spec) || spec.assigns === 'miller' || spec.assigns === 'spinner' ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
     if (!model || !this.ensured(model)) return;
     const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.includes('right') ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
     const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);

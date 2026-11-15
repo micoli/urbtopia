@@ -17,6 +17,7 @@ const DEFAULT_EFFECTS: readonly EffectId[] = ['speed', 'yield'];
 // The levers of each Production interior; the others raise speed and yield.
 const EFFECTS_BY_TYPE: Partial<Record<BuildingType, readonly EffectId[]>> = {
   mill: ['speed'],
+  textileMill: ['speed'],
   bakery: ['speed', 'yield', 'sales'],
   dairy: ['yield'],
   storehouse: ['capacity'],

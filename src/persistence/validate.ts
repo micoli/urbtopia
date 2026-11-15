@@ -179,7 +179,7 @@ const isStaffAssignmentCovered = (interior: Record<string, unknown>): boolean =>
   const fixtures: unknown = interior.fixtures;
   if (!Array.isArray(fixtures)) return true;
   const hired = isRecord(interior.staff) ? interior.staff : {};
-  return (['baker', 'seller', 'cheesemaker', 'creamMaker', 'miller', 'restocker'] as const).every(role => fixtures.filter(fixture => isRecord(fixture) && fixture.assigned === true && FIXTURES[fixture.type as keyof typeof FIXTURES]?.assigns === role).length <= ((hired[role] as number | undefined) ?? 0));
+  return (['baker', 'seller', 'cheesemaker', 'creamMaker', 'miller', 'spinner', 'restocker'] as const).every(role => fixtures.filter(fixture => isRecord(fixture) && fixture.assigned === true && FIXTURES[fixture.type as keyof typeof FIXTURES]?.assigns === role).length <= ((hired[role] as number | undefined) ?? 0));
 };
 
 function isInteriorData(value: unknown, kind: string, type?: BuildingType): boolean {

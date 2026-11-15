@@ -218,6 +218,23 @@
           "careSurgeon": 0.2
         }
       }
+    },
+    "textileMill": {
+      "family": "production",
+      "layout": {
+        "gridSizes": [5, 6, 7, 8, 9],
+        "speedCaps": [0.1, 0.18, 0.26, 0.34, 0.42],
+        "yieldCaps": [0.01],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "autoWork": true
+      },
+      "roles": {
+        "spinner": {
+          "part": "speed",
+          "posts": [1, 2, 3, 4, 5]
+        }
+      },
+      "unlockCitizens": 250
     }
   }
 }

@@ -310,6 +310,7 @@
               "type": "string",
               "enum": [
                 "miller",
+                "spinner",
                 "baker",
                 "seller",
                 "cheesemaker",
