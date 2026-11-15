@@ -7,8 +7,7 @@ interface LabeledListRowProps extends HTMLAttributes<HTMLDivElement> {
 export function LabeledListRow({ label, children, ...rest }: LabeledListRowProps) {
     return (
         <div {...rest}>
-            <dt>{label}</dt>
-            <dd>{children}</dd>
+            <b>{label}</b>: {children}
         </div>
     );
 }
