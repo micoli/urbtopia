@@ -13,4 +13,6 @@ export const codexEntryPathOf = (language: Language, entry: CodexEntry): string 
 
 export const rulesSlugOf = (id: CodexPage): string => kebabOf(id);
 
+export const fixturePathOf = (language: Language, pageId: string): string => `${rulesPathOf(language, 'fixtures')}${pageId}/`;
+
 export const rulesPathOf = (language: Language, id: CodexPage): string => `${language}/mechanics/${rulesSlugOf(id)}/`;

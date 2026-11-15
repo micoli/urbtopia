@@ -1,9 +1,9 @@
 export const PANEL_SECTIONS_KEY = 'urbtopia-panel-sections';
 
-export type PanelSectionId = 'modifications' | 'usage' | 'help';
+export type PanelSectionId = 'modifications' | 'usage' | 'help' | 'arrange';
 
-const PANEL_SECTION_IDS: PanelSectionId[] = ['modifications', 'usage', 'help'];
-const DEFAULTS: Record<PanelSectionId, boolean> = { modifications: true, usage: true, help: true };
+const PANEL_SECTION_IDS: PanelSectionId[] = ['modifications', 'usage', 'help', 'arrange'];
+const DEFAULTS: Record<PanelSectionId, boolean> = { modifications: true, usage: true, help: true , arrange: true};
 
 export function readPanelSections(): Record<PanelSectionId, boolean> {
   try {

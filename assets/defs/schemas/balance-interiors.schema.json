@@ -215,6 +215,10 @@
                 ],
                 "additionalProperties": false
               },
+              "requires": {
+                "type": "string",
+                "minLength": 1
+              },
               "feeds": {
                 "type": "array",
                 "items": {
@@ -310,6 +314,9 @@
               "type": "string",
               "enum": [
                 "miller",
+                "spinner",
+                "knitter",
+                "herder",
                 "baker",
                 "seller",
                 "cheesemaker",
@@ -330,6 +337,7 @@
                   "type": "string",
                   "enum": [
                     "speed",
+                    "yield",
                     "salesRate",
                     "cheeseYield",
                     "creamYield",

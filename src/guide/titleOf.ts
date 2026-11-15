@@ -1,3 +1,4 @@
+import { fixturePageOf } from '../codex/fixturePages';
 import { CODEX_PAGES } from '../codex/pages';
 import { t } from '../i18n/t';
 import { translationOf } from './content/articles';
@@ -8,6 +9,7 @@ function pageTitleOf({ page, language }: GuideRoute): string | null {
   if (page.kind === 'codexSection') return t(page.section);
   if (page.kind === 'codexEntry') return t(codexEntryOf(page.id).name);
   if (page.kind === 'article') return translationOf(page.article, language).meta.title;
+  if (page.kind === 'fixture') return t(`venue.fixture.${fixturePageOf(page.id)!.fixtures[0]!}`);
   if (page.kind === 'rules') return t(CODEX_PAGES.find(item => item.id === page.id)!.title);
   return null;
 }

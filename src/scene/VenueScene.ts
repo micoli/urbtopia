@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { AvatarPatrol, patrolRoute } from './avatarPatrol';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, isVenueType, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, animalModelOfItem, isVenueType, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { RESTOCKER_MODEL, VENUE_STAFF_MODELS, venueCrowdModelsOf } from './venueCrowdModels';
@@ -16,6 +16,8 @@ import { renderPixelRatio, shouldRenderFrame, watchPageHidden, wantsAntialias } 
 const TAP_DISTANCE = 6;
 const SUN_INTENSITY = 2.2;
 const SKY_INTENSITY = 1.1;
+const SUN_OFFSET = new THREE.Vector3(6, 12, 3);
+const SHADOW_MAP_SIZE = 2048;
 const SELECTION_COLOR = 0x4da3ff;
 const WARNING_COLOR = 0xff9500;
 const BROKEN_COLOR = 0xe5484d;
@@ -34,11 +36,18 @@ const OVEN_ROOF = 1.0;
 const OVEN_ROOF_DEPTH = 0.2;
 const CASE_ROOF = 0.76;
 const CASE_DEPTH = 0.3;
+// The Good a Display counter sells is drawn larger than the others and above the roof of its case, to be seen from afar.
+const CASE_ITEM_SCALE = 1.6;
+const CASE_ITEM_LIFT = 0.12;
 // The Good an Exit of a Packhouse restocks stands above the hatch of its dock; that of a Machine of a Factory, above the Machine.
 const DOCK_ROOF = 0.95;
 const DOCK_DEPTH = 0.42;
 const MACHINE_ROOF = 1.1;
 const STAFF_SCALE = 0.7;
+
+// The animals of the models are small next to a one-tile Pen: they are drawn larger in the interior of a Livestock farm, standing on its litter.
+const PEN_ANIMAL_SCALE = 1.6;
+const PEN_LITTER = 0.05;
 // Staff stand on the corner of their Fixture, not in front of it.
 const CORNER_MARGIN = 0.09;
 
@@ -133,9 +142,15 @@ export class VenueScene {
     this.renderer.setPixelRatio(renderPixelRatio());
     this.renderer.toneMapping = THREE.NeutralToneMapping;
     this.renderer.toneMappingExposure = 0.9;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.scene.background = new THREE.Color(0x232838);
-    this.sun.position.set(6, 12, 8);
-    this.scene.add(this.sun, this.sky, this.shell, this.fixtureRoot, this.tokensRoot, this.truckRoot, this.line.root, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
+    this.sun.castShadow = true;
+    this.sun.shadow.mapSize.set(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+    this.sun.shadow.bias = -0.0004;
+    this.sun.shadow.normalBias = 0.03;
+    this.fitSun();
+    this.scene.add(this.sun, this.sun.target, this.sky, this.shell, this.fixtureRoot, this.tokensRoot, this.truckRoot, this.line.root, this.crowd.root, this.warningRoot, this.brokenRoot, this.wearRoot, this.shelfStock.root, this.selectionRoot, this.ghostRoot);
     this.ready = this.library.ensure([...Object.values(this.shellModels), ...(isVenueType(venueType) ? [] : PARQUET_MODELS), ...new Set([...fixtureIdsOf(venueType).flatMap(id => [FIXTURES[id].model, ...(FIXTURES[id].truck ? [FIXTURES[id].truck!] : []), ...Object.values(FIXTURES[id].joins ?? {})]), ...venueCrowdModelsOf(venueType)])]).then(() => {
       if (this.disposed) return;
       this.buildShell();
@@ -255,9 +270,25 @@ export class VenueScene {
     this.crowd.setPlan(plan, mood);
   }
 
+  setShadows(enabled: boolean): void {
+    this.sun.castShadow = enabled;
+    this.dirty = true;
+  }
+
+  // The sun stays on the same side of the room, and its shadow map covers the whole floor.
+  private fitSun(): void {
+    const centre = this.size / 2;
+    const reach = this.size * 0.8;
+    this.sun.target.position.set(centre, 0, centre);
+    this.sun.position.set(centre + SUN_OFFSET.x, SUN_OFFSET.y, centre + SUN_OFFSET.z);
+    Object.assign(this.sun.shadow.camera, { left: -reach, right: reach, top: reach, bottom: -reach, near: 1, far: 60 });
+    this.sun.shadow.camera.updateProjectionMatrix();
+  }
+
   setSize(size: number): void {
     if (size === this.size) return;
     this.size = size;
+    this.fitSun();
     this.crowd.setSize(size);
     this.buildShell();
     this.resize();
@@ -357,6 +388,7 @@ export class VenueScene {
     }
     this.place(this.cornerPost, this.shellModels.corner, this.cornerPlacement.x, this.cornerPlacement.z, this.cornerPlacement.rotation);
     this.shell.add(this.northWalls, this.westWalls, this.cornerPost);
+    for (const walls of [this.northWalls, this.westWalls, this.cornerPost]) this.castShadows(walls, false);
     this.showWalls();
     const mat = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), new THREE.MeshBasicMaterial({ color: ENTRANCE_COLOR }));
     mat.rotation.x = -Math.PI / 2;
@@ -395,21 +427,24 @@ export class VenueScene {
       const centre = { x: fixture.x + width / 2, z: fixture.y + depth / 2 };
       const restockable = isRestockable(FIXTURES[fixture.type]);
       const spec = FIXTURES[fixture.type];
-      const good = spec.assigns === 'restocker' ? workFocusOf(this.lastFixtures, fixture) : spec.picks ? fixture.recipe : restockable ? fixture.restock : focusOf(fixture);
+      const seller = spec.assigns === 'seller';
+      const good = seller ? fixture.soldGood : spec.assigns === 'restocker' || spec.assigns === 'herder' ? workFocusOf(this.lastFixtures, fixture) : spec.family === 'pen' ? undefined : spec.picks ? fixture.recipe : restockable ? fixture.restock : focusOf(fixture);
       const model = good === undefined ? null : itemModelOf(good);
       if (model && this.ensured(model)) {
         const token = new THREE.Group();
         token.add(cloneModel(this.library.get(model)));
-        token.scale.setScalar(ITEM_SCALE);
+        token.scale.setScalar(seller ? ITEM_SCALE * CASE_ITEM_SCALE : ITEM_SCALE);
         const back = turnedOffset(0, -1, fixture.rotation);
         const baker = isProducerRole(FIXTURES[fixture.type].assigns);
-        const [height, depth] = restockable || spec.picks || FIXTURES[fixture.type].assigns === 'miller' ? (FIXTURES[fixture.type].role === 'exit' ? [DOCK_ROOF, DOCK_DEPTH] : [MACHINE_ROOF, 0]) : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
+        const [height, depth] = seller ? [CASE_ROOF + CASE_ITEM_LIFT, CASE_DEPTH] : restockable || spec.picks || (FIXTURES[fixture.type].assigns === 'miller' || FIXTURES[fixture.type].assigns === 'spinner' || FIXTURES[fixture.type].assigns === 'herder') ? (FIXTURES[fixture.type].role === 'exit' ? [DOCK_ROOF, DOCK_DEPTH] : [MACHINE_ROOF, 0]) : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
         token.position.set(centre.x + back.x * depth, height, centre.z + back.z * depth);
         this.tokensRoot.add(token);
       }
+      if (spec.family === 'pen' && fixture.recipe !== undefined) this.placePenAnimal(fixture, centre);
       if (fixture.assigned || fixture.restocker) this.placeStaff(fixture, centre);
     }
     this.placeAvatars();
+    this.castShadows(this.tokensRoot);
     this.dirty = true;
   }
 
@@ -452,12 +487,21 @@ export class VenueScene {
     return false;
   }
 
+  // The animal of the Recipe chosen on a Pen stands in the middle of it, facing the gate.
+  private placePenAnimal(fixture: VenueFixture, centre: { x: number; z: number }): void {
+    const model = animalModelOfItem(fixture.recipe!);
+    if (!model || !this.ensured(model)) return;
+    const animal = this.place(this.tokensRoot, model, centre.x, centre.z, -fixture.rotation * Math.PI / 2);
+    animal.position.y = PEN_LITTER;
+    animal.scale.setScalar(PEN_ANIMAL_SCALE);
+  }
+
   // The Staff assigned to a Fixture stands on the diagonal of its corner, turned toward it: a seller behind its Display counter, on the shop side; a baker at the side of its Oven that its gas does not use. A miller is a plain worker, like a Restocker.
   private placeStaff(fixture: VenueFixture, centre: { x: number; z: number }): void {
     const spec = FIXTURES[fixture.type];
-    const model = isRestockable(spec) || spec.assigns === 'miller' ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
+    const model = isRestockable(spec) || spec.assigns === 'miller' || spec.assigns === 'spinner' || spec.assigns === 'herder' ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
     if (!model || !this.ensured(model)) return;
-    const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.includes('right') ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
+    const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.includes('right') || spec.drive?.includes('right') ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
     const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
     const corner = { x: Math.sign(side.x - side.z), z: Math.sign(side.z + side.x) };
     this.stand(model, { x: centre.x + corner.x * (width / 2 + CORNER_MARGIN), z: centre.z + corner.z * (depth / 2 + CORNER_MARGIN) }, { x: corner.x, z: corner.z });
@@ -498,8 +542,18 @@ export class VenueScene {
     holder.add(cloneModel(this.library.get(model)));
     holder.position.set(x, 0, z);
     holder.rotation.y = rotation;
+    this.castShadows(holder);
     parent.add(holder);
     return holder;
+  }
+
+  // The walls only receive: the sun shines from the left, through the west wall.
+  private castShadows(root: THREE.Object3D, casting = true): void {
+    root.traverse(node => {
+      if (!(node instanceof THREE.Mesh)) return;
+      node.castShadow = casting;
+      node.receiveShadow = true;
+    });
   }
 
   private clear(group: THREE.Group, disposeMarks = false): void {

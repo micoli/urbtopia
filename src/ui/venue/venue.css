@@ -141,21 +141,26 @@
 
 .interior-example {
   --example-tile: 66px;
+  --example-max-height: 40vh;
 }
 
 .interior-example .dialog {
-  max-height: 90vh;
+  width: min(480px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .interior-example__grid {
   display: grid;
+  grid-template-columns: repeat(var(--example-columns), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--example-rows), minmax(0, 1fr));
   gap: var(--space-2);
-  width: max-content;
-  max-width: 100%;
+  aspect-ratio: var(--example-columns) / var(--example-rows);
+  width: min(100%, calc(var(--example-columns) * var(--example-tile)), calc(var(--example-max-height) * var(--example-columns) / var(--example-rows)));
+  box-sizing: border-box;
   margin: var(--space-8) auto;
   padding: var(--space-8);
-  overflow: auto;
   border-radius: var(--radius-md);
   background: var(--color-surface-solid);
 }

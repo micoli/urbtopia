@@ -149,7 +149,7 @@ function isGatheringResult(value: unknown): boolean {
 const isSavedRestock = (fixture: Record<string, unknown>): boolean => {
   const { restock, restocker, restockedAt } = fixture;
   if (restock === undefined && restocker === undefined && restockedAt === undefined) return true;
-  if (!isRestockable(FIXTURES[fixture.type as keyof typeof FIXTURES])) return restock === undefined && restocker === undefined && isProducerRole(FIXTURES[fixture.type as keyof typeof FIXTURES].assigns) && isNumber(restockedAt);
+  if (!isRestockable(FIXTURES[fixture.type as keyof typeof FIXTURES])) return restock === undefined && restocker === undefined && (isProducerRole(FIXTURES[fixture.type as keyof typeof FIXTURES].assigns) || FIXTURES[fixture.type as keyof typeof FIXTURES].family === 'pen') && isNumber(restockedAt);
   return (restock === undefined || (typeof restock === 'string' && Object.hasOwn(GOODS, restock))) && (restocker === undefined || (restocker === true && restock !== undefined)) && (restockedAt === undefined || isNumber(restockedAt));
 };
 
@@ -164,8 +164,8 @@ const isSavedFocus = (fixture: Record<string, unknown>): boolean => {
   const spec = FIXTURES[fixture.type as keyof typeof FIXTURES];
   const role = spec.assigns;
   const isGood = (value: unknown) => typeof value === 'string' && Object.hasOwn(GOODS, value);
-  if (role === undefined) return spec.picks === true && soldGood === undefined && assigned === undefined && (recipe === undefined || (typeof recipe === 'string' && isMaterial(recipe)));
-  if (role === 'restocker') return recipe === undefined && soldGood === undefined && (assigned === undefined || assigned === true);
+  if (role === undefined) return spec.picks === true && soldGood === undefined && (assigned === undefined || (assigned === true && spec.family === 'pen')) && (recipe === undefined || isGood(recipe) || (typeof recipe === 'string' && isMaterial(recipe)));
+  if (role === 'restocker' || role === 'herder') return recipe === undefined && soldGood === undefined && (assigned === undefined || assigned === true);
   if (recipe !== undefined && (!isProducerRole(role) || !(isGood(recipe) || (typeof recipe === 'string' && isMaterial(recipe))))) return false;
   if (soldGood !== undefined && (role !== 'seller' || !isGood(soldGood))) return false;
   return assigned === undefined || (assigned === true && (recipe !== undefined || soldGood !== undefined));
@@ -179,7 +179,7 @@ const isStaffAssignmentCovered = (interior: Record<string, unknown>): boolean =>
   const fixtures: unknown = interior.fixtures;
   if (!Array.isArray(fixtures)) return true;
   const hired = isRecord(interior.staff) ? interior.staff : {};
-  return (['baker', 'seller', 'cheesemaker', 'creamMaker', 'miller', 'restocker'] as const).every(role => fixtures.filter(fixture => isRecord(fixture) && fixture.assigned === true && FIXTURES[fixture.type as keyof typeof FIXTURES]?.assigns === role).length <= ((hired[role] as number | undefined) ?? 0));
+  return (['baker', 'seller', 'cheesemaker', 'creamMaker', 'miller', 'spinner', 'knitter', 'herder', 'restocker'] as const).every(role => fixtures.filter(fixture => isRecord(fixture) && fixture.assigned === true && FIXTURES[fixture.type as keyof typeof FIXTURES]?.assigns === role).length <= ((hired[role] as number | undefined) ?? 0));
 };
 
 function isInteriorData(value: unknown, kind: string, type?: BuildingType): boolean {

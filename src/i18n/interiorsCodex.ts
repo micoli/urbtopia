@@ -1,8 +1,8 @@
 const texts = {
   'codex.productionInteriors.title': ['Production interiors', 'Intérieurs de production'],
   'codex.productionInteriors.intro': [
-    'The Factory, the Packhouse, the Mill, the Workshop, the Bakery, the Dairy, the Storehouse and the Recycling plant can be fitted out from the inside. Motors, Machines and Lines add speed, yield, sales or room to the building, and the Recycling plant adds Waste capacity and Collection distance. The figures below come straight from the rules, and the last part of each interior shows what yours brings right now.',
-    'L’usine, le conditionnement, la minoterie, l’atelier, la boulangerie, la laiterie, l’entrepôt et l’usine de recyclage peuvent être aménagés de l’intérieur. Moteurs, machines et chaînes ajoutent de la vitesse, du rendement, des ventes ou de la place au bâtiment, et l’usine de recyclage ajoute de la capacité de déchets et de la distance de collecte. Les chiffres ci-dessous viennent directement des règles, et la dernière partie de chaque intérieur montre ce que le vôtre apporte en ce moment.',
+    'The Factory, the Packhouse, the Mill, the Workshop, the Bakery, the Dairy, the Storehouse, the Recycling plant, the Textile mill, the Knitwear factory and the Livestock farm can be fitted out from the inside. Motors, Machines and Lines add speed, yield, sales or room to the building, and the Recycling plant adds Waste capacity and Collection distance. The figures below come straight from the rules, and the last part of each interior shows what yours brings right now.',
+    'L’usine, le conditionnement, la minoterie, l’atelier, la boulangerie, la laiterie, l’entrepôt, l’usine de recyclage, la filature, la tricoterie et l’élevage peuvent être aménagés de l’intérieur. Moteurs, machines et chaînes ajoutent de la vitesse, du rendement, des ventes ou de la place au bâtiment, et l’usine de recyclage ajoute de la capacité de déchets et de la distance de collecte. Les chiffres ci-dessous viennent directement des règles, et la dernière partie de chaque intérieur montre ce que le vôtre apporte en ce moment.',
   ],
   'codex.serviceInteriors.title': ['Service interiors', 'Intérieurs de service'],
   'codex.serviceInteriors.intro': [
@@ -38,6 +38,7 @@ const texts = {
   'codex.interiors.liveRow': ['Tier {tier} · {fixtures} pieces', 'Niveau {tier} · {fixtures} pièces'],
   'codex.interiors.furniture': ['Quality of the furniture', 'Qualité du mobilier'],
   'codex.interiors.part.speed': ['Speed', 'Vitesse'],
+  'codex.interiors.part.yield': ['Yield', 'Rendement'],
   'codex.interiors.part.salesRate': ['Sales rate', 'Cadence de vente'],
   'codex.interiors.part.cheeseYield': ['Cheese yield', 'Rendement en fromage'],
   'codex.interiors.part.creamYield': ['Cream yield', 'Rendement en crème'],

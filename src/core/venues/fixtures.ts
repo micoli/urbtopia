@@ -5,7 +5,7 @@ import type { FixtureId, VenueType } from '../engine/state';
 import { modelFileOf } from '../models/modelFiles';
 import type { FixtureDefinition } from './fixtureSchema';
 import { VENUE_TYPES } from './profiles';
-import { FACTORY_FIXTURE_CATEGORIES, HOSPITAL_FIXTURE_CATEGORIES, LIBRARY_FIXTURE_CATEGORIES, SCHOOL_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, LINE_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, type PRODUCTION_INTERIOR_KINDS, type SERVICE_INTERIOR_KINDS, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type PackSize } from './venueVocabulary';
+import { FACTORY_FIXTURE_CATEGORIES, HOSPITAL_FIXTURE_CATEGORIES, LIBRARY_FIXTURE_CATEGORIES, SCHOOL_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, LINE_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, TEXTILE_FIXTURE_CATEGORIES, type PRODUCTION_INTERIOR_KINDS, type SERVICE_INTERIOR_KINDS, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type PackSize } from './venueVocabulary';
 
 export type { FixtureCategory };
 
@@ -20,6 +20,9 @@ export const FIXTURE_CATEGORIES = {
   workshop: LINE_FIXTURE_CATEGORIES,
   storehouse: PACKHOUSE_FIXTURE_CATEGORIES,
   recyclingPlant: PACKHOUSE_FIXTURE_CATEGORIES,
+  textileMill: TEXTILE_FIXTURE_CATEGORIES,
+  knitwearFactory: PACKHOUSE_FIXTURE_CATEGORIES,
+  livestockFarm: PACKHOUSE_FIXTURE_CATEGORIES,
   school: SCHOOL_FIXTURE_CATEGORIES,
   library: LIBRARY_FIXTURE_CATEGORIES,
   hospital: HOSPITAL_FIXTURE_CATEGORIES,
@@ -81,7 +84,7 @@ export interface FixtureSpec {
   quality?: number;
   capacity?: number;
   power?: number;
-  assigns?: 'baker' | 'seller' | 'cheesemaker' | 'creamMaker' | 'miller' | 'restocker';
+  assigns?: 'baker' | 'seller' | 'cheesemaker' | 'creamMaker' | 'miller' | 'spinner' | 'knitter' | 'herder' | 'restocker';
   // A Machine on which the player picks the item that the Line carries (the Extractor of a Workshop).
   picks?: true;
   hatch?: number;

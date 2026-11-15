@@ -2,6 +2,7 @@ import { ArticlePage } from './ArticlePage';
 import { CodexEntryPage } from './CodexEntryPage';
 import { CodexIndexPage } from './CodexIndexPage';
 import { CodexSectionPage } from './CodexSectionPage';
+import { FixturePage } from './FixturePage';
 import { GuideHomePage } from './GuideHomePage';
 import { RulesPage } from './RulesPage';
 import type { GuideData } from './guideData';
@@ -17,7 +18,8 @@ export function GuidePageContent({ route, data }: GuidePageContentProps) {
   if (page.kind === 'codexIndex') return <CodexIndexPage route={route} data={data} />;
   if (page.kind === 'codexSection') return <CodexSectionPage route={route} section={page.section} data={data} />;
   if (page.kind === 'codexEntry') return <CodexEntryPage route={route} id={page.id} data={data} />;
-  if (page.kind === 'rules') return <RulesPage id={page.id} />;
+  if (page.kind === 'rules') return <RulesPage route={route} id={page.id} />;
+  if (page.kind === 'fixture') return <FixturePage route={route} id={page.id} />;
   if (page.kind === 'article') return <ArticlePage route={route} article={page.article} />;
   return <GuideHomePage route={route} />;
 }

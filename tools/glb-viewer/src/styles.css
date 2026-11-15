@@ -13,3 +13,9 @@ footer { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; padding
 footer label { display: flex; gap: 6px; align-items: center; }
 select, button { padding: 3px 8px; border: 1px solid #3a4352; border-radius: 4px; background: #262c38; color: inherit; }
 #info { margin-left: auto; opacity: 0.7; white-space: pre; }
+body[data-models='collapsed'] { grid-template-columns: 1fr; }
+body[data-models='collapsed'] aside { display: none; }
+#toggle-models { position: absolute; top: 8px; left: 8px; z-index: 1; }
+footer { gap: 8px; }
+#controls { display: flex; flex: 1; flex-wrap: wrap; gap: 16px; align-items: center; min-width: 0; }
+body[data-controls='collapsed'] #controls { display: none; }

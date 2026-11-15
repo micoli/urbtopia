@@ -65,7 +65,9 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
     const scene = new VenueScene(canvas, sizeOf(initial, venueType), initial.building.tier, venueType, venueId);
     venueSceneHandle.current = scene;
     scene.setPickMode(prefsStore.getState().pickMode);
+    scene.setShadows(prefsStore.getState().sunShadows);
     const unsubscribePrefs = prefsStore.subscribe((prefs, previous) => {
+      if (prefs.sunShadows !== previous.sunShadows) scene.setShadows(prefs.sunShadows);
       if (prefs.pickMode !== previous.pickMode) scene.setPickMode(prefs.pickMode);
     });
     let hovered: Coord | null = null;

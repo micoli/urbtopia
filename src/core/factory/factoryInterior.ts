@@ -295,6 +295,34 @@ const reachableFrom = (source: number, next: ReadonlyMap<number, number[]>): Set
 
 // The Line, once every Machine feeds no more Fixtures than its limit: of those it reaches, the lowest ids are fed and the others are left out, and so is what only they lead to.
 function lineReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, linked: ReadonlySet<number>): LineReach {
+  const reach = feedLimitedReach(fixtures, at, linked);
+  const stage = requiredStageOf(fixtures);
+  return stage === undefined ? reach : throughStage(fixtures, reach, stage);
+}
+
+// The family a Line must pass through to count, for the building that these Fixtures belong to.
+const requiredStageOf = (fixtures: readonly VenueFixture[]): string | undefined => {
+  const first = fixtures[0];
+  return first === undefined ? undefined : interiorLayoutOf(FIXTURES[first.type].venue as BuildingType)?.requires;
+};
+
+// Keeps the Exits that Packets reach through a Fixture of the required family, and what leads to them.
+function throughStage(fixtures: readonly VenueFixture[], reach: LineReach, stage: string): LineReach {
+  const passed = new Set<number>();
+  for (const fixture of fixtures) if (reach.lined.has(fixture.id) && FIXTURES[fixture.type].family === stage) for (const id of reachableFrom(fixture.id, reach.next)) passed.add(id);
+  const lined = new Set(fixtures.filter(fixture => roleOf(fixture) === 'exit' && reach.lined.has(fixture.id) && passed.has(fixture.id)).map(fixture => fixture.id));
+  for (let grew = true; grew; ) {
+    grew = false;
+    for (const [id, targets] of reach.next) {
+      if (lined.has(id) || !reach.lined.has(id) || !targets.some(target => lined.has(target))) continue;
+      lined.add(id);
+      grew = true;
+    }
+  }
+  return { ...reach, lined };
+}
+
+function feedLimitedReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, linked: ReadonlySet<number>): LineReach {
   const limits = (fixture: VenueFixture) => interiorLayoutOf(FIXTURES[fixture.type].venue as BuildingType)?.feeds?.filter(feed => matches(fixture, feed.from)) ?? [];
   if (!fixtures.some(fixture => limits(fixture).length > 0)) return unlimitedLineReach(fixtures, at, linked);
   const overfed = new Set<number>();
@@ -457,6 +485,11 @@ function milledOf(fixtures: readonly VenueFixture[], flow: FlowReach, linked: Re
   return milled;
 }
 
+// The Spinners at work: linked, with a Recipe. A Spinner needs nothing but its Drive, so a Textile mill has no Line or Flow to complete.
+function spunOf(fixtures: readonly VenueFixture[], linked: ReadonlySet<number>): Set<number> {
+  return new Set(fixtures.filter(fixture => linked.has(fixture.id) && FIXTURES[fixture.type].family === 'spinner' && fixture.recipe !== undefined).map(fixture => fixture.id));
+}
+
 // What is worked out once for a list of Fixtures: Drive, Flow and Links. A floor's list is replaced, never changed, when the player edits it,
 // so each list is read once however many panels, bonuses and scenes ask.
 interface InteriorReport {
@@ -507,7 +540,7 @@ const reportOf = memoized((allFixtures): InteriorReport => {
     else problems.set(machine.id, lacking);
   }
   const line = lineReach(fixtures, at, linked);
-  const lined = new Set([...line.lined, ...milledOf(fixtures, flow, linked)]);
+  const lined = new Set([...line.lined, ...milledOf(fixtures, flow, linked), ...spunOf(fixtures, linked)]);
   return { fixtures, at, drive, powered, flow, line, links: { linked, jammed: drive.jammed, problems, lined, overfed: line.overfed } };
 });
 
@@ -652,7 +685,7 @@ function bonusOf(allFixtures: readonly VenueFixture[], tier: number, type: Build
 export interface LinePath {
   source: number;
   points: readonly { x: number; y: number }[];
-  // Bakery: the Good that the Packets have become once they have gone through an Oven, which is the point of the way where they turn into it, and the Good that arrives at the Exit.
+  // Bakery, Knitwear factory: the Good that the Packets have become once they have gone through an Oven or a Knitter, which is the point of the way where they turn into it, and the Good that arrives at the Exit: the Recipe of what they went through, not the Good the Exit sells.
   baked?: { from: number; good: string };
 }
 
@@ -673,7 +706,8 @@ export const linePathsOf = memoized((allFixtures): readonly LinePath[] => {
     const nexts = (line.next.get(current.id) ?? []).filter(id => line.lined.has(id) && !seen.has(id));
     if (nexts.length === 0) {
       if (roleOf(current) !== 'exit') return;
-      const good = current.soldGood ?? baked?.good;
+      if (current.soldGood !== undefined && baked !== undefined && baked.good !== current.soldGood) return;
+      const good = baked?.good ?? current.soldGood;
       paths.push({ source: source.id, points: [...points, toward(current, 'back', FIXTURES[current.type].hatch ?? HATCH)], ...(baked && good ? { baked: { from: baked.from, good } } : {}) });
       return;
     }
@@ -699,6 +733,10 @@ export type LineFault =
   | { kind: 'misfacing'; fixture: VenueFixture }
   // The Machine that feeds it already feeds as many as its limit allows.
   | { kind: 'overfed'; fixture: VenueFixture }
+  // The Fixture next to the entry sends no Packets at all, such as a Motor: a Conveyor must bring them from the Line.
+  | { kind: 'noOutput'; fixture: VenueFixture }
+  // The Line reaches the Fixture without passing through the Fixture it requires, such as the Finisher of a Knitwear factory.
+  | { kind: 'missingStage'; fixture: VenueFixture }
   // Nothing at all lies next to the entry.
   | { kind: 'deadEnd'; cell: { x: number; y: number }; of: VenueFixture };
 
@@ -721,7 +759,7 @@ export function lineFaultOf(allFixtures: readonly VenueFixture[], start: VenueFi
       return { kind: lacksFlowOnly ? 'noFlow' : 'noDrive', fixture: current };
     }
     const entries = sides(current, 'lineIn');
-    if (entries.length === 0) return undefined;
+    if (entries.length === 0) return requiredStageOf(allFixtures) !== undefined && !allFixtures.some(fixture => seen.has(fixture.id) && FIXTURES[fixture.type].family === requiredStageOf(allFixtures)) ? { kind: 'missingStage', fixture: start } : undefined;
     const feeders = entries.flatMap(side => {
       const cell = cellAt(current, side);
       const neighbour = at.get(keyOf(cell.x, cell.y));
@@ -732,6 +770,7 @@ export function lineFaultOf(allFixtures: readonly VenueFixture[], start: VenueFi
     if (!feeder) {
       const first = entries.map(side => cellAt(current, side)).find(cell => !at.has(keyOf(cell.x, cell.y))) ?? cellAt(current, entries[0]!);
       const wrong = entries.map(side => at.get(keyOf(cellAt(current, side).x, cellAt(current, side).y))).find(neighbour => neighbour !== undefined);
+      if (wrong && sides(wrong, 'lineOut').length === 0) return { kind: 'noOutput', fixture: wrong };
       return wrong ? { kind: 'misfacing', fixture: wrong } : { kind: 'deadEnd', cell: first, of: current };
     }
     if (feeder.broken === true) return { kind: 'broken', fixture: feeder };
@@ -1019,7 +1058,7 @@ function assignedBonusUncached(building: Pick<Building, 'type' | 'tier' | 'inter
   const { links } = reportOf(allFixtures);
   // The report is cached by layout, which leaves out what the player assigns: the Fixtures are read from the interior itself.
   const lined = allFixtures.filter(fixture => links.lined.has(fixture.id));
-  const ovens = lined.filter(fixture => fixture.assigned === true && FIXTURES[fixture.type].assigns === 'baker' && fixture.recipe !== undefined);
+  const ovens = lined.filter(fixture => fixture.assigned === true && isProducerRole(FIXTURES[fixture.type].assigns) && fixture.recipe !== undefined);
   const counters = lined.filter(fixture => fixture.assigned === true && FIXTURES[fixture.type].assigns === 'seller' && fixture.soldGood !== undefined && suppliedGoodsOf(allFixtures, fixture).has(fixture.soldGood));
   const unattended = lined.filter(fixture => isMachine(fixture) && FIXTURES[fixture.type].assigns === undefined);
   const total = (list: readonly VenueFixture[], key: 'speed' | 'yield' | 'sales') => list.reduce((sum, fixture) => sum + (FIXTURES[fixture.type][key] ?? 0), 0);
@@ -1040,6 +1079,9 @@ function assignedBonusUncached(building: Pick<Building, 'type' | 'tier' | 'inter
   };
 }
 
+// The Staff that delivers the yield the Exits add: the sellers of a Bakery, the herders of a Livestock farm.
+const exitYieldPartOf = (type: BuildingType): InteriorPart => (Object.values(interiorDeclarationOf(type)?.roles ?? {}).some(role => role.part === 'yield') ? 'yield' : 'salesRate');
+
 // The bonus of a building's floor; for a Packhouse, the one that applies to the packed Goods `item` when it is given.
 export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'interior' | 'breakerOff'>, item?: ItemId): InteriorBonus {
   if (!building.interior || building.breakerOff) return NO_BONUS;
@@ -1051,7 +1093,7 @@ export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier'
     const bonus = layout?.line ? lineBonusOf(building.interior.fixtures, building.tier, building.type, group) : interiorBonusOf(building.interior.fixtures, building.tier, building.type);
     // A yield that comes from the Exits is delivered by the Staff that serves them. A building that splits its yield in groups of Goods delivers each group through its own role; asked about none, it is the best of them.
     const delivered = (name: string) => bonus.yield * interiorPartPresence(building, `${name}Yield` as InteriorPart);
-    const yieldShare = groups.length === 0 ? bonus.yield * (layout?.yieldFromExits ? interiorPartPresence(building, 'salesRate') : 1) : group !== undefined ? delivered(group) : item !== undefined ? 0 : Math.max(...groups.map(delivered));
+    const yieldShare = groups.length === 0 ? bonus.yield * (layout?.yieldFromExits ? interiorPartPresence(building, exitYieldPartOf(building.type)) : 1) : group !== undefined ? delivered(group) : item !== undefined ? 0 : Math.max(...groups.map(delivered));
     return {
       ...bonus,
       yield: yieldShare,

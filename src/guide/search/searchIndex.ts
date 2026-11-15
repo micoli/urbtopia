@@ -1,11 +1,12 @@
 import { CODEX_ENTRIES, CODEX_SECTIONS } from '../../codex/catalog';
+import { FIXTURE_PAGES } from '../../codex/fixturePages';
 import { CODEX_PAGES } from '../../codex/pages';
 import { pageSearchKeywords } from '../../codex/pageSearchKeywords';
 import type { Language } from '../../i18n/prefsStore';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { ARTICLES, ARTICLE_DIRECTORIES, translationOf, type Article, type ArticleSection } from '../content/articles';
-import { articlePathOf, codexEntryPathOf, codexSectionPathOf, isRulesWrittenUp, rulesPathOf } from '../routes';
+import { articlePathOf, codexEntryPathOf, codexSectionPathOf, fixturePathOf, isRulesWrittenUp, rulesPathOf } from '../routes';
 import type { MessageKey } from '../../i18n/messages';
 import { messageIn } from '../../advisor/messageIn';
 import { plainTextOfArticle } from '../content/articleText';
@@ -39,6 +40,7 @@ export function searchIndexOf(language: Language): SearchItem[] {
       return { path: articlePathOf(language, article), title: meta.title, summary: meta.summary, section: t(sectionTitles[article.section]), body: bodyOfArticle(language, article) };
     }),
     ...CODEX_PAGES.filter(page => !isRulesWrittenUp(page.id)).map(page => ({ path: rulesPathOf(language, page.id), title: t(page.title), summary: t(page.description), section: t('guide.mechanics'), keywords: pageSearchKeywords(page.id) })),
+    ...FIXTURE_PAGES.map(page => ({ path: fixturePathOf(language, page.id), title: t(`venue.fixture.${page.fixtures[0]!}`), summary: '', section: t('codex.fixtures.title') })),
     ...CODEX_SECTIONS.map(section => ({ path: codexSectionPathOf(language, section), title: t(section), summary: '', section: t('guide.codex') })),
     ...CODEX_ENTRIES.map(entry => ({ path: codexEntryPathOf(language, entry), title: t(entry.name), summary: t(entry.description), section: t(entry.section) })),
   ];

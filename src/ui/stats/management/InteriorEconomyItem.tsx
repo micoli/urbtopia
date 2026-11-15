@@ -3,7 +3,7 @@ import {itemName} from '../../../i18n/itemName';
 import {t} from '../../../i18n/t';
 import {gameStore} from '../../../store/gameStore';
 import {ActionButton} from '../../common/ActionButton';
-import {useUi} from '../../common/hooks';
+import {useGame, useUi} from '../../common/hooks';
 import {SwitchField} from '../../common/SwitchField';
 import {UrbsAmount} from '../../common/UrbsAmount';
 import {formatPercent} from '../../factory/formatPercent';
@@ -24,8 +24,9 @@ function BenefitCell({row}: InteriorEconomyItemProps) {
 
 function BreakerCell({row}: InteriorEconomyItemProps) {
     const {building} = row;
+    const breakerOff = useGame(store => store.state.buildings.find(candidate => candidate.id === building.id)?.breakerOff);
     return <td>
-        <SwitchField ariaLabel={t('interior.breaker')} checked={!building.breakerOff} onChange={on => gameStore.getState().send({type: 'SetInteriorBreaker', buildingId: building.id, off: !on})}/>
+        <SwitchField ariaLabel={t('interior.breaker')} checked={!breakerOff} onChange={on => gameStore.getState().send({type: 'SetInteriorBreaker', buildingId: building.id, off: !on})}/>
     </td>;
 }
 

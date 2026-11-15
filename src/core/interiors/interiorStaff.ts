@@ -6,7 +6,7 @@ import { STAFF } from '../venues/staff';
 
 export type InteriorFamily = 'production' | 'service';
 
-export type InteriorPart = 'speed' | 'salesRate' | 'cheeseYield' | 'creamYield' | 'capacity' | 'schooling' | 'knowledge' | 'carePrimary' | 'careDoctor' | 'careSurgeon';
+export type InteriorPart = 'speed' | 'yield' | 'salesRate' | 'cheeseYield' | 'creamYield' | 'capacity' | 'schooling' | 'knowledge' | 'carePrimary' | 'careDoctor' | 'careSurgeon';
 
 // A Machine, named by its family, feeds at most `max` of the Fixtures `to`, named by their family or their role, that its Line reaches.
 export interface LineFeed {
@@ -25,6 +25,8 @@ export interface InteriorLayout {
   capacityCaps?: number[];
   yieldGroups?: Record<string, string[]>;
   feeds?: LineFeed[];
+  // A Line only counts when it passes through a Fixture of this family on its way to an Exit: the Finisher of a Knitwear factory.
+  requires?: string;
   // The yield comes from the Exits that Packets reach, not from the Machines.
   yieldFromExits?: true;
   // The Staff are assigned by hand to the Fixtures that carry their part: a baker to an Oven, a seller to a Display counter.
@@ -100,10 +102,10 @@ export const interiorPostsOf = (type: BuildingType, role: InteriorRole, tier: nu
   return posts.length === 0 ? 0 : posts[Math.min(tier, posts.length) - 1]!;
 };
 
-// A Bakery hires as many bakers as it has production Slots and as many sellers as its Counter has Slots; the other roles follow the Tier. The Dairy hires sellers as its Counter has Slots.
+// A Bakery hires as many bakers (and a Knitwear factory as many knitters) as it has production Slots and as many sellers as its Counter has Slots; the other roles follow the Tier. The Dairy hires sellers as its Counter has Slots.
 export const interiorPostsOfBuilding = (building: Pick<Building, 'type' | 'tier' | 'slotCount'>, role: InteriorRole): number => {
   const layout = interiorLayoutOf(building.type);
-  if (layout?.assignments === true && (role === 'baker' || role === 'seller')) return role === 'baker' ? building.slotCount : stackCountOf(building.type, building.tier);
+  if (layout?.assignments === true && (role === 'seller' || DECLARATIONS[building.type]?.roles[role]?.part === 'speed')) return role === 'seller' ? stackCountOf(building.type, building.tier) : building.slotCount;
   if (layout?.autoWork === true && role === 'seller') return stackCountOf(building.type, building.tier);
   return interiorPostsOf(building.type, role, building.tier);
 };

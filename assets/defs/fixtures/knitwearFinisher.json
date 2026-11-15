@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "knitwearFactory",
+  "category": "machines",
+  "name": {
+    "en": "Finisher (Drive on the right)",
+    "fr": "Finition (prise à droite)"
+  },
+  "model": "knitwear-interior-finisher",
+  "footprint": [1, 1],
+  "price": 900,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["right"],
+  "speed": 0.2,
+  "family": "finisher",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

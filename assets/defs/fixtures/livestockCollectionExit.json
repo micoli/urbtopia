@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "livestockFarm",
+  "category": "line",
+  "name": {
+    "en": "Collection exit",
+    "fr": "Sortie de collecte"
+  },
+  "model": "livestock-interior-collection-exit",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "exit",
+  "yield": 0.05,
+  "assigns": "herder",
+  "hatch": 0.3,
+  "power": 0.3,
+  "lineIn": ["front"]
+}

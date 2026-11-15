@@ -5,6 +5,7 @@ import { favoriteKeyOf, favoriteTargetOf, type FavoriteTarget } from '../../code
 import { pageSearchKeywords } from '../../codex/pageSearchKeywords';
 import { documentScore } from '../../codex/documentSearch';
 import { useArticleBodies } from './useArticleBodies';
+import { FIXTURE_PAGES, fixturePageOf } from '../../codex/fixturePages';
 import { CODEX_PAGES, type CodexPage } from '../../codex/pages';
 import { ARTICLES, translationOf, type Article } from '../../guide/content/articles';
 import type { ArticleLinker } from '../../guide/content/articleLinker';
@@ -20,6 +21,9 @@ import { ARTICLE_GROUPS, CodexArticleNav } from './CodexArticleNav';
 import { CodexFavoriteButton } from './CodexFavoriteButton';
 import { CodexFavoritesNav } from './CodexFavoritesNav';
 import { CodexGuideLink } from './CodexGuideLink';
+import { FixtureLive } from './FixtureLive';
+import { FixturePageContent } from './FixturePageContent';
+import { FixtureLinkContext } from './fixtureLinkContext';
 import { CODEX_PAGE_COMPONENTS } from './codexPageComponents';
 import { useCodexManifest } from './useCodexManifest';
 import { CloseButton } from '../common/CloseButton';
@@ -39,6 +43,7 @@ export function CodexPanel() {
   const initialEntry = useUi(store => store.codexEntryId);
   const initialDetail = useUi(store => store.codexShowDetail);
   const initialPage = useUi(store => store.codexPage);
+  const initialFixture = useUi(store => store.codexFixture);
   const dialog = useRef<HTMLDialogElement>(null);
   const heading = useId();
   const initialArticle = initialPage ? articleOfRules(initialPage) ?? null : null;
@@ -47,9 +52,10 @@ export function CodexPanel() {
   const [showDetail, setShowDetail] = useState(initialDetail);
   const [page, setPage] = useState<CodexPage | null>(initialArticle ? null : initialPage);
   const [article, setArticle] = useState<Article | null>(initialArticle);
+  const [fixture, setFixture] = useState<string | null>(initialFixture);
   const [search, setSearch] = useState('');
   const searching = search.trim() !== '';
-  const pageOpen = page !== null || article !== null;
+  const pageOpen = page !== null || article !== null || fixture !== null;
   const [openSection, setOpenSection] = useState<string>(initialArticle ? groupTitleOf(initialArticle) : CODEX_PAGES.find(item => item.id === initialPage)?.section ?? CODEX_ENTRIES.find(entry => entry.id === initialEntry)!.section);
   const [favoritesOpen, setFavoritesOpen] = useState(true);
   const favoriteKeys = useStore(prefsStore, store => store.codexFavorites);
@@ -60,20 +66,24 @@ export function CodexPanel() {
   const matches = (document: Parameters<typeof documentScore>[0]) => documentScore(document, search) !== null;
   const filteredEntries = CODEX_ENTRIES.filter(item => matches({ title: t(item.name), summary: t(item.description), section: t(item.section) }));
   const filteredPages = CODEX_PAGES.filter(item => !isRulesWrittenUp(item.id) && matches({ title: t(item.title), summary: t(item.description), section: t(item.section), keywords: pageSearchKeywords(item.id) }));
+  const fixtureName = (id: string) => t(`venue.fixture.${fixturePageOf(id)!.fixtures[0]!}`);
+  const filteredFixtures = FIXTURE_PAGES.filter(item => matches({ title: fixtureName(item.id), summary: '', section: t('codex.fixtures.title') }));
   const filteredArticles = ARTICLES.filter(item => matches({ title: translationOf(item, language).meta.title, summary: translationOf(item, language).meta.summary, body: articleBodies.get(item) }));
-  const hasResults = !searching || filteredEntries.length > 0 || filteredPages.length > 0 || filteredArticles.length > 0;
+  const hasResults = !searching || filteredEntries.length > 0 || filteredPages.length > 0 || filteredFixtures.length > 0 || filteredArticles.length > 0;
   const labelOfFavorite = (target: FavoriteTarget): string => {
     if (target.kind === 'article') return translationOf(target.article, language).meta.title;
+    if (target.kind === 'fixture') return fixtureName(target.id);
     if (target.kind === 'page') return t(CODEX_PAGES.find(item => item.id === target.id)!.title);
     return t(CODEX_ENTRIES.find(item => item.id === target.id)!.name);
   };
-  const currentTarget: FavoriteTarget = article ? { kind: 'article', article } : page ? { kind: 'page', id: page } : { kind: 'entry', id: selected };
+  const currentTarget: FavoriteTarget = article ? { kind: 'article', article } : fixture ? { kind: 'fixture', id: fixture } : page ? { kind: 'page', id: page } : { kind: 'entry', id: selected };
   const favorites = favoriteKeys
     .flatMap(key => favoriteTargetOf(key, ARTICLES) ?? [])
     .map(target => ({ target, label: labelOfFavorite(target), current: favoriteKeyOf(target) === favoriteKeyOf(currentTarget) }))
     .filter(({ label }) => matches({ title: label }));
-  const Page = page ? CODEX_PAGE_COMPONENTS[page] : null;
-  const pageTitle = article ? translationOf(article, language).meta.title : page ? t(CODEX_PAGES.find(item => item.id === page)!.title) : t(entry.name);
+  const Page = page && !fixture ? CODEX_PAGE_COMPONENTS[page] : null;
+  const fixturePage = fixture ? fixturePageOf(fixture) : undefined;
+  const pageTitle = article ? translationOf(article, language).meta.title : fixture ? fixtureName(fixture) : page ? t(CODEX_PAGES.find(item => item.id === page)!.title) : t(entry.name);
 
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
@@ -98,11 +108,12 @@ export function CodexPanel() {
     if (!showDetail) return;
     detail.current?.scrollTo(0, 0);
     detail.current?.focus();
-  }, [selected, showDetail, page]);
+  }, [selected, showDetail, page, fixture]);
 
   const select = (id: CodexId) => {
     setPage(null);
     setArticle(null);
+    setFixture(null);
     setSelected(id);
     setOpenSection(CODEX_ENTRIES.find(entry => entry.id === id)!.section);
     setShowDetail(true);
@@ -110,6 +121,7 @@ export function CodexPanel() {
 
   const openArticle = (target: Article) => {
     setPage(null);
+    setFixture(null);
     setArticle(target);
     setOpenSection(groupTitleOf(target));
     setShowDetail(true);
@@ -119,12 +131,22 @@ export function CodexPanel() {
     const written = articleOfRules(id);
     if (written) return openArticle(written);
     setArticle(null);
+    setFixture(null);
     setPage(id);
+    setShowDetail(true);
+  };
+
+  const openFixture = (id: string) => {
+    setArticle(null);
+    setPage('fixtures');
+    setFixture(id);
+    setOpenSection(CODEX_PAGES.find(item => item.id === 'fixtures')!.section);
     setShowDetail(true);
   };
 
   const openFavorite = (target: FavoriteTarget) => {
     if (target.kind === 'article') return openArticle(target.article);
+    if (target.kind === 'fixture') return openFixture(target.id);
     if (target.kind === 'page') return openPage(target.id);
     select(target.id);
   };
@@ -142,7 +164,7 @@ export function CodexPanel() {
         <h2 id={heading}>{t('codex.title')}</h2>
         <div className="codex-header-actions">
           <CodexFavoriteButton target={currentTarget} />
-          <CodexGuideLink entry={entry} page={page} article={article} />
+          <CodexGuideLink entry={entry} page={page} article={article} fixture={fixture} />
           {showDetail && <button type="button" className="codex-back" onClick={() => {
             setShowDetail(false);
             requestAnimationFrame(() => dialog.current?.querySelector<HTMLButtonElement>('.codex-list [aria-current="true"]')?.focus());
@@ -159,12 +181,14 @@ export function CodexPanel() {
           {CODEX_SECTIONS.map(section => {
             const sectionEntries = filteredEntries.filter(item => item.section === section);
             const sectionPages = filteredPages.filter(item => item.section === section);
-            if (searching && sectionEntries.length === 0 && sectionPages.length === 0) return null;
+            const sectionFixtures = searching && section === CODEX_PAGES.find(item => item.id === 'fixtures')!.section ? filteredFixtures : [];
+            if (searching && sectionEntries.length === 0 && sectionPages.length === 0 && sectionFixtures.length === 0) return null;
             const expanded = searching || openSection === section;
             const panelId = `${heading}-${section}`;
             return (
               <AccordionSection key={section} id={panelId} title={t(section)} expanded={expanded} chevron toggleClassName="codex-section-toggle" onToggle={() => setOpenSection(expanded ? '' : section)}>
-                {sectionPages.map(item => <button key={item.id} type="button" aria-current={page === item.id ? 'true' : undefined} onClick={() => openPage(item.id)}>{t(item.title)}</button>)}
+                {sectionPages.map(item => <button key={item.id} type="button" aria-current={page === item.id && !fixture ? 'true' : undefined} onClick={() => openPage(item.id)}>{t(item.title)}</button>)}
+                {sectionFixtures.map(item => <button key={item.id} type="button" aria-current={fixture === item.id ? 'true' : undefined} onClick={() => openFixture(item.id)}>{fixtureName(item.id)}</button>)}
                 {sectionEntries.map(entry => (
                   <button type="button" key={entry.id} aria-current={!pageOpen && selected === entry.id ? 'true' : undefined} onClick={() => select(entry.id)}>{t(entry.name)}</button>
                 ))}
@@ -173,7 +197,10 @@ export function CodexPanel() {
           })}
         </nav>
         <article className="codex-detail" ref={detail} tabIndex={-1} aria-label={pageTitle}>
-          {Page && <Page />}
+          <FixtureLinkContext.Provider value={id => ({ href: '#', onClick: event => { event.preventDefault(); openFixture(id); } })}>
+            {Page && <Page />}
+          </FixtureLinkContext.Provider>
+          {fixturePage && <FixturePageContent page={fixturePage} live={<FixtureLive page={fixturePage} />} />}
           {article && <CodexArticle article={article} linker={linker} />}
           {!pageOpen && <CodexEntryContent entry={entry} manifest={manifest} key={entry.id} />}
           {!pageOpen && !manifest && (failed ? <div role="alert"><p>{t('codex.loadFailed')}</p><ActionButton onClick={retry}>{t('codex.retry')}</ActionButton></div> : <p role="status">{t('codex.loading')}</p>)}

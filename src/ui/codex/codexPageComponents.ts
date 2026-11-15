@@ -8,6 +8,7 @@ import { CropEconomyPage } from './CropEconomyPage';
 import { DayCyclePage } from './DayCyclePage';
 import { EnergyProductionPage } from './EnergyProductionPage';
 import { ProductionInteriorsPage } from './ProductionInteriorsPage';
+import { FixturesPage } from './FixturesPage';
 import { ServiceInteriorsPage } from './ServiceInteriorsPage';
 import { KnowledgePage } from './KnowledgePage';
 import { MarketRulesPage } from './MarketRulesPage';
@@ -42,4 +43,5 @@ export const CODEX_PAGE_COMPONENTS: Record<CodexPage, ComponentType> = {
   staff: StaffPage,
   productionInteriors: ProductionInteriorsPage,
   serviceInteriors: ServiceInteriorsPage,
+  fixtures: FixturesPage,
 };

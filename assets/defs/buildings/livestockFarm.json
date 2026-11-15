@@ -89,5 +89,13 @@
       "x": -0.64,
       "z": -0.14
     }
-  ]
+  ],
+  "floorShell": {
+    "floor": "livestock-interior-floor",
+    "wall": "livestock-interior-wall",
+    "corner": "livestock-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  }
 }
