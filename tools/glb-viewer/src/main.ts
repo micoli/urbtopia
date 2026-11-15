@@ -16,6 +16,41 @@ let selected = new Set(location.hash.slice(1).split(',').filter(Boolean).map(dec
 let tone = 'a'
 let refitOnNextShow = true
 
+type Panel = 'models' | 'controls'
+
+const readCollapsed = (panel: Panel): boolean => {
+  try {
+    return localStorage.getItem(`glb-viewer:${panel}:collapsed`) === 'true'
+  } catch {
+    return false
+  }
+}
+
+const writeCollapsed = (panel: Panel, collapsed: boolean) => {
+  try {
+    localStorage.setItem(`glb-viewer:${panel}:collapsed`, String(collapsed))
+  } catch {
+    // The layout then simply resets on the next load.
+  }
+}
+
+function bindCollapsible(panel: Panel, button: HTMLButtonElement, labels: { open: string; closed: string }) {
+  const apply = (collapsed: boolean) => {
+    document.body.dataset[panel] = collapsed ? 'collapsed' : 'open'
+    button.textContent = collapsed ? labels.closed : labels.open
+    button.setAttribute('aria-expanded', String(!collapsed))
+  }
+  apply(readCollapsed(panel))
+  button.addEventListener('click', () => {
+    const collapsed = document.body.dataset[panel] !== 'collapsed'
+    writeCollapsed(panel, collapsed)
+    apply(collapsed)
+  })
+}
+
+bindCollapsible('models', element<HTMLButtonElement>('toggle-models'), { open: 'Hide models', closed: 'Show models' })
+bindCollapsible('controls', element<HTMLButtonElement>('toggle-controls'), { open: 'Hide controls', closed: 'Show controls' })
+
 const saveSelection = () => history.replaceState(null, '', `#${[...selected].map(encodeURIComponent).join(',')}`)
 
 function renderList() {
