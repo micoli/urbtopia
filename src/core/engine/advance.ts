@@ -44,7 +44,7 @@ export function advance(state: GameState, now: number): AdvanceResult {
 }
 
 // A Replan stands still: the game clock stays where it was and every running timer waits, so nothing is caught up when it ends, however long it took.
-function standStill(state: GameState, now: number): AdvanceResult {
+export function standStill(state: GameState, now: number): AdvanceResult {
   const gap = Math.max(now, state.lastSeen) - state.lastSeen;
   if (gap === 0) return { state, events: [] };
   return { state: { ...shiftRunningTimers(state, gap), lastSeen: state.lastSeen + gap, timeOffset: (state.timeOffset ?? 0) - gap }, events: [] };

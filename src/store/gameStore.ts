@@ -1,5 +1,6 @@
 import { createStore } from 'zustand/vanilla';
 import { advance, forfeitOfflineTime, newGame, type Command, type CommandError, type Difficulty, type GameState } from '../core';
+import { standStill } from '../core/engine/advance';
 import { saveSession } from '../persistence/instance';
 import type { LoadResult } from '../persistence/saveSession';
 import { isSimulationRequested } from '../sim/simulationFlag';
@@ -20,6 +21,8 @@ export interface GameStore {
   state: GameState;
   lastError: CommandError | null;
   lastChange: Change;
+  paused: boolean;
+  suspend: (now: number) => (now: number) => void;
   send: (command: Command) => void;
   tick: (now: number) => void;
   forfeitOffline: (now: number) => void;
@@ -27,12 +30,38 @@ export interface GameStore {
   newGame: (now: number, difficulty?: Difficulty) => void;
 }
 
+// Shift absolute timers while preserving game-clock time and the adaptation grace period.
+function suspendedState(state: GameState, elapsed: number): GameState {
+  if (elapsed === 0) return state;
+  const shifted = standStill(state, state.lastSeen + elapsed).state;
+  return state.adaptationUntil === undefined ? shifted : { ...shifted, adaptationUntil: state.adaptationUntil + elapsed };
+}
+
 export function createGameStore(initial: GameState, gateway: CommandGateway = liveCommandGateway) {
+  let leases = 0;
+  let suspendedAt = 0;
   return createStore<GameStore>((set, get) => ({
     state: initial,
     lastError: null,
     lastChange: 'reset',
+    paused: false,
+    suspend: (now) => {
+      if (leases++ === 0) {
+        suspendedAt = now;
+        set({ paused: true });
+      }
+      let released = false;
+      return (resumedAt) => {
+        if (released) return;
+        released = true;
+        if (--leases > 0) return;
+        const state = get().state;
+        const shifted = suspendedState(state, Math.max(0, resumedAt - suspendedAt));
+        set({ state: shifted, paused: false, lastChange: 'tick' });
+      };
+    },
     send: (command) => {
+      if (get().paused) return;
       const outcome = gateway.apply(get().state, command);
       if (outcome.kind === 'blocked') return;
       if (outcome.kind === 'rejected') {
@@ -43,13 +72,18 @@ export function createGameStore(initial: GameState, gateway: CommandGateway = li
     },
     tick: (tickNow) => {
       if (readOnlyStore.getState().readOnly) return;
+      if (get().paused) {
+        const state = suspendedState(get().state, Math.max(0, tickNow - suspendedAt));
+        suspendedAt = Math.max(suspendedAt, tickNow);
+        return set({ state, lastChange: 'tick' });
+      }
       const result = advance(get().state, tickNow);
       announceEvents(result.events, result.state);
       announceTutorialEnd(get().state, result.state);
       set({ state: result.state, lastChange: 'tick' });
     },
     forfeitOffline: (tickNow) => {
-      if (readOnlyStore.getState().readOnly) return;
+      if (get().paused || readOnlyStore.getState().readOnly) return;
       const result = forfeitOfflineTime(get().state, tickNow);
       announceEvents(result.events, result.state);
       set({ state: result.state, lastChange: 'tick' });
