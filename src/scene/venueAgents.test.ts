@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AGENTS, clipSeconds, findPath, makeWorld, pickClip, reconcile, repath, roll, standPoint, stepAgent, type Agent, type Dice, type World } from './venueAgents';
+import { AGENTS, clipSeconds, findPath, makeWorld, pickClip, reconcile, repath, roll, standPoint, stepAgent, worldOf, type Agent, type Dice, type World } from './venueAgents';
 import type { Figure } from './venueCrowd';
 
 const entrance = { x: 3, y: 0 };
@@ -251,5 +251,15 @@ describe('Venue gestures', () => {
   it('holds a gesture for a few seconds', () => {
     expect(clipSeconds(0)).toBeGreaterThan(1);
     expect(clipSeconds(1)).toBeLessThan(5);
+  });
+});
+
+describe('Doorway orientation', () => {
+  it('runs along the walls beside it whatever its own rotation', () => {
+    const fixture = (id: number, type: 'restaurantWall' | 'restaurantDoorway', x: number, y: number, rotation: 0 | 1 = 0) => ({ id, type, x, y, rotation });
+    const column = [fixture(1, 'restaurantWall', 3, 1), fixture(2, 'restaurantDoorway', 3, 2, 0), fixture(3, 'restaurantWall', 3, 3)];
+    expect(worldOf(6, { x: 0, y: 0 }, column).doors.get('3:2')).toBe('x');
+    const row = [fixture(1, 'restaurantWall', 1, 2), fixture(2, 'restaurantDoorway', 2, 2, 1), fixture(3, 'restaurantWall', 3, 2)];
+    expect(worldOf(6, { x: 0, y: 0 }, row).doors.get('2:2')).toBe('y');
   });
 });

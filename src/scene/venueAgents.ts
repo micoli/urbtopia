@@ -1,5 +1,5 @@
 import { nextRandom } from '../core/engine/random';
-import { FIXTURES, fixtureTiles, type Coord, type VenueFixture } from '../core';
+import { FIXTURES, doorwayTurnsOf, fixtureTiles, type Coord, type VenueFixture } from '../core';
 import type { Figure } from './venueCrowd';
 
 // The people of the interior are a visual projection of the aggregate model: they walk on the grid, play, wait and leave,
@@ -139,7 +139,7 @@ export function makeWorld(size: number, entrance: Coord, blockedCells: readonly 
 export function worldOf(size: number, entrance: Coord, fixtures: readonly VenueFixture[], errands: readonly Coord[] = []): World {
   const doorways = fixtures.filter(fixture => FIXTURES[fixture.type].passable);
   const blocked = fixtures.filter(fixture => !FIXTURES[fixture.type].passable).flatMap(fixtureTiles);
-  const doors = new Map(doorways.flatMap(fixture => fixtureTiles(fixture).map(tile => [keyOf(tile), fixture.rotation % 2 === 0 ? 'y' : 'x'] as const)));
+  const doors = new Map(doorways.flatMap(fixture => fixtureTiles(fixture).map(tile => [keyOf(tile), doorwayTurnsOf(fixture, fixtures) === 0 ? 'y' : 'x'] as const)));
   return makeWorld(size, entrance, blocked, errands, doors);
 }
 
