@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, fixtureTiles, type Coord, type FixtureVenue, type VenueFixture, type VenueType } from '../core';
+import { FIXTURES, fixtureTiles, staffRolesOf, type Coord, type FixtureVenue, type VenueFixture, type VenueType } from '../core';
 import type { ModelLibrary } from './modelLibrary';
 import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
 import { clipSeconds, makeWorld, worldOf, pickClip, reconcile, repath, stepAgent, type Agent, type Dice, type World } from './venueAgents';
@@ -115,7 +115,8 @@ export class VenueCrowdLayer {
     const known = this.visuals.get(agent.id);
     if (known) return known;
     const models = agent.kind === 'employee' ? VENUE_STAFF_MODELS[this.venueType as VenueType] : VENUE_CUSTOMER_MODELS;
-    const model = models[agent.id % models.length]!;
+    const roleIndex = agent.slot?.role ? staffRolesOf(this.venueType as VenueType).indexOf(agent.slot.role) : -1;
+    const model = models[(roleIndex >= 0 ? roleIndex : agent.id) % models.length]!;
     const holder = new THREE.Group();
     const body = cloneModel(this.library.get(model));
     holder.add(body);

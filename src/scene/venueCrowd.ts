@@ -1,10 +1,12 @@
 import { reachableCells, worldOf } from './venueAgents';
-import { FIXTURES, fixtureTiles, type Coord, type FixtureId, type VenueFixture } from '../core';
+import { FIXTURES, fixtureTiles, type Coord, type FixtureId, type StaffRole, type VenueFixture } from '../core';
 
 export type FigureKind = 'gamer' | 'queue' | 'employee' | 'diner';
 
 export interface Figure extends Coord {
   kind: FigureKind;
+  // The role of an employee, which sets its model and its post.
+  role?: StaffRole;
   facing: number;
 }
 
@@ -16,9 +18,16 @@ export interface CrowdInput {
   saturation: number;
   demandRatio: number;
   employees: number;
+  // The hired staff of a Venue that shows each role at its post; with it, `employees` is not used.
+  staff?: readonly { role: StaffRole; count: number }[];
 }
 
-export const CROWD = { maxQueue: 6, maxFigures: 24 };
+export const CROWD = { maxQueue: 6, maxFigures: 24, maxPerRole: 2 };
+
+// The Fixtures an employee stands at, by role: a cook at the cooktop, a waiter among the tables, the maitre d' at the checkout.
+const POSTS: Partial<Record<StaffRole, readonly FixtureId[]>> = {
+  cook: ['cooktop'], kitchenAssistant: ['prepTable'], bartender: ['restaurantBar'], waiter: ['restaurantTable'], maitreD: ['restaurantCheckout'],
+};
 
 // Fixtures where Visitors queue: the counter of an Arcade, a checkout, the reception desk of a Hotel.
 const COUNTERS: readonly FixtureId[] = ['counter', 'checkout', 'receptionDesk'];
@@ -36,17 +45,19 @@ export function planCrowd(input: CrowdInput): Figure[] {
   const taken = new Set<string>([keyOf(entrance), ...fixtures.flatMap(fixtureTiles).map(keyOf)]);
   const reachable = reachableCells(worldOf(size, entrance, fixtures));
   const inside = (cell: Coord) => cell.x >= 0 && cell.y >= 0 && cell.x < size && cell.y < size;
-  const free = (cell: Coord) => inside(cell) && !taken.has(keyOf(cell)) && reachable.has(keyOf(cell));
+  const vacant = (cell: Coord) => inside(cell) && !taken.has(keyOf(cell));
+  const free = (cell: Coord) => vacant(cell) && reachable.has(keyOf(cell));
   const figures: Figure[] = [];
+  // The employees have their place wherever it is, in a walled kitchen too; the customers only stand where they can walk to.
   const add = (kind: FigureKind, cell: Coord, target: Coord) => {
-    if (figures.length >= CROWD.maxFigures || !free(cell)) return false;
+    if (figures.length >= CROWD.maxFigures || !(kind === 'employee' ? vacant(cell) : free(cell))) return false;
     taken.add(keyOf(cell));
     figures.push({ kind, x: cell.x, y: cell.y, facing: facingTo(cell, target) });
     return true;
   };
-  const nearest = (origin: Coord, count: number): Coord[] => {
+  const nearest = (origin: Coord, count: number, anywhere = false): Coord[] => {
     const cells: Coord[] = [];
-    for (let x = 0; x < size; x++) for (let y = 0; y < size; y++) if (free({ x, y })) cells.push({ x, y });
+    for (let x = 0; x < size; x++) for (let y = 0; y < size; y++) if (anywhere ? vacant({ x, y }) : free({ x, y })) cells.push({ x, y });
     return cells.sort((a, b) => gap(a, origin) - gap(b, origin) || a.y - b.y || a.x - b.x).slice(0, count);
   };
 
@@ -59,6 +70,23 @@ export function planCrowd(input: CrowdInput): Figure[] {
   const inUse = (fixture: VenueFixture): boolean => (input.usageByFixture.get(fixture.id) ?? 0) > 0 && !COUNTERS.includes(fixture.type);
   const seats = fixtures.filter(fixture => inUse(fixture) && isSeat(fixture)).sort((a, b) => a.id - b.id);
   const games = fixtures.filter(fixture => inUse(fixture) && !isSeat(fixture) && !hasSeat(fixture)).sort((a, b) => a.id - b.id);
+  const counter = fixtures.find(fixture => COUNTERS.includes(fixture.type));
+  const hub = counter ? centerOf(fixtureTiles(counter)) : entrance;
+  if (input.staff) {
+    for (const { role, count } of input.staff) {
+      const posts = fixtures.filter(fixture => POSTS[role]?.includes(fixture.type)).sort((a, b) => a.id - b.id);
+      for (let k = 0; k < Math.min(count, CROWD.maxPerRole); k++) {
+        const post = posts[k % Math.max(1, posts.length)];
+        const around = post ? fixtureTiles(post).flatMap(tile => [FRONT[post.rotation % 4]!, ...AROUND].map(offset => ({ cell: { x: tile.x + offset.x, y: tile.y + offset.y }, tile }))) : [];
+        const spot = around.find(candidate => vacant(candidate.cell));
+        const cell = spot?.cell ?? nearest(hub, 1, true)[0];
+        if (!cell || figures.length >= CROWD.maxFigures) continue;
+        taken.add(keyOf(cell));
+        figures.push({ kind: 'employee', role, x: cell.x, y: cell.y, facing: facingTo(cell, spot?.tile ?? hub) });
+      }
+    }
+  } else for (const cell of nearest(hub, Math.min(input.employees, 3), true)) add('employee', cell, hub);
+
   for (const seat of seats) {
     if (figures.length >= CROWD.maxFigures || !AROUND.some(offset => reachable.has(keyOf({ x: seat.x + offset.x, y: seat.y + offset.y })))) continue;
     const front = FRONT[seat.rotation % 4]!;
@@ -72,10 +100,6 @@ export function planCrowd(input: CrowdInput): Figure[] {
     const spot = candidates.find(candidate => free(candidate.cell));
     if (spot) add('gamer', spot.cell, spot.tile);
   }
-
-  const counter = fixtures.find(fixture => COUNTERS.includes(fixture.type));
-  const hub = counter ? centerOf(fixtureTiles(counter)) : entrance;
-  for (const cell of nearest(hub, Math.min(input.employees, 3))) add('employee', cell, hub);
 
   const waiting = input.demandRatio > 1 || games.length === 0 ? Math.ceil(Math.min(1, Math.max(0, input.demandRatio - 1)) * CROWD.maxQueue) : 0;
   for (const cell of nearest(hub, Math.min(CROWD.maxQueue, waiting))) add('queue', cell, hub);

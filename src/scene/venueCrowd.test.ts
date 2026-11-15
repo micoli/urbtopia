@@ -74,4 +74,29 @@ describe('Venue crowd', () => {
     const open = planCrowd({ ...base, fixtures: [...wallsOf('arcadeDoorway'), fixture(1, 'billiard', 1, 4)], usageByFixture: new Map([[1, 3]]) });
     expect(open.filter(figure => figure.kind === 'gamer')).toHaveLength(1);
   });
+
+  it('keeps the employees on the floor when the diners fill the crowd, even when the cells next to the entrance are walled in', () => {
+    const chairs = Array.from({ length: 30 }, (_, index) => fixture(100 + index, 'restaurantChair', (index % 5) * 2, 4 + Math.floor(index / 5) * 2, 0));
+    const table = fixture(1, 'restaurantTable', 15, 0);
+    const wall = Array.from({ length: 6 }, (_, x) => fixture(200 + x, 'arcadeWall', x, 2, 0));
+    const fixtures = [table, ...chairs, ...wall];
+    const usageByFixture = new Map(fixtures.filter(item => item.id >= 100 && item.id < 200).map(item => [item.id, 1]));
+    const figures = planCrowd({ size: 16, entrance: { x: 3, y: 0 }, fixtures, usageByFixture, saturation: 1, demandRatio: 1, employees: 3 });
+    expect(figures).toHaveLength(CROWD.maxFigures);
+    expect(figures.filter(figure => figure.kind === 'employee')).toHaveLength(3);
+  });
+
+  it('stands each role of the Restaurant staff at its post', () => {
+    const fixtures = [fixture(1, 'cooktop', 6, 6), fixture(2, 'prepTable', 2, 6), fixture(3, 'restaurantBar', 2, 2), fixture(4, 'restaurantTable', 5, 3)];
+    const staff = [{ role: 'cook' as const, count: 1 }, { role: 'kitchenAssistant' as const, count: 1 }, { role: 'bartender' as const, count: 1 }, { role: 'waiter' as const, count: 5 }, { role: 'maitreD' as const, count: 0 }];
+    const figures = planCrowd({ size: 8, entrance: { x: 3, y: 0 }, fixtures, usageByFixture: new Map(), saturation: 0, demandRatio: 0, employees: 0, staff });
+    const next = (figure: { x: number; y: number }, post: { x: number; y: number }) => Math.abs(figure.x - post.x) + Math.abs(figure.y - post.y) === 1;
+    const of = (role: string) => figures.filter(figure => figure.role === role);
+    expect(of('cook')).toHaveLength(1);
+    expect(next(of('cook')[0]!, fixtures[0]!)).toBe(true);
+    expect(next(of('kitchenAssistant')[0]!, fixtures[1]!)).toBe(true);
+    expect(next(of('bartender')[0]!, fixtures[2]!)).toBe(true);
+    expect(of('waiter')).toHaveLength(CROWD.maxPerRole);
+    expect(of('maitreD')).toHaveLength(0);
+  });
 });
