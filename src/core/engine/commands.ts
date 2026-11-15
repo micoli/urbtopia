@@ -178,6 +178,7 @@ export type Command =
   | { readonly type: 'RemoveFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'PlaceFixture'; readonly buildingId: number; readonly fixture: FixtureId; readonly x: number; readonly y: number; readonly rotation?: Rotation }
   | { readonly type: 'StockShop'; readonly buildingId: number; readonly good: GoodId }
+  | { readonly type: 'UnstockShop'; readonly buildingId: number; readonly slot: number }
   | { readonly type: 'SellToMarket'; readonly good: GoodId; readonly quantity: number }
   | { readonly type: 'DonateItems'; readonly id: string; readonly item: ItemId; readonly quantity: number; readonly accountId?: string }
   | { readonly type: 'ConfirmDonations'; readonly ids: readonly string[] }
@@ -569,6 +570,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return placeFixture(state, command.buildingId, command.fixture, command.x, command.y, command.rotation ?? 0);
     case 'StockShop':
       return stockShop(state, command.buildingId, command.good, now);
+    case 'UnstockShop':
+      return unstockShop(state, command.buildingId, command.slot);
     case 'SellToMarket':
       return sellToMarket(state, command.good, command.quantity, now);
     case 'DonateItems':
@@ -1092,6 +1095,26 @@ function stockShop(state: GameState, buildingId: number, good: GoodId, now: numb
     state: {
       ...state,
       storage: { ...state.storage, goods: { ...state.storage.goods, [good]: available - SHOP.stackSize } },
+      buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, stacks } : candidate)),
+    },
+    events: [],
+  };
+}
+
+// The unsold units go back to the Storehouse; what the stack already earned stays to collect.
+function unstockShop(state: GameState, buildingId: number, slot: number): CommandOutcome {
+  const building = state.buildings.find((candidate) => candidate.id === buildingId);
+  if (!building) return fail('error.unknownBuilding');
+  if (!sellsGoods(building.type)) return fail('error.notAShop');
+  const stack = building.stacks[slot];
+  if (!stack || stack.good === null || stack.stock === 0) return fail('error.nothingToCollect');
+  const returned = { ...state.storage.goods, [stack.good]: (state.storage.goods[stack.good] ?? 0) + stack.stock };
+  const emptied = stack.earned > 0 ? { ...stack, stock: 0, nextSaleAt: null } : emptyStack();
+  const stacks = building.stacks.map((candidate, index) => (index === slot ? emptied : candidate));
+  return {
+    state: {
+      ...state,
+      storage: { ...state.storage, goods: returned },
       buildings: state.buildings.map((candidate) => (candidate === building ? { ...building, stacks } : candidate)),
     },
     events: [],

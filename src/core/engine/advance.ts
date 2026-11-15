@@ -77,6 +77,10 @@ function withRestockers(produced: AdvanceResult, now: number): AdvanceResult {
   return { state: assisted.state, events: [...produced.events, ...restocked.events, ...assisted.events] };
 }
 
+export function isShopWithoutTransit(state: GameState, shop: Building, now: number): boolean {
+  return isShopType(shop.type) && hasBrtOnlyAccess(state, shop) && !transportStats(state, now).coveredActivities.has(shop.id);
+}
+
 function idleShopIds(state: GameState, now: number): ReadonlySet<number> {
   const brtOnlyShops = state.buildings.filter(b => isShopType(b.type) && hasBrtOnlyAccess(state, b));
   if (brtOnlyShops.length === 0) return new Set();

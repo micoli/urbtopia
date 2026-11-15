@@ -1,4 +1,4 @@
-export { advance, forfeitOfflineTime } from './engine/advance';
+export { advance, forfeitOfflineTime, isShopWithoutTransit } from './engine/advance';
 export { SOLIDARITY, donationQuote, donationValue, solidarityBonus, solidarityCost, solidarityTier } from './economy/solidarity';
 export type { DonationRecord } from './economy/solidarity';
 export type { AdvanceResult } from './engine/advance';

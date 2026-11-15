@@ -1599,6 +1599,8 @@ export const CATALOG = {
   'panel.crops': ['Crops', 'Récoltes'],
   'panel.goods': ['Goods', 'Produits'],
   'prefs.title': ['Preferences', 'Préférences'],
+  'shop.cancelStack': ['Cancel', 'Annuler'],
+  'shop.noTransit': ['This shop only has a BRT access and no active line stops near it: its sales are paused.', "Cette boutique n'a qu'un accès BRT et aucun arrêt de ligne active à proximité : ses ventes sont en pause."],
   'prefs.language': ['Language', 'Langue'],
   'prefs.layout': ['Interface layout', "Disposition de l'interface"],
   'prefs.layout.C': ['Side dock', 'Barre latérale'],
