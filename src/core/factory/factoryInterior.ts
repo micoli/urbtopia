@@ -462,16 +462,6 @@ function spunOf(fixtures: readonly VenueFixture[], linked: ReadonlySet<number>):
   return new Set(fixtures.filter(fixture => linked.has(fixture.id) && FIXTURES[fixture.type].family === 'spinner' && fixture.recipe !== undefined).map(fixture => fixture.id));
 }
 
-// The Pens at work: with a Recipe, next to a Feeder that the Line reaches, which is where the grain of the silo arrives.
-function fedOf(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, lined: ReadonlySet<number>): Set<number> {
-  const fed = new Set<number>();
-  for (const pen of fixtures.filter(fixture => FIXTURES[fixture.type].family === 'pen' && fixture.recipe !== undefined)) {
-    const neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => at.get(keyOf(pen.x + dx!, pen.y + dy!)));
-    if (neighbours.some(next => next !== undefined && lined.has(next.id) && FIXTURES[next.type].family === 'feeder')) fed.add(pen.id);
-  }
-  return fed;
-}
-
 // What is worked out once for a list of Fixtures: Drive, Flow and Links. A floor's list is replaced, never changed, when the player edits it,
 // so each list is read once however many panels, bonuses and scenes ask.
 interface InteriorReport {
@@ -522,8 +512,7 @@ const reportOf = memoized((allFixtures): InteriorReport => {
     else problems.set(machine.id, lacking);
   }
   const line = lineReach(fixtures, at, linked);
-  const reached = new Set([...line.lined, ...milledOf(fixtures, flow, linked), ...spunOf(fixtures, linked)]);
-  const lined = new Set([...reached, ...fedOf(fixtures, at, reached)]);
+  const lined = new Set([...line.lined, ...milledOf(fixtures, flow, linked), ...spunOf(fixtures, linked)]);
   return { fixtures, at, drive, powered, flow, line, links: { linked, jammed: drive.jammed, problems, lined, overfed: line.overfed } };
 });
 
@@ -715,7 +704,7 @@ export type LineFault =
   | { kind: 'misfacing'; fixture: VenueFixture }
   // The Machine that feeds it already feeds as many as its limit allows.
   | { kind: 'overfed'; fixture: VenueFixture }
-  // The Fixture next to the entry sends no Packets at all, such as a Pen or a Feeder: a Conveyor must bring them from the Line.
+  // The Fixture next to the entry sends no Packets at all, such as a Motor: a Conveyor must bring them from the Line.
   | { kind: 'noOutput'; fixture: VenueFixture }
   // Nothing at all lies next to the entry.
   | { kind: 'deadEnd'; cell: { x: number; y: number }; of: VenueFixture };

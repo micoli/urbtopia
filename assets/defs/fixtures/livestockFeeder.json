@@ -12,7 +12,8 @@
   "price": 200,
   "minTier": 1,
   "wear": 0.03,
-  "role": "exit",
+  "role": "conveyor",
   "family": "feeder",
-  "lineIn": ["front"]
+  "lineIn": ["front"],
+  "lineOut": ["back"]
 }

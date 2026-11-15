@@ -13,6 +13,8 @@
   "minTier": 1,
   "wear": 0.05,
   "role": "machine",
-  "assigns": "herder",
-  "family": "pen"
+  "picks": true,
+  "family": "pen",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
 }

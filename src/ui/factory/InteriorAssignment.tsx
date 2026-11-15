@@ -25,7 +25,7 @@ export function InteriorAssignment({ building, fixture }: InteriorAssignmentProp
   if (role === undefined && !picksItem(fixture)) return null;
   const send = gameStore.getState().send;
   if (role === undefined) return <ItemChoice building={building} fixture={fixture} />;
-  if (role === 'restocker') return <RestockerAssignment building={building} fixture={fixture} />;
+  if (role === 'restocker' || role === 'herder') return <RestockerAssignment building={building} fixture={fixture} />;
   const choice = focusOf(fixture);
   const options = [{ value: NONE, label: t('venue.assignNone') }, ...goods.map(good => ({ value: good as string, label: <ItemLabel item={good} />, disabled: !unlocked.split(',').includes(good) }))];
   const noSupply = role === 'seller' && goods.length === 0;

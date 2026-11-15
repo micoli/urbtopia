@@ -27,65 +27,72 @@ const focus = (fixtureId: number, good: GoodId | null): Command => ({ type: 'Set
 const assign = (fixtureId: number): Command => ({ type: 'AssignInteriorStaff', buildingId: 1, fixtureId });
 const idOf = (state: GameState, type: FixtureId): number => farm(state).interior!.fixtures.find(fixture => fixture.type === type)!.id;
 const product = producibleItems('livestockFarm')[0] as GoodId;
-
-// A Feed intake driven by a Motor, a Conveyor down to a Feeder, and a Pen on each side of the Feeder.
-const feeding = [place('livestockFeedIntake', 4, 0), place('livestockShaft', 5, 0, 1), place('livestockMotor', 6, 0, 1), place('livestockConveyor', 4, 1), place('livestockConveyor', 4, 2),
-  place('livestockConveyor', 4, 3), place('livestockFeeder', 4, 4, 2), place('livestockPen', 3, 4, 2), place('livestockPen', 5, 4, 2)];
-// The same Line, ending in a Collection exit.
-const collecting = [...feeding.slice(0, 6), place('livestockCollectionExit', 4, 4, 2)];
+// A Feed intake driven by a Motor, a Conveyor down to a Feeder, a Pen and a Packer driven by a Motor, a Conveyor and a Collection exit.
+const chain = [place('livestockFeedIntake', 4, 0), place('livestockShaft', 5, 0, 1), place('livestockMotor', 6, 0, 1), place('livestockConveyor', 4, 1), place('livestockFeeder', 4, 2, 2), place('livestockPen', 4, 3),
+  place('livestockPacker', 4, 4), place('livestockShaft', 5, 4, 1), place('livestockMotor', 6, 4, 1), place('livestockConveyor', 4, 5), place('livestockCollectionExit', 4, 6, 2)];
+// The same chain without its Collection exit and its last Conveyor.
+const openChain = chain.slice(0, 9);
+const penOf = (state: GameState): number => idOf(state, 'livestockPen');
 
 describe('the Pens of a Livestock farm interior', () => {
-  const fitted = apply(city(), ...feeding);
-  const pen = farm(fitted).interior!.fixtures.find(fixture => fixture.type === 'livestockPen')!.id;
+  const fitted = apply(city(), ...chain);
+  const pen = penOf(fitted);
 
   it('offers what the farm gives', () => {
     const goods = focusGoodsOf(farm(fitted), farm(fitted).interior!.fixtures.find(fixture => fixture.id === pen)!);
     expect(goods).toEqual(expect.arrayContaining([...producibleItems('livestockFarm')] as GoodId[]));
   });
 
-  it('is fed once it has a Recipe and stands next to a Feeder that the Line reaches', () => {
-    expect(interiorLinksOf(farm(fitted).interior!.fixtures).lined.has(pen)).toBe(false);
-    const fed = apply(fitted, focus(pen, product));
-    expect(interiorLinksOf(farm(fed).interior!.fixtures).lined.has(pen)).toBe(true);
+  it('takes no herder: the animal is picked on the Pen and the herder stands at the Collection exit', () => {
+    expect(failure(fitted, assign(pen))).toBe('error.notAssignable');
+    expect(failure(fitted, focus(idOf(fitted, 'livestockCollectionExit'), product))).toBe('error.notAssignable');
   });
 
-  it('is not fed when the Line is cut or when no Feeder is beside it', () => {
-    const cut = apply(fitted, focus(pen, product), remove(idOf(fitted, 'livestockMotor')));
-    expect(interiorLinksOf(farm(cut).interior!.fixtures).lined.has(pen)).toBe(false);
-    const alone = apply(city(), place('livestockPen', 0, 0), place('livestockFeeder', 4, 4, 2));
-    const lonely = apply(alone, focus(idOf(alone, 'livestockPen'), product));
-    expect(interiorLinksOf(farm(lonely).interior!.fixtures).lined.has(idOf(lonely, 'livestockPen'))).toBe(false);
+  it('is on a Line that reaches the Collection exit once the Feeder, the Packer and the Conveyors are in place', () => {
+    const { lined } = interiorLinksOf(farm(fitted).interior!.fixtures);
+    expect([pen, idOf(fitted, 'livestockPacker'), idOf(fitted, 'livestockCollectionExit')].every(id => lined.has(id))).toBe(true);
   });
 
-  it('takes a herder, one to one, as many as there are production Slots', () => {
-    expect(failure(fitted, assign(pen))).toBe('error.noFocus');
-    const assigned = apply(fitted, hire, focus(pen, product), assign(pen));
-    expect(assignedFixturesOf(farm(assigned).interior, 'herder').map(fixture => fixture.id)).toEqual([pen]);
-    expect(failure(assigned, assign(pen))).toBe('error.staffAlreadyAssigned');
-    expect(fixtureLimitOf(farm(fitted), 'livestockPen')!.max).toBe(farm(fitted).slotCount);
+  it('is not on the Line when the Line is cut, or when no Packer carries its production on', () => {
+    const cut = apply(fitted, remove(idOf(fitted, 'livestockMotor')));
+    expect(interiorLinksOf(farm(cut).interior!.fixtures).lined.has(idOf(cut, 'livestockCollectionExit'))).toBe(false);
+    const unpacked = apply(fitted, remove(idOf(fitted, 'livestockPacker')));
+    expect(interiorLinksOf(farm(unpacked).interior!.fixtures).lined.has(idOf(unpacked, 'livestockCollectionExit'))).toBe(false);
+  });
+});
+
+describe('the herder of a Collection exit', () => {
+  const fitted = apply(city(), ...chain);
+  const exit = idOf(fitted, 'livestockCollectionExit');
+
+  it('works on the animal picked on the Pen upstream, one herder to one exit', () => {
+    expect(failure(fitted, assign(exit))).toBe('error.noFocus');
+    const assigned = apply(fitted, hire, focus(penOf(fitted), product), assign(exit));
+    expect(assignedFixturesOf(farm(assigned).interior, 'herder').map(fixture => fixture.id)).toEqual([exit]);
+    expect(failure(assigned, assign(exit))).toBe('error.staffAlreadyAssigned');
+    expect(fixtureLimitOf(farm(fitted), 'livestockCollectionExit')!.max).toBe(farm(fitted).slotCount);
   });
 });
 
 describe('the fault of a Collection exit that no Line reaches', () => {
-  // The Line ends at the Feeder; the exit sits behind a Conveyor whose back is the Pen, which sends nothing.
-  const cut = apply(city(), place('livestockFeedIntake', 1, 0), place('livestockMotor', 2, 0, 1), place('livestockConveyor', 1, 1), place('livestockConveyor', 1, 2), place('livestockFeeder', 1, 3, 2),
-    place('livestockPen', 1, 4), place('livestockConveyor', 2, 4, 3), place('livestockCollectionExit', 3, 4, 1));
+  // The exit faces a Motor, which sends no Packets.
+  const cut = apply(city(), place('livestockMotor', 2, 4, 1), place('livestockCollectionExit', 3, 4, 1));
 
-  it('names the Pen as a Fixture that sends no Packets, not as a Fixture to turn', () => {
+  it('names the Fixture next to it as one that sends no Packets, not as a Fixture to turn', () => {
     const exit = farm(cut).interior!.fixtures.find(fixture => fixture.type === 'livestockCollectionExit')!;
     const fault = lineFaultOf(farm(cut).interior!.fixtures, exit);
     expect(fault).toMatchObject({ kind: 'noOutput' });
-    expect(fault && 'fixture' in fault && fault.fixture.type).toBe('livestockPen');
+    expect(fault && 'fixture' in fault && fault.fixture.type).toBe('livestockMotor');
   });
 });
 
 describe('the yield of a Livestock farm interior', () => {
-  const collected = apply(city(), ...collecting);
+  const collected = apply(city(), ...chain);
 
   it('comes from the Collection exits that the Line reaches, delivered by the herders hired', () => {
     expect(interiorBonusOfBuilding(farm(collected)).yield).toBe(0);
     expect(interiorBonusOfBuilding(farm(apply(collected, hire))).yield).toBeGreaterThan(0);
-    expect(interiorBonusOfBuilding(farm(apply(city(), ...feeding.slice(0, 6), hire))).yield).toBe(0);
+    expect(interiorBonusOfBuilding(farm(apply(city(), ...openChain, hire))).yield).toBe(0);
   });
 
   it('adds no speed', () => {
@@ -97,12 +104,11 @@ describe('the herder of a Livestock farm interior at work on its own', () => {
   const HOUR = 3_600_000;
   const STEP = 60_000;
   const working = (): GameState => {
-    const fitted = apply(city(), ...feeding);
+    const fitted = apply(city(), ...chain);
     const materials: Record<string, number> = {};
     for (const [material, amount] of Object.entries(recipeOf(product))) materials[material] = (materials[material] ?? 0) + amount * 10;
     const state = { ...fitted, adaptationUntil: 100 * HOUR, buildings: [...fitted.buildings, { ...createBuilding(2, 'storehouse', 70, 50, 0), tier: 5 }], storage: { ...fitted.storage, materials: { ...fitted.storage.materials, ...materials } } };
-    const pen = idOf(state, 'livestockPen');
-    return apply(state, hire, focus(pen, product), assign(pen));
+    return apply(state, hire, focus(penOf(state), product), assign(idOf(state, 'livestockCollectionExit')));
   };
   const run = (state: GameState, ms: number): GameState => {
     let current = state;
@@ -111,8 +117,16 @@ describe('the herder of a Livestock farm interior at work on its own', () => {
   };
   const stored = (state: GameState): number => (state.storage.materials as Record<string, number>)[product] ?? (state.storage.goods as Record<string, number>)[product] ?? 0;
 
-  it('collects the production of a fed Pen and stores it', () => {
+  it('collects the production of the Pen at the Collection exit and stores it', () => {
     expect(stored(run(working(), 8 * HOUR))).toBeGreaterThan(0);
+  });
+
+  it('waits when the production cannot reach a Collection exit', () => {
+    const state = working();
+    const without = apply(state, remove(idOf(state, 'livestockPacker')));
+    const later = run(without, 8 * HOUR);
+    expect(stored(later)).toBe(0);
+    expect(farm(later).queue).toHaveLength(0);
   });
 
   it('waits when the Line is cut', () => {

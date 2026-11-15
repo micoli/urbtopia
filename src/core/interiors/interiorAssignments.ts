@@ -14,6 +14,9 @@ export const hasAssignments = (building: Pick<Building, 'type'>): boolean => int
 // The group of Goods of the Dairy that a role makes, when it makes only one.
 const GROUP_OF_ROLE: Partial<Record<InteriorRole, string>> = { cheesemaker: 'cheese', creamMaker: 'cream' };
 
+// The Staff that work on what reaches their Fixture, not on a Recipe they pick: the restocker of a Storage bin, the herder of a Collection exit.
+const carriesItem = (fixture: Pick<VenueFixture, 'type'>): boolean => assignedRoleOf(fixture) === 'restocker' || assignedRoleOf(fixture) === 'herder';
+
 export const assignedRoleOf = (fixture: Pick<VenueFixture, 'type'>): InteriorRole | undefined => FIXTURES[fixture.type].assigns;
 
 // The Good an assigned Fixture works on: the Recipe of an Oven, the Sold Good of a Display counter.
@@ -27,14 +30,14 @@ export const carriedItemOf = (fixtures: readonly VenueFixture[], bin: VenueFixtu
   interiorUpstreamOf(fixtures, bin.id).filter(fixture => picksItem(fixture) && fixture.recipe !== undefined).sort((a, b) => a.id - b.id)[0]?.recipe;
 
 // What the Staff of a Fixture works on: for a restocker, the item its bin receives; for the others, their own Recipe or Sold Good.
-export const workFocusOf = (fixtures: readonly VenueFixture[], fixture: VenueFixture): GoodId | undefined => (assignedRoleOf(fixture) === 'restocker' ? carriedItemOf(fixtures, fixture) : focusOf(fixture));
+export const workFocusOf = (fixtures: readonly VenueFixture[], fixture: VenueFixture): GoodId | undefined => (carriesItem(fixture) ? carriedItemOf(fixtures, fixture) : focusOf(fixture));
 
 // The Goods the player can choose on a Fixture: those the building produces for a Machine, those its Counter sells for a Display counter, already unlocked.
 // A Display counter only sells what the Ovens upstream of it bake.
 export function focusGoodsOf(building: Building, fixture: VenueFixture): readonly GoodId[] {
   const role = assignedRoleOf(fixture);
   if (picksItem(fixture)) return (producibleItems(building.type) as GoodId[]);
-  if (role === undefined || role === 'restocker') return [];
+  if (role === undefined || carriesItem(fixture)) return [];
   if (isProducerRole(role)) {
     const group = GROUP_OF_ROLE[role!];
     return (producibleItems(building.type) as GoodId[]).filter(good => group === undefined || yieldGroupOf(building.type, good) === group);
@@ -73,7 +76,7 @@ export function setInteriorFocus(state: GameState, buildingId: number, fixtureId
   if (!building) return { key: 'error.unknownBuilding' };
   const fixture = assignableOf(building, fixtureId);
   if (!fixture) return { key: 'error.notAssignable' };
-  if (assignedRoleOf(fixture) === 'restocker') return { key: 'error.notAssignable' };
+  if (carriesItem(fixture)) return { key: 'error.notAssignable' };
   const field = picksItem(fixture) || isProducerRole(assignedRoleOf(fixture)) ? 'recipe' : 'soldGood';
   if (good === null) return withFixture(state, building, without(withoutAssignment(fixture), field));
   if (assignedRoleOf(fixture) === 'seller' && sellableGoodsOf(building as Parameters<typeof sellableGoodsOf>[0]).includes(good) && !focusGoodsOf(building, fixture).includes(good)) return { key: 'error.notUpstream' };

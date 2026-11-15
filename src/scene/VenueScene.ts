@@ -424,7 +424,7 @@ export class VenueScene {
       const centre = { x: fixture.x + width / 2, z: fixture.y + depth / 2 };
       const restockable = isRestockable(FIXTURES[fixture.type]);
       const spec = FIXTURES[fixture.type];
-      const good = spec.assigns === 'restocker' ? workFocusOf(this.lastFixtures, fixture) : spec.picks ? fixture.recipe : restockable ? fixture.restock : focusOf(fixture);
+      const good = spec.assigns === 'restocker' || spec.assigns === 'herder' ? workFocusOf(this.lastFixtures, fixture) : spec.family === 'pen' ? undefined : spec.picks ? fixture.recipe : restockable ? fixture.restock : focusOf(fixture);
       const model = good === undefined ? null : itemModelOf(good);
       if (model && this.ensured(model)) {
         const token = new THREE.Group();

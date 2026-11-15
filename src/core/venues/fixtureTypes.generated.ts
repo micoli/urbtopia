@@ -173,6 +173,8 @@ export type FixtureId =
   | 'livestockFeeder'
   | 'livestockGear'
   | 'livestockMotor'
+  | 'livestockPacker'
+  | 'livestockPackerLeft'
   | 'livestockPen'
   | 'livestockShaft'
   | 'livestockWall'
