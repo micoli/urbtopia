@@ -3,9 +3,10 @@ import { CODEX_PAGES, type CodexPage } from '../codex/pages';
 import type { Language } from '../i18n/prefsStore';
 import { ARTICLE_DIRECTORIES, ARTICLES, type Article } from './content/articles';
 import type { MessageKey } from '../i18n/messages';
-import { codexEntryPathOf, codexSectionPathOf, rulesPathOf, rulesSlugOf } from './paths';
+import { FIXTURE_PAGES } from '../codex/fixturePages';
+import { codexEntryPathOf, codexSectionPathOf, fixturePathOf, rulesPathOf, rulesSlugOf } from './paths';
 
-export { codexEntryPathOf, codexSectionPathOf, codexSectionSlugOf, rulesPathOf, rulesSlugOf } from './paths';
+export { codexEntryPathOf, codexSectionPathOf, codexSectionSlugOf, fixturePathOf, rulesPathOf, rulesSlugOf } from './paths';
 
 export type GuidePage =
   | { kind: 'languageChoice' }
@@ -14,6 +15,7 @@ export type GuidePage =
   | { kind: 'codexSection'; section: CodexSection }
   | { kind: 'codexEntry'; id: CodexId }
   | { kind: 'rules'; id: CodexPage }
+  | { kind: 'fixture'; id: string }
   | { kind: 'article'; article: Article };
 
 export type GuideSection = 'gettingStarted' | 'mechanics' | 'codex' | 'glossary';
@@ -52,12 +54,13 @@ export const GUIDE_ROUTES: readonly GuideRoute[] = [
     ...CODEX_SECTIONS.map((section): GuideRoute => ({ path: codexSectionPathOf(language, section), language, page: { kind: 'codexSection', section } })),
     ...CODEX_ENTRIES.map((entry): GuideRoute => ({ path: codexEntryPathOf(language, entry), language, page: { kind: 'codexEntry', id: entry.id } })),
     ...CODEX_PAGES.filter(({ id }) => !isRulesWrittenUp(id)).map(({ id }): GuideRoute => ({ path: rulesPathOf(language, id), language, page: { kind: 'rules', id } })),
+    ...FIXTURE_PAGES.map(({ id }): GuideRoute => ({ path: fixturePathOf(language, id), language, page: { kind: 'fixture', id } })),
   ]),
 ];
 
 export function sectionOf({ page }: GuideRoute): GuideSection | null {
   if (page.kind === 'codexIndex' || page.kind === 'codexSection' || page.kind === 'codexEntry') return 'codex';
-  if (page.kind === 'rules') return 'mechanics';
+  if (page.kind === 'rules' || page.kind === 'fixture') return 'mechanics';
   if (page.kind === 'article') return page.article.section;
   return null;
 }

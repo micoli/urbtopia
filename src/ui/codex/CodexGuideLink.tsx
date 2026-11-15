@@ -2,7 +2,7 @@ import type { CodexEntry } from '../../codex/catalog';
 import type { CodexPage } from '../../codex/pages';
 import type { Article } from '../../guide/content/articles';
 import { articlePathOf } from '../../guide/routes';
-import { codexEntryPathOf, rulesPathOf } from '../../guide/paths';
+import { codexEntryPathOf, fixturePathOf, rulesPathOf } from '../../guide/paths';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 
@@ -10,11 +10,13 @@ interface CodexGuideLinkProps {
   entry: CodexEntry;
   page: CodexPage | null;
   article: Article | null;
+  fixture?: string | null;
 }
 
-function guidePathOf({ entry, page, article }: CodexGuideLinkProps): string {
+function guidePathOf({ entry, page, article, fixture }: CodexGuideLinkProps): string {
   const language = prefsStore.getState().language;
   if (article) return articlePathOf(language, article);
+  if (fixture) return fixturePathOf(language, fixture);
   if (page) return rulesPathOf(language, page);
   return codexEntryPathOf(language, entry);
 }

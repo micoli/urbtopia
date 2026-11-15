@@ -9,6 +9,7 @@ import { CropEconomyRules } from './CropEconomyRules';
 import { DayCycleRules } from './DayCycleRules';
 import { EnergyProductionRules } from './EnergyProductionRules';
 import { ProductionInteriorsRules } from './ProductionInteriorsRules';
+import { FixturesRules } from './FixturesRules';
 import { ServiceInteriorsRules } from './ServiceInteriorsRules';
 import { KnowledgeRules } from './KnowledgeRules';
 import { MarketRules } from './MarketRules';
@@ -47,6 +48,7 @@ const RULES: Record<CodexPage, ComponentType<RulesProps>> = {
   staff: StaffRules,
   productionInteriors: ProductionInteriorsRules,
   serviceInteriors: ServiceInteriorsRules,
+  fixtures: FixturesRules,
   politics: PoliticsRules,
 };
 

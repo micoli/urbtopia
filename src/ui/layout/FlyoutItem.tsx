@@ -24,7 +24,7 @@ export function FlyoutItem({ label, badge, cost, guided = false, onChoose, onCho
   const picture = icon ? `${import.meta.env.BASE_URL}assets/icons/${icon}` : preview;
   const hasRow = onInfo || picture;
   const item = (
-      <button type="button" className="flyout-item" data-guided={guided && !hasRow} data-selected={selected} data-codex-label={onInfo ? codexId : undefined} disabled={disabled} onClick={onInfo ?? choose}>
+      <button type="button" className="flyout-item" data-guided={guided && !hasRow} data-selected={selected} data-codex-label={onInfo ? codexId : undefined} disabled={onInfo ? false : disabled} onClick={onInfo ?? choose}>
       <span>{label}</span>
       {badge ? <small className="flyout-badge">{badge}</small> : null}
       {cost && !(onInfo || icon || preview) ? <small className="flyout-cost">{cost}</small> : null}

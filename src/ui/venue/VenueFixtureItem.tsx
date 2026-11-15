@@ -1,5 +1,7 @@
+import { fixturePageIdOf } from '../../codex/fixturePages';
 import { FIXTURES, type FixtureId, type FixtureLimit } from '../../core';
 import { t } from '../../i18n/t';
+import { openCodexLazily } from '../codex/openCodexLazily';
 import { FlyoutItem } from '../layout/FlyoutItem';
 import { UrbsAmount } from '../common/UrbsAmount';
 import { useFixturePicture } from './useFixturePicture';
@@ -28,6 +30,7 @@ export function VenueFixtureItem({ id, tier, rank, selected, onChoose, limit }: 
       selected={selected}
       disabled={locked}
       onChoose={onChoose}
+      onInfo={() => void openCodexLazily('fixtures', fixturePageIdOf(id))}
     />
   );
 }

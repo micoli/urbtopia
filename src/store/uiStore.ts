@@ -96,7 +96,9 @@ export interface UiStore {
   codexEntryId: CodexId;
   codexShowDetail: boolean;
   codexPage: CodexPage | null;
-  openCodex: (entry?: CodexId, page?: CodexPage) => void;
+  // The page of the Fixture that the Codex opens on.
+  codexFixture: string | null;
+  openCodex: (entry?: CodexId, page?: CodexPage, fixture?: string) => void;
   closeCodex: () => void;
   pendingSaleId: number | null;
   evaluation: Evaluation | null;
@@ -331,10 +333,11 @@ export const uiStore = createStore<UiStore>((set, get) => {
     codexEntryId: 'home',
     codexShowDetail: false,
     codexPage: null,
+    codexFixture: null,
     // The Codex is a modal above everything: it leaves the open windows, the menus and the selection where they are.
-    openCodex: (entry, page) => {
+    openCodex: (entry, page, fixture) => {
       get().cancelTool();
-      set({ codexOpen: true, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null });
+      set({ codexOpen: true, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null, codexFixture: fixture ?? null });
     },
     closeCodex: () => set({ codexOpen: false }),
     pendingSaleId: null,

@@ -56,10 +56,11 @@ describe('Venue build menu', () => {
   it('shows the cost of an item, and locks the ones above the Tier with the Tier they need', () => {
     const markup = html(1, 'arcade');
     expect(markup).toContain(`>${FIXTURES.barrelClimber.price}`);
-    const pinball = markup.match(new RegExp(`<button[^>]*flyout-item[^>]*>\\s*<span>${t('venue.fixture.pinball')}</span>[\\s\\S]*?</button>`))?.[0] ?? '';
+    const pinball = markup.match(new RegExp(`<div class="flyout-row"><button[^>]*flyout-item[^>]*>\\s*<span>${t('venue.fixture.pinball')}</span>[\\s\\S]*?</div>`))?.[0] ?? '';
     expect(pinball).toContain('disabled');
     expect(pinball).toContain(`${t('venue.tierNeeded')} 2`);
-    const open = html(2, 'arcade', 2).match(new RegExp(`<button[^>]*flyout-item[^>]*>\\s*<span>${t('venue.fixture.pinball')}</span>[\\s\\S]*?</button>`))?.[0] ?? '';
+    expect(pinball).toMatch(/<button[^>]*flyout-info[^>]*disabled/);
+    const open = html(2, 'arcade', 2).match(new RegExp(`<div class="flyout-row"><button[^>]*flyout-item[^>]*>\\s*<span>${t('venue.fixture.pinball')}</span>[\\s\\S]*?</div>`))?.[0] ?? '';
     expect(open).not.toContain('disabled');
   });
 
