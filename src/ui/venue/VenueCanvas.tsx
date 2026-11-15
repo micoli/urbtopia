@@ -56,12 +56,16 @@ interface VenueCanvasProps {
 }
 
 export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const container = containerRef.current;
     const initial = interiorOf(venueId);
-    if (!canvas || !initial) return;
+    if (!container || !initial) return;
+    // A disposed scene loses its WebGL context for good, so every scene gets a fresh canvas (HMR re-runs this effect).
+    const canvas = document.createElement('canvas');
+    canvas.className = 'venue-canvas';
+    container.append(canvas);
     const scene = new VenueScene(canvas, sizeOf(initial, venueType), initial.building.tier, venueType, venueId);
     venueSceneHandle.current = scene;
     scene.setPickMode(prefsStore.getState().pickMode);
@@ -201,8 +205,9 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       unsubscribeVenue();
       if (venueSceneHandle.current === scene) venueSceneHandle.current = null;
       scene.dispose();
+      canvas.remove();
     };
   }, [venueId, venueType]);
 
-  return <canvas ref={canvasRef} className="venue-canvas" />;
+  return <div ref={containerRef} className="venue-canvas-container" />;
 }

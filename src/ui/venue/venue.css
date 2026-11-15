@@ -43,6 +43,11 @@
   transform: scale(0.80, 0.80);
 }
 
+.venue-canvas-container {
+  position: absolute;
+  inset: 0;
+}
+
 .venue-canvas {
   position: absolute;
   inset: 0;
