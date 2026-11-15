@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, dispatch, newGame, type Building, type Command, type GameState } from '../index';
+import { createBuilding, dispatch, economicPower, isVenuePowered, newGame, type Building, type Command, type GameState } from '../index';
 import { interiorBonusOfBuilding, interiorPowerOfBuilding } from './factoryInterior';
 
 const running: Building['interior'] = {
@@ -15,7 +15,7 @@ const city = (): GameState => ({
   ...newGame({ seed: 'breaker', now: 0 }),
   nextId: 100,
   tutorial: null,
-  buildings: [{ ...createBuilding(1, 'factory', 55, 50, 0), tier: 5, interior: running }, createBuilding(2, 'arcade', 60, 50, 0)],
+  buildings: [{ ...createBuilding(1, 'factory', 55, 50, 0), tier: 5, interior: running }, createBuilding(2, 'coalPlant', 60, 50, 0), { ...createBuilding(3, 'arcade', 64, 50, 0), tier: 1 }],
 });
 const send = (state: GameState, command: Command): GameState => {
   const result = dispatch(state, command, 0);
@@ -44,8 +44,23 @@ describe('the breaker of a Production interior', () => {
     expect(on).toEqual(factory(city()));
   });
 
-  it('refuses a building with no Production interior', () => {
+  it('refuses a building with neither a Production interior nor a Venue', () => {
     const result = dispatch(city(), { type: 'SetInteriorBreaker', buildingId: 2, off: true }, 0);
     expect(result.ok).toBe(false);
+  });
+});
+
+describe('the breaker of a Venue', () => {
+  const venue = (state: GameState): Building => state.buildings.find(candidate => candidate.id === 3)!;
+
+  it('draws no power and shuts the Venue until it is switched back on', () => {
+    const on = city();
+    expect(economicPower(venue(on))).toBeGreaterThan(0);
+    const off = send(on, { type: 'SetInteriorBreaker', buildingId: 3, off: true });
+    expect(venue(off).breakerOff).toBe(true);
+    expect(economicPower(venue(off))).toBe(0);
+    expect(isVenuePowered(off, venue(off))).toBe(false);
+    const back = send(off, { type: 'SetInteriorBreaker', buildingId: 3, off: false });
+    expect(venue(back)).toEqual(venue(on));
   });
 });

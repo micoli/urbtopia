@@ -65,7 +65,7 @@ function basePower(b: Building): number {
   if (isOfficeType(b.type)) return officeTierOf(b).power;
   if (isFacilityType(b.type)) return (tiersOf(b.type)[b.tier - 1]?.power ?? FACILITIES[b.type].power) + (b.type === 'recyclingPlant' ? interiorBonusOfBuilding(b).power : 0);
   if (b.type === 'casino') return casinoPower(b.tier);
-  if (isVenueType(b.type)) return venuePower(b);
+  if (isVenueType(b.type)) return b.breakerOff ? 0 : venuePower(b);
   return 0;
 }
 

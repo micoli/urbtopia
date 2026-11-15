@@ -241,7 +241,7 @@ function isBuilding(value: unknown): boolean {
     (value.attraction === undefined || (typeof value.type === 'string' && sellsTicketsType(value.type) && isAttractionData(value.attraction))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
     (value.coveId === undefined || (typeof value.type === 'string' && isStandsType(value.type) && isInt(value.coveId, 0))) &&
-    (value.breakerOff === undefined || (typeof value.type === 'string' && isProductionInteriorKind(value.type) && typeof value.breakerOff === 'boolean')) &&
+    (value.breakerOff === undefined || (typeof value.type === 'string' && (isProductionInteriorKind(value.type) || isVenueType(value.type)) && typeof value.breakerOff === 'boolean')) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))
   );
