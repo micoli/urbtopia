@@ -715,6 +715,8 @@ export type LineFault =
   | { kind: 'misfacing'; fixture: VenueFixture }
   // The Machine that feeds it already feeds as many as its limit allows.
   | { kind: 'overfed'; fixture: VenueFixture }
+  // The Fixture next to the entry sends no Packets at all, such as a Pen or a Feeder: a Conveyor must bring them from the Line.
+  | { kind: 'noOutput'; fixture: VenueFixture }
   // Nothing at all lies next to the entry.
   | { kind: 'deadEnd'; cell: { x: number; y: number }; of: VenueFixture };
 
@@ -748,6 +750,7 @@ export function lineFaultOf(allFixtures: readonly VenueFixture[], start: VenueFi
     if (!feeder) {
       const first = entries.map(side => cellAt(current, side)).find(cell => !at.has(keyOf(cell.x, cell.y))) ?? cellAt(current, entries[0]!);
       const wrong = entries.map(side => at.get(keyOf(cellAt(current, side).x, cellAt(current, side).y))).find(neighbour => neighbour !== undefined);
+      if (wrong && sides(wrong, 'lineOut').length === 0) return { kind: 'noOutput', fixture: wrong };
       return wrong ? { kind: 'misfacing', fixture: wrong } : { kind: 'deadEnd', cell: first, of: current };
     }
     if (feeder.broken === true) return { kind: 'broken', fixture: feeder };

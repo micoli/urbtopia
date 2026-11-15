@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { advance, assignedFixturesOf, createBuilding, dispatch, fixtureLimitOf, focusGoodsOf, interiorBonusOfBuilding, newGame, type Building, type Command, type FixtureId, type GameState, type GoodId, type Rotation } from '../index';
 import { producibleItems, recipeOf } from '../economy/items';
 import { checkGameState } from '../../persistence/validate';
-import { interiorLinksOf } from './factoryInterior';
+import { interiorLinksOf, lineFaultOf } from './factoryInterior';
 
 const homes = [10, 11, 12, 13].map(id => ({ ...createBuilding(id, 'home', 40 + id, 30, 0), tier: 6 }));
 const city = (): GameState => ({
@@ -63,6 +63,19 @@ describe('the Pens of a Livestock farm interior', () => {
     expect(assignedFixturesOf(farm(assigned).interior, 'herder').map(fixture => fixture.id)).toEqual([pen]);
     expect(failure(assigned, assign(pen))).toBe('error.staffAlreadyAssigned');
     expect(fixtureLimitOf(farm(fitted), 'livestockPen')!.max).toBe(farm(fitted).slotCount);
+  });
+});
+
+describe('the fault of a Collection exit that no Line reaches', () => {
+  // The Line ends at the Feeder; the exit sits behind a Conveyor whose back is the Pen, which sends nothing.
+  const cut = apply(city(), place('livestockFeedIntake', 1, 0), place('livestockMotor', 2, 0, 1), place('livestockConveyor', 1, 1), place('livestockConveyor', 1, 2), place('livestockFeeder', 1, 3, 2),
+    place('livestockPen', 1, 4), place('livestockConveyor', 2, 4, 3), place('livestockCollectionExit', 3, 4, 1));
+
+  it('names the Pen as a Fixture that sends no Packets, not as a Fixture to turn', () => {
+    const exit = farm(cut).interior!.fixtures.find(fixture => fixture.type === 'livestockCollectionExit')!;
+    const fault = lineFaultOf(farm(cut).interior!.fixtures, exit);
+    expect(fault).toMatchObject({ kind: 'noOutput' });
+    expect(fault && 'fixture' in fault && fault.fixture.type).toBe('livestockPen');
   });
 });
 

@@ -182,6 +182,7 @@ type VenueMessageKey =
   | 'packhouse.interior.fault.noDrive'
   | 'packhouse.interior.fault.noFlow'
   | 'packhouse.interior.fault.misfacing'
+  | 'packhouse.interior.fault.noOutput'
   | 'packhouse.interior.fault.deadEnd'
   | 'packhouse.interior.fault.overfed'
   | 'packhouse.interior.noExit'
@@ -593,6 +594,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'packhouse.interior.fault.noDrive': ['{name} gets no Drive (marked on the floor): its input must face a Shaft or a Gear that a Motor turns.', '{name} ne reçoit aucune force (marqué au sol) : son entrée doit faire face à un arbre ou un engrenage que tourne un moteur.'],
   'packhouse.interior.fault.noFlow': ['{name} gets no Flow (marked on the floor): its input must face a Pipe or a Tank fed by a Pump that a Motor drives.', '{name} ne reçoit aucun fluide (marqué au sol) : son entrée doit faire face à un tuyau ou une cuve alimentés par une pompe qu’entraîne un moteur.'],
   'packhouse.interior.fault.misfacing': ['{name} next to it (marked on the floor) does not carry Packets toward it: turn it or replace it.', '{name} à côté (marqué au sol) ne porte pas les paquets vers lui : pivotez-le ou remplacez-le.'],
+  'packhouse.interior.fault.noOutput': ['{name} next to it (marked on the floor) sends no Packets: lay a Conveyor that brings them from the Line to this entry.', '{name} à côté (marqué au sol) n’envoie aucun paquet : posez un tapis qui les amène de la ligne jusqu’à cette entrée.'],
   'packhouse.interior.fault.deadEnd': ['Nothing brings Packets to {name}: the cell in front of its entry (marked on the floor) is empty, lay a Conveyor there that carries toward it.', 'Rien n’apporte de paquets à {name} : la case devant son entrée (marquée au sol) est vide, posez-y un tapis qui porte vers lui.'],
   'packhouse.interior.fault.overfed': ['The Machine ahead already feeds as many {name} as it can: this one gets no Packets. Remove it, or take another from the Line.', 'La machine en amont alimente déjà autant de {name} qu’elle le peut : celui-ci ne reçoit rien. Retirez-le, ou retirez-en un autre de la chaîne.'],
   'mill.interior.incomplete': ['The pipes of its Pump must reach a Cleaner and, for its Recipe, a Bagger (flour) or an Oil tank (olive oil), and a Recipe must be chosen.', "La tuyauterie de sa pompe doit atteindre une nettoyeuse et, selon sa recette, une ensacheuse (farine) ou un réservoir d'huile (huile d'olive), et une recette doit être choisie."],
