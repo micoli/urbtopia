@@ -18,7 +18,7 @@ export function HomeMenus({ home }: HomeMenusProps) {
   const panel = useStore(venueStore, store => store.panel);
   const { togglePanel, close } = venueStore.getState();
   const actions: NavAction[] = [
-    { id: 'build', icon: 'build', label: t('dock.build'), image: 'bulldozer.png', pressed: panel === 'build', disabled: false, guided: false, onClick: () => togglePanel('build') },
+    { id: 'build', icon: 'build', label: t('dock.build'), pressed: panel === 'build', disabled: false, guided: false, onClick: () => togglePanel('build') },
     { id: 'parquet', icon: 'sparkles', label: t('home.interior.parquet'), pressed: panel === 'parquet', disabled: false, guided: false, onClick: () => togglePanel('parquet') },
     { id: 'back', icon: 'undo', label: t('venue.menu.back'), pressed: false, disabled: false, guided: false, onClick: close },
   ];
