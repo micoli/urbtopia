@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, dispatch, newGame, type Building, type BuildingType, type GameState } from '../index';
+import { createBuilding, dispatch, newGame, type Building, type BuildingType, type GameState, type VenueFixture } from '../index';
 import { interiorLinksOf } from '../factory/factoryInterior';
+import { FIXTURES } from '../venues/fixtures';
 import { INTERIOR_EXAMPLES } from './interiorExamples';
 
 const homes = [10, 11, 12, 13].map(id => ({ ...createBuilding(id, 'home', 40 + id, 30, 0), tier: 6 }));
@@ -19,11 +20,27 @@ const fitted = (type: BuildingType): GameState => {
 describe('the examples of set-ups of the Production interiors', () => {
   const types = Object.keys(INTERIOR_EXAMPLES) as BuildingType[];
 
-  it.each(types)('%s: every Fixture can be placed in the room, and the set-up runs', type => {
+  it.each(types)('%s: every Fixture can be placed in the room, and the whole set-up runs', type => {
     const building = fitted(type).buildings.find(candidate => candidate.id === 1) as Building;
     const fixtures = building.interior!.fixtures;
     expect(fixtures).toHaveLength(INTERIOR_EXAMPLES[type]!.fixtures.length);
-    const { linked, lined } = interiorLinksOf(fixtures);
-    expect(linked.size + lined.size).toBeGreaterThan(0);
+    const { linked, lined, problems } = interiorLinksOf(fixtures);
+    const withRole = (role: string) => fixtures.filter(fixture => FIXTURES[fixture.type].role === role);
+    expect(withRole('machine').filter(machine => !linked.has(machine.id))).toEqual([]);
+    expect(withRole('exit').filter(exit => !lined.has(exit.id))).toEqual([]);
+    expect(problems.size).toBe(0);
+  });
+
+  it.each(types)('%s: no Fixture can be taken away without stopping a Machine or a Line', type => {
+    const all = (fitted(type).buildings.find(candidate => candidate.id === 1) as Building).interior!.fixtures;
+    const countOf = (list: readonly VenueFixture[], role: string) => list.filter(fixture => FIXTURES[fixture.type].role === role).length;
+    const works = (list: readonly VenueFixture[]) => {
+      const { linked, lined } = interiorLinksOf(list);
+      const withRole = (role: string) => list.filter(fixture => FIXTURES[fixture.type].role === role);
+      return countOf(list, 'machine') === countOf(all, 'machine') && countOf(list, 'exit') === countOf(all, 'exit')
+        && withRole('machine').every(machine => linked.has(machine.id)) && withRole('exit').every(exit => lined.has(exit.id));
+    };
+    const spare = all.filter(fixture => works(all.filter(other => other.id !== fixture.id)));
+    expect(spare.map(fixture => fixture.type)).toEqual([]);
   });
 });
