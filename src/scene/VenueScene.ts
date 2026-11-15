@@ -457,7 +457,7 @@ export class VenueScene {
     const spec = FIXTURES[fixture.type];
     const model = isRestockable(spec) || spec.assigns === 'miller' || spec.assigns === 'spinner' ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
     if (!model || !this.ensured(model)) return;
-    const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.includes('right') ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
+    const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.includes('right') || spec.drive?.includes('right') ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
     const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
     const corner = { x: Math.sign(side.x - side.z), z: Math.sign(side.z + side.x) };
     this.stand(model, { x: centre.x + corner.x * (width / 2 + CORNER_MARGIN), z: centre.z + corner.z * (depth / 2 + CORNER_MARGIN) }, { x: corner.x, z: corner.z });

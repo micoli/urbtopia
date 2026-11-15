@@ -18,6 +18,7 @@ const DEFAULT_EFFECTS: readonly EffectId[] = ['speed', 'yield'];
 const EFFECTS_BY_TYPE: Partial<Record<BuildingType, readonly EffectId[]>> = {
   mill: ['speed'],
   textileMill: ['speed'],
+  knitwearFactory: ['speed', 'yield', 'sales'],
   bakery: ['speed', 'yield', 'sales'],
   dairy: ['yield'],
   storehouse: ['capacity'],

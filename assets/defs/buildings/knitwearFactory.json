@@ -83,5 +83,13 @@
     "slots": 3,
     "sells": ["sweater", "gloves", "hat", "alpacaSweater", "scarf"],
     "saleIntervalFactor": 1
+  },
+  "floorShell": {
+    "floor": "knitwear-interior-floor",
+    "wall": "knitwear-interior-wall",
+    "corner": "knitwear-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
   }
 }

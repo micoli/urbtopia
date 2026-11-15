@@ -311,6 +311,7 @@
               "enum": [
                 "miller",
                 "spinner",
+                "knitter",
                 "baker",
                 "seller",
                 "cheesemaker",

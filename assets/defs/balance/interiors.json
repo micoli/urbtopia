@@ -235,6 +235,43 @@
         }
       },
       "unlockCitizens": 250
+    },
+    "knitwearFactory": {
+      "family": "production",
+      "layout": {
+        "gridSizes": [6, 7, 8, 9, 10],
+        "speedCaps": [0.1, 0.2, 0.3, 0.4, 0.5],
+        "yieldCaps": [0.02, 0.04, 0.06, 0.08, 0.1],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "line": true,
+        "yieldFromExits": true,
+        "assignments": true,
+        "laneSlowdown": 0.5,
+        "feeds": [
+          {
+            "from": "knitter",
+            "to": "finisher",
+            "max": 2
+          },
+          {
+            "from": "finisher",
+            "to": "exit",
+            "max": 3
+          }
+        ],
+        "salesCaps": [0.1, 0.2, 0.3, 0.4, 0.5]
+      },
+      "roles": {
+        "knitter": {
+          "part": "speed",
+          "posts": [0, 1, 1, 2, 2]
+        },
+        "seller": {
+          "part": "salesRate",
+          "posts": [0, 1, 2, 3, 3]
+        }
+      },
+      "unlockCitizens": 400
     }
   }
 }

@@ -5,7 +5,7 @@ import {
 } from '../core';
 import type { MessageKey } from '../i18n/messages';
 
-export const PRODUCTION_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'workshop', 'bakery', 'dairy', 'storehouse', 'recyclingPlant', 'textileMill'];
+export const PRODUCTION_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'workshop', 'bakery', 'dairy', 'storehouse', 'recyclingPlant', 'textileMill', 'knitwearFactory'];
 
 // The interiors with no bonus to speed, yield, sales or room: their gain is the queue that runs by itself.
 const QUEUE_ONLY_TYPES: readonly BuildingType[] = ['workshop'];

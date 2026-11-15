@@ -1024,7 +1024,7 @@ function assignedBonusUncached(building: Pick<Building, 'type' | 'tier' | 'inter
   const { links } = reportOf(allFixtures);
   // The report is cached by layout, which leaves out what the player assigns: the Fixtures are read from the interior itself.
   const lined = allFixtures.filter(fixture => links.lined.has(fixture.id));
-  const ovens = lined.filter(fixture => fixture.assigned === true && FIXTURES[fixture.type].assigns === 'baker' && fixture.recipe !== undefined);
+  const ovens = lined.filter(fixture => fixture.assigned === true && isProducerRole(FIXTURES[fixture.type].assigns) && fixture.recipe !== undefined);
   const counters = lined.filter(fixture => fixture.assigned === true && FIXTURES[fixture.type].assigns === 'seller' && fixture.soldGood !== undefined && suppliedGoodsOf(allFixtures, fixture).has(fixture.soldGood));
   const unattended = lined.filter(fixture => isMachine(fixture) && FIXTURES[fixture.type].assigns === undefined);
   const total = (list: readonly VenueFixture[], key: 'speed' | 'yield' | 'sales') => list.reduce((sum, fixture) => sum + (FIXTURES[fixture.type][key] ?? 0), 0);
