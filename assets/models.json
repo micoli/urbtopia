@@ -22459,6 +22459,126 @@
     ],
     "flush": true
   },
+  "knitwear-interior-counter-exit": {
+    "file": "knitwear-interior/counter-exit",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "knitwear-interior-finisher": {
+    "file": "knitwear-interior/finisher",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "knitwear-interior-finisher-left": {
+    "file": "knitwear-interior/finisher-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "knitwear-interior-floor": {
+    "file": "knitwear-interior/floor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "knitwear-interior-knitter": {
+    "file": "knitwear-interior/knitter",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "knitwear-interior-knitter-left": {
+    "file": "knitwear-interior/knitter-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "knitwear-interior-partition": {
+    "file": "knitwear-interior/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "knitwear-interior-partition-cross": {
+    "file": "knitwear-interior/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "knitwear-interior-partition-elbow": {
+    "file": "knitwear-interior/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "knitwear-interior-partition-tee": {
+    "file": "knitwear-interior/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "knitwear-interior-wall": {
+    "file": "knitwear-interior/wall",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "knitwear-interior-wall-corner": {
+    "file": "knitwear-interior/wall-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "library-interior-armchair": {
     "file": "library-interior/armchair",
     "source": "managed",
@@ -22581,6 +22701,126 @@
   },
   "library-interior-wall-corner": {
     "file": "library-interior/wall-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-collection-exit": {
+    "file": "livestock-interior/collection-exit",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-feed-intake": {
+    "file": "livestock-interior/feed-intake",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-feed-intake-left": {
+    "file": "livestock-interior/feed-intake-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-feeder": {
+    "file": "livestock-interior/feeder",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-floor": {
+    "file": "livestock-interior/floor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-partition": {
+    "file": "livestock-interior/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-partition-cross": {
+    "file": "livestock-interior/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-partition-elbow": {
+    "file": "livestock-interior/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-partition-tee": {
+    "file": "livestock-interior/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-pen": {
+    "file": "livestock-interior/pen",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-wall": {
+    "file": "livestock-interior/wall",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "livestock-interior-wall-corner": {
+    "file": "livestock-interior/wall-corner",
     "source": "managed",
     "license": "Own work",
     "footprint": [
@@ -25780,6 +26020,96 @@
     "file": "suburban/tree-small",
     "source": "managed",
     "license": "Own work",
+    "flush": true
+  },
+  "textile-interior-floor": {
+    "file": "textile-interior/floor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "textile-interior-partition": {
+    "file": "textile-interior/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "textile-interior-partition-cross": {
+    "file": "textile-interior/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "textile-interior-partition-elbow": {
+    "file": "textile-interior/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "textile-interior-partition-tee": {
+    "file": "textile-interior/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "textile-interior-spinner": {
+    "file": "textile-interior/spinner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "textile-interior-spinner-right": {
+    "file": "textile-interior/spinner-right",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "textile-interior-wall": {
+    "file": "textile-interior/wall",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "textile-interior-wall-corner": {
+    "file": "textile-interior/wall-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
     "flush": true
   },
   "trains-railroad-corner-small": {
