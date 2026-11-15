@@ -22,6 +22,7 @@ export const FIXTURE_CATEGORIES = {
   recyclingPlant: PACKHOUSE_FIXTURE_CATEGORIES,
   textileMill: TEXTILE_FIXTURE_CATEGORIES,
   knitwearFactory: PACKHOUSE_FIXTURE_CATEGORIES,
+  livestockFarm: PACKHOUSE_FIXTURE_CATEGORIES,
   school: SCHOOL_FIXTURE_CATEGORIES,
   library: LIBRARY_FIXTURE_CATEGORIES,
   hospital: HOSPITAL_FIXTURE_CATEGORIES,
@@ -83,7 +84,7 @@ export interface FixtureSpec {
   quality?: number;
   capacity?: number;
   power?: number;
-  assigns?: 'baker' | 'seller' | 'cheesemaker' | 'creamMaker' | 'miller' | 'spinner' | 'knitter' | 'restocker';
+  assigns?: 'baker' | 'seller' | 'cheesemaker' | 'creamMaker' | 'miller' | 'spinner' | 'knitter' | 'herder' | 'restocker';
   // A Machine on which the player picks the item that the Line carries (the Extractor of a Workshop).
   picks?: true;
   hatch?: number;

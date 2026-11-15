@@ -462,6 +462,16 @@ function spunOf(fixtures: readonly VenueFixture[], linked: ReadonlySet<number>):
   return new Set(fixtures.filter(fixture => linked.has(fixture.id) && FIXTURES[fixture.type].family === 'spinner' && fixture.recipe !== undefined).map(fixture => fixture.id));
 }
 
+// The Pens at work: with a Recipe, next to a Feeder that the Line reaches, which is where the grain of the silo arrives.
+function fedOf(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, lined: ReadonlySet<number>): Set<number> {
+  const fed = new Set<number>();
+  for (const pen of fixtures.filter(fixture => FIXTURES[fixture.type].family === 'pen' && fixture.recipe !== undefined)) {
+    const neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => at.get(keyOf(pen.x + dx!, pen.y + dy!)));
+    if (neighbours.some(next => next !== undefined && lined.has(next.id) && FIXTURES[next.type].family === 'feeder')) fed.add(pen.id);
+  }
+  return fed;
+}
+
 // What is worked out once for a list of Fixtures: Drive, Flow and Links. A floor's list is replaced, never changed, when the player edits it,
 // so each list is read once however many panels, bonuses and scenes ask.
 interface InteriorReport {
@@ -512,7 +522,8 @@ const reportOf = memoized((allFixtures): InteriorReport => {
     else problems.set(machine.id, lacking);
   }
   const line = lineReach(fixtures, at, linked);
-  const lined = new Set([...line.lined, ...milledOf(fixtures, flow, linked), ...spunOf(fixtures, linked)]);
+  const reached = new Set([...line.lined, ...milledOf(fixtures, flow, linked), ...spunOf(fixtures, linked)]);
+  const lined = new Set([...reached, ...fedOf(fixtures, at, reached)]);
   return { fixtures, at, drive, powered, flow, line, links: { linked, jammed: drive.jammed, problems, lined, overfed: line.overfed } };
 });
 
@@ -1045,6 +1056,9 @@ function assignedBonusUncached(building: Pick<Building, 'type' | 'tier' | 'inter
   };
 }
 
+// The Staff that delivers the yield the Exits add: the sellers of a Bakery, the herders of a Livestock farm.
+const exitYieldPartOf = (type: BuildingType): InteriorPart => (Object.values(interiorDeclarationOf(type)?.roles ?? {}).some(role => role.part === 'yield') ? 'yield' : 'salesRate');
+
 // The bonus of a building's floor; for a Packhouse, the one that applies to the packed Goods `item` when it is given.
 export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'interior' | 'breakerOff'>, item?: ItemId): InteriorBonus {
   if (!building.interior || building.breakerOff) return NO_BONUS;
@@ -1056,7 +1070,7 @@ export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier'
     const bonus = layout?.line ? lineBonusOf(building.interior.fixtures, building.tier, building.type, group) : interiorBonusOf(building.interior.fixtures, building.tier, building.type);
     // A yield that comes from the Exits is delivered by the Staff that serves them. A building that splits its yield in groups of Goods delivers each group through its own role; asked about none, it is the best of them.
     const delivered = (name: string) => bonus.yield * interiorPartPresence(building, `${name}Yield` as InteriorPart);
-    const yieldShare = groups.length === 0 ? bonus.yield * (layout?.yieldFromExits ? interiorPartPresence(building, 'salesRate') : 1) : group !== undefined ? delivered(group) : item !== undefined ? 0 : Math.max(...groups.map(delivered));
+    const yieldShare = groups.length === 0 ? bonus.yield * (layout?.yieldFromExits ? interiorPartPresence(building, exitYieldPartOf(building.type)) : 1) : group !== undefined ? delivered(group) : item !== undefined ? 0 : Math.max(...groups.map(delivered));
     return {
       ...bonus,
       yield: yieldShare,

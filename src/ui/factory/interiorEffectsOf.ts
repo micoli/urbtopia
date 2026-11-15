@@ -19,6 +19,7 @@ const EFFECTS_BY_TYPE: Partial<Record<BuildingType, readonly EffectId[]>> = {
   mill: ['speed'],
   textileMill: ['speed'],
   knitwearFactory: ['speed', 'yield', 'sales'],
+  livestockFarm: ['yield'],
   bakery: ['speed', 'yield', 'sales'],
   dairy: ['yield'],
   storehouse: ['capacity'],

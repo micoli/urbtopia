@@ -272,6 +272,25 @@
         }
       },
       "unlockCitizens": 400
+    },
+    "livestockFarm": {
+      "family": "production",
+      "layout": {
+        "gridSizes": [6, 7, 8, 9, 10],
+        "speedCaps": [0.01],
+        "yieldCaps": [0.05, 0.1, 0.15, 0.2, 0.25],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "line": true,
+        "autoWork": true,
+        "yieldFromExits": true
+      },
+      "roles": {
+        "herder": {
+          "part": "yield",
+          "posts": [1, 2, 3, 4, 5]
+        }
+      },
+      "unlockCitizens": 80
     }
   }
 }

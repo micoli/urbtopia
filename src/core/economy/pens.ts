@@ -22,4 +22,10 @@ export function penAnimalsOf(building: Pick<Building, 'type' | 'tier' | 'queue'>
   return available.flatMap((pen, index) => (animals[index] ? [{ ...pen, animal: animals[index] }] : []));
 }
 
+// The model of the animal that gives an item (an egg, milk, wool or silk), if any.
+export const animalModelOfItem = (item: string): string | undefined => {
+  const animal = ANIMAL_OF_ITEM.get(item);
+  return animal === undefined ? undefined : modelFileOf(animal);
+};
+
 export const ANIMAL_MODEL_FILES: readonly string[] = [...new Set(ANIMAL_OF_ITEM.values())].map(modelFileOf);

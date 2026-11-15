@@ -6,7 +6,7 @@ import { STAFF } from '../venues/staff';
 
 export type InteriorFamily = 'production' | 'service';
 
-export type InteriorPart = 'speed' | 'salesRate' | 'cheeseYield' | 'creamYield' | 'capacity' | 'schooling' | 'knowledge' | 'carePrimary' | 'careDoctor' | 'careSurgeon';
+export type InteriorPart = 'speed' | 'yield' | 'salesRate' | 'cheeseYield' | 'creamYield' | 'capacity' | 'schooling' | 'knowledge' | 'carePrimary' | 'careDoctor' | 'careSurgeon';
 
 // A Machine, named by its family, feeds at most `max` of the Fixtures `to`, named by their family or their role, that its Line reaches.
 export interface LineFeed {

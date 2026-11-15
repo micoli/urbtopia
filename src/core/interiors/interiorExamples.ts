@@ -62,6 +62,10 @@ export const INTERIOR_EXAMPLES: Partial<Record<BuildingType, InteriorExample>> =
     at('knitwearKnitter', 4, 0), at('knitwearShaft', 5, 0, 1), at('knitwearMotor', 6, 0, 1), at('knitwearConveyor', 4, 1), at('knitwearFinisher', 4, 2), at('knitwearShaft', 5, 2, 1),
     at('knitwearMotor', 6, 2, 1), at('knitwearConveyor', 4, 3), at('knitwearConveyor', 4, 4), at('knitwearConveyor', 4, 5), at('knitwearConveyor', 4, 6), at('knitwearCounter', 4, 7, 2),
   ] },
+  livestockFarm: { tier: 3, fixtures: [
+    at('livestockFeedIntake', 4, 0), at('livestockShaft', 5, 0, 1), at('livestockMotor', 6, 0, 1), at('livestockConveyor', 4, 1), at('livestockConveyor', 4, 2), at('livestockConveyor', 4, 3),
+    at('livestockFeeder', 4, 4, 2), at('livestockPen', 3, 4, 2), at('livestockPen', 5, 4, 2),
+  ] },
   storehouse: { tier: 5, fixtures: [
     at('storehouseDock', 4, 0), at('storehouseShaft', 5, 0, 1), at('storehouseMotor', 6, 0, 1), at('storehouseConveyor', 4, 1), at('storehouseHoist', 4, 2), at('storehouseShaft', 5, 2, 1),
     at('storehouseMotor', 6, 2, 1), at('storehouseConveyor', 4, 3), at('storehouseConveyor', 4, 4), at('storehouseConveyor', 4, 5), at('storehouseConveyor', 4, 6), at('storehouseRack', 4, 7, 2),

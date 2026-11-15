@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { AvatarPatrol, patrolRoute } from './avatarPatrol';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, isVenueType, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, animalModelOfItem, isVenueType, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { RESTOCKER_MODEL, VENUE_STAFF_MODELS, venueCrowdModelsOf } from './venueCrowdModels';
@@ -39,6 +39,10 @@ const DOCK_ROOF = 0.95;
 const DOCK_DEPTH = 0.42;
 const MACHINE_ROOF = 1.1;
 const STAFF_SCALE = 0.7;
+
+// The animals of the models are small next to a one-tile Pen: they are drawn larger in the interior of a Livestock farm, standing on its litter.
+const PEN_ANIMAL_SCALE = 1.6;
+const PEN_LITTER = 0.05;
 // Staff stand on the corner of their Fixture, not in front of it.
 const CORNER_MARGIN = 0.09;
 
@@ -403,10 +407,11 @@ export class VenueScene {
         token.scale.setScalar(ITEM_SCALE);
         const back = turnedOffset(0, -1, fixture.rotation);
         const baker = isProducerRole(FIXTURES[fixture.type].assigns);
-        const [height, depth] = restockable || spec.picks || (FIXTURES[fixture.type].assigns === 'miller' || FIXTURES[fixture.type].assigns === 'spinner') ? (FIXTURES[fixture.type].role === 'exit' ? [DOCK_ROOF, DOCK_DEPTH] : [MACHINE_ROOF, 0]) : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
+        const [height, depth] = restockable || spec.picks || (FIXTURES[fixture.type].assigns === 'miller' || FIXTURES[fixture.type].assigns === 'spinner' || FIXTURES[fixture.type].assigns === 'herder') ? (FIXTURES[fixture.type].role === 'exit' ? [DOCK_ROOF, DOCK_DEPTH] : [MACHINE_ROOF, 0]) : baker ? [OVEN_ROOF, OVEN_ROOF_DEPTH] : [CASE_ROOF, CASE_DEPTH];
         token.position.set(centre.x + back.x * depth, height, centre.z + back.z * depth);
         this.tokensRoot.add(token);
       }
+      if (spec.family === 'pen' && fixture.recipe !== undefined) this.placePenAnimal(fixture, centre);
       if (fixture.assigned || fixture.restocker) this.placeStaff(fixture, centre);
     }
     this.placeAvatars();
@@ -452,10 +457,19 @@ export class VenueScene {
     return false;
   }
 
+  // The animal of the Recipe chosen on a Pen stands in the middle of it, facing the gate.
+  private placePenAnimal(fixture: VenueFixture, centre: { x: number; z: number }): void {
+    const model = animalModelOfItem(fixture.recipe!);
+    if (!model || !this.ensured(model)) return;
+    const animal = this.place(this.tokensRoot, model, centre.x, centre.z, -fixture.rotation * Math.PI / 2);
+    animal.position.y = PEN_LITTER;
+    animal.scale.setScalar(PEN_ANIMAL_SCALE);
+  }
+
   // The Staff assigned to a Fixture stands on the diagonal of its corner, turned toward it: a seller behind its Display counter, on the shop side; a baker at the side of its Oven that its gas does not use. A miller is a plain worker, like a Restocker.
   private placeStaff(fixture: VenueFixture, centre: { x: number; z: number }): void {
     const spec = FIXTURES[fixture.type];
-    const model = isRestockable(spec) || spec.assigns === 'miller' || spec.assigns === 'spinner' ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
+    const model = isRestockable(spec) || spec.assigns === 'miller' || spec.assigns === 'spinner' || spec.assigns === 'herder' ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
     if (!model || !this.ensured(model)) return;
     const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.includes('right') || spec.drive?.includes('right') ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
     const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);

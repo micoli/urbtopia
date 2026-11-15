@@ -312,6 +312,7 @@
                 "miller",
                 "spinner",
                 "knitter",
+                "herder",
                 "baker",
                 "seller",
                 "cheesemaker",
@@ -332,6 +333,7 @@
                   "type": "string",
                   "enum": [
                     "speed",
+                    "yield",
                     "salesRate",
                     "cheeseYield",
                     "creamYield",

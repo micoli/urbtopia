@@ -1015,7 +1015,8 @@
             "workshop",
             "recyclingPlant",
             "textileMill",
-            "knitwearFactory"
+            "knitwearFactory",
+            "livestockFarm"
           ]
         },
         "$schema": {
@@ -1255,6 +1256,7 @@
             "miller",
             "spinner",
             "knitter",
+            "herder",
             "restocker"
           ]
         },
