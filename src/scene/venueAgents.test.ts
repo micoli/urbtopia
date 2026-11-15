@@ -22,6 +22,21 @@ describe('Venue paths', () => {
     expect(path[path.length - 1]).toEqual({ x: 3, y: 2 });
   });
 
+  it('crosses a wall only through its doorway, and only across the wall', () => {
+    const wall = [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }, { x: 5, y: 2 }];
+    const doors = new Map([['2:2', 'y' as const]]);
+    const through = makeWorld(6, entrance, wall, [], doors);
+    const path = findPath(through, { x: 2, y: 1 }, { x: 2, y: 3 })!;
+    expect(path).toEqual([{ x: 2, y: 2 }, { x: 2, y: 3 }]);
+    expect(findPath(makeWorld(6, entrance, wall, [], new Map([['2:2', 'x' as const]])), { x: 2, y: 1 }, { x: 2, y: 3 })).toBeNull();
+  });
+
+  it('sets a seated diner on its chair even though the chair is a Fixture', () => {
+    const seat = { kind: 'diner' as const, x: 2, y: 3, facing: 0 };
+    expect(standPoint(seat)).toEqual({ x: 2.5, y: 3.5 });
+    expect(findPath(world([{ x: 2, y: 3 }]), { x: 3, y: 1 }, { x: 2, y: 3 })).not.toBeNull();
+  });
+
   it('goes in and out through the entrance only', () => {
     const inside = findPath(world(), { x: 3, y: -1 }, { x: 1, y: 3 })!;
     expect(inside[0]).toEqual({ x: 3, y: 0 });

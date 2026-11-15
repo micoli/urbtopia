@@ -58,4 +58,11 @@ describe('Venue crowd', () => {
   it('works in an empty Venue', () => {
     expect(planCrowd({ size: 6, entrance: { x: 3, y: 0 }, fixtures: [], usageByFixture: new Map(), saturation: 0, demandRatio: 0, employees: 0 })).toEqual([]);
   });
+
+  it('sits a diner on the chair that faces a busy table, and leaves a table with no chair to a diner standing at it', () => {
+    const fixtures = [fixture(1, 'restaurantTable', 2, 2), fixture(2, 'restaurantChair', 2, 1, 0), fixture(3, 'restaurantTable', 4, 4)];
+    const figures = planCrowd({ size: 6, entrance: { x: 3, y: 0 }, fixtures, usageByFixture: new Map([[1, 3], [2, 3], [3, 3]]), saturation: 1, demandRatio: 1, employees: 0 });
+    expect(figures.filter(figure => figure.kind === 'diner')).toEqual([{ kind: 'diner', x: 2, y: 1, facing: Math.atan2(0, 1) }]);
+    expect(figures.filter(figure => figure.kind === 'gamer')).toHaveLength(1);
+  });
 });

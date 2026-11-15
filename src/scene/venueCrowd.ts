@@ -1,6 +1,6 @@
-import { fixtureTiles, type Coord, type FixtureId, type VenueFixture } from '../core';
+import { FIXTURES, fixtureTiles, type Coord, type FixtureId, type VenueFixture } from '../core';
 
-export type FigureKind = 'gamer' | 'queue' | 'employee';
+export type FigureKind = 'gamer' | 'queue' | 'employee' | 'diner';
 
 export interface Figure extends Coord {
   kind: FigureKind;
@@ -48,7 +48,20 @@ export function planCrowd(input: CrowdInput): Figure[] {
     return cells.sort((a, b) => gap(a, origin) - gap(b, origin) || a.y - b.y || a.x - b.x).slice(0, count);
   };
 
-  const games = fixtures.filter(fixture => (input.usageByFixture.get(fixture.id) ?? 0) > 0 && !COUNTERS.includes(fixture.type)).sort((a, b) => a.id - b.id);
+  const faces = (seat: VenueFixture, host: VenueFixture): boolean => {
+    const front = FRONT[seat.rotation % 4]!;
+    return fixtureTiles(host).some(tile => tile.x === seat.x + front.x && tile.y === seat.y + front.y);
+  };
+  const isSeat = (fixture: VenueFixture): boolean => FIXTURES[fixture.type].seat !== undefined;
+  const hasSeat = (host: VenueFixture): boolean => fixtures.some(seat => isSeat(seat) && faces(seat, host));
+  const inUse = (fixture: VenueFixture): boolean => (input.usageByFixture.get(fixture.id) ?? 0) > 0 && !COUNTERS.includes(fixture.type);
+  const seats = fixtures.filter(fixture => inUse(fixture) && isSeat(fixture)).sort((a, b) => a.id - b.id);
+  const games = fixtures.filter(fixture => inUse(fixture) && !isSeat(fixture) && !hasSeat(fixture)).sort((a, b) => a.id - b.id);
+  for (const seat of seats) {
+    if (figures.length >= CROWD.maxFigures) break;
+    const front = FRONT[seat.rotation % 4]!;
+    figures.push({ kind: 'diner', x: seat.x, y: seat.y, facing: facingTo(seat, { x: seat.x + front.x, y: seat.y + front.y }) });
+  }
   const players = games.length === 0 ? 0 : Math.max(1, Math.min(games.length, Math.round(input.saturation * games.length)));
   for (const fixture of games.slice(0, players)) {
     const tiles = fixtureTiles(fixture);

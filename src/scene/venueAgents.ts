@@ -5,7 +5,7 @@ import type { Figure } from './venueCrowd';
 // The people of the interior are a visual projection of the aggregate model: they walk on the grid, play, wait and leave,
 // but nothing they do is saved or feeds back into the economy.
 
-export type AgentMode = 'walking' | 'playing' | 'waiting' | 'leaving' | 'idle' | 'errand' | 'checking';
+export type AgentMode = 'walking' | 'playing' | 'waiting' | 'leaving' | 'idle' | 'errand' | 'checking' | 'seated';
 
 export interface Agent {
   id: number;
@@ -27,12 +27,14 @@ export interface World {
   size: number;
   entrance: Coord;
   blocked: ReadonlySet<string>;
+  // Doorways in a wall: the cell can only be crossed along this axis, across the wall.
+  doors: ReadonlyMap<string, 'x' | 'y'>;
   // Cells in front of the Fixtures an employee can go and check.
   errands: readonly Coord[];
 }
 
 // How far toward the Fixture a person stands inside the cell of its slot, so that it is right in front of it.
-const STAND_OFFSET: Record<Figure['kind'], number> = { gamer: 0.38, queue: 0, employee: 0.25 };
+const STAND_OFFSET: Record<Figure['kind'], number> = { gamer: 0.38, queue: 0, employee: 0.25, diner: 0 };
 
 export function standPoint(figure: Figure): Coord {
   const reach = STAND_OFFSET[figure.kind];
@@ -71,7 +73,7 @@ const between = (dice: Dice, [low, high]: readonly [number, number]): number => 
 export function findPath(world: World, from: Coord, to: Coord): Coord[] | null {
   if (keyOf(from) === keyOf(to)) return [];
   const door = outside(world);
-  const walkable = (cell: Coord) => keyOf(cell) === keyOf(door) || (cell.x >= 0 && cell.y >= 0 && cell.x < world.size && cell.y < world.size && !world.blocked.has(keyOf(cell)));
+  const walkable = (cell: Coord) => keyOf(cell) === keyOf(door) || keyOf(cell) === keyOf(to) || (cell.x >= 0 && cell.y >= 0 && cell.x < world.size && cell.y < world.size && !world.blocked.has(keyOf(cell)));
   const previous = new Map<string, Coord | null>([[keyOf(from), null]]);
   const queue: Coord[] = [from];
   for (let head = 0; head < queue.length; head++) {
@@ -84,6 +86,8 @@ export function findPath(world: World, from: Coord, to: Coord): Coord[] | null {
     for (const [dx, dy] of [[0, 1], [1, 0], [-1, 0], [0, -1]] as const) {
       const next = { x: current.x + dx, y: current.y + dy };
       if (previous.has(keyOf(next)) || !walkable(next)) continue;
+      const axis = dx === 0 ? 'y' : 'x';
+      if ((world.doors.get(keyOf(next)) ?? axis) !== axis || (world.doors.get(keyOf(current)) ?? axis) !== axis) continue;
       // The only way out of the grid is through the entrance.
       if (next.y < 0 && !(next.x === door.x && current.x === door.x && current.y === world.entrance.y)) continue;
       previous.set(keyOf(next), current);
@@ -101,11 +105,13 @@ function routeTo(world: World, agent: Agent, goal: Coord): Agent {
   return { ...agent, goal, path };
 }
 
-export function makeWorld(size: number, entrance: Coord, blockedCells: readonly Coord[], errands: readonly Coord[]): World {
-  return { size, entrance, blocked: new Set(blockedCells.map(keyOf)), errands };
+export function makeWorld(size: number, entrance: Coord, blockedCells: readonly Coord[], errands: readonly Coord[], doors: ReadonlyMap<string, 'x' | 'y'> = new Map()): World {
+  return { size, entrance, blocked: new Set(blockedCells.map(keyOf)), doors, errands };
 }
 
-const customerKinds = new Set<Figure['kind']>(['gamer', 'queue']);
+export const doorKey = keyOf;
+
+const customerKinds = new Set<Figure['kind']>(['gamer', 'queue', 'diner']);
 
 const sameSlot = (a: Figure | null, b: Figure): boolean => a !== null && a.kind === b.kind && a.x === b.x && a.y === b.y;
 
@@ -176,6 +182,7 @@ function arrive(agent: Agent, dice: Dice): Agent {
   const base = { ...agent, path: [], goal: null, facing: slot.facing };
   if (slot.kind === 'gamer') return { ...base, mode: 'playing', timer: between(dice, AGENTS.playSeconds) };
   if (slot.kind === 'queue') return { ...base, mode: 'waiting', timer: 0 };
+  if (slot.kind === 'diner') return { ...base, mode: 'seated', timer: 0 };
   return { ...base, mode: 'idle', timer: between(dice, AGENTS.idleSeconds) };
 }
 
@@ -236,6 +243,7 @@ export function pickClip(mode: AgentMode, kind: Agent['kind'], satisfaction: num
   if (mode === 'playing') return roll > 0.9 ? (satisfaction > 0.5 ? 'emote-yes' : 'emote-no') : choose(PLAY_CLIPS);
   if (mode === 'waiting') return satisfaction < 0.3 && roll > 0.5 ? 'emote-no' : 'idle';
   if (mode === 'checking') return choose(CHECK_CLIPS);
+  if (mode === 'seated') return roll > 0.85 ? (satisfaction > 0.5 ? 'emote-yes' : 'emote-no') : roll > 0.4 ? 'holding-both' : 'idle';
   return kind === 'employee' && roll > 0.55 ? (roll > 0.8 ? 'interact-left' : 'interact-right') : 'idle';
 }
 
