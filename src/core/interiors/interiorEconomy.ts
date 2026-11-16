@@ -1,5 +1,5 @@
 import type { Building, GameState } from '../engine/state';
-import { interiorPowerOfBuilding } from '../factory/factoryInterior';
+import { interiorPowerOfBuilding } from '../factory/interiorBonus';
 import { hasProductionInterior, hasServiceInterior } from '../factory/interiorCommands';
 import { restockerWagePerHour, technicianWagePerHour } from '../factory/interiorWear';
 import { venuePower } from '../venues/profiles';

@@ -171,7 +171,7 @@ function updateBattery(building: Building, rate: number, boundary: number | unde
   const storedEnergy = atBoundary
     ? rate > 0 ? ECOLOGY.batteryCapacity : 0
     : Math.max(0, Math.min(ECOLOGY.batteryCapacity, (building.storedEnergy ?? 0) + rate * elapsedMs / ECOLOGY.hourMs));
-  return { ...building, storedEnergy };
+  return storedEnergy === building.storedEnergy ? building : { ...building, storedEnergy };
 }
 
 function remainingCoal(state: GameState, rate: number, elapsed: number): number {

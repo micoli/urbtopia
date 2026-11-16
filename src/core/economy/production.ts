@@ -11,8 +11,8 @@ import { durationOf, valueOf, type ItemId } from './items';
 import type { Building, GameState, QueueEntry, ShopStack } from '../engine/state';
 import { productionTierOf } from './tiers';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/factoryInterior';
-import { interiorLayoutOf } from '../interiors/interiorStaff';
+import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/interiorBonus';
+import { interiorDeclarationOf } from '../interiors/interiorStaff';
 
 // A Mill or a Bakery consumes as many recipes as its yield per cycle.
 export const recipeMultiplierOf = (building: Building): number => (scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1);
@@ -97,7 +97,7 @@ interface Advanced {
 // A Bakery bakes on one line for each Oven, and on one for what the player queues: an entry only waits for the entries of its own line. Every other building has a single line.
 const SINGLE_LINE = -1;
 
-const laneOf = (building: Pick<Building, 'type'>, entry: QueueEntry): number => (interiorLayoutOf(building.type)?.assignments === true && entry.exitId !== undefined ? entry.exitId : SINGLE_LINE);
+const laneOf = (building: Pick<Building, 'type'>, entry: QueueEntry): number => (interiorDeclarationOf(building.type)?.bonusModel === 'assigned' && entry.exitId !== undefined ? entry.exitId : SINGLE_LINE);
 
 // True when no entry of the line an entry would join is still waiting or running.
 export const isLaneIdle = (building: Building, exitId?: number): boolean => {
@@ -107,6 +107,8 @@ export const isLaneIdle = (building: Building, exitId?: number): boolean => {
 
 export function advanceBuilding(building: Building, now: number): Advanced {
   if (building.queue.length === 0) return { building, events: [] };
+  const nothingDue = building.queue.every((entry) => entry.done || entry.startedAt === null || entry.startedAt + entry.duration > now);
+  if (nothingDue) return { building, events: [] };
   const queue = building.queue.map((entry) => ({ ...entry }));
   const events: GameEvent[] = [];
   const blocked = new Set<number>();
@@ -172,14 +174,15 @@ function advanceShop(building: Building, now: number): Building {
     if (finishedAt === null) break;
     startAt = finishedAt;
   }
-  return { ...building, stacks };
+  return stacks.every((stack, index) => stack === building.stacks[index]) ? building : { ...building, stacks };
 }
 
 function advanceHome(building: Building, elapsedMs: number): Building {
   if (!isHomeType(building.type) || elapsedMs <= 0) return building;
   const citizens = citizensOf(building.tier);
   const cap = citizens * TAX.capHours * TAX.hourMs;
-  return { ...building, taxCitizenMs: Math.min(cap, building.taxCitizenMs + citizens * elapsedMs) };
+  const taxCitizenMs = Math.min(cap, building.taxCitizenMs + citizens * elapsedMs);
+  return taxCitizenMs === building.taxCitizenMs ? building : { ...building, taxCitizenMs };
 }
 
 export function taxFillRatio(building: Building): number {
@@ -197,7 +200,7 @@ export function advanceProduction(state: GameState, now: number, elapsedMs: numb
     const drawsPower = building.type === 'packhouse' && interiorPowerOfBuilding(building) > 0;
     const ratio = isIndustryType(building.type) ? economicRatio * industrySpeed : economicRatio;
     const delay = idle ? elapsedMs : elapsedMs * (1 - ratio);
-    const slowed = isIndustryType(building.type) || isShopType(building.type) || drawsPower ? {
+    const slowed = delay !== 0 && (isIndustryType(building.type) || isShopType(building.type) || drawsPower) ? {
       ...building,
       queue: building.queue.map(entry => entry.done || entry.startedAt === null ? entry : { ...entry, startedAt: entry.startedAt + delay }),
       stacks: building.stacks.map(stack => stack.nextSaleAt === null ? stack : { ...stack, nextSaleAt: stack.nextSaleAt + delay }),
@@ -207,7 +210,9 @@ export function advanceProduction(state: GameState, now: number, elapsedMs: numb
     return { ...produced, building: advanceOffice(housed, filledJobs.get(building.id) ?? 0, elapsedMs * economicRatio) };
   });
   const events = results.flatMap((result) => result.events).sort((a, b) => ('at' in a && 'at' in b ? a.at - b.at : 0));
-  return { state: { ...state, buildings: results.map((result) => result.building) }, events };
+  const buildings = results.map((result) => result.building);
+  const unchanged = buildings.every((building, index) => building === state.buildings[index]);
+  return { state: unchanged ? state : { ...state, buildings }, events };
 }
 
 export function restartRunningProduction(building: Building, now: number): Building {

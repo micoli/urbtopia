@@ -1,5 +1,6 @@
 import knowledge from '../../../assets/defs/balance/knowledge.json' with { type: 'json' };
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { buildingById } from '../buildings/buildingIndex';
 import { citizensOf } from '../buildings/city';
 import type { Building, GameState } from '../engine/state';
 import type { FacilityType } from './facilities';
@@ -18,7 +19,7 @@ export function homeKnowledge(state: GameState, home: Building, coverage: Servic
   const serving = servingFacilitiesOf(state).get(home.id);
   // The best quality that the interiors of the facilities serving the Home add to the share of Knowledge their type gives.
   const quality = (type: FacilityType, part: InteriorPart): number => Math.max(0, ...(serving?.get(type) ?? []).map(id => {
-    const facility = state.buildings.find(candidate => candidate.id === id);
+    const facility = buildingById(state.buildings, id);
     return facility ? serviceQualityOf(state, facility, part, null) : 0;
   }));
   const schooling = SCHOOLING.reduce((sum, [type, points]) => sum + (covered.has(type) ? points * (1 + (type === 'school' ? quality('school', 'schooling') : 0)) : 0), 0);

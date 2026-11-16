@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type Rotation } from '../index';
 import { fixtureRefund } from '../venues/venues';
 import { FIXTURES } from '../venues/fixtures';
-import { interiorBonusOf, interiorGridSizeOf } from './factoryInterior';
+import { interiorBonusOf, interiorGridSizeOf } from './interiorBonus';
 
 const city = (tier = 1, urbs = 100_000): GameState => ({
   ...newGame({ seed: 'factory-floor', now: 0 }),
@@ -101,5 +101,13 @@ describe('what a Factory interior adds', () => {
     let state = city(5);
     for (const command of [place('factoryMotor', 2, 2), place('factoryShaft', 2, 3), place('factoryPress', 2, 4, 2)]) state = send(state, command);
     expect(interiorBonusOf(factory(state).interior!.fixtures, factory(state).tier)).toMatchObject({ speed: FIXTURES.factoryPress.speed, yield: 0 });
+  });
+});
+
+describe('moving or removing a Fixture of a building that does not exist', () => {
+  it('is refused, and so is a building that has no interior', () => {
+    expect(failure(city(), { type: 'MoveInteriorFixture', buildingId: 99, fixtureId: 1, x: 3, y: 3 })).toBe('error.unknownBuilding');
+    expect(failure(city(), { type: 'RemoveInteriorFixture', buildingId: 99, fixtureId: 1 })).toBe('error.unknownBuilding');
+    expect(failure(city(), { type: 'RemoveInteriorFixture', buildingId: 2, fixtureId: 1 })).toBe('error.unknownBuilding');
   });
 });

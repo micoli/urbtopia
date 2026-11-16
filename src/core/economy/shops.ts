@@ -2,7 +2,7 @@ import { hasCounter } from './counterSlots';
 import { BUILDING_ENTRIES, definitionOf, tiersOf } from '../buildings/buildingDefinitions';
 import type { ShopType } from '../buildings/buildingTypes.generated';
 import type { Building } from '../engine/state';
-import { interiorBonusOfBuilding } from '../factory/factoryInterior';
+import { interiorBonusOfBuilding } from '../factory/interiorBonus';
 import { SHOP, SLOT_PRICES } from './economy';
 import { PACK_IDS, GOODS, type GoodId, type ItemId } from './items';
 

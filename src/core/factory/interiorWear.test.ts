@@ -117,6 +117,28 @@ describe('repairing a Fixture of a Factory interior', () => {
     expect(failure({ ...worn(), urbs: 0 }, { type: 'RepairInteriorFixture', buildingId: 1, fixtureId: interiorOf(worn()).fixtures[0]!.id })).toBe('error.notEnoughUrbs');
   });
 
+  it('repairs all the worn Fixtures for the price of each', () => {
+    const before = worn();
+    const state = send(before, { type: 'RepairAllInteriorFixtures', buildingId: 1 });
+    expect(interiorOf(state).fixtures.every(fixture => conditionOf(fixture) === 100)).toBe(true);
+    expect(before.urbs - state.urbs).toBe(interiorOf(before).fixtures.reduce((total, fixture) => total + repairCost(fixture), 0));
+  });
+
+  it('repairs as many worn Fixtures as the city can pay for, in the order they were placed', () => {
+    const before = worn();
+    const [first, second] = interiorOf(before).fixtures;
+    const state = send({ ...before, urbs: repairCost(first!) }, { type: 'RepairAllInteriorFixtures', buildingId: 1 });
+    expect(conditionById(state, first!.id)).toBe(100);
+    expect(conditionById(state, second!.id)).toBe(30);
+    expect(state.urbs).toBe(0);
+  });
+
+  it('is refused for every worn Fixture when nothing is worn, when the city can pay for none, or for a building that does not exist', () => {
+    expect(failure(city(running()), { type: 'RepairAllInteriorFixtures', buildingId: 1 })).toBe('error.nothingToRepair');
+    expect(failure({ ...worn(), urbs: 0 }, { type: 'RepairAllInteriorFixtures', buildingId: 1 })).toBe('error.notEnoughUrbs');
+    expect(failure(worn(), { type: 'RepairAllInteriorFixtures', buildingId: 99 })).toBe('error.unknownBuilding');
+  });
+
   it('repairs a broken Fixture', () => {
     const state = city([put('factoryMotor', 2, 1, 0, { condition: 10, broken: true })]);
     const repaired = interiorOf(send(state, { type: 'RepairInteriorFixture', buildingId: 1, fixtureId: 1 })).fixtures[0]!;
@@ -139,6 +161,11 @@ describe('the Technician of a Factory interior', () => {
 
   it('refuses a hire the city cannot pay', () => {
     expect(failure({ ...city([], {}, 3), urbs: 1 }, { type: 'HireInteriorTechnician', buildingId: 1 })).toBe('error.notEnoughUrbs');
+  });
+
+  it('refuses a building that does not exist', () => {
+    expect(failure(city([], {}, 3), { type: 'HireInteriorTechnician', buildingId: 99 })).toBe('error.unknownBuilding');
+    expect(failure(city([], {}, 3), { type: 'ReleaseInteriorTechnician', buildingId: 99 })).toBe('error.unknownBuilding');
   });
 
   it('repairs worn Fixtures by itself and slows the wear', () => {

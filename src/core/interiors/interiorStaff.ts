@@ -3,8 +3,14 @@ import type { Building, BuildingType, InteriorData, InteriorRole } from '../engi
 import { stackCountOf } from '../economy/counterSlots';
 import { modelFileOf } from '../models/modelFiles';
 import { STAFF } from '../venues/staff';
+import { valueByTier } from './valueByTier';
 
-export type InteriorFamily = 'production' | 'service';
+export type InteriorFamily = 'production' | 'service' | 'home';
+
+// How the bonus of a Production interior is computed: its own formula (the Factory, the Packhouse), the Machines alone, a Line of crates, or a Line whose Staff are assigned by hand to the Fixtures that carry their part (a baker to an Oven, a seller to a Display counter).
+export type InteriorBonusModel = 'factory' | 'packhouse' | 'machines' | 'line' | 'assigned';
+
+type DeclaredInteriorFamily = Exclude<InteriorFamily, 'home'>;
 
 export type InteriorPart = 'speed' | 'yield' | 'salesRate' | 'cheeseYield' | 'creamYield' | 'capacity' | 'schooling' | 'knowledge' | 'carePrimary' | 'careDoctor' | 'careSurgeon';
 
@@ -20,7 +26,6 @@ export interface InteriorLayout {
   speedCaps: number[];
   yieldCaps: number[];
   technicianPosts: number[];
-  line?: true;
   salesCaps?: number[];
   capacityCaps?: number[];
   yieldGroups?: Record<string, string[]>;
@@ -29,8 +34,6 @@ export interface InteriorLayout {
   requires?: string;
   // The yield comes from the Exits that Packets reach, not from the Machines.
   yieldFromExits?: true;
-  // The Staff are assigned by hand to the Fixtures that carry their part: a baker to an Oven, a seller to a Display counter.
-  assignments?: true;
   // The Staff assigned to a Fixture work on their own, as in a Bakery, though the bonus of the building stays what the Staff hired deliver.
   autoWork?: true;
   // Each Oven bakes on its own line, and each line is slowed by this share of every other line at work: with 0.5, three lines each take twice as long, so three Ovens bake one and a half times as much as one.
@@ -64,7 +67,8 @@ export interface CareBalance {
 
 interface InteriorDeclaration {
   care?: CareBalance;
-  family: InteriorFamily;
+  family: DeclaredInteriorFamily;
+  bonusModel?: InteriorBonusModel;
   unlockCitizens?: number;
   service?: ServiceLayout;
   layout?: InteriorLayout;
@@ -98,14 +102,13 @@ export const partOfRole = (type: BuildingType, role: InteriorRole): InteriorPart
 const postsByTier = (type: BuildingType, role: InteriorRole): readonly number[] => DECLARATIONS[type]?.roles[role]?.posts ?? [];
 
 export const interiorPostsOf = (type: BuildingType, role: InteriorRole, tier: number): number => {
-  const posts = postsByTier(type, role);
-  return posts.length === 0 ? 0 : posts[Math.min(tier, posts.length) - 1]!;
+  return valueByTier(postsByTier(type, role), tier);
 };
 
 // A Bakery hires as many bakers (and a Knitwear factory as many knitters) as it has production Slots and as many sellers as its Counter has Slots; the other roles follow the Tier. The Dairy hires sellers as its Counter has Slots.
 export const interiorPostsOfBuilding = (building: Pick<Building, 'type' | 'tier' | 'slotCount'>, role: InteriorRole): number => {
   const layout = interiorLayoutOf(building.type);
-  if (layout?.assignments === true && (role === 'seller' || DECLARATIONS[building.type]?.roles[role]?.part === 'speed')) return role === 'seller' ? stackCountOf(building.type, building.tier) : building.slotCount;
+  if (DECLARATIONS[building.type]?.bonusModel === 'assigned' && (role === 'seller' || DECLARATIONS[building.type]?.roles[role]?.part === 'speed')) return role === 'seller' ? stackCountOf(building.type, building.tier) : building.slotCount;
   if (layout?.autoWork === true && role === 'seller') return stackCountOf(building.type, building.tier);
   return interiorPostsOf(building.type, role, building.tier);
 };

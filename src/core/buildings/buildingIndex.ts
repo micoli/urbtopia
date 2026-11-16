@@ -19,6 +19,17 @@ export function buildingsOfType(buildings: readonly Building[], type: string): r
   return byType.get(type) ?? NONE;
 }
 
+const byIdCache = new WeakMap<readonly Building[], ReadonlyMap<number, Building>>();
+
+export function buildingById(buildings: readonly Building[], id: number): Building | undefined {
+  let byId = byIdCache.get(buildings);
+  if (!byId) {
+    byId = new Map(buildings.map((building) => [building.id, building]));
+    byIdCache.set(buildings, byId);
+  }
+  return byId.get(id);
+}
+
 const layoutCache = new WeakMap<readonly Building[], object>();
 let lastLayout: { buildings: readonly Building[]; token: object } | null = null;
 

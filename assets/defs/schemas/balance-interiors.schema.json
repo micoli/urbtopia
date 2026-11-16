@@ -21,6 +21,16 @@
               "service"
             ]
           },
+          "bonusModel": {
+            "type": "string",
+            "enum": [
+              "factory",
+              "packhouse",
+              "machines",
+              "line",
+              "assigned"
+            ]
+          },
           "unlockCitizens": {
             "type": "integer",
             "minimum": 0,
@@ -130,10 +140,6 @@
                   "maximum": 9007199254740991
                 }
               },
-              "line": {
-                "type": "boolean",
-                "const": true
-              },
               "salesCaps": {
                 "minItems": 1,
                 "type": "array",
@@ -166,10 +172,6 @@
                 }
               },
               "yieldFromExits": {
-                "type": "boolean",
-                "const": true
-              },
-              "assignments": {
                 "type": "boolean",
                 "const": true
               },

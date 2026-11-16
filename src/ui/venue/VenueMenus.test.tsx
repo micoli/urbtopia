@@ -37,12 +37,12 @@ afterEach(() => {
 describe('Venue main menu', () => {
   it('has the buttons of an interior, with the return to the city kept apart', () => {
     const actions = venueActionsOf(null, () => {}, () => {});
-    expect(actions.map(action => action.id)).toEqual(['build', 'staff', 'events', 'takings', 'back']);
+    expect(actions.map(action => action.id)).toEqual(['build', 'staff', 'events', 'takings', 'codex', 'back']);
     expect(actions.every(action => !action.pressed && !action.disabled)).toBe(true);
   });
 
   it('puts the Management in place of the Takings in a Hotel and an Arcade, as in the other interiors', () => {
-    for (const type of ['hotel', 'arcade'] as const) expect(venueActionsOf(null, () => {}, () => {}, type).map(action => action.id)).toEqual(['build', 'staff', 'events', 'management', 'back']);
+    for (const type of ['hotel', 'arcade'] as const) expect(venueActionsOf(null, () => {}, () => {}, type).map(action => action.id)).toEqual(['build', 'staff', 'events', 'management', 'codex', 'back']);
     expect(venueActionsOf(null, () => {}, () => {}, 'supermarket').map(action => action.id)).toContain('takings');
   });
 
@@ -124,7 +124,7 @@ describe('Venue menus by layout', () => {
   it('shows a dock in the side bar layout, without any panel until a button is pressed', () => {
     const markup = html('C');
     expect(markup).toContain('class="dock"');
-    for (const id of ['build', 'staff', 'events', 'takings', 'back']) expect(markup).toContain(`data-action="${id}"`);
+    for (const id of ['build', 'staff', 'events', 'takings', 'codex', 'back']) expect(markup).toContain(`data-action="${id}"`);
     expect(markup).toContain('dock__bottom');
     expect(markup).not.toContain('class="flyout"');
     expect(markup).not.toContain('class="sheet"');

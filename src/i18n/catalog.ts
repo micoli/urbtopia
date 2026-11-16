@@ -4,7 +4,12 @@ type Entry = readonly [english: string, french: string];
 
 export const CATALOG = {
   'demo.challenge': ['Finish the active Challenge before opening a demonstration: its server deadline cannot be paused.', 'Termine le défi en cours avant d’ouvrir une démonstration : son échéance serveur ne peut pas être mise en pause.'],
+  'demo.invitation.title': ['Discover this interior', 'Découvrir cet intérieur'],
+  'demo.invitation.description': ['Guided demonstrations explain how this interior works, step by step. Would you like to explore them?', 'Des démonstrations guidées expliquent le fonctionnement de cet intérieur, étape par étape. Veux-tu les découvrir ?'],
+  'demo.invitation.hide': ['Don’t show again for this interior type', 'Ne plus afficher pour ce type d’intérieur'],
+  'demo.invitation.skip': ['Skip for now', 'Passer pour le moment'],
   'demo.open': ['Demonstrations', 'Démonstrations'],
+  'demo.back': ['Back to demonstrations', 'Retour aux démonstrations'],
   'demo.choose': ['Choose a demonstration', 'Choisir une démonstration'],
   'demo.simple': ['Simple', 'Simple'],
   'demo.intermediate': ['Intermediate', 'Intermédiaire'],

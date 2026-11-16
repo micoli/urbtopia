@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { advance, assignedFixturesOf, createBuilding, dispatch, fixtureLimitOf, focusGoodsOf, newGame, type Building, type Command, type FixtureId, type GameState, type GoodId, type Rotation } from '../index';
 import { producibleItems, recipeOf } from '../economy/items';
 import { checkGameState } from '../../persistence/validate';
-import { interiorBonusOfBuilding, interiorLinksOf } from './factoryInterior';
+import { interiorBonusOfBuilding } from './interiorBonus';
+import { interiorLinksOf } from './interiorLinks';
 
 const homes = [10, 11, 12, 13].map(id => ({ ...createBuilding(id, 'home', 40 + id, 30, 0), tier: 6 }));
 const city = (tier = 3): GameState => ({

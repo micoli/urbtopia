@@ -3,7 +3,8 @@ import { newGame } from '../engine/newGame';
 import { frontHasAccess } from '../map/placement';
 import { unpoweredBuildingIds } from '../environment/powered';
 import type { GameState } from '../engine/state';
-import { interiorBonusOfBuilding, interiorLinksOf } from '../factory/factoryInterior';
+import { interiorBonusOfBuilding } from '../factory/interiorBonus';
+import { interiorLinksOf } from '../factory/interiorLinks';
 import type { Demonstration, DemonstrationStep } from './scenario';
 
 const BUILDING_ID = 1;

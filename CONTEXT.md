@@ -412,6 +412,14 @@ _Avoid_: Venue, floor, workshop
 The interior of a Public facility (a School, a Library, a Hospital), opened from its side panel in the same Management view as a Venue, where the player places Fixtures and hires Staff to raise the quality of the service (the Knowledge a School or a Library gives, the Well-being a Hospital gives), never its reach or capacity. It is not a Venue: it earns no Takings and has no Visitors, Rank or events.
 _Avoid_: Venue, floor, Home interior (only a Comfort)
 
+**Interior family**:
+The class of rules an interior follows: Production, Service or Home. A Venue is not one: it has its own Fixtures and its own rules. A building has exactly one Interior family, set in its Interior profile, never deduced from its type in code.
+_Avoid_: Interior kind (that is the kind of Fixtures a building takes), category
+
+**Interior profile**:
+What a type of building with an interior declares, by Tier: its Interior family, the size of its grid, the sections of its build menu, the roles of its Staff, its caps and the model that computes its bonus. The Factory and the Packhouse are declared like every other type. One lookup answers every question about the kind of interior a building has.
+_Avoid_: Interior config, interior definition, layout (the placed Fixtures)
+
 **Line**:
 The network of a Packhouse interior that carries Packets from a Packer to an Exit, through Conveyors and Strappers, in one direction. A Line is Linked when it is unbroken from the Packer to an Exit; a break, or a worn Fixture that has broken down, unlinks everything downstream of it. Packets shown on it are a picture of the Line, never counted.
 _Avoid_: Belt, pipeline, Flow (the liquid network of a Factory interior)

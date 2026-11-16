@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, economicPower, isVenuePowered, newGame, type Building, type Command, type GameState } from '../index';
-import { interiorBonusOfBuilding, interiorPowerOfBuilding } from './factoryInterior';
+import { interiorBonusOfBuilding, interiorPowerOfBuilding } from './interiorBonus';
 
 const running: Building['interior'] = {
   nextFixtureId: 10,

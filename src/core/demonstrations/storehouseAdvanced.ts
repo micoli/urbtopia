@@ -16,7 +16,7 @@ for (const original of storehouseIntermediate.steps) {
     commands: original.commands?.map(command => command.type === 'PlaceInteriorFixture' ? { ...command, x: command.x - 3 } : command),
     highlight: original.highlight?.map(({ x, y }) => ({ x: x - 3, y })),
   };
-  if (step.id === 'split') step = { ...step, title: ['Extend the line', 'Prolonger la chaîne'], action: ['Place a conveyor after the hoist.', 'Place un tapis après le palan.'], explanation: ['The conveyor carries goods onward.', 'Le tapis transporte les biens plus loin.'], commands: [{ type: 'PlaceInteriorFixture', buildingId: BUILDING_ID, fixture: 'storehouseConveyor', x: 1, y: 3, rotation: 0 }], check: checkStorehouse(6, false) };
+  if (step.id === 'split') step = { ...step, title: ['Extend the line past the hoist', 'Prolonger la chaîne après le palan'], action: ['Place a conveyor after the hoist.', 'Place un tapis après le palan.'], explanation: ['The conveyor carries goods onward.', 'Le tapis transporte les biens plus loin.'], commands: [{ type: 'PlaceInteriorFixture', buildingId: BUILDING_ID, fixture: 'storehouseConveyor', x: 1, y: 3, rotation: 0 }], check: checkStorehouse(6, false) };
   if (step.id === 'conveyor-one') step = { ...step, check: checkStorehouse(7, false) };
   if (step.id === 'stocker') step = { ...step, check: checkStorehouse(8, true, true) };
   if (step.id === 'goal') step = { ...step, title: ['Diagnose a stopped hoist', 'Diagnostiquer un palan arrêté'],

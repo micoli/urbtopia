@@ -28,7 +28,8 @@ export function officeTierOf(building: OfficeBuilding): OfficeTier {
 export function advanceOffice(building: Building, filledJobs: number, elapsedMs: number): Building {
   if (!isOfficeType(building.type) || elapsedMs <= 0) return building;
   const cap = officeTierOf(building).jobs * OFFICE.capHours * OFFICE.hourMs;
-  return { ...building, taxCitizenMs: Math.min(cap, building.taxCitizenMs + filledJobs * elapsedMs) };
+  const taxCitizenMs = Math.min(cap, building.taxCitizenMs + filledJobs * elapsedMs);
+  return taxCitizenMs === building.taxCitizenMs ? building : { ...building, taxCitizenMs };
 }
 
 export function officeFillRatio(building: Building): number {

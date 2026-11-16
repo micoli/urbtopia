@@ -3,6 +3,7 @@ import { stackCountOf } from '../economy/counterSlots';
 import { FIXTURES } from '../venues/fixtures';
 import { hasAssignments } from './interiorAssignments';
 import { interiorLayoutOf, isProducerRole } from './interiorStaff';
+import { valueByTier } from './valueByTier';
 
 export interface FixtureLimit {
   count: number;
@@ -19,5 +20,5 @@ export function fixtureLimitOf(building: Building, type: FixtureId): FixtureLimi
 
 const extraProducersOf = (building: Building): number => {
   const extra = interiorLayoutOf(building.type)?.extraProducers ?? [];
-  return extra.length === 0 ? 0 : extra[Math.min(building.tier, extra.length) - 1]!;
+  return valueByTier(extra, building.tier);
 };

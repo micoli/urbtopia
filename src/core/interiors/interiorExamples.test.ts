@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type Building, type BuildingType, type GameState, type VenueFixture } from '../index';
-import { interiorLinksOf } from '../factory/factoryInterior';
+import { interiorLinksOf } from '../factory/interiorLinks';
 import { FIXTURES } from '../venues/fixtures';
 import { INTERIOR_EXAMPLES } from './interiorExamples';
 

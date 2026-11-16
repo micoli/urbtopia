@@ -3,6 +3,7 @@ import { useStore } from 'zustand';
 import { advance, FIXTURES, interiorFixturesOf } from '../../core';
 import { compileDemonstration, type Demonstration, type DemonstrationCheckpoint, type DemonstrationStep, type DemonstrationText } from '../../core/demonstrations/scenario';
 import { prefsStore } from '../../i18n/prefsStore';
+import { demonstrationPreferencesStore } from '../../store/demonstrationPreferencesStore';
 import { t } from '../../i18n/t';
 import type { VenueScene } from '../../scene/VenueScene';
 import { ActionButton } from '../common/ActionButton';
@@ -142,6 +143,9 @@ export function DemonstrationPlayer({ scenario }: { scenario: Demonstration }) {
     catch (error) { console.error(error); return { error }; }
   }, [scenario]);
   const checkpoints = compiled.checkpoints;
+  useEffect(() => {
+    if (checkpoints) demonstrationPreferencesStore.getState().markSeen(scenario.buildingType);
+  }, [checkpoints, scenario.buildingType]);
   const onAdvance = useCallback(() => {
     if (index >= scenario.steps.length - 1) setPlaying(false);
     else setIndex(current => current + 1);

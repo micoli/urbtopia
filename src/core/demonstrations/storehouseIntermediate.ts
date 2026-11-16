@@ -1,6 +1,6 @@
 import { BUILDING_ID, lineCity, placer } from './lineInterior';
 import { checkStorehouse } from './storehouseSimple';
-import { linePathsOf } from '../factory/factoryInterior';
+import { linePathsOf } from '../factory/interiorLine';
 import { roomOf } from './lineInterior';
 import type { Demonstration, DemonstrationStep, DemonstrationText } from './scenario';
 

@@ -8,21 +8,21 @@ import type { CommandError, CommandOutcome } from '../engine/commands';
 import type { Building, FixtureId, InteriorData, GameState, Rotation, VenueFixture, VenueType } from '../engine/state';
 import type { FixtureVenue } from '../venues/fixtures';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS, isServiceInteriorKind } from '../venues/venueVocabulary';
-import { serviceGridSizeOf } from '../interiors/serviceInterior';
+import { PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS } from '../venues/venueVocabulary';
 import { isInteriorUnlocked } from '../interiors/interiorUnlock';
-import { interiorLayoutOf } from '../interiors/interiorStaff';
+import { interiorProfileOf } from '../interiors/interiorProfile';
 import { withoutAssignment } from '../interiors/interiorAssignments';
 import { fixtureLimitOf } from '../interiors/interiorLimits';
+import { editInterior } from '../interiors/interiorEdit';
 import { PARQUETS, canHangOnWall, hangsOnWall, homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
-import { interiorGridSizeOf, interiorGridSizeOfType, packSizeOf, packhouseExitLimitOf, packhouseGridSizeOf, recyclingLimitsOf } from './factoryInterior';
+import { interiorFixturesOf } from './interiorLinks';
+import { recyclingLimitsOf } from './recyclingGains';
+import { packSizeOf, packhouseExitLimitOf } from './interiorBonus';
 import { producibleItems, type GoodId } from '../economy/items';
 import { isItemUnlocked } from '../progression/unlocks';
 import { restockerPostsOf, technicianPostsOf } from './interiorWear';
 
 export type Factory = Building & { type: 'factory' };
-
-const EMPTY_INTERIOR: InteriorData = { fixtures: [], nextFixtureId: 1 };
 
 export const isFactory = (building: Building): building is Factory => building.type === 'factory';
 
@@ -30,48 +30,32 @@ export type Packhouse = Building & { type: 'packhouse' };
 
 export const isPackhouse = (building: Building): building is Packhouse => building.type === 'packhouse';
 
-// A Factory, a Packhouse or a Home: the buildings that have a floor to fit out.
 export const isMill = (building: Building): boolean => building.type === 'mill';
 
 // The Production interiors, which share the engine of the Factory interior.
-export const hasProductionInterior = (building: Building): boolean => (PRODUCTION_INTERIOR_KINDS as readonly string[]).includes(building.type);
+export const hasProductionInterior = (building: Building): boolean => interiorProfileOf(building.type)?.family === 'production';
 
 // A Packhouse, a Bakery, a Dairy or a Storehouse: the interiors where a Line of crates runs from a Machine against the wall to an Exit.
-export const hasLineInterior = (building: Building): boolean => building.type === 'packhouse' || interiorLayoutOf(building.type)?.line === true;
+export const hasLineInterior = (building: Building): boolean => interiorProfileOf(building.type)?.line === true;
 
 // A School, a Library or a Hospital: the interiors that raise the quality of a service.
-export const hasServiceInterior = (building: Building): boolean => isServiceInteriorKind(building.type);
+export const hasServiceInterior = (building: Building): boolean => interiorProfileOf(building.type)?.family === 'service';
 
-export const isInteriorBuilding = (building: Building): boolean => hasProductionInterior(building) || hasServiceInterior(building) || isHomeType(building.type);
+export const isInteriorBuilding = (building: Building): boolean => interiorProfileOf(building.type) !== undefined;
 
 // What a floor building offers in its build menu: its kind of Fixtures.
-export const interiorKindOf = (building: Building): (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number] | 'home' =>
-  (hasProductionInterior(building) ? (building.type as (typeof PRODUCTION_INTERIOR_KINDS)[number]) : hasServiceInterior(building) ? (building.type as (typeof SERVICE_INTERIOR_KINDS)[number]) : 'home');
+export const interiorKindOf = (building: Building): (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number] | 'home' => {
+  const family = interiorProfileOf(building.type)?.family;
+  if (family === 'production' || family === 'service') return building.type as (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number];
+  return 'home';
+};
 
 // The kind of Fixtures a building takes: those of its Venue, of a Factory interior or of a Home interior.
 export const fixtureVenueOf = (building: Building): FixtureVenue => (isInteriorBuilding(building) ? interiorKindOf(building) : (building.type as VenueType));
 
-export const interiorSizeOf = (building: Building): number => (building.type === 'factory' ? interiorGridSizeOf(building.tier) : building.type === 'packhouse' ? packhouseGridSizeOf(building.tier) : hasProductionInterior(building) ? interiorGridSizeOfType(building.type, building.tier) : hasServiceInterior(building) ? serviceGridSizeOf(building.type, building.tier) : homeGridSizeOf(building.tier));
+export const interiorSizeOf = (building: Building): number => interiorProfileOf(building.type)?.gridSize(building.tier) ?? homeGridSizeOf(building.tier);
 
-const technicianHostOf = (state: GameState, buildingId: number): Building | undefined => {
-  const building = state.buildings.find(candidate => candidate.id === buildingId);
-  return building && hasProductionInterior(building) ? building : undefined;
-};
-
-type InteriorHost = Building;
-
-const hostOf = (state: GameState, buildingId: number): InteriorHost | undefined => {
-  const building = state.buildings.find(candidate => candidate.id === buildingId);
-  return building && isInteriorBuilding(building) ? building : undefined;
-};
-
-const kindOf = interiorKindOf;
-
-const gridSizeOf = interiorSizeOf;
-
-const refundOf = (host: InteriorHost, type: FixtureId): number => (hasProductionInterior(host) || hasServiceInterior(host) ? fixtureRefund(type) : homeFixtureRefund(type));
-
-const interiorOf = (host: InteriorHost): InteriorData => host.interior ?? EMPTY_INTERIOR;
+const refundOf = (host: Building, type: FixtureId): number => (hasProductionInterior(host) || hasServiceInterior(host) ? fixtureRefund(type) : homeFixtureRefund(type));
 
 const startsALine = (type: FixtureId): boolean => FIXTURES[type].role === 'machine' && FIXTURES[type].lineOut !== undefined && FIXTURES[type].lineIn === undefined;
 
@@ -99,106 +83,91 @@ const wallTurnsOf = (type: FixtureId, cell: { x: number; y: number }, size: numb
 // The turn a Packer or an Exit takes when put on a cell, if it can stand there.
 export const wallFacingOf = (type: FixtureId, cell: { x: number; y: number }, size: number): Rotation | undefined => wallTurnsOf(type, cell, size)[0];
 
-export function canStandOnInterior(host: InteriorHost, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
-  const size = gridSizeOf(host);
+export function canStandOnInterior(host: Building, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
+  const size = interiorSizeOf(host);
   if (hasLineInterior(host) && needsAWall(fixture.type) && !wallTurnsOf(fixture.type, fixture, size).includes(fixture.rotation)) return false;
   const entrance = entranceCell(host.tier);
-  if (hangsOnWall(fixture.type)) return host.type !== 'factory' && canHangOnWall(interiorOf(host).fixtures, fixture, size, entrance.x, ignoreId);
-  const occupied = new Set(interiorOf(host).fixtures.filter(other => other.id !== ignoreId && !hangsOnWall(other.type)).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
+  if (hangsOnWall(fixture.type)) return host.type !== 'factory' && canHangOnWall(interiorFixturesOf(host), fixture, size, entrance.x, ignoreId);
+  const occupied = new Set(interiorFixturesOf(host).filter(other => other.id !== ignoreId && !hangsOnWall(other.type)).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
   return fixtureTiles(fixture).every(tile => tile.x >= 0 && tile.y >= 0 && tile.x < size && tile.y < size && !occupied.has(`${tile.x}:${tile.y}`) && !(tile.x === entrance.x && tile.y === entrance.y));
 }
 
-const withInterior = (state: GameState, factory: InteriorHost, interior: InteriorData, urbs = state.urbs): GameState => ({
-  ...state,
-  urbs,
-  buildings: state.buildings.map(candidate => (candidate === factory ? { ...factory, interior } : candidate)),
-});
-
 // A Recycling interior takes as many Exits, Sorters and Recyclers as its Tier allows.
-const recyclingLimitReached = (host: InteriorHost, type: FixtureId): boolean => {
+const recyclingLimitReached = (host: Building, type: FixtureId): boolean => {
   const limits = recyclingLimitsOf(host.tier);
   const family = FIXTURES[type].family;
   const kind = FIXTURES[type].role === 'exit' ? 'exits' : family === 'sorter' ? 'sorters' : family === 'shredder' || family === 'furnace' || family === 'crusher' ? 'recyclers' : undefined;
   if (!kind) return false;
-  const placed = interiorOf(host).fixtures.filter(other => (kind === 'exits' ? FIXTURES[other.type].role === 'exit' : kind === 'sorters' ? FIXTURES[other.type].family === 'sorter' : ['shredder', 'furnace', 'crusher'].includes(FIXTURES[other.type].family ?? ''))).length;
+  const placed = interiorFixturesOf(host).filter(other => (kind === 'exits' ? FIXTURES[other.type].role === 'exit' : kind === 'sorters' ? FIXTURES[other.type].family === 'sorter' : ['shredder', 'furnace', 'crusher'].includes(FIXTURES[other.type].family ?? ''))).length;
   return placed >= limits[kind];
 };
 
-export function placeInteriorFixture(state: GameState, buildingId: number, type: FixtureId, x: number, y: number, rotation: Rotation): CommandOutcome {
-  const factory = hostOf(state, buildingId);
-  if (!factory) return { key: 'error.unknownBuilding' };
-  if (!(type in FIXTURES) || FIXTURES[type].venue !== kindOf(factory)) return { key: 'error.unknownCommand' };
-  if (isHomeType(factory.type) && !isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
-  if (!isHomeType(factory.type) && !isInteriorUnlocked(state, factory.type)) return { key: 'error.itemLocked' };
-  if (factory.tier < FIXTURES[type].minTier) return { key: 'error.tierTooLow' };
-  const limit = fixtureLimitOf(factory, type);
-  if (limit && limit.count >= limit.max) return { key: 'error.fixtureLimitReached' };
-  const fixture = { type, x, y, rotation };
-  if (!canStandOnInterior(factory, fixture)) return { key: 'error.tilesOccupied' };
-  if (factory.type === 'packhouse' && FIXTURES[type].role === 'exit' && interiorOf(factory).fixtures.filter(other => FIXTURES[other.type].packSize === FIXTURES[type].packSize).length >= packhouseExitLimitOf(factory.tier)) return { key: 'error.exitLimitReached' };
-  if (factory.type === 'recyclingPlant' && recyclingLimitReached(factory, type)) return { key: 'error.recyclingLimitReached' };
-  const price = FIXTURES[type].price;
-  if (state.urbs < price) return { key: 'error.notEnoughUrbs' };
-  const interior = interiorOf(factory);
-  const placed: VenueFixture = { id: interior.nextFixtureId, ...fixture };
-  return { state: withInterior(state, factory, { ...interior, fixtures: [...interior.fixtures, placed], nextFixtureId: interior.nextFixtureId + 1 }, state.urbs - price), events: [] };
-}
+export const placeInteriorFixture = (state: GameState, buildingId: number, type: FixtureId, x: number, y: number, rotation: Rotation): CommandOutcome =>
+  editInterior(state, buildingId, isInteriorBuilding, (factory, interior) => {
+    if (!(type in FIXTURES) || FIXTURES[type].venue !== interiorKindOf(factory)) return { key: 'error.unknownCommand' };
+    if (isHomeType(factory.type) && !isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
+    if (!isHomeType(factory.type) && !isInteriorUnlocked(state, factory.type)) return { key: 'error.itemLocked' };
+    if (factory.tier < FIXTURES[type].minTier) return { key: 'error.tierTooLow' };
+    const limit = fixtureLimitOf(factory, type);
+    if (limit && limit.count >= limit.max) return { key: 'error.fixtureLimitReached' };
+    const fixture = { type, x, y, rotation };
+    if (!canStandOnInterior(factory, fixture)) return { key: 'error.tilesOccupied' };
+    if (factory.type === 'packhouse' && FIXTURES[type].role === 'exit' && interior.fixtures.filter(other => FIXTURES[other.type].packSize === FIXTURES[type].packSize).length >= packhouseExitLimitOf(factory.tier)) return { key: 'error.exitLimitReached' };
+    if (factory.type === 'recyclingPlant' && recyclingLimitReached(factory, type)) return { key: 'error.recyclingLimitReached' };
+    const placed: VenueFixture = { id: interior.nextFixtureId, ...fixture };
+    return { interior: { ...interior, fixtures: [...interior.fixtures, placed], nextFixtureId: interior.nextFixtureId + 1 }, urbs: -FIXTURES[type].price };
+  });
 
 const hungOn = (fixtures: readonly VenueFixture[], wall: VenueFixture): VenueFixture[] => (wall.type === 'homeWall' ? fixtures.filter(other => hangsOnWall(other.type) && other.x === wall.x && other.y === wall.y) : []);
 
 // What hangs on a wall of the room goes with it: those paintings are taken down and refunded.
-const withoutHungOn = (host: InteriorHost, fixtures: readonly VenueFixture[], wall: VenueFixture): { fixtures: VenueFixture[]; refund: number } => {
+const withoutHungOn = (host: Building, fixtures: readonly VenueFixture[], wall: VenueFixture): { fixtures: VenueFixture[]; refund: number } => {
   const hung = hungOn(fixtures, wall);
   return { fixtures: fixtures.filter(other => !hung.includes(other)), refund: hung.reduce((sum, other) => sum + refundOf(host, other.type), 0) };
 };
 
 // A moved wall carries its paintings, turned as it is; those that no longer find a face to hang on are taken down and refunded.
-const carryingHung = (host: InteriorHost, fixtures: readonly VenueFixture[], wall: VenueFixture, moved: VenueFixture): { fixtures: VenueFixture[]; refund: number } => {
+const carryingHung = (host: Building, fixtures: readonly VenueFixture[], wall: VenueFixture, moved: VenueFixture): { fixtures: VenueFixture[]; refund: number } => {
   const hung = hungOn(fixtures, wall);
   if (hung.length === 0) return { fixtures: [...fixtures], refund: 0 };
   const turn = (moved.rotation - wall.rotation + 4) % 4;
   const carried = new Map(hung.map(painting => [painting, { ...painting, x: moved.x, y: moved.y, rotation: ((painting.rotation + turn) % 4) as Rotation }]));
   const relocated = fixtures.map(candidate => carried.get(candidate) ?? candidate);
   const entrance = entranceCell(host.tier);
-  const kept = [...carried.values()].filter(painting => canHangOnWall(relocated, painting, gridSizeOf(host), entrance.x, painting.id));
+  const kept = [...carried.values()].filter(painting => canHangOnWall(relocated, painting, interiorSizeOf(host), entrance.x, painting.id));
   const dropped = [...carried.values()].filter(painting => !kept.includes(painting));
   return { fixtures: relocated.filter(candidate => !dropped.includes(candidate)), refund: dropped.reduce((sum, painting) => sum + refundOf(host, painting.type), 0) };
 };
 
-export function moveInteriorFixture(state: GameState, buildingId: number, fixtureId: number, x: number, y: number, rotation?: Rotation): CommandOutcome {
-  const factory = hostOf(state, buildingId);
-  if (!factory) return { key: 'error.unknownBuilding' };
-  const interior = interiorOf(factory);
-  const fixture = interior.fixtures.find(candidate => candidate.id === fixtureId);
-  if (!fixture) return { key: 'error.unknownFixture' };
-  const moved: VenueFixture = withoutAssignment(withoutRestocker({ ...fixture, x, y, rotation: rotation ?? fixture.rotation }));
-  if (!canStandOnInterior(factory, moved, fixtureId)) return { key: 'error.tilesOccupied' };
-  const relocated = interior.fixtures.map(candidate => (candidate === fixture ? moved : candidate));
-  const taken = carryingHung(factory, relocated, fixture, moved);
-  return { state: withInterior(state, factory, { ...interior, fixtures: taken.fixtures }, state.urbs + taken.refund), events: [] };
-}
+export const moveInteriorFixture = (state: GameState, buildingId: number, fixtureId: number, x: number, y: number, rotation?: Rotation): CommandOutcome =>
+  editInterior(state, buildingId, isInteriorBuilding, (factory, interior) => {
+    const fixture = interior.fixtures.find(candidate => candidate.id === fixtureId);
+    if (!fixture) return { key: 'error.unknownFixture' };
+    const moved: VenueFixture = withoutAssignment(withoutRestocker({ ...fixture, x, y, rotation: rotation ?? fixture.rotation }));
+    if (!canStandOnInterior(factory, moved, fixtureId)) return { key: 'error.tilesOccupied' };
+    const relocated = interior.fixtures.map(candidate => (candidate === fixture ? moved : candidate));
+    const taken = carryingHung(factory, relocated, fixture, moved);
+    return { interior: { ...interior, fixtures: taken.fixtures }, urbs: taken.refund };
+  });
 
-export function removeInteriorFixture(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {
-  const factory = hostOf(state, buildingId);
-  if (!factory) return { key: 'error.unknownBuilding' };
-  const interior = interiorOf(factory);
-  const fixture = interior.fixtures.find(candidate => candidate.id === fixtureId);
-  if (!fixture) return { key: 'error.unknownFixture' };
-  const taken = withoutHungOn(factory, interior.fixtures.filter(candidate => candidate !== fixture), fixture);
-  return { state: withInterior(state, factory, { ...interior, fixtures: taken.fixtures }, state.urbs + refundOf(factory, fixture.type) + taken.refund), events: [] };
-}
+export const removeInteriorFixture = (state: GameState, buildingId: number, fixtureId: number): CommandOutcome =>
+  editInterior(state, buildingId, isInteriorBuilding, (factory, interior) => {
+    const fixture = interior.fixtures.find(candidate => candidate.id === fixtureId);
+    if (!fixture) return { key: 'error.unknownFixture' };
+    const taken = withoutHungOn(factory, interior.fixtures.filter(candidate => candidate !== fixture), fixture);
+    return { interior: { ...interior, fixtures: taken.fixtures }, urbs: refundOf(factory, fixture.type) + taken.refund };
+  });
 
 // The floor of an interior is a free choice among the parquets; none leaves the floor of its kind (the first parquet for a Home).
-export function setInteriorParquet(state: GameState, buildingId: number, parquet?: number): CommandOutcome {
-  const host = hostOf(state, buildingId);
-  if (!host) return { key: 'error.unknownBuilding' };
-  if (isHomeType(host.type) && !isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
-  const interior = { ...interiorOf(host) };
-  delete interior.parquet;
-  if (parquet === undefined) return { state: withInterior(state, host, interior), events: [] };
-  if (!Number.isInteger(parquet) || parquet < 0 || parquet >= PARQUETS.length) return { key: 'error.unknownCommand' };
-  return { state: withInterior(state, host, { ...interior, parquet }), events: [] };
-}
+export const setInteriorParquet = (state: GameState, buildingId: number, parquet?: number): CommandOutcome =>
+  editInterior(state, buildingId, isInteriorBuilding, (host, current) => {
+    if (isHomeType(host.type) && !isHomeInteriorUnlocked(state)) return { key: 'error.itemLocked' };
+    const interior = { ...current };
+    delete interior.parquet;
+    if (parquet === undefined) return { interior };
+    if (!Number.isInteger(parquet) || parquet < 0 || parquet >= PARQUETS.length) return { key: 'error.unknownCommand' };
+    return { interior: { ...interior, parquet } };
+  });
 
 // The breaker cuts all the power of a Production interior or a Venue: it draws none and runs nothing until it is switched back on.
 export function setInteriorBreaker(state: GameState, buildingId: number, off: boolean): CommandOutcome {
@@ -209,90 +178,70 @@ export function setInteriorBreaker(state: GameState, buildingId: number, off: bo
   return { state: { ...state, buildings: state.buildings.map(candidate => (candidate === building ? switched : candidate)) }, events: [] };
 }
 
-export function repairInteriorFixture(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {
-  const factory = hostOf(state, buildingId);
-  if (!factory) return { key: 'error.unknownBuilding' };
-  const interior = interiorOf(factory);
-  const fixture = interior.fixtures.find(candidate => candidate.id === fixtureId);
-  if (!fixture) return { key: 'error.unknownFixture' };
-  const cost = repairCost(fixture);
-  if (cost === 0) return { key: 'error.nothingToRepair' };
-  if (state.urbs < cost) return { key: 'error.notEnoughUrbs' };
-  return { state: withInterior(state, factory, { ...interior, fixtures: interior.fixtures.map(candidate => (candidate === fixture ? restored(fixture) : candidate)) }, state.urbs - cost), events: [] };
-}
+export const repairInteriorFixture = (state: GameState, buildingId: number, fixtureId: number): CommandOutcome =>
+  editInterior(state, buildingId, isInteriorBuilding, (_factory, interior) => {
+    const fixture = interior.fixtures.find(candidate => candidate.id === fixtureId);
+    if (!fixture) return { key: 'error.unknownFixture' };
+    const cost = repairCost(fixture);
+    if (cost === 0) return { key: 'error.nothingToRepair' };
+    return { interior: { ...interior, fixtures: interior.fixtures.map(candidate => (candidate === fixture ? restored(fixture) : candidate)) }, urbs: -cost };
+  });
 
 // Repairs the worn Fixtures one after the other, in the order they were placed, as far as the city's Urbs go.
-export function repairAllInteriorFixtures(state: GameState, buildingId: number): CommandOutcome {
-  const factory = hostOf(state, buildingId);
-  if (!factory) return { key: 'error.unknownBuilding' };
-  const interior = interiorOf(factory);
-  const worn = interior.fixtures.filter(fixture => repairCost(fixture) > 0);
-  if (worn.length === 0) return { key: 'error.nothingToRepair' };
-  let urbs = state.urbs;
-  const repaired = new Set<number>();
-  for (const fixture of worn) {
-    const cost = repairCost(fixture);
-    if (urbs < cost) break;
-    urbs -= cost;
-    repaired.add(fixture.id);
-  }
-  if (repaired.size === 0) return { key: 'error.notEnoughUrbs' };
-  const fixtures = interior.fixtures.map(fixture => (repaired.has(fixture.id) ? restored(fixture) : fixture));
-  return { state: withInterior(state, factory, { ...interior, fixtures }, urbs), events: [] };
-}
+export const repairAllInteriorFixtures = (state: GameState, buildingId: number): CommandOutcome =>
+  editInterior(state, buildingId, isInteriorBuilding, (_factory, interior) => {
+    const worn = interior.fixtures.filter(fixture => repairCost(fixture) > 0);
+    if (worn.length === 0) return { key: 'error.nothingToRepair' };
+    let urbs = state.urbs;
+    const repaired = new Set<number>();
+    for (const fixture of worn) {
+      const cost = repairCost(fixture);
+      if (urbs < cost) break;
+      urbs -= cost;
+      repaired.add(fixture.id);
+    }
+    if (repaired.size === 0) return { key: 'error.notEnoughUrbs' };
+    const fixtures = interior.fixtures.map(fixture => (repaired.has(fixture.id) ? restored(fixture) : fixture));
+    return { interior: { ...interior, fixtures }, urbs: urbs - state.urbs };
+  });
 
-export function hireInteriorTechnician(state: GameState, buildingId: number): CommandOutcome {
-  const factory = technicianHostOf(state, buildingId);
-  if (!factory) return { key: 'error.unknownBuilding' };
-  const interior = interiorOf(factory);
-  const hired = interior.technicians ?? 0;
-  const posts = technicianPostsOf(factory.tier, factory.type);
-  if (posts === 0) return { key: 'error.tierTooLow' };
-  if (hired >= posts) return { key: 'error.noStaffPost' };
-  const fee = hireFeeOf('technician');
-  if (state.urbs < fee) return { key: 'error.notEnoughUrbs' };
-  return { state: withInterior(state, factory, { ...interior, technicians: hired + 1 }, state.urbs - fee), events: [] };
-}
+export const hireInteriorTechnician = (state: GameState, buildingId: number): CommandOutcome =>
+  editInterior(state, buildingId, hasProductionInterior, (factory, interior) => {
+    const hired = interior.technicians ?? 0;
+    const posts = technicianPostsOf(factory.tier, factory.type);
+    if (posts === 0) return { key: 'error.tierTooLow' };
+    if (hired >= posts) return { key: 'error.noStaffPost' };
+    return { interior: { ...interior, technicians: hired + 1 }, urbs: -hireFeeOf('technician') };
+  });
 
-export function releaseInteriorTechnician(state: GameState, buildingId: number): CommandOutcome {
-  const factory = technicianHostOf(state, buildingId);
-  if (!factory) return { key: 'error.unknownBuilding' };
-  const interior = interiorOf(factory);
-  const hired = interior.technicians ?? 0;
-  if (hired === 0) return { key: 'error.noStaffToRelease' };
-  return { state: withInterior(state, factory, { ...interior, technicians: hired - 1 }), events: [] };
-}
+export const releaseInteriorTechnician = (state: GameState, buildingId: number): CommandOutcome =>
+  editInterior(state, buildingId, hasProductionInterior, (_factory, interior) => {
+    const hired = interior.technicians ?? 0;
+    if (hired === 0) return { key: 'error.noStaffToRelease' };
+    return { interior: { ...interior, technicians: hired - 1 } };
+  });
 
 // A Packhouse and a Factory have Restockers: the first serves its Exits, the second its Machines.
-const packhouseOf = (state: GameState, buildingId: number): Building | undefined => {
-  const building = state.buildings.find(candidate => candidate.id === buildingId);
-  return building?.type === 'packhouse' || building?.type === 'factory' ? building : undefined;
-};
+const hasExitRestockers = (building: Building): boolean => building.type === 'packhouse' || building.type === 'factory';
 
-export function hireInteriorRestocker(state: GameState, buildingId: number): CommandOutcome {
-  const packhouse = packhouseOf(state, buildingId);
-  if (!packhouse) return { key: 'error.unknownBuilding' };
-  const interior = interiorOf(packhouse);
-  const hired = interior.restockers ?? 0;
-  const posts = restockerPostsOf(packhouse.tier, packhouse.type);
-  if (posts === 0) return { key: 'error.tierTooLow' };
-  if (hired >= posts) return { key: 'error.noStaffPost' };
-  const fee = hireFeeOf('restocker');
-  if (state.urbs < fee) return { key: 'error.notEnoughUrbs' };
-  return { state: withInterior(state, packhouse, { ...interior, restockers: hired + 1 }, state.urbs - fee), events: [] };
-}
+export const hireInteriorRestocker = (state: GameState, buildingId: number): CommandOutcome =>
+  editInterior(state, buildingId, hasExitRestockers, (packhouse, interior) => {
+    const hired = interior.restockers ?? 0;
+    const posts = restockerPostsOf(packhouse.tier, packhouse.type);
+    if (posts === 0) return { key: 'error.tierTooLow' };
+    if (hired >= posts) return { key: 'error.noStaffPost' };
+    return { interior: { ...interior, restockers: hired + 1 }, urbs: -hireFeeOf('restocker') };
+  });
 
-export function releaseInteriorRestocker(state: GameState, buildingId: number): CommandOutcome {
-  const packhouse = packhouseOf(state, buildingId);
-  if (!packhouse) return { key: 'error.unknownBuilding' };
-  const interior = interiorOf(packhouse);
-  const hired = interior.restockers ?? 0;
-  if (hired === 0) return { key: 'error.noStaffToRelease' };
-  const assigned = interior.fixtures.filter(fixture => fixture.restocker).sort((a, b) => b.id - a.id);
-  const freed = assigned.length >= hired ? assigned[0] : undefined;
-  const fixtures = freed ? interior.fixtures.map(fixture => (fixture === freed ? withoutRestocker(fixture) : fixture)) : interior.fixtures;
-  return { state: withInterior(state, packhouse, { ...interior, fixtures, restockers: hired - 1 }), events: [] };
-}
+export const releaseInteriorRestocker = (state: GameState, buildingId: number): CommandOutcome =>
+  editInterior(state, buildingId, hasExitRestockers, (_packhouse, interior) => {
+    const hired = interior.restockers ?? 0;
+    if (hired === 0) return { key: 'error.noStaffToRelease' };
+    const assigned = interior.fixtures.filter(fixture => fixture.restocker).sort((a, b) => b.id - a.id);
+    const freed = assigned.length >= hired ? assigned[0] : undefined;
+    const fixtures = freed ? interior.fixtures.map(fixture => (fixture === freed ? withoutRestocker(fixture) : fixture)) : interior.fixtures;
+    return { interior: { ...interior, fixtures, restockers: hired - 1 } };
+  });
 
 const without = (fixture: VenueFixture, ...fields: (keyof VenueFixture)[]): VenueFixture => Object.fromEntries(Object.entries(fixture).filter(([field]) => !fields.includes(field as keyof VenueFixture))) as unknown as VenueFixture;
 
@@ -304,42 +253,33 @@ const exitOf = (interior: InteriorData, fixtureId: number): VenueFixture | Comma
   return isRestockable(FIXTURES[fixture.type]) ? fixture : { key: 'error.notAnExit' };
 };
 
-const withFixture = (state: GameState, packhouse: Building, replacement: VenueFixture): CommandOutcome => {
-  const interior = interiorOf(packhouse);
-  return { state: withInterior(state, packhouse, { ...interior, fixtures: interior.fixtures.map(fixture => (fixture.id === replacement.id ? replacement : fixture)) }), events: [] };
-};
+const withReplacedFixture = (interior: InteriorData, replacement: VenueFixture): InteriorData => ({ ...interior, fixtures: interior.fixtures.map(fixture => (fixture.id === replacement.id ? replacement : fixture)) });
 
-export function setExitRestock(state: GameState, buildingId: number, fixtureId: number, good: GoodId | null): CommandOutcome {
-  const packhouse = packhouseOf(state, buildingId);
-  if (!packhouse) return { key: 'error.unknownBuilding' };
-  const exit = exitOf(interiorOf(packhouse), fixtureId);
-  if ('key' in exit) return exit;
-  if (good === null) {
-    return withFixture(state, packhouse, without(exit, 'restock', 'restocker'));
-  }
-  if (!producibleItems(packhouse.type).includes(good)) return { key: 'error.cannotProduce' };
-  if (packhouse.type === 'packhouse' && packSizeOf(good) !== FIXTURES[exit.type].packSize) return { key: 'error.wrongPackSize' };
-  if (!isItemUnlocked(state, good)) return { key: 'error.itemLocked' };
-  return withFixture(state, packhouse, { ...exit, restock: good });
-}
+export const setExitRestock = (state: GameState, buildingId: number, fixtureId: number, good: GoodId | null): CommandOutcome =>
+  editInterior(state, buildingId, hasExitRestockers, (packhouse, interior) => {
+    const exit = exitOf(interior, fixtureId);
+    if ('key' in exit) return exit;
+    if (good === null) return { interior: withReplacedFixture(interior, without(exit, 'restock', 'restocker')) };
+    if (!producibleItems(packhouse.type).includes(good)) return { key: 'error.cannotProduce' };
+    if (packhouse.type === 'packhouse' && packSizeOf(good) !== FIXTURES[exit.type].packSize) return { key: 'error.wrongPackSize' };
+    if (!isItemUnlocked(state, good)) return { key: 'error.itemLocked' };
+    return { interior: withReplacedFixture(interior, { ...exit, restock: good }) };
+  });
 
-export function assignInteriorRestocker(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {
-  const packhouse = packhouseOf(state, buildingId);
-  if (!packhouse) return { key: 'error.unknownBuilding' };
-  const interior = interiorOf(packhouse);
-  const exit = exitOf(interior, fixtureId);
-  if ('key' in exit) return exit;
-  if (!exit.restock) return { key: 'error.noRestock' };
-  if (exit.restocker) return { key: 'error.restockerAlreadyAssigned' };
-  if (interior.fixtures.filter(fixture => fixture.restocker).length >= (interior.restockers ?? 0)) return { key: 'error.noFreeRestocker' };
-  return withFixture(state, packhouse, { ...exit, restocker: true });
-}
+export const assignInteriorRestocker = (state: GameState, buildingId: number, fixtureId: number): CommandOutcome =>
+  editInterior(state, buildingId, hasExitRestockers, (_packhouse, interior) => {
+    const exit = exitOf(interior, fixtureId);
+    if ('key' in exit) return exit;
+    if (!exit.restock) return { key: 'error.noRestock' };
+    if (exit.restocker) return { key: 'error.restockerAlreadyAssigned' };
+    if (interior.fixtures.filter(fixture => fixture.restocker).length >= (interior.restockers ?? 0)) return { key: 'error.noFreeRestocker' };
+    return { interior: withReplacedFixture(interior, { ...exit, restocker: true }) };
+  });
 
-export function unassignInteriorRestocker(state: GameState, buildingId: number, fixtureId: number): CommandOutcome {
-  const packhouse = packhouseOf(state, buildingId);
-  if (!packhouse) return { key: 'error.unknownBuilding' };
-  const exit = exitOf(interiorOf(packhouse), fixtureId);
-  if ('key' in exit) return exit;
-  if (!exit.restocker) return { key: 'error.noRestockerAssigned' };
-  return withFixture(state, packhouse, withoutRestocker(exit));
-}
+export const unassignInteriorRestocker = (state: GameState, buildingId: number, fixtureId: number): CommandOutcome =>
+  editInterior(state, buildingId, hasExitRestockers, (_packhouse, interior) => {
+    const exit = exitOf(interior, fixtureId);
+    if ('key' in exit) return exit;
+    if (!exit.restocker) return { key: 'error.noRestockerAssigned' };
+    return { interior: withReplacedFixture(interior, withoutRestocker(exit)) };
+  });

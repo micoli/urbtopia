@@ -1,4 +1,5 @@
 import { modelFileOf } from '../models/modelFiles';
+import { valueByTier } from '../interiors/valueByTier';
 import homeBalance from '../../../assets/defs/balance/homeInterior.json' with { type: 'json' };
 import { citizenCount } from '../environment/ecology';
 import type { Building, FixtureId, GameState, Rotation, VenueFixture } from '../engine/state';
@@ -8,17 +9,15 @@ import { fixtureTiles } from '../venues/venues';
 
 export const HOME_INTERIOR = homeBalance;
 
-const capOf = (values: readonly number[], tier: number): number => values[Math.min(tier, values.length) - 1] ?? 0;
-
 export type ComfortGroup = keyof typeof homeBalance.weights;
 
 export const COMFORT_GROUPS = Object.keys(homeBalance.weights) as ComfortGroup[];
 
 const WEIGHT_TOTAL = COMFORT_GROUPS.reduce((sum, group) => sum + homeBalance.weights[group], 0);
 
-export const homeGridSizeOf = (tier: number): number => capOf(homeBalance.gridSizes, tier);
+export const homeGridSizeOf = (tier: number): number => valueByTier(homeBalance.gridSizes, tier);
 
-export const homeWellbeingCapOf = (tier: number): number => capOf(homeBalance.wellbeingCaps, tier);
+export const homeWellbeingCapOf = (tier: number): number => valueByTier(homeBalance.wellbeingCaps, tier);
 
 // Homes can be furnished once the city has grown to a number of Citizens.
 export const isHomeInteriorUnlocked = (state: GameState): boolean => citizenCount(state) >= homeBalance.unlockCitizens;

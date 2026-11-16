@@ -9,7 +9,7 @@ import { hourOf, recyclingPlantPowerRatios } from './wastePower';
 import { componentsOf, pedestrianDistances, pedestrianTileDistances, roadLinks, routeDistances, tilesOfBuilding, outsideNeighbours, type RoadComponents, type RoadLinks } from './wasteLinks';
 import { wasteReductionOf } from '../politics/ordinanceEffects';
 import { layoutOf } from '../buildings/buildingIndex';
-import { recyclingGainsOf } from '../factory/factoryInterior';
+import { recyclingGainsOf } from '../factory/recyclingGains';
 import { WASTE, WASTE_FACILITIES, WASTE_KINDS, WASTE_REQUIRED_FROM_CITIZENS, homeWasteProduction, wasteCapacity, wasteKindOf, type WasteKind } from './wasteBalance';
 
 export type WasteCause = 'noFacility' | 'capacityFull' | 'beyondMaxDistance' | 'noRoadLink' | 'beyondCarryingDistance' | 'facilityStopped';

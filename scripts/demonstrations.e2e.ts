@@ -18,6 +18,7 @@ for (const mobile of [false, true]) {
     });
 
     test('restores step states, protects the City and returns to Management', async ({ page }) => {
+      await page.getByRole('button', { name: 'Skip for now', exact: true }).click();
       const room = page.getByRole('dialog', { name: 'Manage', exact: true });
       await room.getByRole('button', { name: 'Management', exact: true }).click();
       await room.getByRole('button', { name: 'Demonstrations', exact: true }).click();
@@ -48,6 +49,56 @@ for (const mobile of [false, true]) {
       await expect(demo).toHaveCount(0);
       await expect(room).toBeVisible();
       expect(await readCity()).toEqual({ ...before, paused: false });
+    });
+
+    test('invites again after skipping, marks a viewed type, and preserves other types', async ({ page }) => {
+      const prompt = page.locator('.demonstration-prompt');
+      await expect(prompt).toBeVisible();
+      await prompt.getByRole('button', { name: 'Skip for now', exact: true }).click();
+      const reopen = async (type: 'factory' | 'bakery' | 'workshop') => {
+        await page.evaluate(async type => {
+          const { venueStore } = await import('../src/store/venueStore.ts');
+          const { gameStore } = await import('../src/store/gameStore.ts');
+          const { createBuilding } = await import('../src/core/index.ts');
+          venueStore.getState().close();
+          gameStore.getState().replaceState({ ...gameStore.getState().state, buildings: [createBuilding(50, type, 64, 64, 0)] });
+        }, type);
+        await expect(page.getByRole('dialog', { name: 'Manage', exact: true })).toHaveCount(0);
+        await page.evaluate(async () => (await import('../src/store/venueStore.ts')).venueStore.getState().open(50));
+      };
+      await reopen('factory');
+      await expect(prompt).toBeVisible();
+      await prompt.getByRole('button', { name: 'Demonstrations', exact: true }).click();
+      await page.getByRole('button', { name: /Simple — Make a Press/ }).click();
+      await expect(page.getByRole('heading', { name: 'A first working layout', exact: true })).toBeVisible();
+      await page.getByRole('button', { name: 'Close demonstration', exact: true }).click();
+      await reopen('factory');
+      await expect(prompt).toHaveCount(0);
+      await reopen('bakery');
+      await expect(prompt).toBeVisible();
+      await prompt.getByRole('checkbox').click();
+      await expect(prompt.getByRole('checkbox')).toHaveAttribute('aria-checked', 'true');
+      await expect(prompt).toBeVisible();
+      await prompt.getByRole('button', { name: 'Skip for now', exact: true }).click();
+      await reopen('bakery');
+      await expect(prompt).toHaveCount(0);
+      expect(await page.evaluate(() => JSON.parse(localStorage.getItem('urbtopia-demonstration-preferences')!))).toEqual({ seenTypes: ['factory'], hiddenTypes: ['bakery'] });
+      await reopen('workshop');
+      await expect(prompt).toBeVisible();
+      await prompt.getByRole('button', { name: 'Skip for now', exact: true }).click();
+      await reopen('bakery');
+      const room = page.getByRole('dialog', { name: 'Manage', exact: true });
+      await room.getByRole('button', { name: 'Management', exact: true }).click();
+      await room.getByRole('button', { name: 'Demonstrations', exact: true }).click();
+      await expect(page.getByRole('heading', { name: 'Choose a demonstration', exact: true })).toBeVisible();
+    });
+
+    test('Escape skips the invitation without closing the interior', async ({ page }) => {
+      const prompt = page.locator('.demonstration-prompt');
+      await expect(prompt).toBeVisible();
+      await prompt.press('Escape');
+      await expect(prompt).toHaveCount(0);
+      await expect(page.getByRole('dialog', { name: 'Manage', exact: true })).toBeVisible();
     });
 
     test('opens above the native Codex dialog even without a player Factory', async ({ page }) => {
