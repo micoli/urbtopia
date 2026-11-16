@@ -3,8 +3,11 @@
 The Factory has three scenarios: `factory-simple`, `factory-intermediate` (Gears and
 turn direction) and `factory-advanced` (Flow circuit and Motor overload). The Workshop has
 three as well: `workshop-simple` (air circuit, Line and restocker), `workshop-intermediate`
-(Cleaner and Shafts) and `workshop-advanced` (diagnosing a misfacing Conveyor). The Packhouse has three: `packhouse-simple` (straight Conveyors and an elbow), `packhouse-intermediate`
-(splitting Conveyor toward two Exits) and `packhouse-advanced` (joining Conveyor, right and wrong side). Open an interior's
+(Cleaner and Shafts) and `workshop-advanced` (diagnosing a misfacing Conveyor). The Packhouse and the
+Bakery have three each: `packhouse-simple` (straight Conveyors and an elbow), `packhouse-intermediate`
+(splitting Conveyor toward two Exits), `packhouse-advanced` (joining Conveyor, right and wrong side), and
+`bakery-simple` (Mixer, Oven, counter, baker and seller), `bakery-intermediate` (straight splitting Conveyor,
+two counters and sellers), `bakery-advanced` (joining two Mixers into one Oven). Open an interior's
 Management view, choose **Demonstrations**, then **Simple**. It is also available
 from the Factory entry on the codex's Production interiors page, even without
 owning or unlocking a Factory. Use `?e2e` for browser verification.
@@ -55,7 +58,7 @@ Next immediately.
 
 ## Current delivery boundary
 
-The Factory, the Workshop, the Packhouse are covered at all three levels. Remaining interior types follow. The current canvas
+The Factory, the Workshop, the Packhouse and the Bakery are covered at all three levels. Remaining interior types follow. The current canvas
 and indicators serve the Production pilot; Venue, Service and Home rendering
 and indicators must be adapted and verified before registering those scenarios.
 Exported video, voice recordings, exercises and saved viewing progress are out

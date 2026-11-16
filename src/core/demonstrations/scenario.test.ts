@@ -5,6 +5,9 @@ import { interiorBonusOfBuilding, interiorLinksOf } from '../factory/factoryInte
 import { factoryAdvanced } from './factoryAdvanced';
 import { factoryIntermediate } from './factoryIntermediate';
 import { factorySimple, demoFactory } from './factorySimple';
+import { bakeryAdvanced } from './bakeryAdvanced';
+import { bakeryIntermediate } from './bakeryIntermediate';
+import { bakerySimple } from './bakerySimple';
 import { roomOf } from './lineInterior';
 import { packhouseAdvanced } from './packhouseAdvanced';
 import { packhouseIntermediate } from './packhouseIntermediate';
@@ -87,18 +90,18 @@ describe('Workshop demonstrations', () => {
   });
 });
 
-describe('Packhouse demonstrations', () => {
+describe('Packhouse and Bakery demonstrations', () => {
   const lines = (scenario: Parameters<typeof compileDemonstration>[0], stepId?: string) => {
     const checkpoints = compileDemonstration(scenario);
     const checkpoint = stepId ? checkpoints.find(({ step }) => step.id === stepId)! : checkpoints.at(-1)!;
     return interiorLinksOf(roomOf(checkpoint.state).interior!.fixtures);
   };
 
-  it.each([packhouseSimple, packhouseIntermediate, packhouseAdvanced])('ends $id with every Machine linked', scenario => {
+  it.each([packhouseSimple, packhouseIntermediate, packhouseAdvanced, bakerySimple, bakeryIntermediate, bakeryAdvanced])('ends $id with every Machine linked', scenario => {
     expect(lines(scenario).problems.size).toBe(0);
   });
 
-  it.each([['packhouse', packhouseAdvanced]] as const)('cuts the second %s Line off until the joiner takes the right side', (_, scenario) => {
+  it.each([['packhouse', packhouseAdvanced], ['bakery', bakeryAdvanced]] as const)('cuts the second %s Line off until the joiner takes the right side', (_, scenario) => {
     const lined = (stepId: string) => lines(scenario, stepId).lined.size;
     expect(lined('wrong-joiner')).toBe(lined('second'));
     expect(lined('right-joiner')).toBeGreaterThan(lined('wrong-joiner'));
