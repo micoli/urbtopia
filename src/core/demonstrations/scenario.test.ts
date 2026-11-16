@@ -28,6 +28,9 @@ import { lineFaultOf } from '../factory/factoryInterior';
 import { knitwearFactorySimple } from './knitwearFactorySimple';
 import { knitwearFactoryIntermediate } from './knitwearFactoryIntermediate';
 import { knitwearFactoryAdvanced } from './knitwearFactoryAdvanced';
+import { livestockFarmSimple } from './livestockFarmSimple';
+import { livestockFarmIntermediate } from './livestockFarmIntermediate';
+import { livestockFarmAdvanced } from './livestockFarmAdvanced';
 import { DEMONSTRATIONS } from './catalog';
 import { roomOf } from './lineInterior';
 import { packhouseAdvanced } from './packhouseAdvanced';
@@ -39,7 +42,7 @@ import { demoWorkshop } from './workshopCity';
 import { workshopIntermediate } from './workshopIntermediate';
 import { workshopSimple } from './workshopSimple';
 
-it.each(DEMONSTRATIONS.filter(scenario => ['mill', 'dairy', 'recyclingPlant', 'textileMill', 'knitwearFactory', 'storehouse'].includes(scenario.buildingType)))('$id ends without machine problems', scenario => {
+it.each(DEMONSTRATIONS.filter(scenario => ['mill', 'dairy', 'recyclingPlant', 'textileMill', 'knitwearFactory', 'livestockFarm', 'storehouse'].includes(scenario.buildingType)))('$id ends without machine problems', scenario => {
   const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior?.fixtures ?? [];
   expect(interiorLinksOf(fixtures).problems.size).toBe(0);
 });
@@ -208,7 +211,7 @@ describe('Recycling plant demonstrations', () => {
   });
 });
 
-it.each([storehouseIntermediate, dairyIntermediate, knitwearFactoryIntermediate])('reaches both branches in $id', scenario => {
+it.each([storehouseIntermediate, dairyIntermediate, knitwearFactoryIntermediate, livestockFarmIntermediate])('reaches both branches in $id', scenario => {
   const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior!.fixtures;
   expect(linePathsOf(fixtures)).toHaveLength(2);
 });
@@ -236,7 +239,12 @@ describe('Knitwear and livestock demonstrations', () => {
     expect(assignedFixturesOf(interior, 'knitter')).toHaveLength(1);
     expect(interiorLinksOf(interior.fixtures).lined.has(interior.fixtures.find(fixture => fixture.type === 'knitwearCounter')!.id)).toBe(true);
   });
-  it.each([[knitwearFactoryAdvanced, 'finisher', 'counter']] as const)('repairs the missing drive in $id', (scenario, family, faultyStep) => {
+  it.each([livestockFarmSimple, livestockFarmIntermediate, livestockFarmAdvanced])('ends $id with a staffed collection exit', scenario => {
+    const interior = roomOf(compileDemonstration(scenario).at(-1)!.state).interior!;
+    expect(assignedFixturesOf(interior, 'herder')).toHaveLength(1);
+    expect(interiorLinksOf(interior.fixtures).lined.has(interior.fixtures.find(fixture => fixture.type === 'livestockCollectionExit')!.id)).toBe(true);
+  });
+  it.each([[knitwearFactoryAdvanced, 'finisher', 'counter'], [livestockFarmAdvanced, 'packer', 'exit']] as const)('repairs the missing drive in $id', (scenario, family, faultyStep) => {
     const checkpoints = compileDemonstration(scenario);
     const problems = (id: string) => {
       const fixtures = roomOf(checkpoints.find(({ step }) => step.id === id)!.state).interior!.fixtures;
@@ -246,7 +254,7 @@ describe('Knitwear and livestock demonstrations', () => {
     expect(problems(faultyStep)).toContain('noDrive');
     expect(problems('fix-motor')).not.toContain('noDrive');
   });
-  it.each([[knitwearFactorySimple, 'sweater', 'goods']] as const)('produces the selected item in $id', (scenario, item, kind) => {
+  it.each([[knitwearFactorySimple, 'sweater', 'goods'], [livestockFarmSimple, 'milk', 'materials']] as const)('produces the selected item in $id', (scenario, item, kind) => {
     let state = compileDemonstration(scenario).at(-1)!.state;
     const start = state.lastSeen;
     for (let minute = 1; minute <= 480; minute++) state = advance(state, start + minute * 60_000).state;

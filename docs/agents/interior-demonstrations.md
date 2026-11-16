@@ -18,7 +18,8 @@ and `recyclingPlant-advanced` (diagnosing a stopped Sorter). The Dairy has `dair
 (Milk vat and Counter), `dairy-intermediate` (Pasteuriser, split and cream maker), and `dairy-advanced`
 (diagnosing missing Flow). The Knitwear factory has `knitwearFactory-simple` (Knitter and Finisher),
 `knitwearFactory-intermediate` (left-handed Machines and split), and `knitwearFactory-advanced` (missing Finisher Drive).
-Open an interior's
+The Livestock farm has `livestockFarm-simple` (feed to collection), `livestockFarm-intermediate` (left-handed Machines and split),
+and `livestockFarm-advanced` (missing Packer Drive). Open an interior's
 Management view, choose **Demonstrations**, then **Simple**. It is also available
 from the Factory entry on the codex's Production interiors page, even without
 owning or unlocking a Factory. Use `?e2e` for browser verification.
@@ -69,7 +70,7 @@ Next immediately.
 
 ## Current delivery boundary
 
-The Factory, the Workshop, the Packhouse and the Bakery are covered at all three levels. Remaining interior types follow. The current canvas
+All Production interior types are covered at all three levels. The current canvas
 and indicators serve the Production pilot; Venue, Service and Home rendering
 and indicators must be adapted and verified before registering those scenarios.
 Exported video, voice recordings, exercises and saved viewing progress are out
