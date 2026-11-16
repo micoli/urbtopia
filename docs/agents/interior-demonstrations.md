@@ -1,6 +1,7 @@
 # Interior guided demonstrations
 
-The first implemented scenario is `factory-simple`. Open an interior's
+The Factory has three scenarios: `factory-simple`, `factory-intermediate` (Gears and
+turn direction) and `factory-advanced` (Flow circuit and Motor overload). Open an interior's
 Management view, choose **Demonstrations**, then **Simple**. It is also available
 from the Factory entry on the codex's Production interiors page, even without
 owning or unlocking a Factory. Use `?e2e` for browser verification.
@@ -9,7 +10,7 @@ owning or unlocking a Factory. Use `?e2e` for browser verification.
 
 ```sh
 npm run demonstrations:verify
-npm run demonstrations:verify -- factory-simple
+npm run demonstrations:verify -- factory-advanced
 ```
 
 The command loads the current game rules and runs each semantic command and
@@ -51,8 +52,7 @@ Next immediately.
 
 ## Current delivery boundary
 
-Factory Simple is the pilot awaiting user validation. Remaining interior types
-and useful Intermediate/Advanced lessons follow that review. The current canvas
+The Factory is covered at all three levels. Remaining interior types follow. The current canvas
 and indicators serve the Production pilot; Venue, Service and Home rendering
 and indicators must be adapted and verified before registering those scenarios.
 Exported video, voice recordings, exercises and saved viewing progress are out

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { advance } from '../engine/advance';
 import { interiorBonusOfBuilding, interiorLinksOf } from '../factory/factoryInterior';
+import { factoryAdvanced } from './factoryAdvanced';
+import { factoryIntermediate } from './factoryIntermediate';
 import { factorySimple, demoFactory } from './factorySimple';
 import { compileDemonstration } from './scenario';
 
@@ -42,5 +44,23 @@ describe('scripted interior demonstrations', () => {
       ? { ...step, commands: [{ type: 'PlaceInteriorFixture' as const, buildingId: factorySimple.buildingId, fixture: 'factoryShaft' as const, x: 2, y: 1 }] }
       : step);
     expect(() => compileDemonstration({ ...factorySimple, steps })).toThrow(/step 5 \(shaft\).*error.tilesOccupied/);
+  });
+});
+
+describe('Factory Intermediate and Advanced demonstrations', () => {
+  it('teaches a wrong turn, then fixes it with a Gear meshed rim to rim', () => {
+    const checkpoints = compileDemonstration(factoryIntermediate);
+    const wrong = interiorLinksOf(demoFactory(checkpoints.find(({ step }) => step.id === 'lathe-ccw-wrong')!.state).interior!.fixtures);
+    expect([...wrong.problems.values()].flat()).toContain('wrongTurn');
+    const fixed = interiorLinksOf(demoFactory(checkpoints.at(-1)!.state).interior!.fixtures);
+    expect(fixed.problems.size).toBe(0);
+  });
+
+  it('teaches a Flow circuit, then a Motor overload and its fix', () => {
+    const checkpoints = compileDemonstration(factoryAdvanced);
+    const overload = interiorLinksOf(demoFactory(checkpoints.find(({ step }) => step.id === 'presses-overload')!.state).interior!.fixtures);
+    expect([...overload.problems.values()].flat()).toContain('overloaded');
+    const fixed = interiorLinksOf(demoFactory(checkpoints.at(-1)!.state).interior!.fixtures);
+    expect(fixed.problems.size).toBe(0);
   });
 });
