@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { advance } from '../engine/advance';
+import { assignedFixturesOf } from '../interiors/interiorAssignments';
 import { interiorBonusOfBuilding, interiorLinksOf } from '../factory/factoryInterior';
 import { factoryAdvanced } from './factoryAdvanced';
 import { factoryIntermediate } from './factoryIntermediate';
 import { factorySimple, demoFactory } from './factorySimple';
 import { compileDemonstration } from './scenario';
+import { workshopAdvanced } from './workshopAdvanced';
+import { demoWorkshop } from './workshopCity';
+import { workshopIntermediate } from './workshopIntermediate';
+import { workshopSimple } from './workshopSimple';
 
 describe('scripted interior demonstrations', () => {
   it('replays a first functional Press using the real placement and Link rules', () => {
@@ -62,5 +67,18 @@ describe('Factory Intermediate and Advanced demonstrations', () => {
     expect([...overload.problems.values()].flat()).toContain('overloaded');
     const fixed = interiorLinksOf(demoFactory(checkpoints.at(-1)!.state).interior!.fixtures);
     expect(fixed.problems.size).toBe(0);
+  });
+});
+
+describe('Workshop demonstrations', () => {
+  it.each([workshopSimple, workshopIntermediate, workshopAdvanced])('ends with a restocker assigned to the bin of $id', scenario => {
+    const final = demoWorkshop(compileDemonstration(scenario).at(-1)!.state);
+    expect(assignedFixturesOf(final.interior, 'restocker')).toHaveLength(1);
+  });
+
+  it('stores the material by itself once the queue is restocked', () => {
+    const final = compileDemonstration(workshopSimple).at(-1)!.state;
+    const later = advance(final, final.lastSeen + 6 * 3_600_000).state;
+    expect(later.storage.materials.wood ?? 0).toBeGreaterThan(final.storage.materials.wood ?? 0);
   });
 });
