@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { energyStats } from '../environment/energy';
 import { transitNetwork } from '../transit/transport';
+import { congestionStats } from '../traffic/congestion';
 import { advance } from './advance';
 import { parseEnvelope } from '../../persistence/envelope';
 import type { GameState } from './state';
@@ -18,7 +19,7 @@ function loadCity(): GameState {
   return parsed.state;
 }
 
-describe('Reusing the power and the transit network across replay steps', () => {
+describe('Reusing the power, the transit network and the congestion across replay steps', () => {
   it('gives what a computation from scratch gives at every step', () => {
     let state = loadCity();
     let now = state.lastSeen;
@@ -28,6 +29,7 @@ describe('Reusing the power and the transit network across replay steps', () => 
       const fresh = structuredClone(state);
       expect(plain(energyStats(state))).toBe(plain(energyStats(fresh)));
       expect(plain(transitNetwork(state))).toBe(plain(transitNetwork(fresh)));
+      expect(plain(congestionStats(state))).toBe(plain(congestionStats(fresh)));
     }
   });
 });

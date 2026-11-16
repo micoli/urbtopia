@@ -1,4 +1,6 @@
+import { layoutOf } from '../buildings/buildingIndex';
 import { citizensOf } from '../buildings/city';
+import { sameStepInputs } from '../engine/stateReuse';
 import type { Building, GameState } from '../engine/state';
 import type { Coord } from '../map/coord';
 import { tileKey } from '../map/geometry';
@@ -159,15 +161,54 @@ function optionsSignature(homeOptions: TransitNetwork['homeOptions']): string {
   return signature;
 }
 
+const pedestrianWaySignatures = new WeakMap<readonly Coord[], string>();
+
+function pedestrianWaysSignature(ways: readonly Coord[] | undefined): string {
+  if (!ways) return '';
+  let signature = pedestrianWaySignatures.get(ways);
+  if (signature === undefined) {
+    signature = ways.map(tileKey).sort().join(';');
+    pedestrianWaySignatures.set(ways, signature);
+  }
+  return signature;
+}
+
+// How the front of each building touches the Roads depends on where buildings stand and on the map, not on what a replay step moves.
+let lastAccess: { state: GameState; token: object; keys: Map<number, string> } | null = null;
+
+function accessKeysOf(state: GameState): Map<number, string> {
+  const token = layoutOf(state.buildings);
+  if (lastAccess && lastAccess.token === token && sameStepInputs(lastAccess.state, state)) return lastAccess.keys;
+  const keys = new Map(state.buildings.map((building) => [building.id, frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier).join('+')]));
+  lastAccess = { state, token, keys };
+  return keys;
+}
+
+const isTraveller = (building: Building): boolean => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null || sellsTickets(building) || (TOURIST_GATES as readonly string[]).includes(building.type);
+
+const piecesByBuilding = new WeakMap<Building, { covered: ReadonlySet<number>; access: ReadonlyMap<number, string>; text: string | null }>();
+
+function pieceOf(building: Building, covered: ReadonlySet<number>, access: ReadonlyMap<number, string>): string | null {
+  const known = piecesByBuilding.get(building);
+  if (known && known.covered === covered && known.access === access) return known.text;
+  const text = isTraveller(building)
+    ? `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${jobsOf(building)}:${sellsTickets(building) ? ticketOf(building) : ''}:${covered.has(building.id) ? 1 : 0}:${access.get(building.id) ?? ''}`
+    : null;
+  piecesByBuilding.set(building, { covered, access, text });
+  return text;
+}
+
 function layoutSignature(state: GameState, now: number): string {
   const network = transitNetwork(state, now);
-  const buildings = state.buildings
-    .filter((building) => isHomeType(building.type) || workplaceTypes.includes(building.type) || walkDestinationOf(building) !== null || sellsTickets(building) || (TOURIST_GATES as readonly string[]).includes(building.type))
-    .map((building) => `${building.id}:${building.type}:${building.x}:${building.y}:${building.rotation}:${building.tier}:${jobsOf(building)}:${sellsTickets(building) ? ticketOf(building) : ''}:${network.coveredActivities.has(building.id) ? 1 : 0}:${frontAccessModes(state, building.type, building.x, building.y, building.rotation, building.tier).join('+')}`);
+  const access = accessKeysOf(state);
+  const buildings: string[] = [];
+  for (const building of state.buildings) {
+    const piece = pieceOf(building, network.coveredActivities, access);
+    if (piece !== null) buildings.push(piece);
+  }
   const openings = [...closedFractionsByTile(state)].map(([key, fraction]) => `${key}=${fraction.toFixed(3)}`);
-  const pedestrianWays = (state.pedestrianWays ?? []).map(tileKey).sort().join(';');
   const gatherings = state.buildings.flatMap((building) => (movingGathering(building, now) ? [`${building.id}`] : [])).join(',');
-  return [`relief=${congestionReliefOf(state)}`, `gatherings=${gatherings}`, pedestrianWays, networkSignature(network), ...buildings, ...openings].join('|');
+  return [`relief=${congestionReliefOf(state)}`, `gatherings=${gatherings}`, pedestrianWaysSignature(state.pedestrianWays), networkSignature(network), ...buildings, ...openings].join('|');
 }
 
 function activeBusRoutes(network: TransitNetwork): BusRoute[] {
