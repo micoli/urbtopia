@@ -17,7 +17,10 @@ import { storehouseAdvanced } from './storehouseAdvanced';
 import { textileMillSimple } from './textileMillSimple';
 import { textileMillIntermediate } from './textileMillIntermediate';
 import { textileMillAdvanced } from './textileMillAdvanced';
-import { linePathsOf } from '../factory/factoryInterior';
+import { recyclingPlantSimple } from './recyclingPlantSimple';
+import { recyclingPlantIntermediate } from './recyclingPlantIntermediate';
+import { recyclingPlantAdvanced } from './recyclingPlantAdvanced';
+import { linePathsOf, recyclingGainsOf } from '../factory/factoryInterior';
 import { DEMONSTRATIONS } from './catalog';
 import { roomOf } from './lineInterior';
 import { packhouseAdvanced } from './packhouseAdvanced';
@@ -29,7 +32,7 @@ import { demoWorkshop } from './workshopCity';
 import { workshopIntermediate } from './workshopIntermediate';
 import { workshopSimple } from './workshopSimple';
 
-it.each(DEMONSTRATIONS.filter(scenario => ['mill', 'textileMill', 'storehouse'].includes(scenario.buildingType)))('$id ends without machine problems', scenario => {
+it.each(DEMONSTRATIONS.filter(scenario => ['mill', 'recyclingPlant', 'textileMill', 'storehouse'].includes(scenario.buildingType)))('$id ends without machine problems', scenario => {
   const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior?.fixtures ?? [];
   expect(interiorLinksOf(fixtures).problems.size).toBe(0);
 });
@@ -186,7 +189,23 @@ describe('Textile mill demonstrations', () => {
   });
 });
 
+describe('Recycling plant demonstrations', () => {
+  it.each([recyclingPlantSimple, recyclingPlantIntermediate, recyclingPlantAdvanced])('ends $id with recycling capacity', scenario => {
+    expect(recyclingGainsOf(roomOf(compileDemonstration(scenario).at(-1)!.state)).exits).toBeGreaterThan(0);
+  });
+  it('fixes the missing sorter drive', () => {
+    const checkpoints = compileDemonstration(recyclingPlantAdvanced);
+    const gains = (id: string) => recyclingGainsOf(roomOf(checkpoints.find(({ step }) => step.id === id)!.state)).exits;
+    expect(gains('exit')).toBe(0);
+    expect(gains('fix-motor')).toBe(1);
+  });
+});
+
 it.each([storehouseIntermediate])('reaches both branches in $id', scenario => {
   const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior!.fixtures;
   expect(linePathsOf(fixtures)).toHaveLength(2);
+});
+
+it('reaches both recycling exits after the split', () => {
+  expect(recyclingGainsOf(roomOf(compileDemonstration(recyclingPlantIntermediate).at(-1)!.state)).exits).toBe(2);
 });

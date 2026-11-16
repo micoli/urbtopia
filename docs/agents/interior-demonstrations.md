@@ -12,7 +12,9 @@ two counters and sellers), `bakery-advanced` (joining two Mixers into one Oven).
 (diagnosing a misfacing oil tank). The Storehouse has `storehouse-simple` (Dock and Rack),
 `storehouse-intermediate` (Hoist and split), and `storehouse-advanced` (diagnosing a stopped Hoist).
 The Textile mill has `textileMill-simple` (Spinner and Motor), `textileMill-intermediate` (Gear and right-output Spinner),
-and `textileMill-advanced` (diagnosing disconnected Drive). Open an interior's
+and `textileMill-advanced` (diagnosing disconnected Drive). The Recycling plant has
+`recyclingPlant-simple` (Shredder), `recyclingPlant-intermediate` (left-handed Crusher and split),
+and `recyclingPlant-advanced` (diagnosing a stopped Sorter). Open an interior's
 Management view, choose **Demonstrations**, then **Simple**. It is also available
 from the Factory entry on the codex's Production interiors page, even without
 owning or unlocking a Factory. Use `?e2e` for browser verification.
