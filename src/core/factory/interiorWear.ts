@@ -7,20 +7,23 @@ import { STAFF } from '../venues/staff';
 import { drawBreakdowns, technicianRepairs, wearFixtures } from '../venues/wear';
 import { isVenuePowered } from '../venues/venues';
 import type { Building, BuildingType, InteriorData, GameState } from '../engine/state';
-import { interiorLayoutOf } from '../interiors/interiorStaff';
-import { interiorUsageOf, interiorUsageWeightsOf, tierValue } from './factoryInterior';
+import { interiorProfileOf } from '../interiors/interiorProfile';
+import { maxTierOf } from '../economy/tiers';
+import { interiorUsageOf, interiorUsageWeightsOf } from './factoryInterior';
+import { valueByTier } from '../interiors/valueByTier';
 
 export { interiorUsageOf };
 
-const technicianPostsTable = (type: BuildingType): readonly number[] => interiorLayoutOf(type)?.technicianPosts ?? interiorBalance.technicianPosts;
+export const minTierOfTechnician = (type: BuildingType = 'factory'): number => {
+  for (let tier = 1; tier <= maxTierOf(type); tier++) if (technicianPostsOf(tier, type) > 0) return tier;
+  return 0;
+};
 
-export const minTierOfTechnician = (type: BuildingType = 'factory'): number => technicianPostsTable(type).findIndex(posts => posts > 0) + 1;
-
-export const technicianPostsOf = (tier: number, type: BuildingType = 'factory'): number => tierValue(technicianPostsTable(type), tier);
+export const technicianPostsOf = (tier: number, type: BuildingType = 'factory'): number => interiorProfileOf(type)?.technicianPosts(tier) ?? 0;
 
 const hasInterior = (building: Building): building is Building & { interior: InteriorData } => isProductionInteriorKind(building.type) && building.interior !== undefined;
 
-export const restockerPostsOf = (tier: number, type: BuildingType = 'packhouse'): number => tierValue(type === 'factory' ? interiorBalance.restockerPosts : packhouseBalance.restockerPosts, tier);
+export const restockerPostsOf = (tier: number, type: BuildingType = 'packhouse'): number => valueByTier(type === 'factory' ? interiorBalance.restockerPosts : packhouseBalance.restockerPosts, tier);
 
 export const restockerWagePerHour = (): number => STAFF.dailyWage.restocker / STAFF.dayHours;
 

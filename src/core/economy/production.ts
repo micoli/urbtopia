@@ -12,7 +12,7 @@ import type { Building, GameState, QueueEntry, ShopStack } from '../engine/state
 import { productionTierOf } from './tiers';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/factoryInterior';
-import { interiorLayoutOf } from '../interiors/interiorStaff';
+import { interiorDeclarationOf } from '../interiors/interiorStaff';
 
 // A Mill or a Bakery consumes as many recipes as its yield per cycle.
 export const recipeMultiplierOf = (building: Building): number => (scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1);
@@ -97,7 +97,7 @@ interface Advanced {
 // A Bakery bakes on one line for each Oven, and on one for what the player queues: an entry only waits for the entries of its own line. Every other building has a single line.
 const SINGLE_LINE = -1;
 
-const laneOf = (building: Pick<Building, 'type'>, entry: QueueEntry): number => (interiorLayoutOf(building.type)?.assignments === true && entry.exitId !== undefined ? entry.exitId : SINGLE_LINE);
+const laneOf = (building: Pick<Building, 'type'>, entry: QueueEntry): number => (interiorDeclarationOf(building.type)?.bonusModel === 'assigned' && entry.exitId !== undefined ? entry.exitId : SINGLE_LINE);
 
 // True when no entry of the line an entry would join is still waiting or running.
 export const isLaneIdle = (building: Building, exitId?: number): boolean => {

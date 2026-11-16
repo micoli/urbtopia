@@ -5,6 +5,8 @@ import { distanceBetween } from '../venues/layout';
 import { PRODUCTION_INTERIOR_KINDS, type FixtureSide, type PackSize } from '../venues/venueVocabulary';
 import type { ItemId } from '../economy/items';
 import type { Building, BuildingType, VenueFixture } from '../engine/state';
+import { interiorProfileOf } from '../interiors/interiorProfile';
+import { valueByTier } from '../interiors/valueByTier';
 import { interiorDeclarationOf, interiorLayoutOf, interiorPartPresence, isProducerRole, yieldGroupOf, type InteriorPart } from '../interiors/interiorStaff';
 
 export type Turn = 'cw' | 'ccw';
@@ -596,29 +598,21 @@ export const interiorUsageWeightsOf = memoized((allFixtures): ReadonlyMap<number
   return weights;
 });
 
-export const tierValue = (values: readonly number[], tier: number): number => values[Math.min(tier, values.length) - 1]!;
-
-const capOf = (caps: readonly number[], tier: number): number => caps[Math.min(tier, caps.length) - 1]!;
-
 // The highest speed and yield bonus a floor can approach at a Tier.
-export const interiorCapsOf = (tier: number): InteriorCaps => ({ speed: capOf(interiorBalance.speedCaps, tier), yield: capOf(interiorBalance.yieldCaps, tier) });
+export const interiorCapsOf = (tier: number): InteriorCaps => ({ speed: valueByTier(interiorBalance.speedCaps, tier), yield: valueByTier(interiorBalance.yieldCaps, tier) });
 
-export const interiorGridSizeOf = (tier: number): number => capOf(interiorBalance.gridSizes, tier);
+export const interiorGridSizeOf = (tier: number): number => valueByTier(interiorBalance.gridSizes, tier);
 
 // The highest speed and yield bonus, and what the Exits of a Line add to the sales and to the room, that the interior of a Production building can approach at a Tier.
-export const interiorCapsOfType = (type: BuildingType, tier: number): InteriorCaps & { sales?: number; capacity?: number } => {
-  const layout = interiorLayoutOf(type);
-  if (!layout) return interiorCapsOf(tier);
-  return { speed: capOf(layout.speedCaps, tier), yield: capOf(layout.yieldCaps, tier), ...(layout.salesCaps ? { sales: capOf(layout.salesCaps, tier) } : {}), ...(layout.capacityCaps ? { capacity: capOf(layout.capacityCaps, tier) } : {}) };
-};
+export const interiorCapsOfType = (type: BuildingType, tier: number): InteriorCaps & { sales?: number; capacity?: number } => interiorProfileOf(type)?.caps(tier) ?? interiorCapsOf(tier);
 
 // The room, the caps and the Technician posts of a Production interior other than the Factory's, by Tier.
-export const interiorGridSizeOfType = (type: BuildingType, tier: number): number => capOf(interiorLayoutOf(type)?.gridSizes ?? interiorBalance.gridSizes, tier);
+export const interiorGridSizeOfType = (type: BuildingType, tier: number): number => interiorProfileOf(type)?.gridSize(tier) ?? interiorGridSizeOf(tier);
 
-export const packhouseGridSizeOf = (tier: number): number => capOf(packhouseBalance.gridSizes, tier);
+export const packhouseGridSizeOf = (tier: number): number => valueByTier(packhouseBalance.gridSizes, tier);
 
 // The most Exits of each size a Packhouse interior can have at a Tier.
-export const packhouseExitLimitOf = (tier: number): number => capOf(packhouseBalance.exitLimits, tier);
+export const packhouseExitLimitOf = (tier: number): number => valueByTier(packhouseBalance.exitLimits, tier);
 
 // The Machines that a circuit of Flow reaches from a Machine, through its Pipes and Pumps.
 function circuitOf(start: VenueFixture, at: ReadonlyMap<string, VenueFixture>): VenueFixture[] {
@@ -673,7 +667,7 @@ export function interiorBonusOf(allFixtures: readonly VenueFixture[], tier: numb
 }
 
 function bonusOf(allFixtures: readonly VenueFixture[], tier: number, type: BuildingType): InteriorBonus {
-  const layout = interiorLayoutOf(type);
+  const caps = interiorCapsOfType(type, tier);
   const { machines, motors, drive, coolantOf } = coolingOf(allFixtures);
   const saving = Math.min(interiorBalance.maxPowerSaving, interiorBalance.boilerPowerSaving * machines.filter(fixture => FIXTURES[fixture.type].heat).length);
   const busy = motors.length === 0 ? 0 : Math.min(1, drive.received.size / (motors.length * interiorBalance.motorCapacity));
@@ -681,8 +675,8 @@ function bonusOf(allFixtures: readonly VenueFixture[], tier: number, type: Build
   const fixturePower = allFixtures.filter(fixture => fixture.broken !== true).reduce((total, fixture) => total + (FIXTURES[fixture.type].power ?? 0), 0);
   const variety = interiorBalance.varietyYield * Math.max(0, kindsOf(machines) - 1);
   return {
-    speed: saturate(sum('speed'), capOf(layout?.speedCaps ?? interiorBalance.speedCaps, tier)),
-    yield: saturate(sum('yield') + variety, capOf(layout?.yieldCaps ?? interiorBalance.yieldCaps, tier)),
+    speed: saturate(sum('speed'), caps.speed),
+    yield: saturate(sum('yield') + variety, caps.yield),
     power: motors.length * interiorBalance.motorPower * (interiorBalance.idlePowerShare + (1 - interiorBalance.idlePowerShare) * busy) * (1 - saving) + fixturePower,
   };
 }
@@ -823,6 +817,7 @@ export function lineBonusOf(allFixtures: readonly VenueFixture[], tier: number, 
   const cached = perKey.get(key);
   if (cached) return cached;
   const layout = interiorLayoutOf(type);
+  const caps = interiorCapsOfType(type, tier);
   const { fixtures, links } = reportOf(allFixtures);
   const lined = fixtures.filter(fixture => links.lined.has(fixture.id));
   const exits = lined.filter(fixture => roleOf(fixture) === 'exit');
@@ -832,10 +827,10 @@ export function lineBonusOf(allFixtures: readonly VenueFixture[], tier: number, 
     const machines = lined.filter(isMachine);
     const total = (list: readonly VenueFixture[], key: 'speed' | 'yield' | 'sales' | 'capacity') => list.reduce((sum, fixture) => sum + (FIXTURES[fixture.type][key] ?? 0), 0);
     bonus = {
-      speed: saturate(total(machines, 'speed'), capOf(layout.speedCaps, tier), interiorBalance.bonusKnee),
-      yield: saturate(layout.yieldFromExits ? total(exits, 'yield') : total(machines.filter(fixture => group === undefined || FIXTURES[fixture.type].yieldGroup === undefined || FIXTURES[fixture.type].yieldGroup === group), 'yield'), capOf(layout.yieldCaps, tier), interiorBalance.bonusKnee),
-      sales: layout.salesCaps ? saturate(total(exits, 'sales'), capOf(layout.salesCaps, tier), interiorBalance.bonusKnee) : 0,
-      capacity: layout.capacityCaps ? saturate(total(exits, 'capacity'), capOf(layout.capacityCaps, tier), interiorBalance.bonusKnee) : 0,
+      speed: saturate(total(machines, 'speed'), caps.speed, interiorBalance.bonusKnee),
+      yield: saturate(layout.yieldFromExits ? total(exits, 'yield') : total(machines.filter(fixture => group === undefined || FIXTURES[fixture.type].yieldGroup === undefined || FIXTURES[fixture.type].yieldGroup === group), 'yield'), caps.yield, interiorBalance.bonusKnee),
+      sales: caps.sales === undefined ? 0 : saturate(total(exits, 'sales'), caps.sales, interiorBalance.bonusKnee),
+      capacity: caps.capacity === undefined ? 0 : saturate(total(exits, 'capacity'), caps.capacity, interiorBalance.bonusKnee),
       power,
     };
   }
@@ -870,8 +865,8 @@ function packhouseBonusUncached(allFixtures: readonly VenueFixture[], tier: numb
   const strappers = machines.filter(fixture => FIXTURES[fixture.type].family === 'strapper').length;
   const sum = (key: 'speed' | 'yield') => machines.reduce((total, fixture) => total + (FIXTURES[fixture.type][key] ?? 0), 0);
   return {
-    speed: saturate(sum('speed'), capOf(packhouseBalance.speedCaps, tier), packhouseBalance.bonusKnee),
-    yield: saturate(sum('yield') + packhouseBalance.strapperSeriesYield * Math.max(0, strappers - 1), capOf(packhouseBalance.yieldCaps, tier), packhouseBalance.bonusKnee),
+    speed: saturate(sum('speed'), valueByTier(packhouseBalance.speedCaps, tier), packhouseBalance.bonusKnee),
+    yield: saturate(sum('yield') + packhouseBalance.strapperSeriesYield * Math.max(0, strappers - 1), valueByTier(packhouseBalance.yieldCaps, tier), packhouseBalance.bonusKnee),
     power: 0,
   };
 }
@@ -948,7 +943,7 @@ export const recyclingGainsOf = (building: Pick<Building, 'interior'>): Recyclin
 // The most Exits, Sorters and Recyclers a Recycling interior can have at a Tier.
 export const recyclingLimitsOf = (tier: number): { exits: number; sorters: number; recyclers: number } => {
   const balance = interiorLayoutOf('recyclingPlant')!.recycling!;
-  return { exits: capOf(balance.exitLimits, tier), sorters: capOf(balance.sorterLimits, tier), recyclers: capOf(balance.recyclerLimits, tier) };
+  return { exits: valueByTier(balance.exitLimits, tier), sorters: valueByTier(balance.sorterLimits, tier), recyclers: valueByTier(balance.recyclerLimits, tier) };
 };
 
 const kindsOf = (machines: readonly VenueFixture[]): number => new Set(machines.map(fixture => FIXTURES[fixture.type].family ?? fixture.type)).size;
@@ -1060,7 +1055,7 @@ function assignedBonusOf(building: Pick<Building, 'type' | 'tier' | 'interior'>,
 }
 
 function assignedBonusUncached(building: Pick<Building, 'type' | 'tier' | 'interior'>, item?: ItemId): InteriorBonus {
-  const layout = interiorLayoutOf(building.type)!;
+  const caps = interiorCapsOfType(building.type, building.tier);
   const allFixtures = building.interior!.fixtures;
   const { links } = reportOf(allFixtures);
   // The report is cached by layout, which leaves out what the player assigns: the Fixtures are read from the interior itself.
@@ -1071,16 +1066,16 @@ function assignedBonusUncached(building: Pick<Building, 'type' | 'tier' | 'inter
   const total = (list: readonly VenueFixture[], key: 'speed' | 'yield' | 'sales') => list.reduce((sum, fixture) => sum + (FIXTURES[fixture.type][key] ?? 0), 0);
   const speedOf = (good: string) => {
     const baking = ovens.filter(oven => oven.recipe === good);
-    return baking.length === 0 ? 0 : saturate(total(baking, 'speed') + total(unattended, 'speed'), capOf(layout.speedCaps, building.tier), interiorBalance.bonusKnee);
+    return baking.length === 0 ? 0 : saturate(total(baking, 'speed') + total(unattended, 'speed'), caps.speed, interiorBalance.bonusKnee);
   };
-  const sellingOf = (good: string, key: 'yield' | 'sales', caps: readonly number[] | undefined) => (caps ? saturate(total(counters.filter(counter => counter.soldGood === good), key), capOf(caps, building.tier), interiorBalance.bonusKnee) : 0);
+  const sellingOf = (good: string, key: 'yield' | 'sales', cap: number | undefined) => (cap === undefined ? 0 : saturate(total(counters.filter(counter => counter.soldGood === good), key), cap, interiorBalance.bonusKnee));
   const best = (values: readonly number[]) => Math.max(0, ...values);
   const baked = [...new Set(ovens.map(oven => oven.recipe!))];
   const sold = [...new Set(counters.map(counter => counter.soldGood!))];
   return {
     speed: item === undefined ? best(baked.map(speedOf)) : speedOf(item),
-    yield: item === undefined ? best(sold.map(good => sellingOf(good, 'yield', layout.yieldCaps))) : sellingOf(item, 'yield', layout.yieldCaps),
-    sales: item === undefined ? best(sold.map(good => sellingOf(good, 'sales', layout.salesCaps))) : sellingOf(item, 'sales', layout.salesCaps),
+    yield: item === undefined ? best(sold.map(good => sellingOf(good, 'yield', caps.yield))) : sellingOf(item, 'yield', caps.yield),
+    sales: item === undefined ? best(sold.map(good => sellingOf(good, 'sales', caps.sales))) : sellingOf(item, 'sales', caps.sales),
     capacity: 0,
     power: bonusOf(allFixtures, building.tier, building.type).power,
   };
@@ -1095,12 +1090,12 @@ export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier'
   const bonusModel = interiorDeclarationOf(building.type)?.bonusModel;
   if (bonusModel === 'packhouse') return packhouseBonusOf(building.interior.fixtures, building.tier, item === undefined ? undefined : packSizeOf(item));
   if (bonusModel === 'factory') return interiorBonusOf(building.interior.fixtures, building.tier, building.type);
+  if (bonusModel === 'assigned') return assignedBonusOf(building, item);
   if (interiorDeclarationOf(building.type)) {
     const layout = interiorLayoutOf(building.type);
-    if (layout?.assignments) return assignedBonusOf(building, item);
     const groups = Object.keys(layout?.yieldGroups ?? {});
     const group = item === undefined ? undefined : yieldGroupOf(building.type, item);
-    const bonus = layout?.line ? lineBonusOf(building.interior.fixtures, building.tier, building.type, group) : interiorBonusOf(building.interior.fixtures, building.tier, building.type);
+    const bonus = bonusModel === 'line' ? lineBonusOf(building.interior.fixtures, building.tier, building.type, group) : interiorBonusOf(building.interior.fixtures, building.tier, building.type);
     // A yield that comes from the Exits is delivered by the Staff that serves them. A building that splits its yield in groups of Goods delivers each group through its own role; asked about none, it is the best of them.
     const delivered = (name: string) => bonus.yield * interiorPartPresence(building, `${name}Yield` as InteriorPart);
     const yieldShare = groups.length === 0 ? bonus.yield * (layout?.yieldFromExits ? interiorPartPresence(building, exitYieldPartOf(building.type)) : 1) : group !== undefined ? delivered(group) : item !== undefined ? 0 : Math.max(...groups.map(delivered));

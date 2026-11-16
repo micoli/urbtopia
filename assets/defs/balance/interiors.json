@@ -13,6 +13,7 @@
     },
     "mill": {
       "family": "production",
+      "bonusModel": "machines",
       "layout": {
         "gridSizes": [5, 6, 7, 8, 9],
         "speedCaps": [0.1, 0.18, 0.26, 0.34, 0.42],
@@ -38,12 +39,12 @@
     },
     "workshop": {
       "family": "production",
+      "bonusModel": "line",
       "layout": {
         "gridSizes": [5, 6, 7, 8, 9],
         "speedCaps": [0.01],
         "yieldCaps": [0.01],
         "technicianPosts": [0, 0, 1, 1, 2],
-        "line": true,
         "autoWork": true
       },
       "roles": {
@@ -56,12 +57,12 @@
     },
     "recyclingPlant": {
       "family": "production",
+      "bonusModel": "line",
       "layout": {
         "gridSizes": [5, 6, 7, 8],
         "speedCaps": [0.01],
         "yieldCaps": [0.01],
         "technicianPosts": [1, 2, 3, 4],
-        "line": true,
         "recycling": {
           "exitCapacity": 50,
           "allKindsCapacity": 200,
@@ -76,14 +77,13 @@
     },
     "bakery": {
       "family": "production",
+      "bonusModel": "assigned",
       "layout": {
         "gridSizes": [6, 7, 8, 9, 10],
         "speedCaps": [0.1, 0.2, 0.3, 0.4, 0.5],
         "yieldCaps": [0.02, 0.04, 0.06, 0.08, 0.1],
         "technicianPosts": [0, 0, 1, 1, 2],
-        "line": true,
         "yieldFromExits": true,
-        "assignments": true,
         "laneSlowdown": 0.5,
         "feeds": [
           {
@@ -113,12 +113,12 @@
     },
     "dairy": {
       "family": "production",
+      "bonusModel": "line",
       "layout": {
         "gridSizes": [6, 7, 8, 9, 10],
         "speedCaps": [0.05, 0.1, 0.15, 0.2, 0.25],
         "yieldCaps": [0.1, 0.2, 0.3, 0.4, 0.5],
         "technicianPosts": [0, 0, 1, 1, 2],
-        "line": true,
         "autoWork": true,
         "yieldGroups": {
           "cheese": ["cheese", "goatCheese"],
@@ -143,12 +143,12 @@
     },
     "storehouse": {
       "family": "production",
+      "bonusModel": "line",
       "layout": {
         "gridSizes": [6, 6, 7, 7, 8, 8, 9, 9, 10, 10],
         "speedCaps": [0.05],
         "yieldCaps": [0.05],
         "technicianPosts": [0, 0, 1, 1, 2],
-        "line": true,
         "capacityCaps": [0.1, 0.1, 0.15, 0.15, 0.2, 0.2, 0.25, 0.25, 0.3, 0.3]
       },
       "roles": {
@@ -231,6 +231,7 @@
     },
     "textileMill": {
       "family": "production",
+      "bonusModel": "machines",
       "layout": {
         "gridSizes": [5, 6, 7, 8, 9],
         "speedCaps": [0.1, 0.18, 0.26, 0.34, 0.42],
@@ -248,14 +249,13 @@
     },
     "knitwearFactory": {
       "family": "production",
+      "bonusModel": "assigned",
       "layout": {
         "gridSizes": [6, 7, 8, 9, 10],
         "speedCaps": [0.1, 0.2, 0.3, 0.4, 0.5],
         "yieldCaps": [0.02, 0.04, 0.06, 0.08, 0.1],
         "technicianPosts": [0, 0, 1, 1, 2],
-        "line": true,
         "yieldFromExits": true,
-        "assignments": true,
         "laneSlowdown": 0.5,
         "requires": "finisher",
         "feeds": [
@@ -286,12 +286,12 @@
     },
     "livestockFarm": {
       "family": "production",
+      "bonusModel": "line",
       "layout": {
         "gridSizes": [6, 7, 8, 9, 10],
         "speedCaps": [0.01],
         "yieldCaps": [0.05, 0.1, 0.15, 0.2, 0.25],
         "technicianPosts": [0, 0, 1, 1, 2],
-        "line": true,
         "autoWork": true,
         "yieldFromExits": true
       },

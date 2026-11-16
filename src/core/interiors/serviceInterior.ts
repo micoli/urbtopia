@@ -3,20 +3,19 @@ import { congestionStats } from '../traffic/congestion';
 import { jobsOf } from '../traffic/jobs';
 import { isAdapting } from '../environment/adaptation';
 import type { Building, BuildingType, GameState, VenueFixture } from '../engine/state';
+import { valueByTier } from './valueByTier';
 import { careBalanceOf, interiorFillRateFrom, interiorPartPresence, serviceLayoutOf, type InteriorPart } from './interiorStaff';
 import interiorBalance from '../../../assets/defs/balance/factoryInterior.json' with { type: 'json' };
 
 // The size of the room of a Service interior by Tier, and the most quality its furniture can add.
 export const serviceGridSizeOf = (type: BuildingType, tier: number): number => {
-  const sizes = serviceLayoutOf(type)?.gridSizes ?? [5];
-  return sizes[Math.min(tier, sizes.length) - 1]!;
+  return valueByTier(serviceLayoutOf(type)?.gridSizes ?? [5], tier);
 };
 
 export const serviceQualityCapOf = (type: BuildingType, tier: number): number => capOf(type, tier);
 
 const capOf = (type: BuildingType, tier: number): number => {
-  const caps = serviceLayoutOf(type)?.qualityCaps ?? [0];
-  return caps[Math.min(tier, caps.length) - 1]!;
+  return valueByTier(serviceLayoutOf(type)?.qualityCaps ?? [0], tier);
 };
 
 // A bonus counts in full up to a share of the cap of the Tier, then grows with every piece but less and less, and never reaches the cap.

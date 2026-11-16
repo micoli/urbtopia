@@ -6,9 +6,9 @@ import { isItemUnlocked } from '../progression/unlocks';
 import { FIXTURES } from '../venues/fixtures';
 import { interiorUpstreamOf, suppliedGoodsOf } from '../factory/factoryInterior';
 import { editInterior } from './interiorEdit';
-import { hiredInteriorOf, interiorLayoutOf, isProducerRole, yieldGroupOf } from './interiorStaff';
+import { hiredInteriorOf, interiorDeclarationOf, interiorLayoutOf, isProducerRole, yieldGroupOf } from './interiorStaff';
 
-export const hasAssignments = (building: Pick<Building, 'type'>): boolean => interiorLayoutOf(building.type)?.assignments === true || interiorLayoutOf(building.type)?.autoWork === true;
+export const hasAssignments = (building: Pick<Building, 'type'>): boolean => interiorDeclarationOf(building.type)?.bonusModel === 'assigned' || interiorLayoutOf(building.type)?.autoWork === true;
 
 // The group of Goods of the Dairy that a role makes, when it makes only one.
 const GROUP_OF_ROLE: Partial<Record<InteriorRole, string>> = { cheesemaker: 'cheese', creamMaker: 'cream' };

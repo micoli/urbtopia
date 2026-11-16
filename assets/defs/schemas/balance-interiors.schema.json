@@ -25,7 +25,10 @@
             "type": "string",
             "enum": [
               "factory",
-              "packhouse"
+              "packhouse",
+              "machines",
+              "line",
+              "assigned"
             ]
           },
           "unlockCitizens": {
@@ -137,10 +140,6 @@
                   "maximum": 9007199254740991
                 }
               },
-              "line": {
-                "type": "boolean",
-                "const": true
-              },
               "salesCaps": {
                 "minItems": 1,
                 "type": "array",
@@ -173,10 +172,6 @@
                 }
               },
               "yieldFromExits": {
-                "type": "boolean",
-                "const": true
-              },
-              "assignments": {
                 "type": "boolean",
                 "const": true
               },
