@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { CROPS, createBuilding } from '../../core';
-import { collectBadgeLabel, readyFieldModels } from './CollectBadge';
+import { collectBadgeLabel, readyFieldModels, readyFishModels } from './CollectBadge';
 
 vi.mock('../../i18n/prefsStore', () => ({ prefsStore: {} }));
 vi.mock('../../store/gameStore', () => ({ gameStore: {} }));
@@ -23,6 +23,14 @@ describe('collectBadgeLabel for Attractions', () => {
 
   it('is a number, so the tax badge setting hides it with the other Urbs badges', () => {
     expect(typeof collectBadgeLabel(attraction('masMuseum', 10))).toBe('number');
+  });
+});
+
+describe('readyFishModels', () => {
+  it('shows one fish icon per ready fish, up to the preview limit', () => {
+    expect(readyFishModels(3)).toHaveLength(3);
+    expect(readyFishModels(50)).toHaveLength(6);
+    expect(new Set(readyFishModels(3)).size).toBe(1);
   });
 });
 
