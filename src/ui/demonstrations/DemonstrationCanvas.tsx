@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
-import { fixtureTiles, fixtureVenueOf, hasLineInterior, hasProductionInterior, hasServiceInterior, interiorBonusOfBuilding, interiorFixturesOf, interiorMotionOf, interiorOverloadedOf, interiorSizeOf, avatarsOfBuilding, isBroken, linePathsOf, type Building, type Coord } from '../../core';
+import { fixtureVenueOf, interiorSizeOf, type Building, type Coord } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
+import { scenePlanOf } from '../../scene/scenePlan';
 import { VenueScene } from '../../scene/VenueScene';
 
 interface Props {
@@ -52,16 +53,9 @@ export function DemonstrationCanvas({ initial, building, highlight, camera, play
   useEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
-    const fixtures = interiorFixturesOf(building);
-    const speed = 1 + interiorBonusOfBuilding(building).speed;
-    scene.setFixtures(fixtures);
+    const plan = scenePlanOf(building);
+    if (plan) scene.setPlan(plan);
     scene.setSelection(highlight);
-    scene.setMotion(hasProductionInterior(building) ? interiorMotionOf(fixtures) : new Map(), speed);
-    scene.setLine(hasLineInterior(building) ? linePathsOf(fixtures) : [], speed);
-    scene.setAvatars(hasServiceInterior(building) ? avatarsOfBuilding(building) : []);
-    const overloaded = interiorOverloadedOf(fixtures);
-    scene.setBroken(fixtures.filter(fixture => isBroken(fixture) || overloaded.has(fixture.id)).flatMap(fixtureTiles));
-    scene.setWear([...fixtures], hasProductionInterior(building));
     scene.setAnimationPaused(!playing);
   }, [building, playing, highlight, sceneRef]);
 

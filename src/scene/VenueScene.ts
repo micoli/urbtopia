@@ -3,6 +3,7 @@ import { AvatarPatrol, patrolRoute } from './avatarPatrol';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { FIXTURES, PARQUET_MODELS, animalModelOfItem, isVenueType, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, doorwayTurnsOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
+import type { ScenePlan } from './scenePlan';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
 import { RESTOCKER_MODEL, VENUE_STAFF_MODELS, venueCrowdModelsOf } from './venueCrowdModels';
 import { ITEM_SCALE, InteriorLineLayer } from './InteriorLineLayer';
@@ -195,8 +196,22 @@ export class VenueScene {
     return layer;
   }
 
+  // Everything the room shows of its building, in one call: each part skips the work when it has not changed.
+  setPlan(plan: ScenePlan): void {
+    this.setSize(plan.size);
+    this.setLightLevel(plan.lightLevel);
+    this.setFloorModel(plan.floorModel);
+    this.setFixtures(plan.fixtures);
+    this.setTrucks(plan.trucks);
+    this.setLine(plan.line.paths, plan.line.pace);
+    this.setAvatars(plan.avatars);
+    this.setMotion(plan.motion.motion, plan.motion.pace);
+    this.setBroken(plan.broken);
+    this.setWear(plan.wear.fixtures, plan.wear.remaining);
+  }
+
   // Swaps the floor of the room for the parquet chosen by the player, or back to the floor of its kind.
-  setFloorModel(model: string | undefined): void {
+  private setFloorModel(model: string | undefined): void {
     const floor = model ?? this.defaultFloor;
     if (floor === this.shellModels.floor) return;
     this.shellModels = { ...this.shellModels, floor };
@@ -204,7 +219,7 @@ export class VenueScene {
     this.buildShell();
   }
 
-  setFixtures(fixtures: readonly VenueFixture[]): void {
+  private setFixtures(fixtures: readonly VenueFixture[]): void {
     if (this.shelfStock.sync(fixtures)) this.dirty = true;
     const signature = JSON.stringify(fixtures.map(fixture => [fixture.id, fixture.type, fixture.x, fixture.y, fixture.rotation, fixture.recipe, fixture.soldGood, fixture.assigned, fixture.restock, fixture.restocker]));
     if (signature === this.fixturesSignature) return;
@@ -215,28 +230,28 @@ export class VenueScene {
   }
 
   // The Staff hired in a Service interior, standing in the room in costume beside the Fixtures of their post.
-  setAvatars(avatars: readonly InteriorAvatars[]): void {
+  private setAvatars(avatars: readonly InteriorAvatars[]): void {
     if (JSON.stringify(avatars) === JSON.stringify(this.avatars)) return;
     this.avatars = avatars;
     this.rebuildTokens();
   }
 
   // The light of the room, as a share of its full level: a room whose power is cut stays dim.
-  setLightLevel(level: number): void {
+  private setLightLevel(level: number): void {
     this.sun.intensity = SUN_INTENSITY * level;
     this.sky.intensity = SKY_INTENSITY * level;
     this.dirty = true;
   }
 
   // The Fixtures of a Factory interior that run, and the way they turn.
-  setMotion(motion: ReadonlyMap<number, FixtureMotion>, speed = 1): void {
+  private setMotion(motion: ReadonlyMap<number, FixtureMotion>, speed = 1): void {
     this.motion.setMotion(motion);
     this.motion.setSpeed(speed);
     this.dirty = true;
   }
 
   // The ways that Packets take on a Packhouse interior, and the pace they ride at.
-  setLine(paths: readonly LinePath[], speed = 1): void {
+  private setLine(paths: readonly LinePath[], speed = 1): void {
     if (paths !== this.linePaths) {
       this.linePaths = paths;
       this.line.setPaths(paths);
@@ -258,7 +273,7 @@ export class VenueScene {
   }
 
   // The Exits of a Packhouse interior whose Line is linked: a truck waits outside each of them.
-  setTrucks(exits: readonly VenueFixture[]): void {
+  private setTrucks(exits: readonly VenueFixture[]): void {
     if (exits === this.trucks) return;
     this.trucks = exits;
     this.rebuildTrucks();
@@ -292,7 +307,7 @@ export class VenueScene {
     this.sun.shadow.camera.updateProjectionMatrix();
   }
 
-  setSize(size: number): void {
+  private setSize(size: number): void {
     if (size === this.size) return;
     this.size = size;
     this.fitSun();
@@ -315,7 +330,7 @@ export class VenueScene {
     this.markTiles(this.selectionRoot, tiles, SELECTION_COLOR);
   }
 
-  setBroken(tiles: readonly Coord[]): void {
+  private setBroken(tiles: readonly Coord[]): void {
     this.markTiles(this.brokenRoot, tiles, BROKEN_COLOR);
   }
 
@@ -324,7 +339,7 @@ export class VenueScene {
   }
 
   // A bar shows once a Fixture is worn: its Condition has fallen to 90 %. A Factory interior reads it as what is left, a Venue as what is lost.
-  setWear(fixtures: readonly VenueFixture[], remaining = false): void {
+  private setWear(fixtures: readonly VenueFixture[], remaining = false): void {
     this.clear(this.wearRoot, true);
     for (const fixture of fixtures) {
       const condition = conditionOf(fixture);

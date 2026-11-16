@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { avatarsOfBuilding, canPlaceFixture, canStandOnInterior, entranceCell, fixtureTiles, parquetModelOf, wallPlacementOf, hasLineInterior, hasProductionInterior, hasServiceInterior, interiorBonusOfBuilding, interiorFixturesOf, lineFaultOf, linePathsOf, linkedExitsOf, interiorMotionOf, interiorOverloadedOf, interiorSizeOf, gridSizeOf, hangsOnWall, hiredOf, staffRolesOf, isBroken, isInteriorBuilding, isPackhouse, wallFacingOf, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type LinePath, type VenueFixture, type VenueType } from '../../core';
+import { canPlaceFixture, canStandOnInterior, entranceCell, fixtureTiles, wallPlacementOf, hasLineInterior, interiorFixturesOf, lineFaultOf, interiorSizeOf, gridSizeOf, hangsOnWall, hiredOf, staffRolesOf, isBroken, isInteriorBuilding, wallFacingOf, isVenue, venuePerformance, FRONT_ROLE, type Building, type Coord, type FixtureId, type FixtureVenue, type VenueFixture, type VenueType } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
+import { scenePlanOf } from '../../scene/scenePlan';
 import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
 import { gameStore } from '../../store/gameStore';
@@ -20,12 +21,6 @@ const interiorOf = (venueId: number): Interior | undefined => {
   if (isInteriorBuilding(building)) return { building, fixtures: interiorFixturesOf(building), interior: true };
   return isVenue(building) ? { building, fixtures: building.venue.fixtures, interior: false } : undefined;
 };
-
-// The same empty lists each time, so that the scene sees nothing change.
-// The share of its light a room keeps when its breaker is off.
-const BREAKER_OFF_LIGHT = 0.3;
-const NO_EXITS: readonly VenueFixture[] = [];
-const NO_PATHS: readonly LinePath[] = [];
 
 // A wall Fixture goes where the cell leads on a back wall; the others go on the cell.
 const targetOf = (type: FixtureId, cell: Coord, fixtures: readonly VenueFixture[], size = 0): { x: number; y: number; rotation?: 0 | 1 | 2 | 3 } => {
@@ -104,9 +99,6 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       const fault = hasLineInterior(interior.building) && selected ? lineFaultOf(interior.fixtures, selected) : undefined;
       const faulty = !fault ? [] : 'cell' in fault ? [fault.cell] : fixtureTiles(fault.fixture);
       scene.setWarnings([...interior.fixtures.filter(fixture => hints.has(fixture.id) && !isBroken(fixture)).flatMap(fixtureTiles), ...faulty]);
-      const overloaded = hasProductionInterior(interior.building) ? interiorOverloadedOf(interior.fixtures) : new Set<number>();
-      scene.setBroken(interior.fixtures.filter(fixture => isBroken(fixture) || overloaded.has(fixture.id)).flatMap(fixtureTiles));
-      scene.setWear([...interior.fixtures], interior.interior && (hasProductionInterior(interior.building)));
     };
     const showCrowd = () => {
       const venue = interiorOf(venueId)?.building;
@@ -126,17 +118,8 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
     };
     const sync = () => {
       const interior = interiorOf(venueId);
-      if (interior) {
-        scene.setSize(sizeOf(interior, venueType));
-        scene.setLightLevel(interior.building.breakerOff ? BREAKER_OFF_LIGHT : 1);
-        if (isInteriorBuilding(interior.building)) scene.setFloorModel(interior.building.interior?.parquet === undefined ? undefined : parquetModelOf(interior.building.interior.parquet));
-        scene.setFixtures([...interior.fixtures]);
-        scene.setTrucks(isPackhouse(interior.building) || interior.building.type === 'recyclingPlant' ? linkedExitsOf(interior.fixtures) : NO_EXITS);
-        const pace = 1 + interiorBonusOfBuilding(interior.building).speed;
-        scene.setLine(hasLineInterior(interior.building) && !interior.building.breakerOff ? linePathsOf(interior.fixtures) : NO_PATHS, pace);
-        scene.setAvatars(hasServiceInterior(interior.building) ? avatarsOfBuilding(interior.building) : []);
-        scene.setMotion(hasProductionInterior(interior.building) && !interior.building.breakerOff ? interiorMotionOf(interior.fixtures) : new Map(), pace);
-      }
+      const plan = interior && scenePlanOf(interior.building);
+      if (plan) scene.setPlan(plan);
       showCrowd();
       showSelection();
       showWarnings();
