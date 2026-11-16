@@ -5,6 +5,10 @@ import { interiorBonusOfBuilding, interiorLinksOf } from '../factory/factoryInte
 import { factoryAdvanced } from './factoryAdvanced';
 import { factoryIntermediate } from './factoryIntermediate';
 import { factorySimple, demoFactory } from './factorySimple';
+import { roomOf } from './lineInterior';
+import { packhouseAdvanced } from './packhouseAdvanced';
+import { packhouseIntermediate } from './packhouseIntermediate';
+import { packhouseSimple } from './packhouseSimple';
 import { compileDemonstration } from './scenario';
 import { workshopAdvanced } from './workshopAdvanced';
 import { demoWorkshop } from './workshopCity';
@@ -80,5 +84,27 @@ describe('Workshop demonstrations', () => {
     const final = compileDemonstration(workshopSimple).at(-1)!.state;
     const later = advance(final, final.lastSeen + 6 * 3_600_000).state;
     expect(later.storage.materials.wood ?? 0).toBeGreaterThan(final.storage.materials.wood ?? 0);
+  });
+});
+
+describe('Packhouse demonstrations', () => {
+  const lines = (scenario: Parameters<typeof compileDemonstration>[0], stepId?: string) => {
+    const checkpoints = compileDemonstration(scenario);
+    const checkpoint = stepId ? checkpoints.find(({ step }) => step.id === stepId)! : checkpoints.at(-1)!;
+    return interiorLinksOf(roomOf(checkpoint.state).interior!.fixtures);
+  };
+
+  it.each([packhouseSimple, packhouseIntermediate, packhouseAdvanced])('ends $id with every Machine linked', scenario => {
+    expect(lines(scenario).problems.size).toBe(0);
+  });
+
+  it.each([['packhouse', packhouseAdvanced]] as const)('cuts the second %s Line off until the joiner takes the right side', (_, scenario) => {
+    const lined = (stepId: string) => lines(scenario, stepId).lined.size;
+    expect(lined('wrong-joiner')).toBe(lined('second'));
+    expect(lined('right-joiner')).toBeGreaterThan(lined('wrong-joiner'));
+  });
+
+  it('feeds two Exits from one Packer through a splitting Conveyor', () => {
+    expect(lines(packhouseIntermediate).lined.size).toBeGreaterThan(lines(packhouseIntermediate, 'left').lined.size);
   });
 });
