@@ -69,6 +69,8 @@ jobs:
         run: npm run assets
       - name: Run the tests
         run: npm test
+      - name: Verify the interior demonstrations
+        run: npm run demonstrations:verify
 
   find-built-site:
     name: Look for a site built less than an hour ago from the same tree
