@@ -14,7 +14,9 @@ two counters and sellers), `bakery-advanced` (joining two Mixers into one Oven).
 The Textile mill has `textileMill-simple` (Spinner and Motor), `textileMill-intermediate` (Gear and right-output Spinner),
 and `textileMill-advanced` (diagnosing disconnected Drive). The Recycling plant has
 `recyclingPlant-simple` (Shredder), `recyclingPlant-intermediate` (left-handed Crusher and split),
-and `recyclingPlant-advanced` (diagnosing a stopped Sorter). Open an interior's
+and `recyclingPlant-advanced` (diagnosing a stopped Sorter). The Dairy has `dairy-simple`
+(Milk vat and Counter), `dairy-intermediate` (Pasteuriser, split and cream maker), and `dairy-advanced`
+(diagnosing missing Flow). Open an interior's
 Management view, choose **Demonstrations**, then **Simple**. It is also available
 from the Factory entry on the codex's Production interiors page, even without
 owning or unlocking a Factory. Use `?e2e` for browser verification.

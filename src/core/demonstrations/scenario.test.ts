@@ -21,6 +21,10 @@ import { recyclingPlantSimple } from './recyclingPlantSimple';
 import { recyclingPlantIntermediate } from './recyclingPlantIntermediate';
 import { recyclingPlantAdvanced } from './recyclingPlantAdvanced';
 import { linePathsOf, recyclingGainsOf } from '../factory/factoryInterior';
+import { dairySimple } from './dairySimple';
+import { dairyIntermediate } from './dairyIntermediate';
+import { dairyAdvanced } from './dairyAdvanced';
+import { lineFaultOf } from '../factory/factoryInterior';
 import { DEMONSTRATIONS } from './catalog';
 import { roomOf } from './lineInterior';
 import { packhouseAdvanced } from './packhouseAdvanced';
@@ -32,7 +36,7 @@ import { demoWorkshop } from './workshopCity';
 import { workshopIntermediate } from './workshopIntermediate';
 import { workshopSimple } from './workshopSimple';
 
-it.each(DEMONSTRATIONS.filter(scenario => ['mill', 'recyclingPlant', 'textileMill', 'storehouse'].includes(scenario.buildingType)))('$id ends without machine problems', scenario => {
+it.each(DEMONSTRATIONS.filter(scenario => ['mill', 'dairy', 'recyclingPlant', 'textileMill', 'storehouse'].includes(scenario.buildingType)))('$id ends without machine problems', scenario => {
   const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior?.fixtures ?? [];
   expect(interiorLinksOf(fixtures).problems.size).toBe(0);
 });
@@ -201,11 +205,24 @@ describe('Recycling plant demonstrations', () => {
   });
 });
 
-it.each([storehouseIntermediate])('reaches both branches in $id', scenario => {
+it.each([storehouseIntermediate, dairyIntermediate])('reaches both branches in $id', scenario => {
   const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior!.fixtures;
   expect(linePathsOf(fixtures)).toHaveLength(2);
 });
 
 it('reaches both recycling exits after the split', () => {
   expect(recyclingGainsOf(roomOf(compileDemonstration(recyclingPlantIntermediate).at(-1)!.state)).exits).toBe(2);
+});
+
+describe('Dairy demonstrations', () => {
+  it.each([dairySimple, dairyIntermediate, dairyAdvanced])('ends $id with a connected counter', scenario => {
+    const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior!.fixtures;
+    expect(interiorLinksOf(fixtures).lined.has(fixtures.find(fixture => fixture.type === 'dairyCounter')!.id)).toBe(true);
+  });
+  it('repairs missing flow and activates the cream yield bonus', () => {
+    const checkpoints = compileDemonstration(dairyAdvanced);
+    const fixtures = roomOf(checkpoints.find(({ step }) => step.id === 'counter')!.state).interior!.fixtures;
+    expect(lineFaultOf(fixtures, fixtures.find(fixture => fixture.type === 'dairyCounter')!)?.kind).toBe('noFlow');
+    expect(interiorBonusOfBuilding(roomOf(compileDemonstration(dairyIntermediate).at(-1)!.state), 'cream').yield).toBeGreaterThan(0);
+  });
 });
