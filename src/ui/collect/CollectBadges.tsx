@@ -6,6 +6,7 @@ import { gameStore } from '../../store/gameStore';
 import { useGame } from '../common/hooks';
 import { CollectBadge, collectBadgeLabel, readyItemModels } from './CollectBadge';
 import { ReadyFieldBadges } from './ReadyFieldBadges';
+import { ReadyFishBadges } from './ReadyFishBadges';
 
 interface BadgeSpec {
   id: number;
@@ -61,6 +62,7 @@ export function CollectBadges() {
         />
       ))}
       <ReadyFieldBadges />
+      <ReadyFishBadges />
     </>
   );
 }

@@ -7,7 +7,19 @@ three as well: `workshop-simple` (air circuit, Line and restocker), `workshop-in
 Bakery have three each: `packhouse-simple` (straight Conveyors and an elbow), `packhouse-intermediate`
 (splitting Conveyor toward two Exits), `packhouse-advanced` (joining Conveyor, right and wrong side), and
 `bakery-simple` (Mixer, Oven, counter, baker and seller), `bakery-intermediate` (straight splitting Conveyor,
-two counters and sellers), `bakery-advanced` (joining two Mixers into one Oven). Open an interior's
+two counters and sellers), `bakery-advanced` (joining two Mixers into one Oven). The Mill has
+`mill-simple` (olive oil), `mill-intermediate` (flour and the Bagger), and `mill-advanced`
+(diagnosing a misfacing oil tank). The Storehouse has `storehouse-simple` (Dock and Rack),
+`storehouse-intermediate` (Hoist and split), and `storehouse-advanced` (diagnosing a stopped Hoist).
+The Textile mill has `textileMill-simple` (Spinner and Motor), `textileMill-intermediate` (Gear and right-output Spinner),
+and `textileMill-advanced` (diagnosing disconnected Drive). The Recycling plant has
+`recyclingPlant-simple` (Shredder), `recyclingPlant-intermediate` (left-handed Crusher and split),
+and `recyclingPlant-advanced` (diagnosing a stopped Sorter). The Dairy has `dairy-simple`
+(Milk vat and Counter), `dairy-intermediate` (Pasteuriser, split and cream maker), and `dairy-advanced`
+(diagnosing missing Flow). The Knitwear factory has `knitwearFactory-simple` (Knitter and Finisher),
+`knitwearFactory-intermediate` (left-handed Machines and split), and `knitwearFactory-advanced` (missing Finisher Drive).
+The Livestock farm has `livestockFarm-simple` (feed to collection), `livestockFarm-intermediate` (left-handed Machines and split),
+and `livestockFarm-advanced` (missing Packer Drive). Open an interior's
 Management view, choose **Demonstrations**, then **Simple**. It is also available
 from the Factory entry on the codex's Production interiors page, even without
 owning or unlocking a Factory. Use `?e2e` for browser verification.
@@ -58,7 +70,7 @@ Next immediately.
 
 ## Current delivery boundary
 
-The Factory, the Workshop, the Packhouse and the Bakery are covered at all three levels. Remaining interior types follow. The current canvas
+All Production interior types are covered at all three levels. The current canvas
 and indicators serve the Production pilot; Venue, Service and Home rendering
 and indicators must be adapted and verified before registering those scenarios.
 Exported video, voice recordings, exercises and saved viewing progress are out

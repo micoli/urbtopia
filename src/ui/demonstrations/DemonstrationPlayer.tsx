@@ -11,6 +11,7 @@ import { Icon } from '../common/Icon';
 import type { IconName } from '../common/iconRegistry';
 import { ProductionIndicators } from '../factory/ProductionIndicators';
 import { DemonstrationCanvas } from './DemonstrationCanvas';
+import { DEMONSTRATION_SPEEDS, useDemonstrationSpeed } from './useDemonstrationSpeed';
 
 const NO_HIGHLIGHTS: readonly { x: number; y: number }[] = [];
 export function demonstrationText(text: DemonstrationText): string {
@@ -24,7 +25,6 @@ function IconButton({ icon, label, variant, onClick, disabled }: { icon: IconNam
 const PHASES = ['objective', 'action', 'explanation', 'result'] as const;
 const PHASE_LABELS = { objective: 'demo.objective', action: 'demo.action', explanation: 'demo.why', result: 'demo.result' } as const;
 
-const SPEEDS = [0.5, 1, 1.5, 2, 2.5] as const;
 const END_OF_STEP_PAUSE = 2_000;
 
 function phaseDurationsOf(step: DemonstrationStep): number[] {
@@ -114,7 +114,7 @@ function Step({ scenario, checkpoint, playing, speed, onSpeedChange, subtitles, 
         <IconButton icon="rotateRight" label={t('demo.rotateRight')} onClick={() => sceneRef.current?.rotate(1)} />
         <IconButton icon="recenter" label={t('demo.recenter')} onClick={() => sceneRef.current?.recenter(step.camera?.x, step.camera?.y, step.camera?.zoom)} />
         <select className="demonstration-speed" aria-label={t('demo.speed')} value={speed} onChange={event => onSpeedChange(Number(event.target.value))}>
-          {SPEEDS.map(value => <option key={value} value={value}>{value}×</option>)}
+          {DEMONSTRATION_SPEEDS.map(value => <option key={value} value={value}>{value}×</option>)}
         </select>
         <SwitchField label={t('demo.subtitles')} checked={subtitles} onChange={onSubtitlesChange} />
       </div>
@@ -134,7 +134,7 @@ export function DemonstrationPlayer({ scenario }: { scenario: Demonstration }) {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [subtitles, setSubtitles] = useState(true);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useDemonstrationSpeed();
   const [restart, setRestart] = useState(0);
   const sceneRef = useRef<VenueScene | null>(null);
   const compiled = useMemo(() => {

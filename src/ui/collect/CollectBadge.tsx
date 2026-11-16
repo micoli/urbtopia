@@ -60,6 +60,11 @@ export function readyFieldModels(species: CropId): string[] {
   return model === null ? [] : Array<string>(CROPS[species].yield).fill(model);
 }
 
+export function readyFishModels(fish: number): string[] {
+  const model = itemModelOf('fish');
+  return model === null ? [] : Array<string>(Math.min(fish, MAX_PREVIEWS)).fill(model);
+}
+
 function sameBadgeProps(a: CollectBadgeProps, b: CollectBadgeProps): boolean {
   return a.worldX === b.worldX && a.worldZ === b.worldZ && a.label === b.label && (a.models ?? []).join() === (b.models ?? []).join() && JSON.stringify(a.command) === JSON.stringify(b.command);
 }
