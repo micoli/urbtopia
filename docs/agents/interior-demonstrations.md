@@ -9,7 +9,9 @@ Bakery have three each: `packhouse-simple` (straight Conveyors and an elbow), `p
 `bakery-simple` (Mixer, Oven, counter, baker and seller), `bakery-intermediate` (straight splitting Conveyor,
 two counters and sellers), `bakery-advanced` (joining two Mixers into one Oven). The Mill has
 `mill-simple` (olive oil), `mill-intermediate` (flour and the Bagger), and `mill-advanced`
-(diagnosing a misfacing oil tank). Open an interior's
+(diagnosing a misfacing oil tank). The Storehouse has `storehouse-simple` (Dock and Rack),
+`storehouse-intermediate` (Hoist and split), and `storehouse-advanced` (diagnosing a stopped Hoist).
+Open an interior's
 Management view, choose **Demonstrations**, then **Simple**. It is also available
 from the Factory entry on the codex's Production interiors page, even without
 owning or unlocking a Factory. Use `?e2e` for browser verification.

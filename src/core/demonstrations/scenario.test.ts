@@ -11,6 +11,10 @@ import { bakerySimple } from './bakerySimple';
 import { millSimple } from './millSimple';
 import { millAdvanced } from './millAdvanced';
 import { millIntermediate } from './millIntermediate';
+import { storehouseSimple } from './storehouseSimple';
+import { storehouseIntermediate } from './storehouseIntermediate';
+import { storehouseAdvanced } from './storehouseAdvanced';
+import { linePathsOf } from '../factory/factoryInterior';
 import { DEMONSTRATIONS } from './catalog';
 import { roomOf } from './lineInterior';
 import { packhouseAdvanced } from './packhouseAdvanced';
@@ -22,7 +26,7 @@ import { demoWorkshop } from './workshopCity';
 import { workshopIntermediate } from './workshopIntermediate';
 import { workshopSimple } from './workshopSimple';
 
-it.each(DEMONSTRATIONS.filter(scenario => ['mill'].includes(scenario.buildingType)))('$id ends without machine problems', scenario => {
+it.each(DEMONSTRATIONS.filter(scenario => ['mill', 'storehouse'].includes(scenario.buildingType)))('$id ends without machine problems', scenario => {
   const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior?.fixtures ?? [];
   expect(interiorLinksOf(fixtures).problems.size).toBe(0);
 });
@@ -142,4 +146,24 @@ describe('Mill demonstrations', () => {
     for (let minute = 1; minute <= 360; minute++) state = advance(state, start + minute * 60_000).state;
     expect(state.storage.materials[material] ?? 0).toBeGreaterThan(0);
   });
+});
+
+describe('Storehouse demonstrations', () => {
+  it.each([storehouseSimple, storehouseIntermediate, storehouseAdvanced])('ends $id with a connected rack', scenario => {
+    const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior!.fixtures;
+    const rack = fixtures.find(fixture => fixture.type === 'storehouseRack')!;
+    expect(interiorLinksOf(fixtures).lined.has(rack.id)).toBe(true);
+  });
+
+  it('repairs a hoist with no drive', () => {
+    const checkpoints = compileDemonstration(storehouseAdvanced);
+    const problems = (id: string) => interiorLinksOf(roomOf(checkpoints.find(({ step }) => step.id === id)!.state).interior!.fixtures).problems.get(4) ?? [];
+    expect(problems('rack')).toContain('noDrive');
+    expect(problems('fix-motor')).not.toContain('noDrive');
+  });
+});
+
+it.each([storehouseIntermediate])('reaches both branches in $id', scenario => {
+  const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior!.fixtures;
+  expect(linePathsOf(fixtures)).toHaveLength(2);
 });
