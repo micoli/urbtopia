@@ -72,6 +72,15 @@ describe('the Staff assigned in a Bakery interior', () => {
     expect(failure(baked, assign(ovenB))).toBe('error.noFreeStaff');
   });
 
+  it('refuses a building that does not exist or takes no assigned Staff, and an unassign on a Fixture with none', () => {
+    for (const buildingId of [99, 10]) {
+      expect(failure(fitted, { type: 'SetInteriorFocus', buildingId, fixtureId: ovenA, good: 'bread' })).toBe('error.unknownBuilding');
+      expect(failure(fitted, { type: 'AssignInteriorStaff', buildingId, fixtureId: ovenA })).toBe('error.unknownBuilding');
+      expect(failure(fitted, { type: 'UnassignInteriorStaff', buildingId, fixtureId: ovenA })).toBe('error.unknownBuilding');
+    }
+    expect(failure(baking, unassign(ovenA))).toBe('error.noStaffAssigned');
+  });
+
   it('frees the Staff when it is unassigned, when its Good is cleared, when the Fixture moves or is sold, or when the Staff is released', () => {
     const working = apply(baking, hire('seller'), focus(counterA, 'bread'), assign(counterA));
     expect(fixtureOf(apply(working, unassign(counterA)), counterA).assigned).toBeUndefined();

@@ -3,49 +3,34 @@ import type { Building, GameState, InteriorData, InteriorRole } from '../engine/
 import { VENUE } from '../venues/shared';
 import { hireFeeOf } from '../venues/staff';
 import { withAssignmentsCovered } from './interiorAssignments';
+import { editInterior } from './interiorEdit';
 import { hiredInteriorOf, interiorPostsOfBuilding, interiorRolesOf, interiorWagesPerHour } from './interiorStaff';
 
-const EMPTY_INTERIOR: InteriorData = { fixtures: [], nextFixtureId: 1 };
+const declaresRole = (role: InteriorRole) => (building: Building): boolean => interiorRolesOf(building.type).includes(role);
 
-const hostOf = (state: GameState, buildingId: number, role: InteriorRole): Building | undefined => {
-  const building = state.buildings.find(candidate => candidate.id === buildingId);
-  return building && interiorRolesOf(building.type).includes(role) ? building : undefined;
-};
-
-const withStaff = (state: GameState, building: Building, staff: InteriorData['staff'], urbs = state.urbs): GameState => ({
-  ...state,
-  urbs,
-  buildings: state.buildings.map(candidate => (candidate === building ? { ...building, interior: { ...(building.interior ?? EMPTY_INTERIOR), staff } } : candidate)),
-});
-
-const staffWith = (building: Building, role: InteriorRole, count: number): InteriorData['staff'] => {
-  const staff = { ...building.interior?.staff };
+const staffWith = (interior: InteriorData, role: InteriorRole, count: number): InteriorData['staff'] => {
+  const staff = { ...interior.staff };
   if (count > 0) staff[role] = count;
   else delete staff[role];
   return staff;
 };
 
-export function hireInteriorStaff(state: GameState, buildingId: number, role: InteriorRole): CommandOutcome {
-  const building = hostOf(state, buildingId, role);
-  if (!building) return { key: 'error.unknownBuilding' };
-  const posts = interiorPostsOfBuilding(building, role);
-  if (posts === 0) return { key: 'error.tierTooLow' };
-  const hired = hiredInteriorOf(building.interior, role);
-  if (hired >= posts) return { key: 'error.noStaffPost' };
-  const fee = hireFeeOf(role);
-  if (state.urbs < fee) return { key: 'error.notEnoughUrbs' };
-  return { state: withStaff(state, building, staffWith(building, role, hired + 1), state.urbs - fee), events: [] };
-}
+export const hireInteriorStaff = (state: GameState, buildingId: number, role: InteriorRole): CommandOutcome =>
+  editInterior(state, buildingId, declaresRole(role), (building, interior) => {
+    const posts = interiorPostsOfBuilding(building, role);
+    if (posts === 0) return { key: 'error.tierTooLow' };
+    const hired = hiredInteriorOf(interior, role);
+    if (hired >= posts) return { key: 'error.noStaffPost' };
+    return { interior: { ...interior, staff: staffWith(interior, role, hired + 1) }, urbs: -hireFeeOf(role) };
+  });
 
-export function releaseInteriorStaff(state: GameState, buildingId: number, role: InteriorRole): CommandOutcome {
-  const building = hostOf(state, buildingId, role);
-  if (!building) return { key: 'error.unknownBuilding' };
-  const hired = hiredInteriorOf(building.interior, role);
-  if (hired === 0) return { key: 'error.noStaffToRelease' };
-  const next = withStaff(state, building, staffWith(building, role, hired - 1));
-  const fixtures = withAssignmentsCovered(building, role, hired - 1);
-  return { state: { ...next, buildings: next.buildings.map(candidate => (candidate.id === building.id && candidate.interior ? { ...candidate, interior: { ...candidate.interior, fixtures } } : candidate)) }, events: [] };
-}
+export const releaseInteriorStaff = (state: GameState, buildingId: number, role: InteriorRole): CommandOutcome =>
+  editInterior(state, buildingId, declaresRole(role), (building, interior) => {
+    const hired = hiredInteriorOf(interior, role);
+    if (hired === 0) return { key: 'error.noStaffToRelease' };
+    const released = { ...interior, staff: staffWith(interior, role, hired - 1) };
+    return { interior: { ...released, fixtures: withAssignmentsCovered({ ...building, interior: released }, role, hired - 1) } };
+  });
 
 // The Staff hired in an interior are paid by the hour, as far as the city's Urbs go.
 export function payInteriorStaff(state: GameState, from: number, to: number): GameState {

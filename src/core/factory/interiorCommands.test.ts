@@ -103,3 +103,11 @@ describe('what a Factory interior adds', () => {
     expect(interiorBonusOf(factory(state).interior!.fixtures, factory(state).tier)).toMatchObject({ speed: FIXTURES.factoryPress.speed, yield: 0 });
   });
 });
+
+describe('moving or removing a Fixture of a building that does not exist', () => {
+  it('is refused, and so is a building that has no interior', () => {
+    expect(failure(city(), { type: 'MoveInteriorFixture', buildingId: 99, fixtureId: 1, x: 3, y: 3 })).toBe('error.unknownBuilding');
+    expect(failure(city(), { type: 'RemoveInteriorFixture', buildingId: 99, fixtureId: 1 })).toBe('error.unknownBuilding');
+    expect(failure(city(), { type: 'RemoveInteriorFixture', buildingId: 2, fixtureId: 1 })).toBe('error.unknownBuilding');
+  });
+});

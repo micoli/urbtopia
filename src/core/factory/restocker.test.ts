@@ -47,6 +47,11 @@ describe('hiring a Restocker for a Packhouse interior', () => {
     expect(failure(city(3, 10), hire)).toBe('error.notEnoughUrbs');
     expect(failure(city(), release)).toBe('error.noStaffToRelease');
   });
+
+  it('is refused for a building that has no Restocker', () => {
+    expect(failure(city(), { type: 'HireInteriorRestocker', buildingId: 2 })).toBe('error.unknownBuilding');
+    expect(failure(city(), { type: 'ReleaseInteriorRestocker', buildingId: 2 })).toBe('error.unknownBuilding');
+  });
 });
 
 const crate = packedGood('Crate');
