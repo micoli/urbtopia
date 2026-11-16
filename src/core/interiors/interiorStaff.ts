@@ -4,7 +4,9 @@ import { stackCountOf } from '../economy/counterSlots';
 import { modelFileOf } from '../models/modelFiles';
 import { STAFF } from '../venues/staff';
 
-export type InteriorFamily = 'production' | 'service';
+export type InteriorFamily = 'production' | 'service' | 'home';
+
+type DeclaredInteriorFamily = Exclude<InteriorFamily, 'home'>;
 
 export type InteriorPart = 'speed' | 'yield' | 'salesRate' | 'cheeseYield' | 'creamYield' | 'capacity' | 'schooling' | 'knowledge' | 'carePrimary' | 'careDoctor' | 'careSurgeon';
 
@@ -64,7 +66,8 @@ export interface CareBalance {
 
 interface InteriorDeclaration {
   care?: CareBalance;
-  family: InteriorFamily;
+  family: DeclaredInteriorFamily;
+  bonusModel?: 'factory' | 'packhouse';
   unlockCitizens?: number;
   service?: ServiceLayout;
   layout?: InteriorLayout;

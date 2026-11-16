@@ -82,6 +82,8 @@ export const interiorsBalanceSchema = z
       z.string().min(1),
       z.strictObject({
         family: z.enum(INTERIOR_FAMILIES_ALL),
+        // The Factory and the Packhouse have their own formula for the bonus of their floor and keep their numbers in their own files; the other buildings have none.
+        bonusModel: z.enum(['factory', 'packhouse']).optional(),
         // The Citizens a city needs before the interior can be fitted out.
         unlockCitizens: count.optional(),
         // Service interiors: the size of the room and the most quality the furniture can add, by Tier.

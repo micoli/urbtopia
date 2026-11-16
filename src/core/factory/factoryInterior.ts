@@ -1092,6 +1092,9 @@ const exitYieldPartOf = (type: BuildingType): InteriorPart => (Object.values(int
 // The bonus of a building's floor; for a Packhouse, the one that applies to the packed Goods `item` when it is given.
 export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'interior' | 'breakerOff'>, item?: ItemId): InteriorBonus {
   if (!building.interior || building.breakerOff) return NO_BONUS;
+  const bonusModel = interiorDeclarationOf(building.type)?.bonusModel;
+  if (bonusModel === 'packhouse') return packhouseBonusOf(building.interior.fixtures, building.tier, item === undefined ? undefined : packSizeOf(item));
+  if (bonusModel === 'factory') return interiorBonusOf(building.interior.fixtures, building.tier, building.type);
   if (interiorDeclarationOf(building.type)) {
     const layout = interiorLayoutOf(building.type);
     if (layout?.assignments) return assignedBonusOf(building, item);
@@ -1109,6 +1112,5 @@ export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier'
       ...(bonus.capacity === undefined ? {} : { capacity: bonus.capacity * interiorPartPresence(building, 'capacity') }),
     };
   }
-  if (building.type === 'packhouse') return packhouseBonusOf(building.interior.fixtures, building.tier, item === undefined ? undefined : packSizeOf(item));
   return interiorBonusOf(building.interior.fixtures, building.tier, building.type);
 }

@@ -8,14 +8,13 @@ import type { CommandError, CommandOutcome } from '../engine/commands';
 import type { Building, FixtureId, InteriorData, GameState, Rotation, VenueFixture, VenueType } from '../engine/state';
 import type { FixtureVenue } from '../venues/fixtures';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS, isServiceInteriorKind } from '../venues/venueVocabulary';
-import { serviceGridSizeOf } from '../interiors/serviceInterior';
+import { PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS } from '../venues/venueVocabulary';
 import { isInteriorUnlocked } from '../interiors/interiorUnlock';
-import { interiorLayoutOf } from '../interiors/interiorStaff';
+import { interiorProfileOf } from '../interiors/interiorProfile';
 import { withoutAssignment } from '../interiors/interiorAssignments';
 import { fixtureLimitOf } from '../interiors/interiorLimits';
 import { PARQUETS, canHangOnWall, hangsOnWall, homeFixtureRefund, homeGridSizeOf, isHomeInteriorUnlocked } from '../homes/homeInterior';
-import { interiorGridSizeOf, interiorGridSizeOfType, packSizeOf, packhouseExitLimitOf, packhouseGridSizeOf, recyclingLimitsOf } from './factoryInterior';
+import { packSizeOf, packhouseExitLimitOf, recyclingLimitsOf } from './factoryInterior';
 import { producibleItems, type GoodId } from '../economy/items';
 import { isItemUnlocked } from '../progression/unlocks';
 import { restockerPostsOf, technicianPostsOf } from './interiorWear';
@@ -34,24 +33,27 @@ export const isPackhouse = (building: Building): building is Packhouse => buildi
 export const isMill = (building: Building): boolean => building.type === 'mill';
 
 // The Production interiors, which share the engine of the Factory interior.
-export const hasProductionInterior = (building: Building): boolean => (PRODUCTION_INTERIOR_KINDS as readonly string[]).includes(building.type);
+export const hasProductionInterior = (building: Building): boolean => interiorProfileOf(building.type)?.family === 'production';
 
 // A Packhouse, a Bakery, a Dairy or a Storehouse: the interiors where a Line of crates runs from a Machine against the wall to an Exit.
-export const hasLineInterior = (building: Building): boolean => building.type === 'packhouse' || interiorLayoutOf(building.type)?.line === true;
+export const hasLineInterior = (building: Building): boolean => interiorProfileOf(building.type)?.line === true;
 
 // A School, a Library or a Hospital: the interiors that raise the quality of a service.
-export const hasServiceInterior = (building: Building): boolean => isServiceInteriorKind(building.type);
+export const hasServiceInterior = (building: Building): boolean => interiorProfileOf(building.type)?.family === 'service';
 
-export const isInteriorBuilding = (building: Building): boolean => hasProductionInterior(building) || hasServiceInterior(building) || isHomeType(building.type);
+export const isInteriorBuilding = (building: Building): boolean => interiorProfileOf(building.type) !== undefined;
 
 // What a floor building offers in its build menu: its kind of Fixtures.
-export const interiorKindOf = (building: Building): (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number] | 'home' =>
-  (hasProductionInterior(building) ? (building.type as (typeof PRODUCTION_INTERIOR_KINDS)[number]) : hasServiceInterior(building) ? (building.type as (typeof SERVICE_INTERIOR_KINDS)[number]) : 'home');
+export const interiorKindOf = (building: Building): (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number] | 'home' => {
+  const family = interiorProfileOf(building.type)?.family;
+  if (family === 'production' || family === 'service') return building.type as (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number];
+  return 'home';
+};
 
 // The kind of Fixtures a building takes: those of its Venue, of a Factory interior or of a Home interior.
 export const fixtureVenueOf = (building: Building): FixtureVenue => (isInteriorBuilding(building) ? interiorKindOf(building) : (building.type as VenueType));
 
-export const interiorSizeOf = (building: Building): number => (building.type === 'factory' ? interiorGridSizeOf(building.tier) : building.type === 'packhouse' ? packhouseGridSizeOf(building.tier) : hasProductionInterior(building) ? interiorGridSizeOfType(building.type, building.tier) : hasServiceInterior(building) ? serviceGridSizeOf(building.type, building.tier) : homeGridSizeOf(building.tier));
+export const interiorSizeOf = (building: Building): number => interiorProfileOf(building.type)?.gridSize(building.tier) ?? homeGridSizeOf(building.tier);
 
 const technicianHostOf = (state: GameState, buildingId: number): Building | undefined => {
   const building = state.buildings.find(candidate => candidate.id === buildingId);

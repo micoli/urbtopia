@@ -21,6 +21,13 @@
               "service"
             ]
           },
+          "bonusModel": {
+            "type": "string",
+            "enum": [
+              "factory",
+              "packhouse"
+            ]
+          },
           "unlockCitizens": {
             "type": "integer",
             "minimum": 0,

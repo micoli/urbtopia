@@ -1,4 +1,4 @@
-import { isProductionInteriorKind, interiorFamilyOf, isMaterial, interiorRolesOf, isProducerRole } from '../core';
+import { isProductionInteriorKind, interiorProfileOf, isMaterial, interiorRolesOf, isProducerRole } from '../core';
 import { FIXTURES, isRestockable, FIXTURE_IDS, PARQUETS, PIRATE_SHOW_TITLES, isCoveBoatFamily, footprintTiles, isSeaSceneryType, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
@@ -236,7 +236,7 @@ function isBuilding(value: unknown): boolean {
     (value.solar === undefined || (typeof value.type === 'string' && canHaveSolarPanels(value.type as BuildingType) && typeof value.solar === 'boolean')) &&
     (value.colorVariant === undefined || isColorAccepted(value.type, value.colorVariant)) &&
     (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
-    (value.interior === undefined || (value.type === 'factory' && isInteriorData(value.interior, 'factory')) || (value.type === 'packhouse' && isInteriorData(value.interior, 'packhouse')) || (isHomeType(value.type) && isInteriorData(value.interior, 'home')) || (typeof value.type === 'string' && interiorFamilyOf(value.type as BuildingType) !== undefined && isInteriorData(value.interior, value.type, value.type as BuildingType))) &&
+    (value.interior === undefined || (typeof value.type === 'string' && interiorProfileOf(value.type as BuildingType) !== undefined && isInteriorData(value.interior, interiorProfileOf(value.type as BuildingType)!.family === 'home' ? 'home' : value.type, value.type as BuildingType))) &&
     (value.club === undefined || (typeof value.type === 'string' && hasClub(value.type) && isClubData(value.club))) &&
     (value.attraction === undefined || (typeof value.type === 'string' && sellsTicketsType(value.type) && isAttractionData(value.attraction))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
