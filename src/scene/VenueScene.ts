@@ -80,6 +80,7 @@ export class VenueScene {
   private linePaths: readonly LinePath[] | null = null;
   private ghostRoot = new THREE.Group();
   private selectionRoot = new THREE.Group();
+  private marksBelowFixtures = false;
   private warningRoot = new THREE.Group();
   private crowd: VenueCrowdLayer;
   private motion = new InteriorMotionLayer();
@@ -300,6 +301,11 @@ export class VenueScene {
     this.resize();
   }
 
+  // The marks on tiles normally show over everything; here they stay on the floor, hidden by the Fixtures standing on them.
+  setMarksBelowFixtures(below: boolean): void {
+    this.marksBelowFixtures = below;
+  }
+
   setGhost(ghost: VenueGhost | null): void {
     this.markTiles(this.ghostRoot, ghost?.tiles ?? [], ghost ? (ghost.valid ? VALID_COLOR : INVALID_COLOR) : VALID_COLOR);
   }
@@ -343,9 +349,11 @@ export class VenueScene {
   private markTiles(root: THREE.Group, tiles: readonly Coord[], color: number): void {
     this.clear(root, true);
     if (tiles.length > 0) {
-      const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.55, depthTest: false });
+      // Under a Fixture the mark is larger than the tile, so that a rim of it shows around the piece.
+      const size = this.marksBelowFixtures ? 1.3 : 0.9;
+      const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.55, depthTest: this.marksBelowFixtures, depthWrite: false });
       for (const tile of tiles) {
-        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), material);
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), material);
         mesh.rotation.x = -Math.PI / 2;
         mesh.position.set(tile.x + 0.5, 0.05, tile.y + 0.5);
         mesh.renderOrder = 10;
@@ -801,6 +809,40 @@ export class VenueScene {
     return { x: Math.round((left + right) / 2), y: Math.round(bottom) };
   }
 
+  private animationPaused = false;
+
+  setAnimationPaused(paused: boolean): void {
+    this.animationPaused = paused;
+    this.lastFrame = performance.now();
+    this.dirty = true;
+  }
+
+  getView(): { x: number; y: number; zoom: number } {
+    return { x: this.pan.x, y: this.pan.z, zoom: this.zoom };
+  }
+
+  // Unlike recenter, keeps the turn of the view.
+  setView(x: number, y: number, zoom: number): void {
+    this.pan = { x, z: y };
+    this.zoom = zoom;
+    this.resize();
+  }
+
+  // The pan that centres the view on the middle of the given tiles.
+  panToTiles(tiles: readonly Coord[]): { x: number; y: number } {
+    const x = tiles.reduce((sum, tile) => sum + tile.x + 0.5, 0) / tiles.length;
+    const y = tiles.reduce((sum, tile) => sum + tile.y + 0.5, 0) / tiles.length;
+    return { x: x - this.size / 2, y: y - this.size / 2 };
+  }
+
+  recenter(x = 0, y = 0, zoom = 1): void {
+    this.pan = { x, z: y };
+    this.zoom = zoom;
+    this.yaw = Math.PI / 4;
+    this.yawTarget = this.yaw;
+    this.resize();
+  }
+
   private frame = (now: number): void => {
     const elapsed = now - this.lastFrame;
     if (!shouldRenderFrame(elapsed)) {
@@ -810,12 +852,14 @@ export class VenueScene {
     const delta = Math.min(0.1, Math.max(0, elapsed / 1000));
     this.lastFrame = now;
     this.turnTowardTarget(delta);
-    this.crowd.update(delta, this.camera);
-    this.motion.update(delta);
-    this.line.update(delta);
-    for (const mixer of this.staffMixers) mixer.update(delta);
-    for (const patrol of this.patrols) patrol.update(delta);
-    if (this.crowd.active || this.patrols.length > 0 || this.motion.active || this.line.active || this.staffMixers.length > 0) this.dirty = true;
+    if (!this.animationPaused) {
+      this.crowd.update(delta, this.camera);
+      this.motion.update(delta);
+      this.line.update(delta);
+      for (const mixer of this.staffMixers) mixer.update(delta);
+      for (const patrol of this.patrols) patrol.update(delta);
+    }
+    if (!this.animationPaused && (this.crowd.active || this.patrols.length > 0 || this.motion.active || this.line.active || this.staffMixers.length > 0)) this.dirty = true;
     if (this.dirty) {
       this.dirty = false;
       this.renderer.render(this.scene, this.camera);

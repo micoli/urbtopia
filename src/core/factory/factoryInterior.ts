@@ -71,8 +71,15 @@ const isRim = (fixture: VenueFixture, target: Cell): boolean => {
   return side !== undefined && (FIXTURES[fixture.type].rim ?? []).includes(side);
 };
 
-// Two Gears touch rim to rim or axle to axle, never rim to axle; a Motor, a Shaft or a Machine joins a Gear on any side.
-const sameKindOfEdge = (a: VenueFixture, b: VenueFixture): boolean => roleOf(a) !== 'gear' || roleOf(b) !== 'gear' || isRim(a, b) === isRim(b, a);
+// A Gear takes and gives Drive through its axle ends only: a Motor, a Shaft, a Machine or a Pump never meets its rim. The rim meshes with the rim of another Gear:
+// two Gears touch rim to rim or axle to axle, never rim to axle. A bevel gear meshes on its own cones.
+const sameKindOfEdge = (a: VenueFixture, b: VenueFixture): boolean => {
+  const gearA = roleOf(a) === 'gear', gearB = roleOf(b) === 'gear';
+  if (gearA && gearB) return isRim(a, b) === isRim(b, a);
+  if (gearA) return roleOf(b) === 'bevel' || !isRim(a, b);
+  if (gearB) return roleOf(a) === 'bevel' || !isRim(b, a);
+  return true;
+};
 
 const opensToward = (fixture: VenueFixture, kind: Kind, target: Cell): boolean =>
   sidesOf(fixture, kind).some(side => {

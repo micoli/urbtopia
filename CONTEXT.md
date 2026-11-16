@@ -492,7 +492,7 @@ A Fixture of a Factory interior that needs Drive, Flow or both, and a given turn
 _Avoid_: Equipment, Workshop
 
 **Drive**:
-The turning force a Motor sends through Gears and Shafts to the Machines. A Gear stands across the line, its axle running sideways: a Motor, a Shaft or a Machine feeds it on any side, the rim meshes with the rim of the next Gear along the line, and the axle ends join the axle of a Gear beside it. Two Gears meshed rim to rim turn in opposite directions, so the number of meshes decides the direction a Machine receives; a group of Gears fed in two opposite directions (by two Motors, or by a Shaft that skips a mesh) jams, and no Machine in it turns.
+The turning force a Motor sends through Gears and Shafts to the Machines. A Gear stands across the line, its axle running sideways: a Motor, a Shaft or a Machine feeds it only at an axle end, never on its rim, the rim meshes only with the rim of the next Gear along the line, and the axle ends also join the axle of a Gear beside it. Two Gears meshed rim to rim turn in opposite directions, so the number of meshes decides the direction a Machine receives; a group of Gears fed in two opposite directions (by two Motors, or by a Shaft that skips a mesh) jams, and no Machine in it turns.
 _Avoid_: Power (electricity), torque
 
 **Bevel gear**:
@@ -839,6 +839,10 @@ _Avoid_: Onboarding, intro, walkthrough
 **Venue tutorial**:
 The short guided sequence started when the first Venue of a type is placed, teaching the player to make it earn. It never locks commands and can be skipped or replayed. Distinct from the Tutorial.
 _Avoid_: Onboarding, intro, walkthrough
+
+**Guided demonstration**:
+A replayable explanation of how an interior works, divided into detailed steps and played in a demonstration interior separate from the player's City. The player can pause playback and return to the previous step. An interior has one to three demonstrations: Simple teaches a first useful layout, Intermediate teaches combinations and constraints, and Advanced teaches optimization and diagnosis. These learning levels are independent of the building's Tier. Distinct from the Tutorial and a Venue tutorial.
+_Avoid_: Video (playback does not require a video file), Tier (a building's upgrade level)
 
 **Time skip**:
 The player action that advances game time by a set number of game hours, up to the end of a Tutorial step, or up to the next occurrence of a chosen Cycle hour of the Day cycle (Dawn 05:00, Noon 12:00, Dusk 22:00, Midnight 00:00). A skip to a Cycle hour that is already the current one goes to the next cycle, 2 real hours later. It always advances the economy as well and is refused during a Challenge.

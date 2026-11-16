@@ -3,6 +3,7 @@ import { hasProductionInterior, hasServiceInterior, type Building } from '../../
 import { t } from '../../i18n/t';
 import { CodexLinkButton } from '../buildings/CodexLinkButton';
 import { openCodexLazily } from '../codex/openCodexLazily';
+import { DemonstrationsButton } from '../demonstrations/DemonstrationsButton';
 import { InteriorExamples } from './InteriorExamples';
 import { InteriorFeatures } from './InteriorFeatures';
 import { InteriorIndicators } from './InteriorIndicators';
@@ -25,6 +26,7 @@ export function InteriorManagement({ factory }: InteriorManagementProps) {
         {factory.type === 'bakery' ? <BakeryInteriorRecipes factory={factory} /> : null}
         <InteriorFeatures building={factory} />
         <InteriorExamples building={factory} />
+        <DemonstrationsButton type={factory.type} />
         <InteriorRepairs buildingId={factory.id} repairs={repairs} />
         {page ? <CodexLinkButton title={t(`codex.${page}.title`)} onOpen={() => void openCodexLazily(page)} /> : null}
       </div>

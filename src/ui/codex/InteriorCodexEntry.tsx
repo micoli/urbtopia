@@ -3,6 +3,7 @@ import { liveInteriorsOf, tablesOf } from '../../codex/interiorFigures';
 import { isInteriorUnlocked, type BuildingType, type GameState } from '../../core';
 import type { MessageKey } from '../../i18n/messages';
 import { t } from '../../i18n/t';
+import { DemonstrationsButton } from '../demonstrations/DemonstrationsButton';
 import { InteriorExampleGrid } from '../factory/InteriorExampleGrid';
 import { interiorEntryIdOf } from './InteriorEntryLink';
 import { InteriorLiveList } from './InteriorLiveList';
@@ -39,6 +40,7 @@ export function InteriorCodexEntry({ state, type }: InteriorCodexEntryProps) {
           </div>
         </>
       ) : null}
+      <DemonstrationsButton type={type} />
       <h5>{t('codex.interiors.yours')}</h5>
       <InteriorLiveList interiors={live} />
       <hr/>

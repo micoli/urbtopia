@@ -44,7 +44,7 @@ export function advance(state: GameState, now: number): AdvanceResult {
 }
 
 // A Replan stands still: the game clock stays where it was and every running timer waits, so nothing is caught up when it ends, however long it took.
-function standStill(state: GameState, now: number): AdvanceResult {
+export function standStill(state: GameState, now: number): AdvanceResult {
   const gap = Math.max(now, state.lastSeen) - state.lastSeen;
   if (gap === 0) return { state, events: [] };
   return { state: { ...shiftRunningTimers(state, gap), lastSeen: state.lastSeen + gap, timeOffset: (state.timeOffset ?? 0) - gap }, events: [] };
@@ -75,6 +75,10 @@ function withRestockers(produced: AdvanceResult, now: number): AdvanceResult {
   const restocked = advanceRestockers(produced.state, now);
   const assisted = advanceAssistants(restocked.state, now);
   return { state: assisted.state, events: [...produced.events, ...restocked.events, ...assisted.events] };
+}
+
+export function isShopWithoutTransit(state: GameState, shop: Building, now: number): boolean {
+  return isShopType(shop.type) && hasBrtOnlyAccess(state, shop) && !transportStats(state, now).coveredActivities.has(shop.id);
 }
 
 function idleShopIds(state: GameState, now: number): ReadonlySet<number> {
