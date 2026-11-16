@@ -2,6 +2,7 @@
 .demonstration-dialog { position: fixed; inset: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); z-index: 201; margin: 0; width: auto; height: auto; max-width: none; max-height: none; border: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 16px; border-radius: var(--radius-lg); background: var(--color-surface-solid); color: var(--color-text); box-shadow: 0 16px 64px var(--black-a50); }
 .demonstration-prompt { inset: 0; margin: auto; width: min(440px, calc(100vw - 32px)); height: fit-content; max-height: calc(100dvh - 32px); gap: 16px; }
 .demonstration-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.demonstration-header-actions { display: flex; flex-shrink: 0; gap: 4px; }
 .demonstration-header h2 { margin: 0; font-size: 1.2rem; }
 .demonstration-dialog p { margin: 0; }
 .demonstration-controls { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }

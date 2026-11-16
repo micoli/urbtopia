@@ -9,6 +9,7 @@ export const CATALOG = {
   'demo.invitation.hide': ['Don’t show again for this interior type', 'Ne plus afficher pour ce type d’intérieur'],
   'demo.invitation.skip': ['Skip for now', 'Passer pour le moment'],
   'demo.open': ['Demonstrations', 'Démonstrations'],
+  'demo.back': ['Back to demonstrations', 'Retour aux démonstrations'],
   'demo.choose': ['Choose a demonstration', 'Choisir une démonstration'],
   'demo.simple': ['Simple', 'Simple'],
   'demo.intermediate': ['Intermediate', 'Intermédiaire'],

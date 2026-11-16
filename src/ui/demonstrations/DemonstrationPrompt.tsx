@@ -7,6 +7,7 @@ import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { demonstrationPreferencesStore } from '../../store/demonstrationPreferencesStore';
 import { ActionButton } from '../common/ActionButton';
+import { Icon } from '../common/Icon';
 import { CheckboxField } from '../common/CheckboxField';
 import { useGame } from '../common/hooks';
 import './demonstrations.css';
@@ -42,7 +43,7 @@ export function DemonstrationPrompt({ type }: { type: BuildingType }) {
       </header>
       <p id="demonstration-prompt-description">{t('demo.invitation.description')}</p>
       <CheckboxField label={t('demo.invitation.hide')} checked={dontShowAgain} onChange={setDontShowAgain} />
-      <ActionButton variant="primary" block onClick={() => void launch()}>{t('demo.open')}</ActionButton>
+      <ActionButton variant="primary" block onClick={() => void launch()}><Icon name="movie" /> {t('demo.open')}</ActionButton>
       <ActionButton block onClick={dismiss}>{t('demo.invitation.skip')}</ActionButton>
     </dialog>,
     document.body,

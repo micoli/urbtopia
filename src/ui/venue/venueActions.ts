@@ -1,4 +1,5 @@
 import { t } from '../../i18n/t';
+import { openBuildingCodexLazily } from '../codex/openCodexLazily';
 import type { VenuePanelId } from '../../store/venueStore';
 import type { NavAction } from '../layout/useNavActions';
 import type { VenueType } from '../../core';
@@ -15,6 +16,7 @@ export function venueActionsOf(panel: VenuePanelId | null, toggle: (panel: Venue
     ...(type === 'restaurant' ? [entry('menu', 'book', t('venue.menu'))] : []),
     entry('events', 'trophy', t('venue.events')),
     ...(type === 'hotel' || type === 'arcade' ? [entry('management', 'book', t('venue.management'))] : type === 'restaurant' ? [entry('takings', 'book', t('venue.management'))] : [entry('takings', 'money', t('venue.takings'), 'market.png')]),
+    { id: 'codex', icon: 'book', image: 'codex.png', label: t('codex.title'), pressed: false, disabled: false, guided: false, onClick: () => void openBuildingCodexLazily(type) },
     { id: 'back', icon: 'undo', label: t('venue.menu.back'), pressed: false, disabled: false, guided: false, onClick: back },
   ];
 }

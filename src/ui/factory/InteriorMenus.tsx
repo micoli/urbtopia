@@ -1,6 +1,7 @@
 import { useStore } from 'zustand';
 import { hasProductionInterior, hasServiceInterior, type Building } from '../../core';
 import { t } from '../../i18n/t';
+import { openBuildingCodexLazily } from '../codex/openCodexLazily';
 import { venueStore } from '../../store/venueStore';
 import { Dock } from '../layout/Dock';
 import type { NavAction } from '../layout/useNavActions';
@@ -24,6 +25,7 @@ export function InteriorMenus({ factory }: InteriorMenusProps) {
     { id: 'staff', icon: 'citizens', label: t('venue.staff'), pressed: panel === 'staff', disabled: false, guided: false, onClick: () => togglePanel('staff') },
     { id: 'parquet', icon: 'sparkles', label: t('home.interior.parquet'), pressed: panel === 'parquet', disabled: false, guided: false, onClick: () => togglePanel('parquet') },
     { id: 'management', icon: 'book', label: t('venue.management'), pressed: panel === 'management', disabled: false, guided: false, onClick: () => togglePanel('management') },
+    { id: 'codex', icon: 'book', image: 'codex.png', label: t('codex.title'), pressed: false, disabled: false, guided: false, onClick: () => void openBuildingCodexLazily(factory.type) },
     { id: 'back', icon: 'undo', label: t('venue.menu.back'), pressed: false, disabled: false, guided: false, onClick: close },
   ];
   return (
