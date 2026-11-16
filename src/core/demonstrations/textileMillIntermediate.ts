@@ -1,4 +1,3 @@
-import { BUILDING_ID } from './lineInterior';
 import { checkTextile, placeTextile, textileCity } from './textileCity';
 import { textileMillSimple } from './textileMillSimple';
 import type { Demonstration, DemonstrationStep } from './scenario';
