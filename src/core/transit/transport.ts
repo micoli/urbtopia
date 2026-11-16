@@ -8,6 +8,8 @@ import { hasBrtOnlyAccess } from '../map/placement';
 import { transitServices, type SpeedFactors } from './transitService';
 import type { Building, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { layoutOf } from '../buildings/buildingIndex';
+import { gameHourOf, sameStepInputs } from '../engine/stateReuse';
 import { isTransitStopType } from './stopNames';
 import { WALKING } from '../traffic/walking';
 import { legBetween } from './lineLeg';
@@ -92,8 +94,25 @@ export function transitNetwork(state: GameState, now = state.lastSeen, speedFact
   }
   const cached = networkCache.get(state);
   if (cached?.now === now) return cached.network;
-  const network = calculateNetwork(state, now); networkCache.set(state, { now, network });
+  const similar = recentNetworks.find(entry => sameNetworkInputs(entry, state, now));
+  const network = similar?.network ?? calculateNetwork(state, now);
+  networkCache.set(state, { now, network });
+  if (!similar) {
+    recentNetworks.push({ state, now, transitRatio: energyStats(state, now).transitRatio, network });
+    if (recentNetworks.length > RECENT_NETWORKS) recentNetworks.shift();
+  }
   return network;
+}
+
+const RECENT_NETWORKS = 2;
+const recentNetworks: { state: GameState; now: number; transitRatio: number; network: TransitNetwork }[] = [];
+
+// A replay step that moves no building and leaves the power and the lines as they were serves the same itineraries.
+function sameNetworkInputs(entry: (typeof recentNetworks)[number], state: GameState, now: number): boolean {
+  return sameStepInputs(entry.state, state)
+    && gameHourOf(entry.state, entry.now, ECOLOGY.hourMs) === gameHourOf(state, now, ECOLOGY.hourMs)
+    && layoutOf(entry.state.buildings) === layoutOf(state.buildings)
+    && entry.transitRatio === energyStats(state, now).transitRatio;
 }
 
 function buildStructure(services: Service[], homes: Building[], workplaces: Building[], activities: Building[], stops: Map<number, Building>): NetworkStructure {

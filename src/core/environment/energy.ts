@@ -8,6 +8,7 @@ import { isHomeType } from '../buildings/buildingDefinitions';
 import { flowFactor } from '../water/flow';
 import { PLANT_TYPES, generatedSourceOf, isGeneratingPlant, type EnergySourceId } from './generators';
 import { solarPanelsCapacity } from './solarPanels';
+import { gameHourOf, sameFieldsExcept, sameStepInputs } from '../engine/stateReuse';
 import { energySavingOf } from '../politics/ordinanceEffects';
 
 // `now` is the game clock, which sets the wind; `cycleTime` is the Day cycle clock, which sets solar and hydro.
@@ -50,13 +51,42 @@ export function generatorOutput(state: GameState, b: Building, factors = factors
 const RATIO_EPSILON = 1e-9;
 const satisfactionRatio = (ratio: number) => ratio > 1 - RATIO_EPSILON ? 1 : ratio;
 
-const energyCache = new WeakMap<GameState, { now: number; stats: ReturnType<typeof computeEnergyStats> }>();
+type EnergyStats = ReturnType<typeof computeEnergyStats>;
 
-export function energyStats(state: GameState, now = state.lastSeen): ReturnType<typeof computeEnergyStats> {
+const energyCache = new WeakMap<GameState, { now: number; stats: EnergyStats }>();
+const RECENT_KEPT = 2;
+const recent: { state: GameState; now: number; stats: EnergyStats }[] = [];
+
+// Fields a Building can change at every replay step without changing what it draws or supplies.
+const POWER_IRRELEVANT = ['taxCitizenMs', 'stacks', 'queue', 'venue'];
+// The Carry and the breakdown Seed of a floor move at every step; what the floor draws does not.
+const INTERIOR_IRRELEVANT = ['carry', 'rng'];
+
+function samePowerInputs(a: Building, b: Building): boolean {
+  if (a === b) return true;
+  const { interior: interiorA, ...restA } = a, { interior: interiorB, ...restB } = b;
+  if (!sameFieldsExcept(restA, restB, POWER_IRRELEVANT)) return false;
+  if (interiorA === interiorB) return true;
+  return interiorA !== undefined && interiorB !== undefined && sameFieldsExcept(interiorA, interiorB, INTERIOR_IRRELEVANT);
+}
+
+function sameEnergyInputs(previous: GameState, previousNow: number, next: GameState, now: number): boolean {
+  if (!sameStepInputs(previous, next) || gameHourOf(previous, previousNow, ECOLOGY.hourMs) !== gameHourOf(next, now, ECOLOGY.hourMs)) return false;
+  const before = factorsAt(previous, previousNow), after = factorsAt(next, now);
+  if (before.solar !== after.solar || before.wind !== after.wind || before.hydro !== after.hydro || before.geothermal !== after.geothermal) return false;
+  return previous.buildings.length === next.buildings.length && previous.buildings.every((building, index) => building.id === next.buildings[index]!.id && samePowerInputs(building, next.buildings[index]!));
+}
+
+export function energyStats(state: GameState, now = state.lastSeen): EnergyStats {
   const cached = energyCache.get(state);
   if (cached?.now === now) return cached.stats;
-  const stats = computeEnergyStats(state, now);
+  const similar = recent.find(entry => sameEnergyInputs(entry.state, entry.now, state, now));
+  const stats = similar?.stats ?? computeEnergyStats(state, now);
   energyCache.set(state, { now, stats });
+  if (!similar) {
+    recent.push({ state, now, stats });
+    if (recent.length > RECENT_KEPT) recent.shift();
+  }
   return stats;
 }
 
