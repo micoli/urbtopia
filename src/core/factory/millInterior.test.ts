@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, hasProductionInterior, interiorBonusOfBuilding, interiorKindOf, interiorSizeOf, newGame, productionDurationOf, type Building, type Command, type FixtureId, type GameState, type Rotation } from '../index';
-import { interiorLinksOf } from './factoryInterior';
+import { interiorLinksOf } from './interiorLinks';
 import { FIXTURES } from '../venues/fixtures';
 
 // A city with enough Citizens for every interior to be fitted out.

@@ -5,7 +5,7 @@ import { isItemUnlocked } from '../progression/unlocks';
 import type { CommandOutcome } from '../engine/commands';
 import type { GameEvent } from '../engine/events';
 import type { Building, GameState, QueueEntry, VenueFixture } from '../engine/state';
-import { linkedExitsOf, runningMachinesOf } from './factoryInterior';
+import { linkedExitsOf, runningMachinesOf } from './interiorLine';
 import { restockerWagePerHour } from './interiorWear';
 
 // Queues one production of an item in a building, taking its ingredients from the Storehouse; an entry queued for an Exit's Restocker carries the Exit.

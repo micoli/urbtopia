@@ -9,7 +9,7 @@ import { isVenuePowered } from '../venues/venues';
 import type { Building, BuildingType, InteriorData, GameState } from '../engine/state';
 import { interiorProfileOf } from '../interiors/interiorProfile';
 import { maxTierOf } from '../economy/tiers';
-import { interiorUsageOf, interiorUsageWeightsOf } from './factoryInterior';
+import { interiorUsageOf, interiorUsageWeightsOf } from './interiorLinks';
 import { valueByTier } from '../interiors/valueByTier';
 
 export { interiorUsageOf };

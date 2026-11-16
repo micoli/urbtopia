@@ -4,7 +4,7 @@ import { producibleItems, type GoodId } from '../economy/items';
 import { sellableGoodsOf } from '../economy/shops';
 import { isItemUnlocked } from '../progression/unlocks';
 import { FIXTURES } from '../venues/fixtures';
-import { interiorUpstreamOf, suppliedGoodsOf } from '../factory/factoryInterior';
+import { interiorUpstreamOf, suppliedGoodsOf } from '../factory/interiorLine';
 import { editInterior } from './interiorEdit';
 import { hiredInteriorOf, interiorDeclarationOf, interiorLayoutOf, isProducerRole, yieldGroupOf } from './interiorStaff';
 

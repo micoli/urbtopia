@@ -1,6 +1,7 @@
 import { frontHasAccess } from '../map/placement';
 import { unpoweredBuildingIds } from '../environment/powered';
-import { interiorBonusOfBuilding, interiorLinksOf } from '../factory/factoryInterior';
+import { interiorBonusOfBuilding } from '../factory/interiorBonus';
+import { interiorLinksOf } from '../factory/interiorLinks';
 import { factoryCity, FACTORY_ID } from './factoryCity';
 import { demoFactory } from './factorySimple';
 import type { Demonstration, DemonstrationStep } from './scenario';

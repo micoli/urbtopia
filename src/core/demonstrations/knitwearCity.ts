@@ -1,5 +1,5 @@
 import { createBuilding } from '../buildings/buildingSpecs';
-import { interiorLinksOf } from '../factory/factoryInterior';
+import { interiorLinksOf } from '../factory/interiorLinks';
 import { assignedFixturesOf, type GoodId } from '../index';
 import type { FixtureId, Rotation } from '../engine/state';
 import { BUILDING_ID, lineCity, roomOf } from './lineInterior';

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type Rotation } from '../index';
 import { fixtureRefund } from '../venues/venues';
 import { FIXTURES } from '../venues/fixtures';
-import { interiorBonusOf, interiorGridSizeOf } from './factoryInterior';
+import { interiorBonusOf, interiorGridSizeOf } from './interiorBonus';
 
 const city = (tier = 1, urbs = 100_000): GameState => ({
   ...newGame({ seed: 'factory-floor', now: 0 }),

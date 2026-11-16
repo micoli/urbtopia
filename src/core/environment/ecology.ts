@@ -8,7 +8,7 @@ import { FACILITIES, isFacilityType } from '../services/facilities';
 import { HOME_TIERS } from '../economy/economy';
 import { casinoPower } from '../leisure/casino';
 import { isVenueType, venuePower } from '../venues/profiles';
-import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/factoryInterior';
+import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/interiorBonus';
 import type { Building, BuildingType, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 

@@ -1,5 +1,5 @@
 import { labels as l, piece, recyclingScenario } from './recyclingCity';
-import { recyclingGainsOf } from '../factory/factoryInterior';
+import { recyclingGainsOf } from '../factory/recyclingGains';
 import { roomOf } from './lineInterior';
 
 const scenario = recyclingScenario('intermediate', [

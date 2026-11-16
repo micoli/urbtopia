@@ -7,7 +7,8 @@ import { interiorLayoutOf, interiorWagesPerHour, isProducerRole } from '../inter
 import type { GameEvent } from '../engine/events';
 import type { Building, GameState, ShopStack, VenueFixture } from '../engine/state';
 import type { GoodId } from '../economy/items';
-import { interiorLinksOf, suppliedGoodsOf } from './factoryInterior';
+import { suppliedGoodsOf } from './interiorLine';
+import { interiorLinksOf } from './interiorLinks';
 import { MAX_TURNS, RESERVED_SLOTS, isError, queueItem, store, withBuilding, withFixture } from './restock';
 
 // The Fixtures the Staff of a Bakery or a Dairy is at work on: assigned, with their Recipe or their Sold Good, and reached by the Line. The layout results are cached by layout, so the Fixtures are read from the interior.

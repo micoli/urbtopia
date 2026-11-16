@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, dispatch, newGame, type Building, type Command, type FixtureId, type GameState, type Rotation, type VenueFixture } from '../index';
 import { productionDurationOf } from '../economy/production';
-import { interiorBonusOfBuilding, interiorLinksOf, interiorMotionOf, interiorPowerOfBuilding, interiorUsageWeightsOf, lineFaultOf, linePathsOf, linkedExitsOf, packhouseBonusOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factoryInterior';
+import { lineFaultOf, linePathsOf, linkedExitsOf } from './interiorLine';
+import { interiorBonusOfBuilding, interiorPowerOfBuilding, packhouseBonusOf, packhouseExitLimitOf, packhouseGridSizeOf } from './interiorBonus';
+import { interiorLinksOf, interiorMotionOf, interiorUsageWeightsOf } from './interiorLinks';
 import { wallFacingOf } from './interiorCommands';
 import { economicPower } from '../environment/ecology';
 import packhouseBalance from '../../../assets/defs/balance/packhouseInterior.json' with { type: 'json' };

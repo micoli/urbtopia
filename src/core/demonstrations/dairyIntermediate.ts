@@ -1,5 +1,6 @@
 import { dairyLabels as l, dairyPiece as p, dairyScenario } from './dairyCity';
-import { interiorBonusOfBuilding, linePathsOf } from '../factory/factoryInterior';
+import { linePathsOf } from '../factory/interiorLine';
+import { interiorBonusOfBuilding } from '../factory/interiorBonus';
 import { BUILDING_ID, roomOf } from './lineInterior';
 const scenario = dairyScenario('intermediate', [
   p('vat', 'dairyMilkVat', 4, 0, 0, l.vat, l.vatInfo), p('pump', 'dairyPump', 5, 0, 1, l.pump, l.pumpInfo),

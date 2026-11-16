@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { FixtureId, Rotation, VenueFixture } from '../engine/state';
-import { interiorBenefitsOf, interiorBonusOf, interiorLinksOf, interiorMotionOf, interiorMotorLoadOf, interiorOverloadedOf } from './factoryInterior';
+import { interiorBenefitsOf, interiorBonusOf } from './interiorBonus';
+import { interiorLinksOf, interiorMotionOf, interiorMotorLoadOf, interiorOverloadedOf } from './interiorLinks';
 
 let nextId = 1;
 const put = (type: FixtureId, x: number, y: number, rotation: Rotation = 0, broken = false): VenueFixture => ({ id: nextId++, type, x, y, rotation, ...(broken ? { broken: true as const } : {}) });

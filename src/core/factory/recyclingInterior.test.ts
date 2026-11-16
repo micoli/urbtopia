@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { FixtureId, Rotation, VenueFixture } from '../index';
-import { NO_RECYCLING, recyclingGainsOf, recyclingLimitsOf } from './factoryInterior';
+import { NO_RECYCLING, recyclingGainsOf, recyclingLimitsOf } from './recyclingGains';
 import { collectionDistanceOf } from '../waste/waste';
 import { wasteCapacity } from '../waste/wasteBalance';
 import { createBuilding, dispatch, newGame, type Command } from '../index';

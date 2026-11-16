@@ -1,5 +1,5 @@
 import { livestockLabels as l, livestockPiece as p, livestockScenario } from './livestockCity';
-import { linePathsOf } from '../factory/factoryInterior';
+import { linePathsOf } from '../factory/interiorLine';
 import { roomOf } from './lineInterior';
 const scenario = livestockScenario('intermediate', [
   p('intake', 'livestockFeedIntakeLeft', 2, 0, 0, l.intake, ['The left-handed intake takes drive on its left.', 'L’entrée gauchère reçoit la force à gauche.']), p('intake-motor', 'livestockMotor', 1, 0, 3, l.motor, l.motorInfo),

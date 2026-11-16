@@ -1,4 +1,4 @@
-import { interiorBonusOfBuilding } from '../factory/factoryInterior';
+import { interiorBonusOfBuilding } from '../factory/interiorBonus';
 import { FARM_CROP_CAPACITY, STORAGE_TYPES, storageTierOf, type StorageType } from './economy';
 import { CROPS } from '../farming/crops';
 import type { GameState, Storage } from '../engine/state';

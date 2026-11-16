@@ -11,7 +11,7 @@ import { durationOf, valueOf, type ItemId } from './items';
 import type { Building, GameState, QueueEntry, ShopStack } from '../engine/state';
 import { productionTierOf } from './tiers';
 import { isHomeType } from '../buildings/buildingDefinitions';
-import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/factoryInterior';
+import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/interiorBonus';
 import { interiorDeclarationOf } from '../interiors/interiorStaff';
 
 // A Mill or a Bakery consumes as many recipes as its yield per cycle.

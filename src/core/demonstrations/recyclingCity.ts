@@ -1,4 +1,5 @@
-import { recyclingGainsOf, interiorLinksOf } from '../factory/factoryInterior';
+import { recyclingGainsOf } from '../factory/recyclingGains';
+import { interiorLinksOf } from '../factory/interiorLinks';
 import type { FixtureId, Rotation } from '../engine/state';
 import { BUILDING_ID, lineCity, roomOf } from './lineInterior';
 import { levelTitle, placeTitle, type LevelIntro } from './guidedLevel';

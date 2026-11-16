@@ -1,4 +1,4 @@
-import { linePathsOf } from '../factory/factoryInterior';
+import { linePathsOf } from '../factory/interiorLine';
 import { roomOf } from './lineInterior';
 import { knitLabels as l, knitPiece as p, knitScenario } from './knitwearCity';
 const scenario = knitScenario('intermediate', [
