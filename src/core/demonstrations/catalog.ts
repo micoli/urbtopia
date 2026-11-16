@@ -10,6 +10,9 @@ import { millIntermediate } from './millIntermediate';
 import { storehouseSimple } from './storehouseSimple';
 import { storehouseIntermediate } from './storehouseIntermediate';
 import { storehouseAdvanced } from './storehouseAdvanced';
+import { textileMillSimple } from './textileMillSimple';
+import { textileMillIntermediate } from './textileMillIntermediate';
+import { textileMillAdvanced } from './textileMillAdvanced';
 import { packhouseAdvanced } from './packhouseAdvanced';
 import { packhouseIntermediate } from './packhouseIntermediate';
 import { packhouseSimple } from './packhouseSimple';
@@ -19,5 +22,5 @@ import { workshopSimple } from './workshopSimple';
 import type { Demonstration } from './scenario';
 import type { BuildingType } from '../engine/state';
 
-export const DEMONSTRATIONS: readonly Demonstration[] = [factorySimple, factoryIntermediate, factoryAdvanced, workshopSimple, workshopIntermediate, workshopAdvanced, packhouseSimple, packhouseIntermediate, packhouseAdvanced, bakerySimple, bakeryIntermediate, bakeryAdvanced, millSimple, millIntermediate, millAdvanced, storehouseSimple, storehouseIntermediate, storehouseAdvanced];
+export const DEMONSTRATIONS: readonly Demonstration[] = [factorySimple, factoryIntermediate, factoryAdvanced, workshopSimple, workshopIntermediate, workshopAdvanced, packhouseSimple, packhouseIntermediate, packhouseAdvanced, bakerySimple, bakeryIntermediate, bakeryAdvanced, millSimple, millIntermediate, millAdvanced, storehouseSimple, storehouseIntermediate, storehouseAdvanced, textileMillSimple, textileMillIntermediate, textileMillAdvanced];
 export const demonstrationsOf = (type: BuildingType) => DEMONSTRATIONS.filter(scenario => scenario.buildingType === type);

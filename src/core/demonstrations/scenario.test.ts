@@ -14,6 +14,9 @@ import { millIntermediate } from './millIntermediate';
 import { storehouseSimple } from './storehouseSimple';
 import { storehouseIntermediate } from './storehouseIntermediate';
 import { storehouseAdvanced } from './storehouseAdvanced';
+import { textileMillSimple } from './textileMillSimple';
+import { textileMillIntermediate } from './textileMillIntermediate';
+import { textileMillAdvanced } from './textileMillAdvanced';
 import { linePathsOf } from '../factory/factoryInterior';
 import { DEMONSTRATIONS } from './catalog';
 import { roomOf } from './lineInterior';
@@ -26,7 +29,7 @@ import { demoWorkshop } from './workshopCity';
 import { workshopIntermediate } from './workshopIntermediate';
 import { workshopSimple } from './workshopSimple';
 
-it.each(DEMONSTRATIONS.filter(scenario => ['mill', 'storehouse'].includes(scenario.buildingType)))('$id ends without machine problems', scenario => {
+it.each(DEMONSTRATIONS.filter(scenario => ['mill', 'textileMill', 'storehouse'].includes(scenario.buildingType)))('$id ends without machine problems', scenario => {
   const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior?.fixtures ?? [];
   expect(interiorLinksOf(fixtures).problems.size).toBe(0);
 });
@@ -160,6 +163,26 @@ describe('Storehouse demonstrations', () => {
     const problems = (id: string) => interiorLinksOf(roomOf(checkpoints.find(({ step }) => step.id === id)!.state).interior!.fixtures).problems.get(4) ?? [];
     expect(problems('rack')).toContain('noDrive');
     expect(problems('fix-motor')).not.toContain('noDrive');
+  });
+});
+
+describe('Textile mill demonstrations', () => {
+  it.each([textileMillSimple, textileMillIntermediate, textileMillAdvanced])('ends $id with a working spinner', scenario => {
+    const interior = roomOf(compileDemonstration(scenario).at(-1)!.state).interior!;
+    expect(interiorLinksOf(interior.fixtures).lined.has(1)).toBe(true);
+    expect(assignedFixturesOf(interior, 'spinner')).toHaveLength(1);
+  });
+  it('diagnoses and repairs a motor without drive', () => {
+    const checkpoints = compileDemonstration(textileMillAdvanced);
+    const problems = (id: string) => interiorLinksOf(roomOf(checkpoints.find(({ step }) => step.id === id)!.state).interior!.fixtures).problems.get(1) ?? [];
+    expect(problems('motor')).toContain('noDrive');
+    expect(problems('fix-motor')).not.toContain('noDrive');
+  });
+  it('produces textile from stocked wool', () => {
+    let state = compileDemonstration(textileMillSimple).at(-1)!.state;
+    const start = state.lastSeen;
+    for (let minute = 1; minute <= 360; minute++) state = advance(state, start + minute * 60_000).state;
+    expect(state.storage.materials.textile ?? 0).toBeGreaterThan(0);
   });
 });
 

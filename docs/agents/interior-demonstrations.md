@@ -11,7 +11,8 @@ two counters and sellers), `bakery-advanced` (joining two Mixers into one Oven).
 `mill-simple` (olive oil), `mill-intermediate` (flour and the Bagger), and `mill-advanced`
 (diagnosing a misfacing oil tank). The Storehouse has `storehouse-simple` (Dock and Rack),
 `storehouse-intermediate` (Hoist and split), and `storehouse-advanced` (diagnosing a stopped Hoist).
-Open an interior's
+The Textile mill has `textileMill-simple` (Spinner and Motor), `textileMill-intermediate` (Gear and right-output Spinner),
+and `textileMill-advanced` (diagnosing disconnected Drive). Open an interior's
 Management view, choose **Demonstrations**, then **Simple**. It is also available
 from the Factory entry on the codex's Production interiors page, even without
 owning or unlocking a Factory. Use `?e2e` for browser verification.
