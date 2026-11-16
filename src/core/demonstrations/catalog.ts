@@ -4,6 +4,9 @@ import { bakerySimple } from './bakerySimple';
 import { factoryAdvanced } from './factoryAdvanced';
 import { factoryIntermediate } from './factoryIntermediate';
 import { factorySimple } from './factorySimple';
+import { millSimple } from './millSimple';
+import { millAdvanced } from './millAdvanced';
+import { millIntermediate } from './millIntermediate';
 import { packhouseAdvanced } from './packhouseAdvanced';
 import { packhouseIntermediate } from './packhouseIntermediate';
 import { packhouseSimple } from './packhouseSimple';
@@ -13,5 +16,5 @@ import { workshopSimple } from './workshopSimple';
 import type { Demonstration } from './scenario';
 import type { BuildingType } from '../engine/state';
 
-export const DEMONSTRATIONS: readonly Demonstration[] = [factorySimple, factoryIntermediate, factoryAdvanced, workshopSimple, workshopIntermediate, workshopAdvanced, packhouseSimple, packhouseIntermediate, packhouseAdvanced, bakerySimple, bakeryIntermediate, bakeryAdvanced];
+export const DEMONSTRATIONS: readonly Demonstration[] = [factorySimple, factoryIntermediate, factoryAdvanced, workshopSimple, workshopIntermediate, workshopAdvanced, packhouseSimple, packhouseIntermediate, packhouseAdvanced, bakerySimple, bakeryIntermediate, bakeryAdvanced, millSimple, millIntermediate, millAdvanced];
 export const demonstrationsOf = (type: BuildingType) => DEMONSTRATIONS.filter(scenario => scenario.buildingType === type);

@@ -8,6 +8,10 @@ import { factorySimple, demoFactory } from './factorySimple';
 import { bakeryAdvanced } from './bakeryAdvanced';
 import { bakeryIntermediate } from './bakeryIntermediate';
 import { bakerySimple } from './bakerySimple';
+import { millSimple } from './millSimple';
+import { millAdvanced } from './millAdvanced';
+import { millIntermediate } from './millIntermediate';
+import { DEMONSTRATIONS } from './catalog';
 import { roomOf } from './lineInterior';
 import { packhouseAdvanced } from './packhouseAdvanced';
 import { packhouseIntermediate } from './packhouseIntermediate';
@@ -17,6 +21,11 @@ import { workshopAdvanced } from './workshopAdvanced';
 import { demoWorkshop } from './workshopCity';
 import { workshopIntermediate } from './workshopIntermediate';
 import { workshopSimple } from './workshopSimple';
+
+it.each(DEMONSTRATIONS.filter(scenario => ['mill'].includes(scenario.buildingType)))('$id ends without machine problems', scenario => {
+  const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior?.fixtures ?? [];
+  expect(interiorLinksOf(fixtures).problems.size).toBe(0);
+});
 
 describe('scripted interior demonstrations', () => {
   it('replays a first functional Press using the real placement and Link rules', () => {
@@ -109,5 +118,28 @@ describe('Packhouse and Bakery demonstrations', () => {
 
   it('feeds two Exits from one Packer through a splitting Conveyor', () => {
     expect(lines(packhouseIntermediate).lined.size).toBeGreaterThan(lines(packhouseIntermediate, 'left').lined.size);
+  });
+});
+
+describe('Mill demonstrations', () => {
+  it.each([millSimple, millIntermediate, millAdvanced])('ends $id with a complete millstone line', scenario => {
+    const fixtures = roomOf(compileDemonstration(scenario).at(-1)!.state).interior!.fixtures;
+    expect(interiorLinksOf(fixtures).lined.has(1)).toBe(true);
+  });
+  it('fixes the oil tank orientation', () => {
+    const checkpoints = compileDemonstration(millAdvanced);
+    const isComplete = (id: string) => {
+      const fixtures = roomOf(checkpoints.find(({ step }) => step.id === id)!.state).interior!.fixtures;
+      return interiorLinksOf(fixtures).lined.has(1);
+    };
+    expect(isComplete('recipe')).toBe(false);
+    expect(isComplete('fix-tank')).toBe(true);
+  });
+
+  it.each([[millSimple, 'oliveOil'], [millIntermediate, 'flour']] as const)('produces %s with an assigned miller', (scenario, material) => {
+    let state = compileDemonstration(scenario).at(-1)!.state;
+    const start = state.lastSeen;
+    for (let minute = 1; minute <= 360; minute++) state = advance(state, start + minute * 60_000).state;
+    expect(state.storage.materials[material] ?? 0).toBeGreaterThan(0);
   });
 });
