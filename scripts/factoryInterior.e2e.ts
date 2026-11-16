@@ -4,6 +4,7 @@ test('the Factory interior opens from the Factory panel and shows what the layou
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', taxBadgeThreshold: 1, layout: 'C' })));
+  await page.addInitScript(() => localStorage.setItem('urbtopia-demonstration-preferences', JSON.stringify({ seenTypes: ['factory'], hiddenTypes: [] })));
   await page.goto('/?e2e');
   await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
   await page.evaluate(async () => {

@@ -24,6 +24,14 @@ Management view, choose **Demonstrations**, then **Simple**. It is also availabl
 from the Factory entry on the codex's Production interiors page, even without
 owning or unlocking a Factory. Use `?e2e` for browser verification.
 
+Opening an interior offers its demonstrations until one has been opened successfully
+for that building type. **Skip for now** dismisses the invitation for this visit;
+the **Don’t show again for this interior type** checkbox remembers dismissal for
+that type only. Viewed types and hidden invitations persist locally across visits
+and City changes. Opening the demonstration chooser alone does not mark a type as
+viewed. Manual access remains available from Management and the Codex. Interiors
+without registered demonstrations and live online Challenges do not show the invitation.
+
 ## Replay and verification
 
 ```sh

@@ -12,6 +12,7 @@ import { HomeMenus } from '../home/HomeMenus';
 import { VenueMenus } from './VenueMenus';
 import { VenueFixtureToolbar } from './VenueFixtureToolbar';
 import { VenueRotateButtons } from './VenueRotateButtons';
+import { DemonstrationPrompt } from '../demonstrations/DemonstrationPrompt';
 
 export function VenueDialog() {
   const venueId = useStore(venueStore, store => store.venueId);
@@ -51,6 +52,7 @@ export function VenueDialog() {
       {hasProductionInterior(venue) || hasServiceInterior(venue) ? <InteriorMenus factory={venue} /> : isHomeType(venue.type) ? <HomeMenus home={venue} /> : <VenueMenus venue={venue} />}
       <VenueFixtureToolbar venueId={venueId} />
       <VenueRotateButtons />
+      <DemonstrationPrompt key={venueId} type={venue.type} />
     </div>
   );
 }

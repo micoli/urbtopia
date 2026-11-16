@@ -6,6 +6,7 @@ for (const mobile of [false, true]) {
 
     test.beforeEach(async ({ page }) => {
       await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'en', layout: 'C' })));
+      await page.addInitScript(() => localStorage.setItem('urbtopia-demonstration-preferences', JSON.stringify({ seenTypes: ['workshop'], hiddenTypes: [] })));
       await page.goto('/?e2e');
       await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
       await page.evaluate(async () => {
