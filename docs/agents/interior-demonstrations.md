@@ -16,7 +16,9 @@ and `textileMill-advanced` (diagnosing disconnected Drive). The Recycling plant 
 `recyclingPlant-simple` (Shredder), `recyclingPlant-intermediate` (left-handed Crusher and split),
 and `recyclingPlant-advanced` (diagnosing a stopped Sorter). The Dairy has `dairy-simple`
 (Milk vat and Counter), `dairy-intermediate` (Pasteuriser, split and cream maker), and `dairy-advanced`
-(diagnosing missing Flow). Open an interior's
+(diagnosing missing Flow). The Knitwear factory has `knitwearFactory-simple` (Knitter and Finisher),
+`knitwearFactory-intermediate` (left-handed Machines and split), and `knitwearFactory-advanced` (missing Finisher Drive).
+Open an interior's
 Management view, choose **Demonstrations**, then **Simple**. It is also available
 from the Factory entry on the codex's Production interiors page, even without
 owning or unlocking a Factory. Use `?e2e` for browser verification.
