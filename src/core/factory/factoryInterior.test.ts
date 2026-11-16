@@ -27,29 +27,35 @@ describe('Drive', () => {
     expect(linkedTypes(fixtures)).toEqual([]);
   });
 
-  it('turns the other way through Gears meshed rim to rim along the line', () => {
-    const chain = (lathe: FixtureId) => [put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryGear', 3, 5), put(lathe, 3, 6, 2)];
+  it('turns the other way through Gears whose teeth mesh', () => {
+    const chain = (lathe: FixtureId) => [put('factoryMotor', 3, 3), put('factoryGear', 3, 4, 1), put('factoryGear', 4, 4, 1), put(lathe, 4, 5, 2)];
     expect(linkedTypes(chain('factoryLatheCcw'))).toEqual(['factoryLatheCcw']);
     expect(linkedTypes(chain('factoryLatheCw'))).toEqual([]);
   });
 
   it('turns the same way through a single Gear fed by the Motor', () => {
-    const fixtures = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryLatheCw', 3, 5, 2)];
+    const fixtures = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4, 1), put('factoryLatheCw', 3, 5, 2)];
     expect(linkedTypes(fixtures)).toEqual(['factoryLatheCw']);
   });
 
   it('turns the same way through Gears joined axle to axle', () => {
-    const fixtures = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryGear', 4, 4), put('factoryLatheCw', 4, 5, 2)];
+    const fixtures = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4, 1), put('factoryGear', 3, 5, 1), put('factoryLatheCw', 3, 6, 2)];
     expect(linkedTypes(fixtures)).toEqual(['factoryLatheCw']);
   });
 
   it('does not join the rim of a Gear to the axle of another', () => {
-    const fixtures = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryGear', 4, 4, 1), put('factoryPress', 5, 4, 1)];
+    const fixtures = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4, 1), put('factoryGear', 4, 4), put('factoryPress', 5, 4, 1)];
     expect(linkedTypes(fixtures)).toEqual([]);
   });
 
+  it('does not feed a Gear on its teeth', () => {
+    expect(linkedTypes([put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryLatheCw', 3, 5, 2)])).toEqual([]);
+    expect(linkedTypes([put('factoryMotor', 3, 3), put('factoryShaft', 3, 4), put('factoryGear', 3, 5), put('factoryPress', 3, 6, 2)])).toEqual([]);
+    expect(linkedTypes([put('factoryMotor', 3, 3), put('factoryGear', 3, 4, 1), put('factoryPress', 4, 4, 1)])).toEqual([]);
+  });
+
   it('jams a chain that is fed in two opposite directions', () => {
-    const fixtures = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryGear', 3, 5), put('factoryMotor', 4, 5, 1), put('factoryPress', 3, 6, 2)];
+    const fixtures = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4, 1), put('factoryGear', 4, 4, 1), put('factoryMotor', 4, 5, 2), put('factoryPress', 4, 3)];
     const links = interiorLinksOf(fixtures);
     expect(links.linked.size).toBe(0);
     expect(links.jammed).toBe(true);
@@ -179,12 +185,12 @@ describe('why a Machine is not linked', () => {
 
   it('turns the wrong way', () => {
     const lathe = put('factoryLatheCcw', 3, 5, 2);
-    expect(problemsOf([put('factoryMotor', 3, 3), put('factoryGear', 3, 4), lathe], lathe)).toEqual(['wrongTurn']);
+    expect(problemsOf([put('factoryMotor', 3, 3), put('factoryGear', 3, 4, 1), lathe], lathe)).toEqual(['wrongTurn']);
   });
 
   it('sits on a jammed group', () => {
-    const press = put('factoryPress', 3, 6, 2);
-    expect(problemsOf([put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryGear', 3, 5), put('factoryMotor', 4, 5, 1), press], press)).toEqual(['jammed']);
+    const press = put('factoryPress', 4, 3);
+    expect(problemsOf([put('factoryMotor', 3, 3), put('factoryGear', 3, 4, 1), put('factoryGear', 4, 4, 1), put('factoryMotor', 4, 5, 2), press], press)).toEqual(['jammed']);
   });
 
   it('lacks Flow when no Pump reaches it', () => {
@@ -243,7 +249,7 @@ describe('Bevel gears', () => {
   });
 
   it('adds to the meshes of the Gears that follow', () => {
-    const fixtures = (lathe: FixtureId) => [put('factoryMotor', 3, 3), put('factoryBevel', 3, 4, 3), put('factoryGear', 4, 4, 1), put('factoryGear', 5, 4, 1), put(lathe, 6, 4, 1)];
+    const fixtures = (lathe: FixtureId) => [put('factoryMotor', 3, 3), put('factoryBevel', 3, 4, 3), put('factoryGear', 4, 4, 1), put('factoryGear', 5, 4, 1), put(lathe, 5, 5, 2)];
     expect(linkedTypes(fixtures('factoryLatheCcw'))).toEqual(['factoryLatheCcw']);
     expect(linkedTypes(fixtures('factoryLatheCw'))).toEqual([]);
   });
@@ -352,7 +358,7 @@ describe('interiorMotionOf', () => {
   });
 
   it('turns what carries Drive, each Gear the other way, and the linked Machines', () => {
-    const [motor, gearA, gearB, lathe] = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryGear', 3, 5), put('factoryLatheCcw', 3, 6, 2)];
+    const [motor, gearA, gearB, lathe] = [put('factoryMotor', 3, 3), put('factoryGear', 3, 4, 1), put('factoryGear', 4, 4, 1), put('factoryLatheCcw', 4, 5, 2)];
     const motion = interiorMotionOf([motor, gearA, gearB, lathe]);
     expect([motor, gearA, gearB, lathe].map(fixture => motion.get(fixture.id))).toEqual(['cw', 'cw', 'ccw', 'ccw']);
   });
@@ -375,8 +381,8 @@ describe('interiorMotionOf', () => {
   });
 
   it('turns nothing in a jammed group, nor a Machine that is not linked', () => {
-    const press = put('factoryPress', 3, 6, 2);
-    const motion = interiorMotionOf([put('factoryMotor', 3, 3), put('factoryGear', 3, 4), put('factoryGear', 3, 5), put('factoryMotor', 4, 5, 1), press]);
+    const press = put('factoryPress', 4, 3);
+    const motion = interiorMotionOf([put('factoryMotor', 3, 3), put('factoryGear', 3, 4, 1), put('factoryGear', 4, 4, 1), put('factoryMotor', 4, 5, 2), press]);
     expect(motion.size).toBe(0);
   });
 });

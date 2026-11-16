@@ -492,7 +492,7 @@ A Fixture of a Factory interior that needs Drive, Flow or both, and a given turn
 _Avoid_: Equipment, Workshop
 
 **Drive**:
-The turning force a Motor sends through Gears and Shafts to the Machines. A Gear stands across the line, its axle running sideways: a Motor, a Shaft or a Machine feeds it on any side, the rim meshes with the rim of the next Gear along the line, and the axle ends join the axle of a Gear beside it. Two Gears meshed rim to rim turn in opposite directions, so the number of meshes decides the direction a Machine receives; a group of Gears fed in two opposite directions (by two Motors, or by a Shaft that skips a mesh) jams, and no Machine in it turns.
+The turning force a Motor sends through Gears and Shafts to the Machines. A Gear stands across the line, its axle running sideways: a Motor, a Shaft or a Machine feeds it only at an axle end, never on its rim, the rim meshes only with the rim of the next Gear along the line, and the axle ends also join the axle of a Gear beside it. Two Gears meshed rim to rim turn in opposite directions, so the number of meshes decides the direction a Machine receives; a group of Gears fed in two opposite directions (by two Motors, or by a Shaft that skips a mesh) jams, and no Machine in it turns.
 _Avoid_: Power (electricity), torque
 
 **Bevel gear**:
