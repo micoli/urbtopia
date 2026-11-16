@@ -35,6 +35,7 @@ export function DemonstrationCanvas({ initial, building, highlight, camera, play
     const scene = new VenueScene(canvas, interiorSizeOf(initial), initial.tier, fixtureVenueOf(initial), initial.id);
     sceneRef.current = scene;
     scene.setAnimationPaused(true);
+    scene.setMarksBelowFixtures(true);
     scene.setShadows(prefsStore.getState().sunShadows);
     scene.recenter(cameraRef.current?.x, cameraRef.current?.y, cameraRef.current?.zoom);
     // No edit or picking callbacks: all game actions belong to the script.

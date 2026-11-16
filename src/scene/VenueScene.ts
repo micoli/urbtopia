@@ -80,6 +80,7 @@ export class VenueScene {
   private linePaths: readonly LinePath[] | null = null;
   private ghostRoot = new THREE.Group();
   private selectionRoot = new THREE.Group();
+  private marksBelowFixtures = false;
   private warningRoot = new THREE.Group();
   private crowd: VenueCrowdLayer;
   private motion = new InteriorMotionLayer();
@@ -300,6 +301,11 @@ export class VenueScene {
     this.resize();
   }
 
+  // The marks on tiles normally show over everything; here they stay on the floor, hidden by the Fixtures standing on them.
+  setMarksBelowFixtures(below: boolean): void {
+    this.marksBelowFixtures = below;
+  }
+
   setGhost(ghost: VenueGhost | null): void {
     this.markTiles(this.ghostRoot, ghost?.tiles ?? [], ghost ? (ghost.valid ? VALID_COLOR : INVALID_COLOR) : VALID_COLOR);
   }
@@ -343,9 +349,11 @@ export class VenueScene {
   private markTiles(root: THREE.Group, tiles: readonly Coord[], color: number): void {
     this.clear(root, true);
     if (tiles.length > 0) {
-      const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.55, depthTest: false });
+      // Under a Fixture the mark is larger than the tile, so that a rim of it shows around the piece.
+      const size = this.marksBelowFixtures ? 1.3 : 0.9;
+      const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.55, depthTest: this.marksBelowFixtures, depthWrite: false });
       for (const tile of tiles) {
-        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), material);
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), material);
         mesh.rotation.x = -Math.PI / 2;
         mesh.position.set(tile.x + 0.5, 0.05, tile.y + 0.5);
         mesh.renderOrder = 10;
