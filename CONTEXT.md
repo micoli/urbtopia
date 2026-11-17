@@ -71,8 +71,40 @@ The cost of the next copy of a building under a Build limit: its base cost multi
 _Avoid_: Repeat price, surcharge
 
 **Farm**:
-A building that holds the player's seed stock and is the entry point of cultivation. It does not produce anything itself, but employs Citizens like any workplace (10 Jobs per Tier). Several can be built, up to its Build limit; their seed capacities, Field caps and base Crop capacities add up, while Fields and the seed stock stay shared by the whole city.
+A building that holds the player's seed stock and is the entry point of cultivation. It does not produce anything itself, but employs Citizens like any workplace (10 Jobs per Tier). Several can be built, up to its Build limit; their seed capacities, Field caps and base Crop capacities add up, while Fields and the seed stock stay shared by the whole city. It has a Farm interior.
 _Avoid_: Workshop, plantation
+
+**Farm interior**:
+The Production interior of a Farm. It raises the Field cap of its Farm through its Sprinklers, and the yield of every Harvest through its Harvest bins. It runs two circuits that share one Motor: Drive and Flow for the Sprinklers, and a Line of Washer, Thresher and Grader for the Harvest bins. The yield is that of the best Farm interior in the city, never the sum of several; the Field cap bonus of each Farm is added to its own Field cap. The Farm still produces nothing: the Harvest stays a gesture of the player.
+_Avoid_: Barn, irrigation system
+
+**Sprinkler**:
+A Machine of a Farm interior that receives Flow from the Pipes of a Pump. Each Sprinkler with an irrigator assigned raises the Field cap of its Farm. A Tank feeds at most three Machines, the Washer and the Sprinklers counted together.
+_Avoid_: Irrigator (that is the Staff role), Pipe
+
+**Washer**:
+The Machine of a Farm interior's Line that needs Flow, between the Intake and the Thresher. A Line whose Washer receives no Flow is incomplete.
+_Avoid_: Cleaner (the Mill's Machine), Pump
+
+**Thresher**:
+The Machine of a Farm interior's Line that needs Drive, between the Washer and the Grader.
+_Avoid_: Mill, Millstone
+
+**Grader**:
+The Machine of a Farm interior's Line that needs Drive, between the Thresher and the Harvest bin.
+_Avoid_: Sorter (the Recycling plant's Machine)
+
+**Harvest bin**:
+The Exit of a Farm interior's Line. A Line is complete when it reaches a Harvest bin with a farmhand assigned: each one adds to the yield of the Harvest. The output is Crop Material, never Seed packs.
+_Avoid_: Seed bin, Storage bin (the Workshop's Exit)
+
+**Farmhand**:
+A worker of a Farm interior, hired like a Technician and assigned by hand to one Harvest bin. He delivers the yield part of the bonus in proportion to the posts hired, and does nothing by himself: he never harvests. An unassigned farmhand is paid all the same.
+_Avoid_: Herder (Livestock farm), Restocker
+
+**Irrigator**:
+A worker of a Farm interior, hired like a Technician and assigned by hand to one Sprinkler. He delivers the Field cap part of the bonus in proportion to the posts hired.
+_Avoid_: Sprinkler (that is the Fixture), farmhand
 
 **Field**:
 A tile laid by the player on free owned land to make it cultivable. Crops are planted on Field tiles and harvested from them.
