@@ -31,6 +31,10 @@
               "assigned"
             ]
           },
+          "fixtureKind": {
+            "type": "string",
+            "minLength": 1
+          },
           "unlockCitizens": {
             "type": "integer",
             "minimum": 0,

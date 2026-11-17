@@ -69,6 +69,7 @@ interface InteriorDeclaration {
   care?: CareBalance;
   family: DeclaredInteriorFamily;
   bonusModel?: InteriorBonusModel;
+  fixtureKind?: BuildingType;
   unlockCitizens?: number;
   service?: ServiceLayout;
   layout?: InteriorLayout;
@@ -78,6 +79,9 @@ interface InteriorDeclaration {
 const DECLARATIONS = interiors.buildings as Record<string, InteriorDeclaration>;
 
 export const interiorDeclarationOf = (type: BuildingType): InteriorDeclaration | undefined => DECLARATIONS[type];
+
+// The building whose Fixtures an interior takes: its own type, unless it declares that it runs the interior of another.
+export const interiorFixtureKindOf = (type: BuildingType): BuildingType => DECLARATIONS[type]?.fixtureKind ?? type;
 
 // The group of Goods that an item belongs to in a building that splits its yield, if it does.
 // Every assigned role but the seller works a Machine: a baker an Oven, a cheesemaker a Cheese cellar, a cream maker a Pasteuriser.

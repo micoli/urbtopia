@@ -232,7 +232,7 @@ export { INTERIOR_EXAMPLES, interiorExampleOf, type ExampleFixture, type Interio
 export { serviceFurnitureQuality, serviceGridSizeOf, serviceQualityCapOf, serviceQualityOf } from './interiors/serviceInterior';
 export { avatarOfRole, interiorAvatarModels, avatarsOfBuilding, type InteriorAvatars, hiredInteriorOf, interiorUnlockCitizensOf, serviceLayoutOf, interiorDeclarationOf, interiorFillRateFrom, interiorLayoutOf, interiorPartPresence, interiorRoleShare, isProducerRole, interiorFamilyOf, interiorPostsOf, interiorPostsOfBuilding, interiorRolesOf, interiorWagesPerHour, minTierOfInteriorRole, partOfRole, totalInteriorStaff } from './interiors/interiorStaff';
 export type { InteriorFamily, InteriorPart } from './interiors/interiorStaff';
-export { interiorProfileOf, type InteriorProfile } from './interiors/interiorProfile';
+export { hasProductionInteriorType, interiorProfileOf, type InteriorProfile } from './interiors/interiorProfile';
 export { fixtureLimitOf, type FixtureLimit } from './interiors/interiorLimits';
 export { assignedFixturesOf, assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, hasAssignments, carriedItemOf, picksItem, workFocusOf } from './interiors/interiorAssignments';
 export { hireInteriorStaff, releaseInteriorStaff } from './interiors/interiorStaffCommands';

@@ -1,4 +1,4 @@
-import { isProductionInteriorKind, interiorProfileOf, isMaterial, interiorRolesOf, isProducerRole } from '../core';
+import { hasProductionInteriorType, interiorProfileOf, isMaterial, interiorRolesOf, isProducerRole } from '../core';
 import { FIXTURES, isRestockable, FIXTURE_IDS, PARQUETS, PIRATE_SHOW_TITLES, isCoveBoatFamily, footprintTiles, isSeaSceneryType, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 
 type Json = Record<string, unknown>;
@@ -241,7 +241,7 @@ function isBuilding(value: unknown): boolean {
     (value.attraction === undefined || (typeof value.type === 'string' && sellsTicketsType(value.type) && isAttractionData(value.attraction))) &&
     (value.name === undefined || (typeof value.type === 'string' && isTransitStopType(value.type) && typeof value.name === 'string' && value.name.length > 0 && value.name.length <= STOP_NAME_MAX_LENGTH)) &&
     (value.coveId === undefined || (typeof value.type === 'string' && isStandsType(value.type) && isInt(value.coveId, 0))) &&
-    (value.breakerOff === undefined || (typeof value.type === 'string' && (isProductionInteriorKind(value.type) || isVenueType(value.type)) && typeof value.breakerOff === 'boolean')) &&
+    (value.breakerOff === undefined || (typeof value.type === 'string' && (hasProductionInteriorType(value.type) || isVenueType(value.type)) && typeof value.breakerOff === 'boolean')) &&
     (value.coalEnabled === undefined || (value.type === 'coalPlant' && typeof value.coalEnabled === 'boolean')) &&
     (value.storedEnergy === undefined || (value.type === 'battery' && isNonNegative(value.storedEnergy) && value.storedEnergy <= 24))
   );

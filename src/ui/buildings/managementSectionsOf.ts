@@ -1,4 +1,4 @@
-import { FACILITIES, isFacilityType, isProductionInteriorKind, isServiceInteriorKind, isVenueType, kindOf, wasteKindOf, type Building } from '../../core';
+import { FACILITIES, hasProductionInteriorType, isFacilityType, isServiceInteriorKind, isVenueType, kindOf, wasteKindOf, type Building } from '../../core';
 import type { ManagementSectionId } from '../stats/management/managementSections';
 
 const UTILITY_SECTIONS: Record<string, readonly ManagementSectionId[]> = {
@@ -18,7 +18,7 @@ function facilitySections(type: string): readonly ManagementSectionId[] {
   return type === 'incinerator' ? ['eco-waste', 'eco-emissions'] : ['eco-waste'];
 }
 
-const hasInteriorEconomy = (type: string): boolean => isVenueType(type) || isProductionInteriorKind(type) || isServiceInteriorKind(type);
+const hasInteriorEconomy = (type: string): boolean => isVenueType(type) || hasProductionInteriorType(type) || isServiceInteriorKind(type);
 
 // The sections of City management that tell more about a building: the one of its interior or Venue comes last.
 export function managementSectionsOf({ type }: Pick<Building, 'type'>): readonly ManagementSectionId[] {

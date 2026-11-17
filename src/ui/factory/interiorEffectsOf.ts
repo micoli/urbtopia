@@ -23,6 +23,8 @@ const EFFECTS_BY_TYPE: Partial<Record<BuildingType, readonly EffectId[]>> = {
   bakery: ['speed', 'yield', 'sales'],
   dairy: ['yield'],
   storehouse: ['capacity'],
+  vault: ['capacity'],
+  materialDepot: ['capacity'],
   recyclingPlant: ['wasteCapacity', 'reach'],
 };
 

@@ -159,6 +159,44 @@
       },
       "unlockCitizens": 250
     },
+    "vault": {
+      "family": "production",
+      "bonusModel": "line",
+      "fixtureKind": "storehouse",
+      "layout": {
+        "gridSizes": [6, 6, 7, 7, 8, 8],
+        "speedCaps": [0.05],
+        "yieldCaps": [0.05],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "capacityCaps": [0.1, 0.1, 0.15, 0.15, 0.2, 0.2]
+      },
+      "roles": {
+        "stocker": {
+          "part": "capacity",
+          "posts": [0, 1, 1, 2, 2]
+        }
+      },
+      "unlockCitizens": 250
+    },
+    "materialDepot": {
+      "family": "production",
+      "bonusModel": "line",
+      "fixtureKind": "storehouse",
+      "layout": {
+        "gridSizes": [6, 6, 7, 7, 8, 8],
+        "speedCaps": [0.05],
+        "yieldCaps": [0.05],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "capacityCaps": [0.1, 0.1, 0.15, 0.15, 0.2, 0.2]
+      },
+      "roles": {
+        "stocker": {
+          "part": "capacity",
+          "posts": [0, 1, 1, 2, 2]
+        }
+      },
+      "unlockCitizens": 250
+    },
     "school": {
       "family": "service",
       "roles": {

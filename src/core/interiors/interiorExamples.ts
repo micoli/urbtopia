@@ -17,6 +17,8 @@ export interface InteriorExample {
   readonly fixtures: readonly ExampleFixture[];
 }
 
+const STOREHOUSE_EXAMPLE: InteriorExample = { tier: 1, fixtures: [at('storehouseDock', 0, 0), at('storehouseMotor', 1, 0, 1), at('storehouseRack', 0, 1, 2)] };
+
 export const INTERIOR_EXAMPLES: Partial<Record<BuildingType, InteriorExample>> = {
   factory: { tier: 2, fixtures: [
     at('factoryTank', 1, 0), at('factoryPump', 1, 1), at('factoryMotor', 2, 1, 1), at('factoryPipeTee', 1, 2, 2), at('factoryMixingVat', 0, 2, 3),
@@ -50,7 +52,9 @@ export const INTERIOR_EXAMPLES: Partial<Record<BuildingType, InteriorExample>> =
     at('livestockFeedIntake', 0, 0), at('livestockMotor', 1, 0, 1), at('livestockFeeder', 0, 1, 2), at('livestockPen', 0, 2), at('livestockPacker', 0, 3),
     at('livestockMotor', 1, 3, 1), at('livestockCollectionExit', 0, 4, 2),
   ] },
-  storehouse: { tier: 1, fixtures: [at('storehouseDock', 0, 0), at('storehouseMotor', 1, 0, 1), at('storehouseRack', 0, 1, 2)] },
+  storehouse: STOREHOUSE_EXAMPLE,
+  vault: STOREHOUSE_EXAMPLE,
+  materialDepot: STOREHOUSE_EXAMPLE,
 };
 
 export const interiorExampleOf = (type: BuildingType): InteriorExample | undefined => INTERIOR_EXAMPLES[type];

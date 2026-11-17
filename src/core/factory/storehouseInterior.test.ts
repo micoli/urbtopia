@@ -76,3 +76,24 @@ describe('the Storehouse interior', () => {
     expect(storageCapacity(apply(cut, stocker))).toEqual(storageCapacity(city()));
   });
 });
+
+describe.each([
+  { type: 'vault', gains: 'goods', unchanged: 'materials' },
+  { type: 'materialDepot', gains: 'materials', unchanged: 'goods' },
+] as const)('the $type interior, which runs the Storehouse interior', ({ type, gains, unchanged }) => {
+  const storage = (tier = 5): GameState => ({ ...city(), buildings: [...homes, { ...createBuilding(1, type, 55, 50, 0), tier }] });
+  const withLine = apply(storage(), ...line);
+
+  it('takes the Fixtures of the Storehouse and a room that grows with its Tier', () => {
+    expect(failure(storage(), place('millstone', 2, 2))).toBe('error.unknownCommand');
+    expect(interiorSizeOf(withLine.buildings.find(candidate => candidate.id === 1)!)).toBe(8);
+  });
+
+  it('holds more only in its own compartment, and only with a stocker', () => {
+    const base = storageCapacity(storage());
+    expect(storageCapacity(withLine)).toEqual(base);
+    const hired = storageCapacity(apply(withLine, stocker));
+    expect(hired[gains]).toBeGreaterThan(base[gains]);
+    expect(hired[unchanged]).toBe(base[unchanged]);
+  });
+});

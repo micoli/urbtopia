@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import interiors from '../../../assets/defs/balance/interiors.json' with { type: 'json' };
 import { FIXTURES } from '../venues/fixtures';
 import { PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS } from '../venues/venueVocabulary';
-import { interiorProfileOf } from './interiorProfile';
+import { interiorKindOf } from '../factory/interiorCommands';
+import { hasProductionInteriorType, interiorProfileOf } from './interiorProfile';
+import { interiorFixtureKindOf } from './interiorStaff';
 
 type Family = NonNullable<ReturnType<typeof interiorProfileOf>>['family'];
 
@@ -92,6 +94,18 @@ describe('the Interior profile of a type of building', () => {
     expect(interiorProfileOf(type)?.bonusModel).toBeUndefined();
   });
 
+  it.each(['vault', 'materialDepot'] as const)('runs the Storehouse interior in a %s', type => {
+    expect(interiorFixtureKindOf(type)).toBe('storehouse');
+    expect(interiorKindOf({ type } as Parameters<typeof interiorKindOf>[0])).toBe('storehouse');
+    expect(interiorProfileOf(type)?.family).toBe('production');
+    expect(interiorProfileOf(type)?.bonusModel).toBe(interiorProfileOf('storehouse')?.bonusModel);
+    expect(hasProductionInteriorType(type)).toBe(true);
+  });
+
+  it('keeps the kind of Fixtures of a type that declares none', () => {
+    expect(interiorFixtureKindOf('storehouse')).toBe('storehouse');
+  });
+
   it('gives nothing to a type of building with no interior', () => {
     expect(interiorProfileOf('farm')).toBeUndefined();
   });
@@ -99,8 +113,10 @@ describe('the Interior profile of a type of building', () => {
   it.each([
     { family: 'production', kinds: PRODUCTION_INTERIOR_KINDS },
     { family: 'service', kinds: SERVICE_INTERIOR_KINDS },
-  ] as const)('lists as $family kinds exactly the types that interiors.json declares in that family', ({ family, kinds }) => {
-    const declared = Object.entries(interiors.buildings).filter(([, declaration]) => declaration.family === family).map(([type]) => type);
+  ] as const)('lists as $family kinds exactly the types that interiors.json declares in that family with Fixtures of their own', ({ family, kinds }) => {
+    const declared = Object.entries(interiors.buildings)
+      .filter(([, declaration]) => declaration.family === family && !('fixtureKind' in declaration))
+      .map(([type]) => type);
     expect([...kinds].sort()).toEqual(declared.sort());
   });
 

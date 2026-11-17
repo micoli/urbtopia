@@ -11,6 +11,7 @@ import { isHomeType } from '../buildings/buildingDefinitions';
 import { PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS } from '../venues/venueVocabulary';
 import { isInteriorUnlocked } from '../interiors/interiorUnlock';
 import { interiorProfileOf } from '../interiors/interiorProfile';
+import { interiorFixtureKindOf } from '../interiors/interiorStaff';
 import { withoutAssignment } from '../interiors/interiorAssignments';
 import { fixtureLimitOf } from '../interiors/interiorLimits';
 import { editInterior } from '../interiors/interiorEdit';
@@ -46,7 +47,7 @@ export const isInteriorBuilding = (building: Building): boolean => interiorProfi
 // What a floor building offers in its build menu: its kind of Fixtures.
 export const interiorKindOf = (building: Building): (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number] | 'home' => {
   const family = interiorProfileOf(building.type)?.family;
-  if (family === 'production' || family === 'service') return building.type as (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number];
+  if (family === 'production' || family === 'service') return interiorFixtureKindOf(building.type) as (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number];
   return 'home';
 };
 

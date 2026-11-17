@@ -84,6 +84,8 @@ export const interiorsBalanceSchema = z
         family: z.enum(INTERIOR_FAMILIES_ALL),
         // The model that computes the bonus of the floor of a Production interior: the Factory and the Packhouse have their own formula and keep their numbers in their own files; machines alone, a Line of crates, or a Line whose Staff are assigned to its Fixtures. A Service interior has none.
         bonusModel: z.enum(['factory', 'packhouse', 'machines', 'line', 'assigned']).optional(),
+        // The building whose Fixtures, shell and demonstrations this interior shares, when it is not its own kind: the Vault and the Material depot run the Storehouse interior.
+        fixtureKind: z.string().min(1).optional(),
         // The Citizens a city needs before the interior can be fitted out.
         unlockCitizens: count.optional(),
         // Service interiors: the size of the room and the most quality the furniture can add, by Tier.

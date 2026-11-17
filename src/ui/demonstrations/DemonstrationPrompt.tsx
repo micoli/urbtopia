@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useStore } from 'zustand';
 import type { BuildingType } from '../../core';
-import { demonstrationsOf } from '../../core/demonstrations/catalog';
+import { demonstrationsOf, demonstrationTypeOf } from '../../core/demonstrations/catalog';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import { demonstrationPreferencesStore } from '../../store/demonstrationPreferencesStore';
@@ -15,7 +15,8 @@ import './demonstrations.css';
 /** Mounted once per interior visit, including when switching between buildings. */
 export function DemonstrationPrompt({ type }: { type: BuildingType }) {
   useStore(prefsStore, store => store.language);
-  const hidden = useStore(demonstrationPreferencesStore, store => store.hiddenTypes.includes(type) || store.seenTypes.includes(type));
+  const played = demonstrationTypeOf(type);
+  const hidden = useStore(demonstrationPreferencesStore, store => store.hiddenTypes.includes(played) || store.seenTypes.includes(played));
   const challenge = useGame(store => Boolean(store.state.challenge));
   const [dismissed, setDismissed] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
@@ -28,7 +29,7 @@ export function DemonstrationPrompt({ type }: { type: BuildingType }) {
     return () => dialog?.close();
   }, [visible]);
   const dismiss = () => {
-    if (dontShowAgain) demonstrationPreferencesStore.getState().hideInvitation(type);
+    if (dontShowAgain) demonstrationPreferencesStore.getState().hideInvitation(played);
     setDismissed(true);
   };
   const launch = async () => {

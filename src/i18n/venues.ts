@@ -95,11 +95,13 @@ type VenueMessageKey =
   | 'interior.examples.dairy'
   | 'interior.examples.packhouse'
   | 'interior.examples.storehouse'
+  | 'interior.examples.vault'
+  | 'interior.examples.materialDepot'
   | 'interior.examples.recyclingPlant'
   | 'interior.examples.textileMill'
   | 'interior.examples.knitwearFactory'
   | 'interior.examples.livestockFarm'
-  | `interior.features.${'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'recyclingPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'school' | 'library' | 'hospital'}`
+  | `interior.features.${'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'vault' | 'materialDepot' | 'recyclingPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'school' | 'library' | 'hospital'}`
   | 'bakery.recipes.assembly'
   | 'bakery.recipes.limits'
   | 'bakery.recipes.bonuses'
@@ -159,7 +161,7 @@ type VenueMessageKey =
   | 'home.interior.comfort'
   | 'home.interior.wellbeing'
   | 'home.interior.wellbeingShort'
-  | `interior.open.${'arcade' | 'supermarket' | 'hotel' | 'restaurant' | 'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'recyclingPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'school' | 'library' | 'hospital'}`
+  | `interior.open.${'arcade' | 'supermarket' | 'hotel' | 'restaurant' | 'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'vault' | 'materialDepot' | 'recyclingPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'school' | 'library' | 'hospital'}`
   | 'factory.interior.linked'
   | 'factory.interior.speed'
   | 'factory.interior.yield'
@@ -434,6 +436,8 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.examples.bakery': ["A Motor drives the Mixer against the back wall. A Tank, a Pump and a Motor bring the gas to the Oven. The Mixer pours the dough into the Oven, which sends the bread to the Counter, where it is sold.", "Un moteur entraîne le pétrin contre le mur du fond. Un réservoir, une pompe et un moteur amènent le gaz au four. Le pétrin verse la pâte dans le four, qui envoie le pain au comptoir, où il est vendu."],
   'interior.examples.dairy': ["A Tank, a Pump and a Motor bring the Flow to the Milk vat against the back wall, which sends the milk straight to the Counter, where it is sold.", "Un réservoir, une pompe et un moteur amènent le fluide à la cuve à lait contre le mur du fond, qui envoie le lait droit au comptoir, où il est vendu."],
   'interior.examples.packhouse': ["A Motor drives the Packer against the back wall. A Conveyor elbow turns the Packets toward the Exit, where a truck takes the crates away.", "Un moteur entraîne l’emballeuse contre le mur du fond. Un tapis coudé tourne les paquets vers la sortie, où un camion emporte les caisses."],
+  'interior.examples.vault': ["A Motor drives the Loading dock where the Goods come in, and the crates go straight to the Rack, which stores them: every linked Rack adds room to the Vault.", "Un moteur entraîne le quai de chargement où entrent les biens, et les caisses vont droit au rayonnage, qui les stocke : chaque rayonnage relié ajoute de la place à la chambre forte."],
+  'interior.examples.materialDepot': ["A Motor drives the Loading dock where the Materials come in, and the crates go straight to the Rack, which stores them: every linked Rack adds room to the Material depot.", "Un moteur entraîne le quai de chargement où entrent les matériaux, et les caisses vont droit au rayonnage, qui les stocke : chaque rayonnage relié ajoute de la place au dépôt de matériaux."],
   'interior.examples.storehouse': ["A Motor drives the Loading dock where the Goods come in, and the crates go straight to the Rack, which stores them: every linked Rack adds room to the Storehouse.", "Un moteur entraîne le quai de chargement où entrent les biens, et les caisses vont droit au rayonnage, qui les stocke : chaque rayonnage relié ajoute de la place à l’entrepôt."],
   'interior.examples.recyclingPlant': ["A Motor drives each Machine: the Intake against the back wall takes the Waste in, the Sorter sorts it, the Shredder breaks it up. A Conveyor carries the Waste down to the Collection exit, where a truck takes it away.", "Un moteur entraîne chaque machine : l’entrée contre le mur du fond reçoit les déchets, la trieuse les trie, la broyeuse les broie. Un tapis porte les déchets jusqu’à la sortie camion, où un camion les emporte."],
   'interior.examples.textileMill': ["A Motor drives the Spinner. A spinner assigned to a Spinner whose fibre you chose, wool, alpaca wool or silk, spins on his own and stores the textile in the Storehouse.", "Un moteur entraîne la filature. Un fileur affecté à une filature dont vous avez choisi la fibre, laine, laine d’alpaga ou soie, file seul et range le tissu à l’entrepôt."],
@@ -449,6 +453,8 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.features.livestockFarm': ["A Line carries the grain of the silo from a Feed intake against the back wall, driven by a Motor, to a Feeder. The Feeder feeds the Pen in front of it: choose its animal. The Pen sends its production to a Packer, driven by a Motor, which sends packets on Conveyors to a Collection exit. Assign a herder to the Collection exit, and he collects what the Pen gives and stores it on his own. Each Collection exit on the Line adds yield to the farm, up to a cap that rises with the Tier, and the herders you hire deliver it.", "Une chaîne porte le grain du silo depuis une entrée de fourrage contre le mur du fond, entraînée par un moteur, jusqu’à une mangeoire. La mangeoire nourrit l’enclos devant elle : choisissez son animal. L’enclos envoie sa production à une emballeuse, entraînée par un moteur, qui envoie des paquets sur des tapis jusqu’à une sortie de collecte. Affectez un éleveur à la sortie de collecte : il récolte seul ce que donne l’enclos et le range. Chaque sortie de collecte sur la chaîne ajoute du rendement à la ferme, jusqu’à un plafond qui monte avec le niveau, et les éleveurs que vous embauchez le délivrent."],
   'interior.features.bakery': ['A Line carries the dough from the Mixer through an Oven to a Display counter. Mixers and Ovens add speed, Display counters add sales and yield, each up to a cap that rises with the Tier, and bakers and sellers deliver them. Assign a baker to an Oven with a Recipe and a seller to a Display counter: they bake, store and sell on their own. The Recipes and the bonuses are detailed below.', "Une chaîne porte la pâte du pétrin à un comptoir vitrine en passant par un four. Pétrins et fours ajoutent de la vitesse, les comptoirs vitrine des ventes et du rendement, chacun jusqu'à un plafond qui monte avec le niveau, et les boulangers et les vendeurs les délivrent. Affectez un boulanger à un four avec une recette et un vendeur à un comptoir vitrine : ils cuisent, rangent et vendent seuls. Les recettes et les bonus sont détaillés ci-dessous."],
   'interior.features.dairy': ["A Line carries the milk from the vat through the Machines to an Exit. Cheesemakers and cream makers add the cheese and cream yield, and assigned to a Cheese cellar or a Pasteuriser with a Recipe they make it on their own and store it; a seller assigned to a Display counter sells what arrives on it.", "Une chaîne porte le lait de la cuve jusqu'à une sortie à travers les machines. Les fromagers et les crémiers ajoutent le rendement en fromage et en crème, et affectés à une cave d’affinage ou à un pasteurisateur avec une recette ils la fabriquent seuls et la rangent ; un vendeur affecté à un comptoir vitrine vend ce qui y arrive."],
+  'interior.features.vault': ["A Line runs from a loading dock, by a hoist, to a shelf rack: each linked rack adds room for Goods to the Vault. A stocker adds the room bonus.", "Une chaîne court d'un quai de chargement, par un palan, jusqu'à un rayonnage : chaque rayonnage relié ajoute de la place pour les produits à la chambre forte. Un magasinier ajoute le bonus de place."],
+  'interior.features.materialDepot': ["A Line runs from a loading dock, by a hoist, to a shelf rack: each linked rack adds room for Materials to the Material depot. A stocker adds the room bonus.", "Une chaîne court d'un quai de chargement, par un palan, jusqu'à un rayonnage : chaque rayonnage relié ajoute de la place pour les matériaux au dépôt de matériaux. Un magasinier ajoute le bonus de place."],
   'interior.features.storehouse': ["A Line runs from a loading dock, by a hoist, to a shelf rack: each linked rack adds room to the Storehouse. A stocker adds the room bonus.", "Une chaîne court d'un quai de chargement, par un palan, jusqu'à un rayonnage : chaque rayonnage relié ajoute de la place à l'entrepôt. Un magasinier ajoute le bonus de place."],
   'interior.features.school': ["Furniture adds quality, up to a cap that rises with the Tier. A teacher adds the schooling the School gives to the homes it serves. Furniture never wears.", "Le mobilier ajoute de la qualité, jusqu'à un plafond qui monte avec le niveau. Un enseignant ajoute la scolarité que l'école donne aux logements desservis. Le mobilier ne s'use jamais."],
   'interior.features.library': ["Furniture adds quality, up to a cap that rises with the Tier. A librarian adds the Knowledge the Library gives to the homes it serves. Furniture never wears.", "Le mobilier ajoute de la qualité, jusqu'à un plafond qui monte avec le niveau. Un bibliothécaire ajoute le savoir que la bibliothèque donne aux logements desservis. Le mobilier ne s'use jamais."],
@@ -497,7 +503,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.role.creamMaker': ['Cream maker', 'Crémier'],
   'interior.roleEffect.creamMaker': ['Makes more Cream from the Milk', "Tire plus de crème du lait"],
   'interior.role.stocker': ['Stocker', 'Magasinier'],
-  'interior.roleEffect.stocker': ['Puts the crates away: more room in the Storehouse', "Range les caisses : plus de place dans l’entrepôt"],
+  'interior.roleEffect.stocker': ['Puts the crates away: more room in the storage', "Range les caisses : plus de place dans le stockage"],
   'interior.role.teacher': ['Teacher', 'Enseignant'],
   'interior.roleEffect.teacher': ['Teaches better: more Knowledge from this School', "Enseigne mieux : plus de Savoir pour cette école"],
   'interior.role.librarian': ['Librarian', 'Bibliothécaire'],
@@ -573,6 +579,8 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.open.workshop': ['Open the Workshop interior', "Ouvrir l'intérieur de l'atelier"],
   'interior.open.bakery': ['Open the Bakery interior', "Ouvrir l'atelier de la boulangerie"],
   'interior.open.dairy': ['Open the Dairy interior', "Ouvrir l'atelier de la laiterie"],
+  'interior.open.vault': ['Open the Vault interior', "Ouvrir l'intérieur de la chambre forte"],
+  'interior.open.materialDepot': ['Open the Material depot interior', "Ouvrir l'intérieur du dépôt de matériaux"],
   'interior.open.storehouse': ['Open the Storehouse interior', "Ouvrir l'intérieur de l'entrepôt"],
   'interior.open.recyclingPlant': ['Open the Recycling plant interior', "Ouvrir l'intérieur de l'usine de recyclage"],
   'interior.open.textileMill': ['Open the Textile mill interior', "Ouvrir l'intérieur de la filature"],
