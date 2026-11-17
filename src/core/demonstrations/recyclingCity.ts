@@ -3,11 +3,11 @@ import { interiorLinksOf } from '../factory/interiorLinks';
 import type { FixtureId, Rotation } from '../engine/state';
 import { BUILDING_ID, lineCity, roomOf } from './lineInterior';
 import { levelTitle, placeTitle, type LevelIntro } from './guidedLevel';
-import type { Demonstration, DemonstrationStep, DemonstrationText } from './scenario';
+import type { Demonstration, DemonstrationStep, DemonstrationText, GuidedLevel } from './scenario';
 
 type Piece = { id: string; fixture: FixtureId; x: number; y: number; rotation: Rotation; label: DemonstrationText; description: DemonstrationText };
 const en = (a: string, b: string): DemonstrationText => [a, b];
-const INTROS: Record<Demonstration['level'], LevelIntro> = {
+const INTROS: Record<GuidedLevel, LevelIntro> = {
   simple: { title: en('A first recycling line', 'Une première chaîne de recyclage'), objective: en('Connect the intake, sorter, shredder and exit.', 'Relier l’entrée, le trieur, le broyeur et la sortie.'), explanation: en('Each machine needs its own motor. A complete line increases recycling capacity and collection distance.', 'Chaque machine a besoin de son propre moteur. Une chaîne complète augmente la capacité de recyclage et la distance de collecte.'), summary: en('Build one working recycling line.', 'Construire une chaîne de recyclage fonctionnelle.') },
   intermediate: { title: en('One line, two exits', 'Une chaîne, deux sorties'), objective: en('Split the recycled material between two exits.', 'Répartir les matières recyclées entre deux sorties.'), explanation: en('A splitting conveyor sends material straight on and sideways; an elbow turns the side branch toward its own exit.', 'Un tapis répartiteur envoie les matières tout droit et sur le côté ; un coude tourne la branche latérale vers sa propre sortie.'), summary: en('Build a recycling line that ends at two exits.', 'Construire une chaîne de recyclage qui finit à deux sorties.') },
   advanced: { title: en('A sorter without drive', 'Un trieur sans force'), objective: en('Find why the sorter does not run and fix it.', 'Trouver pourquoi le trieur ne tourne pas et le corriger.'), explanation: en('The sorter motor will face away from its input. You will inspect the line, then turn the motor.', 'Le moteur du trieur sera tourné à l’opposé de son entrée. Tu vas inspecter la chaîne, puis tourner le moteur.'), summary: en('Diagnose and repair a recycling line with an undriven sorter.', 'Diagnostiquer et réparer une chaîne de recyclage dont le trieur n’a pas de force.') },
@@ -19,7 +19,7 @@ export const checkRecycling = (count: number, complete: boolean): DemonstrationS
   if (fixtures.length !== count) throw new Error(`expected ${count} fixtures, got ${fixtures.length}`);
   if ((recyclingGainsOf(building).exits > 0) !== complete) throw new Error(`expected complete recycling line: ${complete}`);
 };
-export const recyclingScenario = (level: Demonstration['level'], pieces: Piece[], faulty = false, tier = 1): Demonstration => {
+export const recyclingScenario = (level: GuidedLevel, pieces: Piece[], faulty = false, tier = 1): Demonstration => {
   const steps: DemonstrationStep[] = [{ id: 'goal', title: en('A recycling line', 'Une chaîne de recyclage'), objective: en('Connect the intake, sorter, recycler and exit.', 'Relier l’entrée, le trieur, la machine de recyclage et la sortie.'),
     action: en(`The room you see is an empty Tier ${tier} Recycling plant interior. You will fit it out piece by piece.`, `La salle que tu vois est un intérieur de centre de recyclage de niveau ${tier}, vide. Tu vas l’équiper pièce par pièce.`),
     explanation: en('The intake, sorter and recycler each need drive. A complete line increases recycling capacity and collection distance.', 'L’entrée, le trieur et la machine de recyclage ont chacun besoin de force. Une chaîne complète augmente la capacité de recyclage et la distance de collecte.'),

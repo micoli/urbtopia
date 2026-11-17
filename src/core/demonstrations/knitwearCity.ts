@@ -4,16 +4,16 @@ import { assignedFixturesOf, type GoodId } from '../index';
 import type { FixtureId, Rotation } from '../engine/state';
 import { BUILDING_ID, lineCity, roomOf } from './lineInterior';
 import { levelTitle, placeTitle, type LevelIntro } from './guidedLevel';
-import type { Demonstration, DemonstrationStep, DemonstrationText } from './scenario';
+import type { Demonstration, DemonstrationStep, DemonstrationText, GuidedLevel } from './scenario';
 type Piece = { id: string; fixture: FixtureId; x: number; y: number; rotation: Rotation; label: DemonstrationText; explanation: DemonstrationText };
 export const knitPiece = (id: string, fixture: FixtureId, x: number, y: number, rotation: Rotation, label: DemonstrationText, explanation: DemonstrationText): Piece => ({ id, fixture, x, y, rotation, label, explanation });
 const t = (en: string, fr: string): DemonstrationText => [en, fr];
-const INTROS: Record<Demonstration['level'], LevelIntro> = {
+const INTROS: Record<GuidedLevel, LevelIntro> = {
   simple: { title: t('A first knitwear line', 'Une première chaîne de maille'), objective: t('Connect a knitter, a finisher and a counter.', 'Relier une tricoteuse, une finisseuse et un comptoir.'), explanation: t('The knitter and finisher each need drive; an assigned worker then produces the chosen garment.', 'La tricoteuse et la finisseuse ont chacune besoin de force ; un employé affecté produit ensuite le vêtement choisi.'), summary: t('Produce knitwear on one connected line.', 'Produire de la maille sur une chaîne raccordée.') },
   intermediate: { title: t('One finisher, two counters', 'Une finisseuse, deux comptoirs'), objective: t('Share the finished garments between two counters.', 'Partager les vêtements finis entre deux comptoirs.'), explanation: t('A splitting conveyor sends garments straight on and sideways; an elbow turns the side branch toward its own counter.', 'Un tapis répartiteur envoie les vêtements tout droit et sur le côté ; un coude tourne la branche latérale vers son propre comptoir.'), summary: t('Produce knitwear for two counters.', 'Produire de la maille pour deux comptoirs.') },
   advanced: { title: t('A finisher without drive', 'Une finisseuse sans force'), objective: t('Find why the finisher does not run and fix it.', 'Trouver pourquoi la finisseuse ne tourne pas et le corriger.'), explanation: t('The finisher motor will face away from its input. You will inspect the line, then turn the motor before producing.', 'Le moteur de la finisseuse sera tourné à l’opposé de son entrée. Tu vas inspecter la chaîne, puis tourner le moteur avant de produire.'), summary: t('Diagnose and repair a knitwear line, then produce.', 'Diagnostiquer et réparer une chaîne de maille, puis produire.') },
 };
-export const knitScenario = (level: Demonstration['level'], pieces: Piece[], faulty = false): Demonstration => {
+export const knitScenario = (level: GuidedLevel, pieces: Piece[], faulty = false): Demonstration => {
   const check = (count: number, complete: boolean, assigned = false, fault = false): DemonstrationStep['check'] => state => {
     const interior = roomOf(state).interior;
     const fixtures = interior?.fixtures ?? [];

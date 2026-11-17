@@ -20,7 +20,7 @@ and `recyclingPlant-advanced` (diagnosing a stopped Sorter). The Dairy has `dair
 `knitwearFactory-intermediate` (left-handed Machines and split), and `knitwearFactory-advanced` (missing Finisher Drive).
 The Livestock farm has `livestockFarm-simple` (feed to collection), `livestockFarm-intermediate` (left-handed Machines and split),
 and `livestockFarm-advanced` (missing Packer Drive). The Farm has `farm-simple` (harvest line, farmhand), `farm-intermediate` (irrigation, left-handed sprinkler, irrigator),
-and `farm-advanced` (a washer without water: the pump motor faces away). Open an interior's
+`farm-advanced` (a washer without water: the pump motor faces away), and `farm-expert`, a fourth level that builds a whole Tier 5 farm (two bins, two sprinklers, one motor, one tank) and ends on a layout a player built, which its test compares piece for piece. Open an interior's
 Management view, choose **Demonstrations**, then **Simple**. It is also available
 from the Factory entry on the codex's Production interiors page, even without
 owning or unlocking a Factory. Use `?e2e` for browser verification.

@@ -4,16 +4,16 @@ import { assignedFixturesOf, type GoodId } from '../index';
 import type { FixtureId, Rotation } from '../engine/state';
 import { BUILDING_ID, lineCity, roomOf } from './lineInterior';
 import { levelTitle, placeTitle, type LevelIntro } from './guidedLevel';
-import type { Demonstration, DemonstrationStep, DemonstrationText } from './scenario';
+import type { Demonstration, DemonstrationStep, DemonstrationText, GuidedLevel } from './scenario';
 type Piece = { id: string; fixture: FixtureId; x: number; y: number; rotation: Rotation; label: DemonstrationText; explanation: DemonstrationText };
 export const livestockPiece = (id: string, fixture: FixtureId, x: number, y: number, rotation: Rotation, label: DemonstrationText, explanation: DemonstrationText): Piece => ({ id, fixture, x, y, rotation, label, explanation });
 const t = (en: string, fr: string): DemonstrationText => [en, fr];
-const INTROS: Record<Demonstration['level'], LevelIntro> = {
+const INTROS: Record<GuidedLevel, LevelIntro> = {
   simple: { title: t('A first livestock line', 'Une première chaîne d’élevage'), objective: t('Connect the feed intake to the collection exit.', 'Relier l’entrée de fourrage à la sortie de collecte.'), explanation: t('The intake and packer need drive; a feeder, a pen and a collection exit complete the line.', 'L’entrée et l’emballeuse ont besoin de force ; une mangeoire, un enclos et une sortie de collecte complètent la chaîne.'), summary: t('Build one working collection line.', 'Construire une chaîne de collecte fonctionnelle.') },
   intermediate: { title: t('One pen, two collection exits', 'Un enclos, deux sorties de collecte'), objective: t('Share the production between two collection exits.', 'Partager la production entre deux sorties de collecte.'), explanation: t('A splitting conveyor sends production straight on and sideways; an elbow turns the side branch toward its own exit.', 'Un tapis répartiteur envoie la production tout droit et sur le côté ; un coude tourne la branche latérale vers sa propre sortie.'), summary: t('Build a collection line that ends at two exits.', 'Construire une chaîne de collecte qui finit à deux sorties.') },
   advanced: { title: t('A packer without drive', 'Une emballeuse sans force'), objective: t('Find why the packer does not pass the production on and fix it.', 'Trouver pourquoi l’emballeuse ne transmet pas la production et le corriger.'), explanation: t('The packer motor will face away from its input. You will inspect the line, then turn the motor before collecting.', 'Le moteur de l’emballeuse sera tourné à l’opposé de son entrée. Tu vas inspecter la chaîne, puis tourner le moteur avant de collecter.'), summary: t('Diagnose and repair a collection line, then collect.', 'Diagnostiquer et réparer une chaîne de collecte, puis collecter.') },
 };
-export const livestockScenario = (level: Demonstration['level'], pieces: Piece[], faulty = false): Demonstration => {
+export const livestockScenario = (level: GuidedLevel, pieces: Piece[], faulty = false): Demonstration => {
   const check = (count: number, complete: boolean, assigned = false, fault = false): DemonstrationStep['check'] => state => {
     const interior = roomOf(state).interior;
     const fixtures = interior?.fixtures ?? [];

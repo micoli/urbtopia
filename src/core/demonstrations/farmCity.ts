@@ -6,7 +6,7 @@ import type { FixtureId, Rotation } from '../engine/state';
 import type { GoodId } from '../economy/items';
 import { BUILDING_ID, lineCity, roomOf } from './lineInterior';
 import { levelTitle, placeTitle, type LevelIntro } from './guidedLevel';
-import type { Demonstration, DemonstrationStep, DemonstrationText } from './scenario';
+import type { Demonstration, DemonstrationStep, DemonstrationText, GuidedLevel } from './scenario';
 
 export type FarmPiece = { id: string; fixture: FixtureId; x: number; y: number; rotation: Rotation; label: DemonstrationText; explanation: DemonstrationText };
 
@@ -31,7 +31,7 @@ export const farmLabels = {
   sprinklerInfo: t('The sprinkler takes water through its side. An irrigator assigned to it adds Field tiles to the Farm.', 'L’arroseur reçoit l’eau par son côté. Un irrigateur qui lui est affecté ajoute des parcelles à la ferme.'),
 };
 
-const INTROS: Record<Demonstration['level'], LevelIntro> = {
+const INTROS: Record<GuidedLevel, LevelIntro> = {
   simple: {
     title: t('A first harvest line', 'Une première chaîne de récolte'), objective: t('Carry the harvest from the intake to the harvest bin.', 'Porter la récolte de l’entrée jusqu’au bac de récolte.'),
     explanation: t('The washer needs water, the thresher and the grader need drive, and a farmhand at the bin raises the yield of the Harvest.', 'La laveuse veut de l’eau, la batteuse et la calibreuse veulent de la force, et un ouvrier agricole au bac augmente le rendement de la récolte.'),
@@ -102,7 +102,7 @@ const staffSteps = (pieces: readonly FarmPiece[], role: 'farmhand' | 'irrigator'
   ];
 };
 
-export const farmScenario = (level: Demonstration['level'], pieces: FarmPiece[], role: 'farmhand' | 'irrigator', faulty = false): Demonstration => {
+export const farmScenario = (level: GuidedLevel, pieces: FarmPiece[], role: 'farmhand' | 'irrigator', faulty = false): Demonstration => {
   const steps: DemonstrationStep[] = [{
     id: 'goal', ...INTROS[level], action: t('The room you see is an empty Tier 1 Farm interior. You will fit it out piece by piece.', 'La salle que tu vois est un intérieur de ferme de niveau 1, vide. Tu vas l’équiper pièce par pièce.'),
     result: t('The room is empty.', 'La salle est vide.'), check: check({ count: 0 }),

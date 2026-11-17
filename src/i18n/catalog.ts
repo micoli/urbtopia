@@ -14,6 +14,7 @@ export const CATALOG = {
   'demo.simple': ['Simple', 'Simple'],
   'demo.intermediate': ['Intermediate', 'Intermédiaire'],
   'demo.advanced': ['Advanced', 'Avancé'],
+  'demo.expert': ['Expert', 'Expert'],
   'demo.previous': ['Previous step', 'Étape précédente'],
   'demo.next': ['Next step', 'Étape suivante'],
   'demo.play': ['Play automatically', 'Lecture automatique'],
