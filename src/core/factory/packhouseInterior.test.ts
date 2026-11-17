@@ -148,6 +148,15 @@ describe('the Packets of a Line', () => {
     expect(linePathsOf([put('packhousePacker', 2, 0)])).toEqual([]);
   });
 
+  it('split at a cross splitting conveyor into a way for each of the three Exits', () => {
+    const fixtures = [put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), put('packhouseConveyorCross', 2, 2), put('packhouseExitPallet', 2, 3, 2),
+      put('packhouseConveyor', 1, 2, 1), put('packhouseExitCrate', 0, 2, 3), put('packhouseConveyor', 3, 2, 3), put('packhouseExitBox', 4, 2, 1)];
+    const paths = linePathsOf(fixtures);
+    expect(paths).toHaveLength(3);
+    expect(new Set(paths.map(path => path.source)).size).toBe(1);
+    expect(linkedExitsOf(fixtures)).toHaveLength(3);
+  });
+
   it('split at a splitting T into a way for each Exit, which share their start', () => {
     const fixtures = [put('packhousePacker', 2, 0), ...driven(2, 0), put('packhouseConveyor', 2, 1), put('packhouseConveyorSplit', 2, 2), put('packhouseConveyor', 1, 2, 1), put('packhouseExitCrate', 0, 2, 3),
       put('packhouseConveyor', 3, 2, 3), put('packhouseExitBox', 4, 2, 1)];

@@ -1482,6 +1482,7 @@ export type ModelId =
   | 'nature-tree-thin'
   | 'nature-tree-thin-dark'
   | 'nature-tree-thin-fall'
+  | 'packhouse-floor-conveyor-cross'
   | 'packhouse-floor-conveyor-elbow-left'
   | 'packhouse-floor-conveyor-elbow-right'
   | 'packhouse-floor-conveyor-join-straight-left'

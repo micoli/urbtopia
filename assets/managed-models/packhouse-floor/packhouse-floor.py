@@ -130,6 +130,19 @@ def conveyor_split(rng):
     return parts + arrow("arrow_l", -0.33, 0.0, -90) + arrow("arrow_r", 0.33, 0.0, 90) + arrow("arrow_in", 0.0, 0.3)
 
 
+def conveyor_cross(rng):
+    """Cross Conveyor that splits three ways: the Packets come in at the back, along y, and leave toward the front and to the left and to the right, one packet to each in turn.
+    All four arms are open and have two rails. Arrows on the three exits point away from the junction, the one on the back points in."""
+    parts = [block("belt_bed_bar", -0.5, 0.5, -0.17, 0.17, 0.3, BELT_Z - 0.02, P["belt"]), block("belt_bed_stem", -0.17, 0.17, -0.5, 0.5, 0.3, BELT_Z - 0.02, P["belt"]),
+             block("junction_plate", -0.17, 0.17, -0.17, 0.17, BELT_Z - 0.02, BELT_Z - 0.016, P["steel_dark"]),
+             block("splitter_blade_x", -0.12, 0.12, -0.015, 0.015, BELT_Z - 0.02, BELT_Z + 0.04, P["yellow"]), block("splitter_blade_y", -0.015, 0.015, -0.12, 0.12, BELT_Z - 0.02, BELT_Z + 0.04, P["yellow"])]
+    for k, (sx, sy) in enumerate(((-1, -1), (1, -1), (-1, 1), (1, 1))):
+        parts += [block(f"rail_x{k}", min(0.2 * sx, 0.5 * sx), max(0.2 * sx, 0.5 * sx), min(0.17 * sy, 0.2 * sy), max(0.17 * sy, 0.2 * sy), 0.3, BELT_Z, P["steel"]),
+                  block(f"rail_y{k}", min(0.17 * sx, 0.2 * sx), max(0.17 * sx, 0.2 * sx), min(0.2 * sy, 0.5 * sy), max(0.2 * sy, 0.5 * sy), 0.3, BELT_Z, P["steel"]),
+                  block(f"leg{k}", min(0.41 * sx, 0.47 * sx), max(0.41 * sx, 0.47 * sx), min(0.155 * sy, 0.215 * sy), max(0.155 * sy, 0.215 * sy), 0.0, 0.3, P["iron"])]
+    return parts + arrow("arrow_l", -0.33, 0.0, -90) + arrow("arrow_r", 0.33, 0.0, 90) + arrow("arrow_front", 0.0, -0.36) + arrow("arrow_in", 0.0, 0.34)
+
+
 def split_straight(side, joining=False):
     """Straight splitting T Conveyor: the Packets come in at the back and go on straight toward the front, and every other packet turns off to the right (side 1) or to the left
     (side -1) along x. The belt keeps its two rails, opened on the side of the branch. Joining, the branch brings its Packets onto the straight belt instead, and there is no diverter."""
@@ -277,6 +290,7 @@ if __name__ == "__main__":
         "conveyor-straight": conveyor_straight,
         "conveyor-tee": conveyor_tee,
         "conveyor-split": conveyor_split,
+        "conveyor-cross": conveyor_cross,
         "conveyor-split-straight-left": split_straight(-1),
         "conveyor-split-straight-right": split_straight(1),
         "conveyor-join-straight-left": split_straight(-1, True),

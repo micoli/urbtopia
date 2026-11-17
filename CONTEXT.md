@@ -461,7 +461,7 @@ The Machine at the start of a Line, standing against the back wall of a Packhous
 _Avoid_: Packing machine, entry
 
 **Conveyor**:
-A Fixture of a Line, at a worker's height, that carries Packets one way: straight, in an elbow (a left or a right turn for the Packets), in a T that merges two entries into one exit (from both sides, or from straight behind and one side), or in a T that splits one entry into two exits (to both sides, or straight on and to one side), where Packets take the two ways in turn. It needs no Drive.
+A Fixture of a Line, at a worker's height, that carries Packets one way: straight, in an elbow (a left or a right turn for the Packets), in a T that merges two entries into one exit (from both sides, or from straight behind and one side), or in a T that splits one entry into two exits (to both sides, or straight on and to one side), where Packets take the two ways in turn, or in a cross that splits one entry into three exits (straight on and to both sides), where Packets take the three ways in turn. It needs no Drive.
 _Avoid_: Belt, tape, treadmill
 
 **Strapper**:

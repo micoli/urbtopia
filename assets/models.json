@@ -25938,6 +25938,16 @@
       "height": 2.5
     }
   },
+  "packhouse-floor-conveyor-cross": {
+    "file": "packhouse-floor/conveyor-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "packhouse-floor-conveyor-elbow-left": {
     "file": "packhouse-floor/conveyor-elbow-left",
     "source": "managed",
