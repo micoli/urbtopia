@@ -331,6 +331,38 @@ describe('Strong motor', () => {
   });
 });
 
+describe('Reverser', () => {
+  const lathes = ['factoryLatheCw', 'factoryLatheCcw'] as const;
+  const turning = (carrier: FixtureId) => lathes.find(lathe => linkedTypes([put('factoryMotor', 3, 3), put(carrier, 3, 4), put(lathe, 3, 5, 2)]).length === 1);
+
+  it('hands the Drive on like a Shaft, turned the other way', () => {
+    expect(turning('factoryShaft')).toBeDefined();
+    expect(turning('factoryReverser')).toBeDefined();
+    expect(turning('factoryReverser')).not.toBe(turning('factoryShaft'));
+  });
+
+  it('turns back the way it was when a second Reverser follows', () => {
+    const fixtures = (lathe: FixtureId) => [put('factoryMotor', 3, 3), put('factoryReverser', 3, 4), put('factoryReverser', 3, 5), put(lathe, 3, 6, 2)];
+    expect(lathes.find(lathe => linkedTypes(fixtures(lathe)).length === 1)).toBe(turning('factoryShaft'));
+  });
+
+  it('reverses only what lies beyond it: the Shaft before it keeps the turn of the Motor', () => {
+    const before = put('factoryShaft', 3, 4);
+    const reverser = put('factoryReverser', 3, 5);
+    const beyond = put('factoryShaft', 3, 6);
+    const motion = interiorMotionOf([put('factoryMotor', 3, 3), before, reverser, beyond]);
+    const halves = motion.get(reverser.id) as Record<string, string>;
+    expect(halves.back).toBe(motion.get(before.id));
+    expect(halves.front).not.toBe(halves.back);
+    expect(motion.get(beyond.id)).toBe(halves.front);
+  });
+
+  it('is on offer in every interior that runs on Drive', () => {
+    const reversers = Object.values(FIXTURES).filter(spec => spec.reverses);
+    expect(reversers).toHaveLength(Object.values(FIXTURES).filter(spec => spec.role === 'shaft' && !spec.reverses).length);
+  });
+});
+
 describe('what a floor costs and brings', () => {
   const pressLine = (x: number, y: number) => [put('factoryMotor', x, y - 2), put('factoryShaft', x, y - 1), put('factoryPress', x, y, 2)];
   const vat = () => [...pumped(3, 3), put('factoryPipe', 3, 4), put('factoryMixingVat', 3, 5, 2)];

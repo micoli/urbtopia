@@ -87,6 +87,8 @@ export interface FixtureSpec {
   // A Motor: how many Machines it drives, and the power it draws as a multiple of an ordinary Motor.
   strength?: number;
   draw?: number;
+  // A Shaft that turns the Drive the other way for everything it hands on.
+  reverses?: true;
   power?: number;
   assigns?: 'baker' | 'seller' | 'cheesemaker' | 'creamMaker' | 'miller' | 'spinner' | 'knitter' | 'herder' | 'farmhand' | 'irrigator' | 'restocker';
   // A Machine on which the player picks the item that the Line carries (the Extractor of a Workshop).

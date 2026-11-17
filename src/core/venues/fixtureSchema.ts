@@ -104,6 +104,8 @@ export const fixtureSchema = z
       strength: z.int().min(1).optional(),
       // A Motor: the power it draws, as a multiple of what one ordinary Motor draws; 1 when left out.
       draw: z.number().positive().optional(),
+      // A Shaft that turns the Drive the other way for everything it hands on: the Reverser.
+      reverses: z.literal(true).optional(),
       // The role of the Staff that is assigned to the Fixture by hand: a baker to an Oven, a cheesemaker to a Cheese cellar, a cream maker to a Pasteuriser, a seller to a Display counter.
       assigns: z.enum(['baker', 'seller', 'cheesemaker', 'creamMaker', 'miller', 'spinner', 'knitter', 'herder', 'farmhand', 'irrigator', 'restocker']).optional(),
       // A Machine at the start of a Line on which the player picks the item that the Line carries: the Extractor of a Workshop.

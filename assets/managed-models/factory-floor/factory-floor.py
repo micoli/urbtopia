@@ -106,6 +106,18 @@ def shaft(rng):
     return parts, {"spin-y": (turning, (0, 0, PIPE_Z))}
 
 
+def reverser(rng):
+    """Reverser: a straight shaft along y like the Shaft, with a red gearbox housing in the middle that shows the turn is reversed there. Its front rod and its back rod turn opposite ways."""
+    front = [horizontal(disc("rod_front", 0.045, 0.5, (0, 0, 0), P["steel"], 6), y=-0.5, z=0.34), block("key_front", -0.012, 0.012, -0.5, 0.0, 0.385, 0.395, P["steel_dark"])]
+    back = [horizontal(disc("rod_back", 0.045, 0.5, (0, 0, 0), P["steel"], 6), y=0.0, z=0.34), block("key_back", -0.012, 0.012, 0.0, 0.5, 0.385, 0.395, P["steel_dark"])]
+    parts = [block("housing", -0.17, 0.17, -0.17, 0.17, 0.12, 0.5, P["red"]), block("housing_lid", -0.19, 0.19, -0.19, 0.19, 0.5, 0.55, P["steel_dark"]),
+             block("housing_base", -0.2, 0.2, -0.2, 0.2, 0.0, 0.12, P["iron"]), block("lamp", -0.04, 0.04, -0.04, 0.04, 0.55, 0.62, P["yellow"])]
+    for k, y in enumerate((-0.35, 0.35)):
+        parts += [block(f"pedestal{k}", -0.07, 0.07, y - 0.06, y + 0.06, 0.0, 0.26, P["iron"]), block(f"bearing{k}", -0.09, 0.09, y - 0.08, y + 0.08, 0.26, 0.3, P["blue_dark"]),
+                  horizontal(disc(f"sleeve{k}", 0.075, 0.16, (0, 0, 0), P["brass"], 8), y=y - 0.08, z=0.34)]
+    return parts, {"spin-y": (front, (0, 0, PIPE_Z)), "spin-ny": (back, (0, 0, PIPE_Z))}
+
+
 def pump(rng):
     """In-line centrifugal pump facing -y: the fluid enters through the flanged pipe at the back and leaves through the front, and a shaft
     stub with its bearing brings the Drive in from the right. A gauge sits on the casing."""
@@ -412,6 +424,7 @@ if __name__ == "__main__":
         "motor": motor,
         "gear": gear,
         "shaft": shaft,
+        "reverser": reverser,
         "pump": pump,
         "pump-left": mirrored(pump),
         "tank": tank,

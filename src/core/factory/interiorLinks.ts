@@ -145,6 +145,9 @@ interface Node {
 
 const isBevel = (fixture: VenueFixture): boolean => roleOf(fixture) === 'bevel';
 
+// A Fixture whose sides do not all turn the same way: a bevel gear and a Reverser.
+const isSplit = (fixture: VenueFixture): boolean => isBevel(fixture) || FIXTURES[fixture.type].reverses === true;
+
 const nodeKey = ({ fixture, side }: Node): string => (side ? `${fixture.id}:${side}` : `${fixture.id}`);
 
 // The Fixture across a side, when both sides of the edge are open.
@@ -157,7 +160,7 @@ function across(fixture: VenueFixture, side: FixtureSide, at: ReadonlyMap<string
 interface Step {
   node?: Node;
   machine?: VenueFixture;
-  // The turn reverses on the way: two Gears meshed rim to rim, or two cones of a bevel gear that mesh.
+  // The turn reverses on the way: two Gears meshed rim to rim, two cones of a bevel gear that mesh, or the two halves of a Reverser.
   reverses: boolean;
 }
 
@@ -178,11 +181,11 @@ function stepsFrom(node: Node, at: ReadonlyMap<string, VenueFixture>): Step[] {
     const next = across(fixture, own, at);
     if (!next) continue;
     if (takesDrive(next)) steps.push({ machine: next, reverses: false });
-    else if (isBevel(next)) steps.push({ node: { fixture: next, side: sideToward(next, fixture)! }, reverses: false });
+    else if (isSplit(next)) steps.push({ node: { fixture: next, side: sideToward(next, fixture)! }, reverses: false });
     else steps.push({ node: { fixture: next }, reverses: roleOf(next) === 'gear' && isRim(fixture, next) });
   }
-  // Inside a bevel gear the stem cone (the front) meshes with the others.
-  if (side) for (const other of sidesOf(fixture, 'drive')) if (other !== side) steps.push({ node: { fixture, side: other }, reverses: meshReverses(fixture, side, other) });
+  // Inside a bevel gear the stem cone (the front) meshes with the others; the two halves of a Reverser turn opposite ways.
+  if (side) for (const other of sidesOf(fixture, 'drive')) if (other !== side) steps.push({ node: { fixture, side: other }, reverses: isBevel(fixture) ? meshReverses(fixture, side, other) : true });
   return steps;
 }
 

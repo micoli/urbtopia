@@ -21764,6 +21764,16 @@
     ],
     "flush": true
   },
+  "factory-floor-reverser": {
+    "file": "factory-floor/reverser",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "factory-floor-shaft": {
     "file": "factory-floor/shaft",
     "source": "managed",

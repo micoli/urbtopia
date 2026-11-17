@@ -539,6 +539,10 @@ _Avoid_: Power (electricity), torque
 A Fixture of a Factory interior that turns the Drive a quarter turn (the elbow), splits it three ways (the tee) or four ways (the cross), so that one Motor can serve several Machines. Its cones mesh like Gears at a right angle: a turn is told about the +x or +z axis of the floor, whichever way a Fixture faces, so the Drive reverses between the stem and a side cone only when the two cones point toward the same sign of axis. In a tee the two side cones both mesh the stem, so they turn opposite ways; in a cross the cone across from the stem turns opposite to it as well, and the four cones never jam. A cross takes the Drive on any of its sides and gives it to the three others.
 _Avoid_: Gearbox, junction
 
+**Reverser**:
+A Shaft of a Factory interior that turns the Drive the other way for everything it hands on. Its two halves, front and back, turn opposite ways, so a Machine behind it that needs the other direction gets it without a Gear, and a second Reverser restores the first direction. The Shaft before it keeps the turn of the Motor. It is a single tile in line with the Drive, on offer from Tier 2.
+_Avoid_: Inverter, switch
+
 **Strong motor**:
 A Motor of a Factory interior that covers two tiles and hands its Drive over at one end, in line with its body, never on its sides or its other end. It drives five Machines or Pumps instead of three and draws one and a half times the power of an ordinary Motor, so less per Machine it drives. Its two tiles and its single end make it a layout decision. It is on offer from Tier 3, as is the Bevel gear cross.
 _Avoid_: Big motor, generator

@@ -1284,6 +1284,10 @@
           "type": "number",
           "exclusiveMinimum": 0
         },
+        "reverses": {
+          "type": "boolean",
+          "const": true
+        },
         "assigns": {
           "type": "string",
           "enum": [
