@@ -3,7 +3,7 @@ import { SHOP } from '../economy/economy';
 import { advanceBuilding } from '../economy/production';
 import { saleIntervalOf } from '../economy/shops';
 import { assignedRoleOf, hasAssignments, workFocusOf } from '../interiors/interiorAssignments';
-import { interiorLayoutOf, interiorWagesPerHour, isProducerRole } from '../interiors/interiorStaff';
+import { interiorLayoutOf, interiorWagesPerHour, isPlainRole, isProducerRole } from '../interiors/interiorStaff';
 import type { GameEvent } from '../engine/events';
 import type { Building, GameState, ShopStack, VenueFixture } from '../engine/state';
 import type { GoodId } from '../economy/items';
@@ -20,7 +20,7 @@ const workingWithGoodOf = (building: Building, role: 'producer' | 'seller'): { f
   const fixtures = building.interior.fixtures;
   const { lined } = interiorLinksOf(fixtures);
   return fixtures
-    .filter(fixture => fixture.assigned === true && assignedRoleOf(fixture) !== undefined && isProducerRole(assignedRoleOf(fixture)) === (role === 'producer') && lined.has(fixture.id) && (role === 'producer' || suppliedGoodsOf(fixtures, fixture).has(fixture.soldGood!)))
+    .filter(fixture => fixture.assigned === true && assignedRoleOf(fixture) !== undefined && !isPlainRole(assignedRoleOf(fixture)) && isProducerRole(assignedRoleOf(fixture)) === (role === 'producer') && lined.has(fixture.id) && (role === 'producer' || suppliedGoodsOf(fixtures, fixture).has(fixture.soldGood!)))
     .flatMap(fixture => {
       const good = workFocusOf(fixtures, fixture);
       return good === undefined ? [] : [{ fixture, good }];

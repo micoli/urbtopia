@@ -28,6 +28,8 @@ export interface InteriorLayout {
   technicianPosts: number[];
   salesCaps?: number[];
   capacityCaps?: number[];
+  // Farm interior: the Fields that the farmhand of a Harvest bin harvests in an hour, by Tier.
+  harvestPerHour?: number[];
   yieldGroups?: Record<string, string[]>;
   feeds?: LineFeed[];
   // A Line only counts when it passes through a Fixture of this family on its way to an Exit: the Finisher of a Knitwear factory.
@@ -85,7 +87,10 @@ export const interiorFixtureKindOf = (type: BuildingType): BuildingType => DECLA
 
 // The group of Goods that an item belongs to in a building that splits its yield, if it does.
 // Every assigned role but the seller works a Machine: a baker an Oven, a cheesemaker a Cheese cellar, a cream maker a Pasteuriser.
-export const isProducerRole = (role: InteriorRole | undefined): boolean => role !== undefined && role !== 'seller';
+export const isProducerRole = (role: InteriorRole | undefined): boolean => role !== undefined && role !== 'seller' && !isPlainRole(role);
+
+// The Staff of a Farm interior that stand at a Fixture with no Good to work on: the farmhand of a Harvest bin and the irrigator of a Sprinkler.
+export const isPlainRole = (role: InteriorRole | undefined): boolean => role === 'farmhand' || role === 'irrigator';
 
 export const yieldGroupOf = (type: BuildingType, item: string): string | undefined => Object.entries(DECLARATIONS[type]?.layout?.yieldGroups ?? {}).find(([, items]) => items.includes(item))?.[0];
 

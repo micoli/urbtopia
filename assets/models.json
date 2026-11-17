@@ -21804,6 +21804,236 @@
     ],
     "flush": true
   },
+  "farm-interior-floor": {
+    "file": "farm-interior/floor",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-grader": {
+    "file": "farm-interior/grader",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-grader-left": {
+    "file": "farm-interior/grader-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-harvest-bin": {
+    "file": "farm-interior/harvest-bin",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-intake": {
+    "file": "farm-interior/intake",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-partition": {
+    "file": "farm-interior/partition",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-partition-cross": {
+    "file": "farm-interior/partition-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-partition-elbow": {
+    "file": "farm-interior/partition-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-partition-full": {
+    "file": "farm-interior/partition-full",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-partition-full-cross": {
+    "file": "farm-interior/partition-full-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-partition-full-elbow": {
+    "file": "farm-interior/partition-full-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-partition-full-tee": {
+    "file": "farm-interior/partition-full-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-partition-tee": {
+    "file": "farm-interior/partition-tee",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-sprinkler": {
+    "file": "farm-interior/sprinkler",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-sprinkler-left": {
+    "file": "farm-interior/sprinkler-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-thresher": {
+    "file": "farm-interior/thresher",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-thresher-left": {
+    "file": "farm-interior/thresher-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-wall": {
+    "file": "farm-interior/wall",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-wall-corner": {
+    "file": "farm-interior/wall-corner",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-wall-door": {
+    "file": "farm-interior/wall-door",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-wall-window": {
+    "file": "farm-interior/wall-window",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-washer": {
+    "file": "farm-interior/washer",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "farm-interior-washer-left": {
+    "file": "farm-interior/washer-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "furniture-bathtub": {
     "file": "furniture/bathtub",
     "source": "managed",

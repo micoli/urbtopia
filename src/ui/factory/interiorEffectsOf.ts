@@ -10,7 +10,7 @@ export interface InteriorEffect {
   value: string;
 }
 
-type EffectId = 'speed' | 'yield' | 'sales' | 'capacity' | 'wasteCapacity' | 'reach';
+type EffectId = 'speed' | 'yield' | 'sales' | 'capacity' | 'fieldCap' | 'wasteCapacity' | 'reach';
 
 const DEFAULT_EFFECTS: readonly EffectId[] = ['speed', 'yield'];
 
@@ -20,6 +20,7 @@ const EFFECTS_BY_TYPE: Partial<Record<BuildingType, readonly EffectId[]>> = {
   textileMill: ['speed'],
   knitwearFactory: ['speed', 'yield', 'sales'],
   livestockFarm: ['yield'],
+  farm: ['yield', 'fieldCap'],
   bakery: ['speed', 'yield', 'sales'],
   dairy: ['yield'],
   storehouse: ['capacity'],
@@ -33,6 +34,7 @@ const PRESENTATION: Record<EffectId, { icon: IconName; label: MessageKey }> = {
   yield: { icon: 'yield', label: 'factory.interior.yield' },
   sales: { icon: 'money', label: 'factory.interior.sales' },
   capacity: { icon: 'disk', label: 'factory.interior.capacity' },
+  fieldCap: { icon: 'map', label: 'factory.interior.fieldCap' },
   wasteCapacity: { icon: 'trash', label: 'factory.interior.wasteCapacity' },
   reach: { icon: 'map', label: 'factory.interior.reach' },
 };
@@ -46,6 +48,7 @@ export function interiorEffectsOf(building: Pick<Building, 'type' | 'tier' | 'in
     yield: formatPercent(bonus.yield),
     sales: formatPercent(bonus.sales ?? 0),
     capacity: formatPercent(bonus.capacity ?? 0),
+    fieldCap: formatPercent(bonus.capacity ?? 0),
     wasteCapacity: `+${Math.round(recycling.capacity)}`,
     reach: `+${recycling.collectionDistance}`,
   };

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { FIXTURES, hasLineInterior, interiorFixturesOf, interiorLinksOf, interiorMotorLoadOf, type Building, type VenueFixture } from '../../core';
 import { t } from '../../i18n/t';
 import { InteriorBenefits } from './InteriorBenefits';
+import { FarmFixtureStatus } from './FarmFixtureStatus';
 import { LineStatus } from './LineStatus';
 
 interface InteriorMachineStatusProps {
@@ -29,11 +30,14 @@ export function InteriorMachineStatus({ factory, fixture }: InteriorMachineStatu
     );
   }
   if (!status.links) return null;
+  if (role === 'exit' && factory.type === 'farm') return <><LineStatus lined={status.links.lined.has(fixture.id)} fixture={fixture} fixtures={fixtures} /><FarmFixtureStatus farm={factory} fixture={fixture} reached={status.links.lined.has(fixture.id)} /></>;
   if (role === 'conveyor' || role === 'scanner' || role === 'exit') return <LineStatus lined={status.links.lined.has(fixture.id)} fixture={fixture} fixtures={fixtures} />;
   if (status.links.overfed.has(fixture.id)) return <p className="note note--warn">{t('packhouse.interior.fault.overfed').replace('{name}', t(`venue.fixture.${fixture.type}`))}</p>;
-  if (hasLineInterior(factory) && status.links.linked.has(fixture.id) && !status.links.lined.has(fixture.id)) return <><p className="note note--warn">{t('packhouse.interior.noExit')}</p></>;
+  // A Machine that is not on the Line, such as the Sprinkler of a Farm interior, has no Exit to reach.
+  const onLine = FIXTURES[fixture.type].lineIn !== undefined || FIXTURES[fixture.type].lineOut !== undefined;
+  if (hasLineInterior(factory) && onLine && status.links.linked.has(fixture.id) && !status.links.lined.has(fixture.id)) return <><p className="note note--warn">{t('packhouse.interior.noExit')}</p></>;
   if (FIXTURES[fixture.type].family === 'millstone' && status.links.linked.has(fixture.id) && !status.links.lined.has(fixture.id)) return <p className="note note--warn">{t('mill.interior.incomplete')}</p>;
-  if (status.links.linked.has(fixture.id)) return <><p className="note">{t('factory.interior.linkedMachine')}</p><InteriorBenefits fixtures={fixtures} fixture={fixture} /></>;
+  if (status.links.linked.has(fixture.id)) return <><p className="note">{t('factory.interior.linkedMachine')}</p><InteriorBenefits fixtures={fixtures} fixture={fixture} /><FarmFixtureStatus farm={factory} fixture={fixture} reached /></>;
   const problems = status.links.problems.get(fixture.id) ?? [];
   return <>{problems.map(problem => <p key={problem} className="note note--warn">{t(`factory.interior.problem.${problem}`)}</p>)}</>;
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from 'zustand';
-import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, hasAssignments, hasProductionInterior, hasServiceInterior, isBroken, isInteriorBuilding, isHomeType, repairCost, WEAR } from '../../core';
+import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, canAssignStaff, hasProductionInterior, hasServiceInterior, isBroken, isInteriorBuilding, isHomeType, repairCost, WEAR } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -58,7 +58,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
         {partition ? null : isBroken(fixture) ? <p className="note note--danger">{t('venue.broken')}</p> : conditionOf(fixture) < WEAR.breakdownBelow ? <p className="note note--warn">{t('venue.worn')}</p> : null}
         {interiorOwner ? <InteriorMachineStatus factory={interiorOwner} fixture={fixture} /> : null}
         {interiorOwner && movingId === null ? <ExitRestock packhouse={interiorOwner} fixture={fixture} /> : null}
-        {interiorOwner && movingId === null && hasAssignments(interiorOwner) ? <InteriorAssignment building={interiorOwner} fixture={fixture} /> : null}
+        {interiorOwner && movingId === null && canAssignStaff(interiorOwner) ? <InteriorAssignment building={interiorOwner} fixture={fixture} /> : null}
         {hints.map(hint => <p key={hint} className="note note--warn">{t(`venue.hint.${hint}`)}</p>)}
       </PanelSection>
       <PanelSection id="usage" title={t('panel.section.modifications')}>

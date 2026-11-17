@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, isItemUnlocked, isProducerRole, picksItem, type Building, type GoodId, type VenueFixture } from '../../core';
+import { assignedRoleOf, focusGoodsOf, focusOf, freeStaffOf, isItemUnlocked, isPlainRole, isProducerRole, picksItem, type Building, type GoodId, type VenueFixture } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { Dropdown } from '../common/Dropdown';
@@ -26,10 +26,11 @@ export function InteriorAssignment({ building, fixture }: InteriorAssignmentProp
   const send = gameStore.getState().send;
   if (role === undefined) return <ItemChoice building={building} fixture={fixture} />;
   if (role === 'restocker' || role === 'herder') return <RestockerAssignment building={building} fixture={fixture} />;
+  if (role === 'irrigator') return <StaffAssignSwitch building={building} fixture={fixture} role={role} blocked={freeStaffOf(building, role) <= 0} />;
   const choice = focusOf(fixture);
   const options = [{ value: NONE, label: t('venue.assignNone') }, ...goods.map(good => ({ value: good as string, label: <ItemLabel item={good} />, disabled: !unlocked.split(',').includes(good) }))];
   const noSupply = role === 'seller' && goods.length === 0;
-  const label = t(isProducerRole(role) ? 'venue.assignRecipe' : 'venue.assignSoldGood');
+  const label = t(role === 'farmhand' ? 'venue.assignCrop' : isProducerRole(role) ? 'venue.assignRecipe' : 'venue.assignSoldGood');
   const free = freeStaffOf(building, role);
   return (
     <div className="venue-stock">
@@ -43,7 +44,7 @@ export function InteriorAssignment({ building, fixture }: InteriorAssignmentProp
         />
       </div>
       {noSupply ? <p className="note note--warn">{t('venue.assignNoSupply')}</p> : null}
-      <StaffAssignSwitch building={building} fixture={fixture} role={role} blocked={choice === undefined || free <= 0} />
+      <StaffAssignSwitch building={building} fixture={fixture} role={role} blocked={(choice === undefined && !isPlainRole(role)) || free <= 0} />
     </div>
   );
 }

@@ -160,6 +160,14 @@
                   "exclusiveMinimum": 0
                 }
               },
+              "harvestPerHour": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              },
               "yieldGroups": {
                 "type": "object",
                 "propertyNames": {
@@ -323,6 +331,8 @@
                 "spinner",
                 "knitter",
                 "herder",
+                "farmhand",
+                "irrigator",
                 "baker",
                 "seller",
                 "cheesemaker",

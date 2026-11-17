@@ -10,6 +10,6 @@ describe('the demonstrations of a type', () => {
 
   it('are those of the type itself otherwise', () => {
     expect(demonstrationTypeOf('mill')).toBe('mill');
-    expect(demonstrationsOf('farm')).toEqual([]);
+    expect(demonstrationsOf('grainSilo')).toEqual([]);
   });
 });

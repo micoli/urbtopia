@@ -402,7 +402,8 @@ function flowReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, Ve
 
 // The Cooling vats a Tank reaches through its Pumps, and the ones it cannot feed: each Tank feeds a few, the lowest ids first, and the vat no Tank feeds is cut from the Flow.
 function starvedVats(fixtures: readonly VenueFixture[], fedByTank: ReadonlyMap<number, number[]>, outputs: FlowReach['outputs'], reached: Set<number>): Set<number> {
-  const isVat = new Set(fixtures.filter(fixture => FIXTURES[fixture.type].coolant !== undefined).map(fixture => fixture.id));
+  // The Machines of a Farm interior that take Flow, the Washer and the Sprinklers, count with the Cooling vats against the strength of a Tank.
+  const isVat = new Set(fixtures.filter(fixture => FIXTURES[fixture.type].coolant !== undefined || (FIXTURES[fixture.type].venue === 'farm' && isMachine(fixture) && FIXTURES[fixture.type].flow !== undefined)).map(fixture => fixture.id));
   const fed = new Set<number>();
   const wanted = new Set<number>();
   for (const pumps of fedByTank.values()) {

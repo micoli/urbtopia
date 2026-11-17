@@ -1,14 +1,18 @@
 import type { CommandOutcome } from '../engine/commands';
 import type { Building, GameState, InteriorData, InteriorRole, VenueFixture } from '../engine/state';
 import { producibleItems, type GoodId } from '../economy/items';
+import { CROP_IDS } from '../farming/crops';
 import { sellableGoodsOf } from '../economy/shops';
 import { isItemUnlocked } from '../progression/unlocks';
 import { FIXTURES } from '../venues/fixtures';
 import { interiorUpstreamOf, suppliedGoodsOf } from '../factory/interiorLine';
 import { editInterior } from './interiorEdit';
-import { hiredInteriorOf, interiorDeclarationOf, interiorLayoutOf, isProducerRole, yieldGroupOf } from './interiorStaff';
+import { hiredInteriorOf, interiorDeclarationOf, interiorLayoutOf, interiorRolesOf, isPlainRole, isProducerRole, yieldGroupOf } from './interiorStaff';
 
 export const hasAssignments = (building: Pick<Building, 'type'>): boolean => interiorDeclarationOf(building.type)?.bonusModel === 'assigned' || interiorLayoutOf(building.type)?.autoWork === true;
+
+// The Staff of a Farm interior are assigned to a Fixture too, though they do no work of their own: the engine of the assistants leaves them out.
+export const canAssignStaff = (building: Pick<Building, 'type'>): boolean => hasAssignments(building) || interiorRolesOf(building.type).some(isPlainRole);
 
 // The group of Goods of the Dairy that a role makes, when it makes only one.
 const GROUP_OF_ROLE: Partial<Record<InteriorRole, string>> = { cheesemaker: 'cheese', creamMaker: 'cream' };
@@ -19,7 +23,10 @@ const carriesItem = (fixture: Pick<VenueFixture, 'type'>): boolean => assignedRo
 export const assignedRoleOf = (fixture: Pick<VenueFixture, 'type'>): InteriorRole | undefined => FIXTURES[fixture.type].assigns;
 
 // The Good an assigned Fixture works on: the Recipe of an Oven, the Sold Good of a Display counter.
-export const focusOf = (fixture: VenueFixture): GoodId | undefined => (isProducerRole(assignedRoleOf(fixture)) || FIXTURES[fixture.type].picks === true ? fixture.recipe : fixture.soldGood);
+export const focusOf = (fixture: VenueFixture): GoodId | undefined => (isProducerRole(assignedRoleOf(fixture)) || isCropHarvester(fixture) || FIXTURES[fixture.type].picks === true ? fixture.recipe : fixture.soldGood);
+
+// The Harvest bin of a Farm interior: the species its farmhand harvests is picked on it.
+export const isCropHarvester = (fixture: Pick<VenueFixture, 'type'>): boolean => assignedRoleOf(fixture) === 'farmhand';
 
 // A Fixture on which the player picks the item that its Line carries: the Extractor of a Workshop.
 export const picksItem = (fixture: Pick<VenueFixture, 'type'>): boolean => FIXTURES[fixture.type].picks === true;
@@ -36,7 +43,8 @@ export const workFocusOf = (fixtures: readonly VenueFixture[], fixture: VenueFix
 export function focusGoodsOf(building: Building, fixture: VenueFixture): readonly GoodId[] {
   const role = assignedRoleOf(fixture);
   if (picksItem(fixture)) return (producibleItems(building.type) as GoodId[]);
-  if (role === undefined || carriesItem(fixture)) return [];
+  if (role === 'farmhand') return [...CROP_IDS] as unknown as GoodId[];
+  if (role === undefined || carriesItem(fixture) || isPlainRole(role)) return [];
   if (isProducerRole(role)) {
     const group = GROUP_OF_ROLE[role!];
     return (producibleItems(building.type) as GoodId[]).filter(good => group === undefined || yieldGroupOf(building.type, good) === group);
@@ -62,11 +70,13 @@ const assignableOf = (building: Building, fixtureId: number): VenueFixture | und
 const withReplacedFixture = (interior: InteriorData, replacement: VenueFixture): InteriorData => ({ ...interior, fixtures: interior.fixtures.map(fixture => (fixture.id === replacement.id ? replacement : fixture)) });
 
 export const setInteriorFocus = (state: GameState, buildingId: number, fixtureId: number, good: GoodId | null): CommandOutcome =>
-  editInterior(state, buildingId, hasAssignments, (building, interior) => {
+  editInterior(state, buildingId, canAssignStaff, (building, interior) => {
     const fixture = assignableOf(building, fixtureId);
     if (!fixture) return { key: 'error.notAssignable' };
-    if (carriesItem(fixture)) return { key: 'error.notAssignable' };
-    const field = picksItem(fixture) || isProducerRole(assignedRoleOf(fixture)) ? 'recipe' : 'soldGood';
+    if (carriesItem(fixture) || assignedRoleOf(fixture) === 'irrigator') return { key: 'error.notAssignable' };
+    const harvester = isCropHarvester(fixture);
+    const field = picksItem(fixture) || isProducerRole(assignedRoleOf(fixture)) || harvester ? 'recipe' : 'soldGood';
+    if (good === null && harvester) return { interior: withReplacedFixture(interior, without(fixture, 'recipe')) };
     if (good === null) return { interior: withReplacedFixture(interior, without(withoutAssignment(fixture), field)) };
     if (assignedRoleOf(fixture) === 'seller' && sellableGoodsOf(building as Parameters<typeof sellableGoodsOf>[0]).includes(good) && !focusGoodsOf(building, fixture).includes(good)) return { key: 'error.notUpstream' };
     if (!focusGoodsOf(building, fixture).includes(good)) return { key: 'error.cannotProduce' };
@@ -75,17 +85,17 @@ export const setInteriorFocus = (state: GameState, buildingId: number, fixtureId
   });
 
 export const assignInteriorStaff = (state: GameState, buildingId: number, fixtureId: number): CommandOutcome =>
-  editInterior(state, buildingId, hasAssignments, (building, interior) => {
+  editInterior(state, buildingId, canAssignStaff, (building, interior) => {
     const fixture = assignableOf(building, fixtureId);
     if (!fixture || picksItem(fixture)) return { key: 'error.notAssignable' };
-    if (workFocusOf(interior.fixtures, fixture) === undefined) return { key: 'error.noFocus' };
+    if (!isPlainRole(assignedRoleOf(fixture)) && workFocusOf(interior.fixtures, fixture) === undefined) return { key: 'error.noFocus' };
     if (fixture.assigned) return { key: 'error.staffAlreadyAssigned' };
     if (freeStaffOf(building, assignedRoleOf(fixture)!) <= 0) return { key: 'error.noFreeStaff' };
     return { interior: withReplacedFixture(interior, { ...fixture, assigned: true }) };
   });
 
 export const unassignInteriorStaff = (state: GameState, buildingId: number, fixtureId: number): CommandOutcome =>
-  editInterior(state, buildingId, hasAssignments, (building, interior) => {
+  editInterior(state, buildingId, canAssignStaff, (building, interior) => {
     const fixture = assignableOf(building, fixtureId);
     if (!fixture) return { key: 'error.notAssignable' };
     if (!fixture.assigned) return { key: 'error.noStaffAssigned' };

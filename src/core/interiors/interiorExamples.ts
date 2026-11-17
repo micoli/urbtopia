@@ -52,6 +52,11 @@ export const INTERIOR_EXAMPLES: Partial<Record<BuildingType, InteriorExample>> =
     at('livestockFeedIntake', 0, 0), at('livestockMotor', 1, 0, 1), at('livestockFeeder', 0, 1, 2), at('livestockPen', 0, 2), at('livestockPacker', 0, 3),
     at('livestockMotor', 1, 3, 1), at('livestockCollectionExit', 0, 4, 2),
   ] },
+  farm: { tier: 1, fixtures: [
+    at('farmIntake', 0, 0), at('farmMotor', 1, 0), at('farmPumpLeft', 1, 1, 1), at('farmTank', 2, 1, 1), at('farmWasher', 0, 1), at('farmThresher', 0, 2), at('farmMotor', 1, 2, 1),
+    at('farmGrader', 0, 3), at('farmMotor', 1, 3, 1), at('farmHarvestBin', 0, 4, 2),
+    at('farmSprinkler', 2, 3), at('farmPump', 3, 3, 1), at('farmTank', 4, 3, 1), at('farmMotor', 3, 4, 2),
+  ] },
   storehouse: STOREHOUSE_EXAMPLE,
   vault: STOREHOUSE_EXAMPLE,
   materialDepot: STOREHOUSE_EXAMPLE,

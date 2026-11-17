@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "farm",
+  "category": "walls",
+  "name": {
+    "en": "Full-height wall",
+    "fr": "Mur pleine hauteur"
+  },
+  "model": "farm-interior-partition-full",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "partition": true,
+  "joins": {
+    "elbow": "farm-interior-partition-full-elbow",
+    "tee": "farm-interior-partition-full-tee",
+    "cross": "farm-interior-partition-full-cross"
+  }
+}

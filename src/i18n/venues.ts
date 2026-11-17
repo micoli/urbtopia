@@ -101,7 +101,8 @@ type VenueMessageKey =
   | 'interior.examples.textileMill'
   | 'interior.examples.knitwearFactory'
   | 'interior.examples.livestockFarm'
-  | `interior.features.${'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'vault' | 'materialDepot' | 'recyclingPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'school' | 'library' | 'hospital'}`
+  | 'interior.examples.farm'
+  | `interior.features.${'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'vault' | 'materialDepot' | 'recyclingPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'farm' | 'school' | 'library' | 'hospital'}`
   | 'bakery.recipes.assembly'
   | 'bakery.recipes.limits'
   | 'bakery.recipes.bonuses'
@@ -134,6 +135,7 @@ type VenueMessageKey =
   | 'venue.restock'
   | 'venue.restockNone'
   | 'venue.assignRecipe'
+  | 'venue.assignCrop'
   | 'venue.assignSoldGood'
   | 'venue.assignNone'
   | 'venue.pickItem'
@@ -161,13 +163,14 @@ type VenueMessageKey =
   | 'home.interior.comfort'
   | 'home.interior.wellbeing'
   | 'home.interior.wellbeingShort'
-  | `interior.open.${'arcade' | 'supermarket' | 'hotel' | 'restaurant' | 'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'vault' | 'materialDepot' | 'recyclingPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'school' | 'library' | 'hospital'}`
+  | `interior.open.${'arcade' | 'supermarket' | 'hotel' | 'restaurant' | 'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'vault' | 'materialDepot' | 'recyclingPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'farm' | 'school' | 'library' | 'hospital'}`
   | 'factory.interior.linked'
   | 'factory.interior.speed'
   | 'factory.interior.yield'
   | 'factory.interior.power'
   | 'factory.interior.sales'
   | 'factory.interior.capacity'
+  | 'factory.interior.fieldCap'
   | 'factory.interior.wasteCapacity'
   | 'factory.interior.reach'
   | 'factory.interior.motorLoad'
@@ -196,6 +199,12 @@ type VenueMessageKey =
   | 'packhouse.interior.fault.deadEnd'
   | 'packhouse.interior.fault.overfed'
   | 'packhouse.interior.noExit'
+  | 'farm.interior.binNoWorker'
+  | 'farm.interior.binYield'
+  | 'farm.interior.binNoCrop'
+  | 'farm.interior.binHarvest'
+  | 'farm.interior.sprinklerNoWorker'
+  | 'farm.interior.sprinklerCap'
   | 'mill.interior.incomplete'
   | 'packhouse.interior.exitSize'
   | 'packhouse.interior.size.Crate'
@@ -442,6 +451,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.examples.recyclingPlant': ["A Motor drives each Machine: the Intake against the back wall takes the Waste in, the Sorter sorts it, the Shredder breaks it up. A Conveyor carries the Waste down to the Collection exit, where a truck takes it away.", "Un moteur entraîne chaque machine : l’entrée contre le mur du fond reçoit les déchets, la trieuse les trie, la broyeuse les broie. Un tapis porte les déchets jusqu’à la sortie camion, où un camion les emporte."],
   'interior.examples.textileMill': ["A Motor drives the Spinner. A spinner assigned to a Spinner whose fibre you chose, wool, alpaca wool or silk, spins on his own and stores the textile in the Storehouse.", "Un moteur entraîne la filature. Un fileur affecté à une filature dont vous avez choisi la fibre, laine, laine d’alpaga ou soie, file seul et range le tissu à l’entrepôt."],
   'interior.examples.knitwearFactory': ["A Motor drives the Knitter against the back wall, and another one drives the Finisher. The Knitter hands the knitted pieces to the Finisher, which sends them to the Display counter, where they are sold.", "Un moteur entraîne la tricoteuse contre le mur du fond, et un autre entraîne la finition. La tricoteuse passe les pièces tricotées à la finition, qui les envoie au comptoir vitrine, où elles sont vendues."],
+  'interior.examples.farm': ["A Motor drives a Thresher and a Grader on the Line; a second Motor drives a Pump that pushes the Flow of a Tank to the Washer, which sits on the Line between the Intake and the Thresher. A second Pump and Tank feed a Sprinkler. A farmhand at the Harvest bin, with a Crop picked on it, harvests that Crop by himself and delivers the yield bonus; an irrigator at the Sprinkler delivers the Field bonus.", "Un moteur entraîne une batteuse et une calibreuse sur la chaîne ; un autre moteur entraîne une pompe qui pousse l’eau d’un réservoir vers la laveuse, placée sur la chaîne entre l’entrée et la batteuse. Une seconde pompe et un second réservoir alimentent un arroseur. Un ouvrier agricole au bac de récolte, avec une culture choisie, la récolte seul et délivre le bonus de rendement ; un irrigateur à l’arroseur délivre le bonus de parcelles."],
   'interior.examples.livestockFarm': ["A Motor drives the Feed intake against the back wall, which pours the grain of the silo into a Feeder. The Feeder feeds the Pen in front of it: pick its animal. The Pen sends its production to a Packer, driven by a second Motor, which hands the packets to a Collection exit. A herder assigned to the Collection exit collects what the Pen gives and stores it.", "Un moteur entraîne l’entrée de fourrage contre le mur du fond, qui verse le grain du silo dans une mangeoire. La mangeoire nourrit l’enclos devant elle : choisissez son animal. L’enclos envoie sa production à une emballeuse, entraînée par un second moteur, qui passe les paquets à une sortie de collecte. Un éleveur affecté à la sortie de collecte récolte ce que donne l’enclos et le range."],
   'interior.features.factory': ["Machines turn the Motor's Drive into speed and yield for the Factory's Slots. Link them with Shafts and Gears, add Flow for the Machines that need it, and cool the Motors with a Cooling vat. Each Machine can make any Good of the Factory: pick one, and a Restocker assigned to it stores what it makes in the Storehouse.", "Les machines transforment la force du moteur en vitesse et en rendement pour les emplacements de l'usine. Reliez-les par des arbres et des engrenages, ajoutez du fluide pour celles qui en ont besoin, et refroidissez les moteurs avec une cuve réfrigérante. Chaque machine peut fabriquer n'importe quel bien de l'usine : choisissez-en un, et un employé de réassort affecté le range à l'entrepôt."],
   'interior.features.packhouse': ['A Line carries Packets from a Packer against the back wall, through the Conveyors, Strappers and Scanners, to the Exits. Linked Machines raise the speed of the Slots that pack a size of Goods, and the Exits set the yield. Keep every Machine linked and fed, and restock the Exits.', "Une chaîne porte les colis d'une emballeuse contre le mur du fond, par les tapis, les cercleuses et les scanners, jusqu'aux sorties. Les machines reliées accélèrent les emplacements qui emballent une taille de biens, et les sorties fixent le rendement. Gardez chaque machine reliée et alimentée, et réapprovisionnez les sorties."],
@@ -450,6 +460,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.features.recyclingPlant': ["Only a complete Recycling line counts: an Intake against the back wall, a Sorter, a Recycler (Shredder, Smelting furnace or Glass crusher) and a Collection exit, joined by Conveyors, every Machine driven by a Motor. Each Collection exit adds to the Waste the plant takes in each day, with a bonus when the three kinds of Recycler are all at work, and each Recycler widens the distance the plant collects from. Machines wear: hire a Technician to repair them.", "Seule une chaîne de recyclage complète compte : une entrée contre le mur du fond, une trieuse, une recycleuse (broyeuse, four de fonte ou concasseuse à verre) et une sortie camion, reliées par des tapis, chaque machine entraînée par un moteur. Chaque sortie camion augmente les déchets que l’usine absorbe chaque jour, avec un bonus quand les trois sortes de recycleuses travaillent, et chaque recycleuse élargit la distance de collecte de l’usine. Les machines s’usent : embauchez un technicien pour les réparer."],
   'interior.features.textileMill': ["A Motor, Shafts and Gears drive the Spinners. Choose on each Spinner what it spins, wool, alpaca wool or silk, and assign a spinner to it: he spins on his own and stores the textile in the Storehouse. Linked Spinners add speed to the Textile mill, up to a cap that rises with the Tier, and the spinners you hire deliver it. Machines wear: hire a Technician to repair them.", "Un moteur, des arbres et des engrenages entraînent les filatures. Choisissez sur chaque filature ce qu’elle file, laine, laine d’alpaga ou soie, et affectez-lui un fileur : il file seul et range le tissu à l’entrepôt. Les filatures reliées ajoutent de la vitesse à la filature, jusqu’à un plafond qui monte avec le niveau, et les fileurs que vous embauchez la délivrent. Les machines s’usent : embauchez un technicien pour les réparer."],
   'interior.features.knitwearFactory': ["A Line carries the pieces from a Knitter against the back wall through a Finisher, which it cannot do without, to a Display counter, every Machine driven by a Motor through Shafts and Gears. Knitters and Finishers add speed, Display counters add sales and yield, each up to a cap that rises with the Tier, and knitters and sellers deliver them. Choose on a Knitter what it knits and assign a knitter to it, and a seller to a Display counter with a Sold Good: they knit, store and sell on their own.", "Une chaîne porte les pièces d'une tricoteuse contre le mur du fond à un comptoir vitrine en passant obligatoirement par une finition, chaque machine étant entraînée par un moteur, par des arbres et des engrenages. Tricoteuses et finitions ajoutent de la vitesse, les comptoirs vitrine des ventes et du rendement, chacun jusqu'à un plafond qui monte avec le niveau, et les tricoteurs et les vendeurs les délivrent. Choisissez sur une tricoteuse ce qu'elle tricote et affectez-lui un tricoteur, et un vendeur à un comptoir vitrine avec un bien vendu : ils tricotent, rangent et vendent seuls."],
+  'interior.features.farm': ["Two circuits share the Motors and the Tanks. A Line carries the harvest from an Intake against the back wall through a Washer (it needs Flow), a Thresher and a Grader (they need Drive) to a Harvest bin: each Harvest bin on a complete Line adds yield to every Harvest, up to a cap that rises with the Tier, and the farmhands you hire deliver it. Pick a Crop on each Harvest bin: its farmhand then harvests by himself the ready Fields of that Crop, anywhere in the city, a few Fields an hour that rise with the Tier, as long as the Grain silo has room. Pipes carry the Flow of a Tank, pushed by a Pump driven by a Motor, to the Sprinklers: each Sprinkler adds Field tiles to its Farm, and the irrigators you hire deliver it. A Tank feeds only three Machines that take Flow, Washer and Sprinklers together. Assign a farmhand to a Harvest bin and an irrigator to a Sprinkler.", "Deux circuits se partagent les moteurs et les réservoirs. Une chaîne porte la récolte depuis une entrée contre le mur du fond, à travers une laveuse (elle veut de l’eau), une batteuse et une calibreuse (elles veulent de l’entraînement), jusqu’à un bac de récolte : chaque bac de récolte sur une chaîne complète ajoute du rendement à chaque récolte, jusqu’à un plafond qui monte avec le niveau, et les ouvriers agricoles que vous embauchez le délivrent. Choisissez une culture sur chaque bac de récolte : son ouvrier agricole récolte alors seul les parcelles prêtes de cette culture, partout dans la ville, quelques parcelles par heure qui montent avec le niveau, tant que le silo à grains a de la place. Des tuyaux portent l’eau d’un réservoir, poussée par une pompe entraînée par un moteur, jusqu’aux arroseurs : chaque arroseur ajoute des parcelles à sa ferme, et les irrigateurs que vous embauchez le délivrent. Un réservoir n’alimente que trois machines qui veulent de l’eau, laveuse et arroseurs ensemble. Affectez un ouvrier agricole à un bac de récolte et un irrigateur à un arroseur."],
   'interior.features.livestockFarm': ["A Line carries the grain of the silo from a Feed intake against the back wall, driven by a Motor, to a Feeder. The Feeder feeds the Pen in front of it: choose its animal. The Pen sends its production to a Packer, driven by a Motor, which sends packets on Conveyors to a Collection exit. Assign a herder to the Collection exit, and he collects what the Pen gives and stores it on his own. Each Collection exit on the Line adds yield to the farm, up to a cap that rises with the Tier, and the herders you hire deliver it.", "Une chaîne porte le grain du silo depuis une entrée de fourrage contre le mur du fond, entraînée par un moteur, jusqu’à une mangeoire. La mangeoire nourrit l’enclos devant elle : choisissez son animal. L’enclos envoie sa production à une emballeuse, entraînée par un moteur, qui envoie des paquets sur des tapis jusqu’à une sortie de collecte. Affectez un éleveur à la sortie de collecte : il récolte seul ce que donne l’enclos et le range. Chaque sortie de collecte sur la chaîne ajoute du rendement à la ferme, jusqu’à un plafond qui monte avec le niveau, et les éleveurs que vous embauchez le délivrent."],
   'interior.features.bakery': ['A Line carries the dough from the Mixer through an Oven to a Display counter. Mixers and Ovens add speed, Display counters add sales and yield, each up to a cap that rises with the Tier, and bakers and sellers deliver them. Assign a baker to an Oven with a Recipe and a seller to a Display counter: they bake, store and sell on their own. The Recipes and the bonuses are detailed below.', "Une chaîne porte la pâte du pétrin à un comptoir vitrine en passant par un four. Pétrins et fours ajoutent de la vitesse, les comptoirs vitrine des ventes et du rendement, chacun jusqu'à un plafond qui monte avec le niveau, et les boulangers et les vendeurs les délivrent. Affectez un boulanger à un four avec une recette et un vendeur à un comptoir vitrine : ils cuisent, rangent et vendent seuls. Les recettes et les bonus sont détaillés ci-dessous."],
   'interior.features.dairy': ["A Line carries the milk from the vat through the Machines to an Exit. Cheesemakers and cream makers add the cheese and cream yield, and assigned to a Cheese cellar or a Pasteuriser with a Recipe they make it on their own and store it; a seller assigned to a Display counter sells what arrives on it.", "Une chaîne porte le lait de la cuve jusqu'à une sortie à travers les machines. Les fromagers et les crémiers ajoutent le rendement en fromage et en crème, et affectés à une cave d’affinage ou à un pasteurisateur avec une recette ils la fabriquent seuls et la rangent ; un vendeur affecté à un comptoir vitrine vend ce qui y arrive."],
@@ -491,6 +502,10 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.roleEffect.miller': ['Turns the grain into flour faster: the speed bonus of the millstones', "Moud plus vite : le bonus de vitesse des meules"],
   'interior.roleEffect.spinner': ['Spins the fibre into textile faster: the speed bonus of the spinning frames', 'File la fibre en tissu plus vite : le bonus de vitesse des filatures'],
   'interior.roleEffect.knitter': ['Knits faster: the speed bonus of the machines', 'Tricote plus vite : le bonus de vitesse des machines'],
+  'interior.role.farmhand': ['Farmhand', 'Ouvrier agricole'],
+  'interior.roleEffect.farmhand': ['Harvests by himself the ready Fields of the crop picked on his bin, and gets more from every Harvest: the yield bonus of the harvest bins', 'Récolte seul les parcelles prêtes de la culture choisie sur son bac, et tire plus de chaque récolte : le bonus de rendement des bacs de récolte'],
+  'interior.role.irrigator': ['Irrigator', 'Irrigateur'],
+  'interior.roleEffect.irrigator': ['Waters more land: the Field cap bonus of the sprinklers', 'Arrose plus de terres : le bonus de parcelles des arroseurs'],
   'interior.roleEffect.herder': ['Raises more from the animals: the yield bonus of the collection exits', 'Tire plus des bêtes : le bonus de rendement des sorties de collecte'],
   'interior.role.restocker': ['Restocker', 'Réassort'],
   'interior.roleEffect.restocker': ['Restarts the production of the material of his bin and stores it, with no bonus to speed or yield', "Relance la production du matériau de son bac et la range, sans bonus de vitesse ni de rendement"],
@@ -519,6 +534,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'venue.roleEffect.restocker': ['Keeps the production of a Restock going and stores it', 'Relance la production d’un réassort et la range à l’entrepôt'],
   'venue.restock': ['Restock', 'Réassort'],
   'venue.restockNone': ['No restock', 'Aucun réassort'],
+  'venue.assignCrop': ['Crop harvested', 'Culture récoltée'],
   'venue.assignRecipe': ['Recipe', 'Recette'],
   'venue.assignSoldGood': ['Sold Good', 'Bien vendu'],
   'venue.assignNone': ['None', 'Aucun'],
@@ -585,6 +601,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.open.recyclingPlant': ['Open the Recycling plant interior', "Ouvrir l'intérieur de l'usine de recyclage"],
   'interior.open.textileMill': ['Open the Textile mill interior', "Ouvrir l'intérieur de la filature"],
   'interior.open.knitwearFactory': ['Open the Knitwear factory interior', "Ouvrir l'intérieur de la tricoterie"],
+  'interior.open.farm': ['Open the Farm interior', "Ouvrir l'intérieur de la ferme"],
   'interior.open.livestockFarm': ['Open the Livestock farm interior', "Ouvrir l'intérieur de l'élevage"],
   'interior.open.school': ['Open the School interior', "Ouvrir l'intérieur de l'école"],
   'interior.open.library': ['Open the Library interior', "Ouvrir l'intérieur de la bibliothèque"],
@@ -594,9 +611,10 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'factory.interior.yield': ['Yield', 'Rendement'],
   'factory.interior.sales': ['Sales rate', 'Cadence de vente'],
   'factory.interior.capacity': ['Storage capacity', 'Capacité de stockage'],
+  'factory.interior.fieldCap': ['Field cap added', 'Parcelles de culture ajoutées'],
   'factory.interior.wasteCapacity': ['Waste capacity per day', 'Capacité de déchets par jour'],
   'factory.interior.reach': ['Collection distance (tiles)', 'Distance de collecte (cases)'],
-  'factory.interior.problem.tankFull': ['Its Tank already feeds three Cooling vats: add a Tank, or take a vat off this one.', 'Son réservoir alimente déjà trois cuves réfrigérantes : ajoutez un réservoir, ou retirez une cuve de celui-ci.'],
+  'factory.interior.problem.tankFull': ['Its Tank already feeds three Cooling vats, Washers or Sprinklers: add a Tank, or take one off this one.', 'Son réservoir alimente déjà trois cuves réfrigérantes, laveuses ou arroseurs : ajoutez un réservoir, ou retirez-en un de celui-ci.'],
   'factory.interior.problem.overloaded': ['Its Motor drives too many Machines and Pumps, so it is stopped: add a Motor or take one off.', 'Son moteur entraîne trop de machines et de pompes, elle est donc arrêtée : ajoutez un moteur ou retirez-en une.'],
   'factory.interior.motorOverloaded': ['{count} stopped: the Motor cannot drive them.', '{count} à l’arrêt : le moteur ne peut pas les entraîner.'],
   'factory.interior.benefit.own': ['Brings to the Factory: {bonus}.', 'Apporte à l’usine : {bonus}.'],
@@ -625,6 +643,12 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'packhouse.interior.fault.deadEnd': ['Nothing brings Packets to {name}: the cell in front of its entry (marked on the floor) is empty, lay a Conveyor there that carries toward it.', 'Rien n’apporte de paquets à {name} : la case devant son entrée (marquée au sol) est vide, posez-y un tapis qui porte vers lui.'],
   'packhouse.interior.fault.overfed': ['The Machine ahead already feeds as many {name} as it can: this one gets no Packets. Remove it, or take another from the Line.', 'La machine en amont alimente déjà autant de {name} qu’elle le peut : celui-ci ne reçoit rien. Retirez-le, ou retirez-en un autre de la chaîne.'],
   'mill.interior.incomplete': ['The pipes of its Pump must reach a Cleaner and, for its Recipe, a Bagger (flour) or an Oil tank (olive oil), and a Recipe must be chosen.', "La tuyauterie de sa pompe doit atteindre une nettoyeuse et, selon sa recette, une ensacheuse (farine) ou un réservoir d'huile (huile d'olive), et une recette doit être choisie."],
+  'farm.interior.binNoWorker': ['No farmhand is assigned to this bin: it adds no bonus and harvests nothing.', 'Aucun ouvrier agricole n’est affecté à ce bac : il n’apporte aucun bonus et ne récolte rien.'],
+  'farm.interior.binYield': ['Adds {share} to the yield of every Harvest, up to the cap of the Tier.', 'Ajoute {share} au rendement de chaque récolte, jusqu’au plafond du niveau.'],
+  'farm.interior.binNoCrop': ['Pick a Crop: its farmhand then harvests it by himself.', 'Choisissez une culture : son ouvrier agricole la récolte alors seul.'],
+  'farm.interior.binHarvest': ['Its farmhand harvests {crop} by himself: {rate} Fields an hour.', 'Son ouvrier agricole récolte seul : {crop}, {rate} parcelles par heure.'],
+  'farm.interior.sprinklerNoWorker': ['No irrigator is assigned to this Sprinkler: it adds no bonus.', 'Aucun irrigateur n’est affecté à cet arroseur : il n’apporte aucun bonus.'],
+  'farm.interior.sprinklerCap': ['Adds {share} to the Field cap of this Farm, up to the cap of the Tier.', 'Ajoute {share} au nombre de parcelles de cette ferme, jusqu’au plafond du niveau.'],
   'packhouse.interior.noExit': ['Its Packets reach no Exit: it adds no bonus.', 'Ses paquets n’atteignent aucune sortie : elle n’apporte aucun bonus.'],
   'packhouse.interior.exitSize': ['Serves {size} of packed Goods.', 'Dessert les {size} de produits emballés.'],
   'packhouse.interior.size.Crate': ['crates', 'caisses'],

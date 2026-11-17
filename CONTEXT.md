@@ -75,7 +75,7 @@ A building that holds the player's seed stock and is the entry point of cultivat
 _Avoid_: Workshop, plantation
 
 **Farm interior**:
-The Production interior of a Farm. It raises the Field cap of its Farm through its Sprinklers, and the yield of every Harvest through its Harvest bins. It runs two circuits that share one Motor: Drive and Flow for the Sprinklers, and a Line of Washer, Thresher and Grader for the Harvest bins. The yield is that of the best Farm interior in the city, never the sum of several; the Field cap bonus of each Farm is added to its own Field cap. The Farm still produces nothing: the Harvest stays a gesture of the player.
+The Production interior of a Farm. It raises the Field cap of its Farm through its Sprinklers, and the yield of every Harvest through its Harvest bins. It runs two circuits that share one Motor: Drive and Flow for the Sprinklers, and a Line of Washer, Thresher and Grader for the Harvest bins. The yield is that of the best Farm interior in the city, never the sum of several; the Field cap bonus of each Farm is added to its own Field cap. The Farm still produces nothing itself; its farmhands harvest, by themselves, the species picked on their Harvest bin.
 _Avoid_: Barn, irrigation system
 
 **Sprinkler**:
@@ -95,11 +95,11 @@ The Machine of a Farm interior's Line that needs Drive, between the Thresher and
 _Avoid_: Sorter (the Recycling plant's Machine)
 
 **Harvest bin**:
-The Exit of a Farm interior's Line. A Line is complete when it reaches a Harvest bin with a farmhand assigned: each one adds to the yield of the Harvest. The output is Crop Material, never Seed packs.
+The Exit of a Farm interior's Line. The player picks on it a Crop species. A Line is complete when it reaches a Harvest bin with a farmhand assigned: each one adds to the yield of the Harvest, and its farmhand harvests the ready Fields of its species. The output is Crop Material, never Seed packs.
 _Avoid_: Seed bin, Storage bin (the Workshop's Exit)
 
 **Farmhand**:
-A worker of a Farm interior, hired like a Technician and assigned by hand to one Harvest bin. He delivers the yield part of the bonus in proportion to the posts hired, and does nothing by himself: he never harvests. An unassigned farmhand is paid all the same.
+A worker of a Farm interior, hired like a Technician and assigned by hand to one Harvest bin. He delivers the yield part of the bonus in proportion to the posts hired, and harvests by himself the ready Fields, anywhere in the city, of the species picked on his bin, at a rate set by the Tier. He stops while the Grain silo is full or the Urbs fall short. An unassigned farmhand is paid all the same.
 _Avoid_: Herder (Livestock farm), Restocker
 
 **Irrigator**:

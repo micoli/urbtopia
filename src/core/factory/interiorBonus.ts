@@ -7,7 +7,7 @@ import type { ItemId } from '../economy/items';
 import type { Building, BuildingType, VenueFixture } from '../engine/state';
 import { interiorProfileOf } from '../interiors/interiorProfile';
 import { valueByTier } from '../interiors/valueByTier';
-import { interiorDeclarationOf, interiorLayoutOf, interiorPartPresence, isProducerRole, yieldGroupOf, type InteriorPart } from '../interiors/interiorStaff';
+import { interiorDeclarationOf, interiorLayoutOf, interiorPartPresence, isPlainRole, isProducerRole, yieldGroupOf, type InteriorPart } from '../interiors/interiorStaff';
 import { memoizedByLayout } from './memoizedByLayout';
 import { circuitOf, interiorReportOf, isMachine, roleOf } from './interiorLinks';
 import { suppliedGoodsOf } from './interiorLine';
@@ -121,19 +121,24 @@ export function lineBonusOf(allFixtures: readonly VenueFixture[], tier: number, 
   if (cached) return cached;
   const layout = interiorLayoutOf(type);
   const caps = interiorCapsOfType(type, tier);
-  const { fixtures, links } = interiorReportOf(allFixtures);
-  const lined = fixtures.filter(fixture => links.lined.has(fixture.id));
-  const exits = lined.filter(fixture => roleOf(fixture) === 'exit');
+  const { links } = interiorReportOf(allFixtures);
+  // The report is cached by layout, which leaves out what the player assigns: the Fixtures are read from the interior itself.
+  const attended = (fixture: VenueFixture): boolean => !isPlainRole(FIXTURES[fixture.type].assigns) || fixture.assigned === true;
+  const lined = allFixtures.filter(fixture => links.lined.has(fixture.id));
+  const exits = lined.filter(fixture => roleOf(fixture) === 'exit' && attended(fixture));
+  // A Sprinkler of a Farm interior is reached by Flow, not by the Line, and counts once its irrigator stands at it.
+  const sprinklers = allFixtures.filter(fixture => links.linked.has(fixture.id) && FIXTURES[fixture.type].capacity !== undefined && roleOf(fixture) !== 'exit' && attended(fixture));
   const power = bonusOf(allFixtures, tier, type).power;
-  let bonus: InteriorBonus = { speed: 0, yield: 0, sales: 0, capacity: 0, power };
+  const total = (list: readonly VenueFixture[], key: 'speed' | 'yield' | 'sales' | 'capacity') => list.reduce((sum, fixture) => sum + (FIXTURES[fixture.type][key] ?? 0), 0);
+  const sprinklerCapacity = caps.capacity === undefined ? 0 : saturate(total(sprinklers, 'capacity'), caps.capacity, interiorBalance.bonusKnee);
+  let bonus: InteriorBonus = { speed: 0, yield: 0, sales: 0, capacity: sprinklerCapacity, power };
   if (layout && exits.length > 0) {
     const machines = lined.filter(isMachine);
-    const total = (list: readonly VenueFixture[], key: 'speed' | 'yield' | 'sales' | 'capacity') => list.reduce((sum, fixture) => sum + (FIXTURES[fixture.type][key] ?? 0), 0);
     bonus = {
       speed: saturate(total(machines, 'speed'), caps.speed, interiorBalance.bonusKnee),
       yield: saturate(layout.yieldFromExits ? total(exits, 'yield') : total(machines.filter(fixture => group === undefined || FIXTURES[fixture.type].yieldGroup === undefined || FIXTURES[fixture.type].yieldGroup === group), 'yield'), caps.yield, interiorBalance.bonusKnee),
       sales: caps.sales === undefined ? 0 : saturate(total(exits, 'sales'), caps.sales, interiorBalance.bonusKnee),
-      capacity: caps.capacity === undefined ? 0 : saturate(total(exits, 'capacity'), caps.capacity, interiorBalance.bonusKnee),
+      capacity: caps.capacity === undefined ? 0 : saturate(total(exits, 'capacity') + total(sprinklers, 'capacity'), caps.capacity, interiorBalance.bonusKnee),
       power,
     };
   }
