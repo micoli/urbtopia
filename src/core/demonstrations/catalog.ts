@@ -1,4 +1,5 @@
 import { bakeryAdvanced } from './bakeryAdvanced';
+import { bakeryExpert } from './bakeryExpert';
 import { bakeryIntermediate } from './bakeryIntermediate';
 import { bakerySimple } from './bakerySimple';
 import { factoryAdvanced } from './factoryAdvanced';
@@ -40,7 +41,7 @@ import type { Demonstration } from './scenario';
 import type { BuildingType } from '../engine/state';
 import { interiorFixtureKindOf } from '../interiors/interiorStaff';
 
-export const DEMONSTRATIONS: readonly Demonstration[] = [factorySimple, factoryIntermediate, factoryAdvanced, workshopSimple, workshopIntermediate, workshopAdvanced, packhouseSimple, packhouseIntermediate, packhouseAdvanced, bakerySimple, bakeryIntermediate, bakeryAdvanced, millSimple, millIntermediate, millAdvanced, storehouseSimple, storehouseIntermediate, storehouseAdvanced, textileMillSimple, textileMillIntermediate, textileMillAdvanced, recyclingPlantSimple, recyclingPlantIntermediate, recyclingPlantAdvanced, dairySimple, dairyIntermediate, dairyAdvanced, knitwearFactorySimple, knitwearFactoryIntermediate, knitwearFactoryAdvanced, livestockFarmSimple, livestockFarmIntermediate, livestockFarmAdvanced, farmSimple, farmIntermediate, farmAdvanced, farmExpert, livestockFarmExpert];
+export const DEMONSTRATIONS: readonly Demonstration[] = [factorySimple, factoryIntermediate, factoryAdvanced, workshopSimple, workshopIntermediate, workshopAdvanced, packhouseSimple, packhouseIntermediate, packhouseAdvanced, bakerySimple, bakeryIntermediate, bakeryAdvanced, millSimple, millIntermediate, millAdvanced, storehouseSimple, storehouseIntermediate, storehouseAdvanced, textileMillSimple, textileMillIntermediate, textileMillAdvanced, recyclingPlantSimple, recyclingPlantIntermediate, recyclingPlantAdvanced, dairySimple, dairyIntermediate, dairyAdvanced, knitwearFactorySimple, knitwearFactoryIntermediate, knitwearFactoryAdvanced, livestockFarmSimple, livestockFarmIntermediate, livestockFarmAdvanced, farmSimple, farmIntermediate, farmAdvanced, farmExpert, livestockFarmExpert, bakeryExpert];
 // The building whose demonstrations a type plays: a Vault and a Material depot run the Storehouse interior.
 export const demonstrationTypeOf = (type: BuildingType): BuildingType => interiorFixtureKindOf(type);
 
