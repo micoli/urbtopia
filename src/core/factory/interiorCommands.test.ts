@@ -52,13 +52,16 @@ describe('placing a Fixture on a Factory interior', () => {
     expect(failure(city(2), place('factoryMixingVat', 2, 2))).toBeNull();
   });
 
-  it('refuses a place outside the grid, an occupied place and the entrance', () => {
+  it('refuses a place outside the grid, and an occupied place', () => {
     const size = interiorGridSizeOf(1);
     expect(failure(city(), place('factoryMotor', size, 2))).toBe('error.tilesOccupied');
     expect(failure(city(), place('factoryMotor', -1, 2))).toBe('error.tilesOccupied');
-    expect(failure(city(), place('factoryMotor', 3, 0))).toBe('error.tilesOccupied');
     const state = send(city(), place('factoryMotor', 2, 2));
     expect(failure(state, place('factoryGear', 2, 2))).toBe('error.tilesOccupied');
+  });
+
+  it('lets a Fixture stand on the entrance, which only lacks a wall', () => {
+    expect(failure(city(), place('factoryMotor', 3, 0))).toBeNull();
   });
 
   it('refuses a Fixture the city cannot pay for', () => {
