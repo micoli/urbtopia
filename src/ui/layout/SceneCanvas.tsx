@@ -11,6 +11,8 @@ import { FACILITIES, isFacilityType, wasteKindOf } from '../../core';
 import { selectionGhost } from '../../tools/tools';
 import { selectionFocus } from '../../store/selectionFocus';
 import { readCameraView, writeCameraView, type CameraView } from '../../scene/cameraUrl';
+import { applyBuildingTarget, currentBuildingTarget, writeBuildingTarget } from '../../store/buildingUrl';
+import { venueStore } from '../../store/venueStore';
 import { crowdFactor } from '../../scene/crowdDensity';
 import { isAlwaysDayRequested, pinnedCycleHourOf } from '../../store/dayCycleFlags';
 import { hideSplash, setSplashProgress } from '../system/splash';
@@ -125,7 +127,17 @@ export function SceneCanvas() {
       scene.setEcologicalSelection(uiStore.getState().selectedBuildingId);
       scene.setCoverageFocus(selected && prefsStore.getState().showReach && isFacilityType(selected.type) && (FACILITIES[selected.type].radius !== null || wasteKindOf(selected.type) !== null) ? { type: selected.type, facilityId: selected.id } : null);
     };
+    applyBuildingTarget(window.location.search);
     showSelection();
+    const syncBuildingUrl = () => {
+      const search = writeBuildingTarget(window.location.search, currentBuildingTarget());
+      if (search === window.location.search) return;
+      window.history.replaceState(window.history.state, '', `${window.location.pathname}${search}${window.location.hash}`);
+    };
+    const unsubscribeBuildingUrl = [
+      uiStore.subscribe((store, previous) => { if (store.selectedBuildingId !== previous.selectedBuildingId) syncBuildingUrl(); }),
+      venueStore.subscribe((store, previous) => { if (store.venueId !== previous.venueId) syncBuildingUrl(); }),
+    ];
     const unsubscribeGame = gameStore.subscribe((store, previous) => {
       if (store.state === previous.state) return;
       scene.setState(store.state);
@@ -170,6 +182,7 @@ export function SceneCanvas() {
       unsubscribeGame();
       unsubscribePrefs();
       unsubscribeUi();
+      unsubscribeBuildingUrl.forEach(unsubscribe => unsubscribe());
       unsubscribeHarvest();
       sceneHandle.current = null;
       scene.dispose();
