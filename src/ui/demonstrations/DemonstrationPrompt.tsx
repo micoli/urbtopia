@@ -9,7 +9,7 @@ import { demonstrationPreferencesStore } from '../../store/demonstrationPreferen
 import { ActionButton } from '../common/ActionButton';
 import { Icon } from '../common/Icon';
 import { CheckboxField } from '../common/CheckboxField';
-import { useGame } from '../common/hooks';
+import { useCloud, useGame } from '../common/hooks';
 import './demonstrations.css';
 
 /** Mounted once per interior visit, including when switching between buildings. */
@@ -18,10 +18,11 @@ export function DemonstrationPrompt({ type }: { type: BuildingType }) {
   const played = demonstrationTypeOf(type);
   const hidden = useStore(demonstrationPreferencesStore, store => store.hiddenTypes.includes(played) || store.seenTypes.includes(played));
   const challenge = useGame(store => Boolean(store.state.challenge));
+  const saveConflict = useCloud(store => store.status.kind === 'conflict');
   const [dismissed, setDismissed] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const visible = !hidden && !dismissed && !challenge && demonstrationsOf(type).length > 0;
+  const visible = !hidden && !dismissed && !challenge && !saveConflict && demonstrationsOf(type).length > 0;
   useEffect(() => {
     if (!visible) return;
     const dialog = dialogRef.current;
