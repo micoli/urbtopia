@@ -6,7 +6,7 @@ type Turn = 'cw' | 'ccw';
 export type FixtureMotion = Turn | Readonly<Partial<Record<'front' | 'right' | 'back' | 'left', Turn>>>;
 
 // The cone of a bevel gear that each turning part belongs to.
-const CONE_SIDE: Record<string, 'front' | 'right' | 'left'> = { 'spin-y': 'front', 'spin-x': 'right', 'spin-nx': 'left' };
+const CONE_SIDE: Record<string, 'front' | 'right' | 'back' | 'left'> = { 'spin-y': 'front', 'spin-x': 'right', 'spin-ny': 'back', 'spin-nx': 'left' };
 
 // The turning parts of a model are children named after the axis they turn on, with their origin on it; the part of a press that falls
 // and the part of a lathe that slides are children named `slide-up` and `slide-x`.
@@ -14,6 +14,8 @@ const AXES: Record<string, THREE.Vector3> = {
   'spin-x': new THREE.Vector3(1, 0, 0),
   // The left cone of a tee turns about the same axis as the right one: the two sides of the tee are one line, and they turn the same way.
   'spin-nx': new THREE.Vector3(1, 0, 0),
+  // Likewise the back cone of a cross turns about the axis of the front one.
+  'spin-ny': new THREE.Vector3(0, 0, 1),
   'spin-y': new THREE.Vector3(0, 0, 1),
   'spin-up': new THREE.Vector3(0, 1, 0),
 };

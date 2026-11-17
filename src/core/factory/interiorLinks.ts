@@ -2,6 +2,7 @@ import interiorBalance from '../../../assets/defs/balance/factoryInterior.json' 
 import packhouseBalance from '../../../assets/defs/balance/packhouseInterior.json' with { type: 'json' };
 import { FIXTURES } from '../venues/fixtures';
 import { PRODUCTION_INTERIOR_KINDS, type FixtureSide } from '../venues/venueVocabulary';
+import { tilesOf } from '../venues/layout';
 import type { Building, BuildingType, VenueFixture } from '../engine/state';
 import { interiorLayoutOf } from '../interiors/interiorStaff';
 import { memoizedByLayout } from './memoizedByLayout';
@@ -40,17 +41,28 @@ export const isFactoryFixture = (fixture: VenueFixture): boolean => (PRODUCTION_
 
 export const roleOf = (fixture: VenueFixture) => FIXTURES[fixture.type].role;
 
+// How many Machines and Pumps a Motor drives, and the power it draws as a multiple of an ordinary Motor.
+export const motorStrengthOf = (motor: VenueFixture): number => FIXTURES[motor.type].strength ?? interiorBalance.motorCapacity;
+export const motorDrawOf = (motor: VenueFixture): number => FIXTURES[motor.type].draw ?? 1;
+
 const sidesOf = (fixture: VenueFixture, kind: Kind): readonly FixtureSide[] => FIXTURES[fixture.type][kind] ?? [];
 
-// The side of a Fixture that faces a neighbouring cell, if it is one of the four.
-export function sideToward(fixture: VenueFixture, target: Cell): FixtureSide | undefined {
-  return (Object.keys(SIDE_OFFSETS) as FixtureSide[]).find(side => {
-    const offset = turned(SIDE_OFFSETS[side], fixture.rotation);
-    return fixture.x + offset.x === target.x && fixture.y + offset.y === target.y;
-  });
+// The cell a side of a Fixture opens onto: the one beyond the tile that lies farthest that way, so a Fixture of several tiles opens at its ends.
+export function cellBeyond(fixture: VenueFixture, side: FixtureSide): Cell {
+  const direction = turned(SIDE_OFFSETS[side], fixture.rotation);
+  const reach = (tile: Cell): number => tile.x * direction.x + tile.y * direction.y;
+  const edge = tilesOf(fixture).reduce((best, tile) => (reach(tile) > reach(best) ? tile : best));
+  return { x: edge.x + direction.x, y: edge.y + direction.y };
 }
 
-const isRim = (fixture: VenueFixture, target: Cell): boolean => {
+const covers = (fixture: VenueFixture, cell: Cell): boolean => tilesOf(fixture).some(tile => tile.x === cell.x && tile.y === cell.y);
+
+// The side of a Fixture that faces a neighbouring Fixture, if it is one of the four.
+export function sideToward(fixture: VenueFixture, target: VenueFixture): FixtureSide | undefined {
+  return (Object.keys(SIDE_OFFSETS) as FixtureSide[]).find(side => covers(target, cellBeyond(fixture, side)));
+}
+
+const isRim = (fixture: VenueFixture, target: VenueFixture): boolean => {
   const side = sideToward(fixture, target);
   return side !== undefined && (FIXTURES[fixture.type].rim ?? []).includes(side);
 };
@@ -65,22 +77,19 @@ const sameKindOfEdge = (a: VenueFixture, b: VenueFixture): boolean => {
   return true;
 };
 
-const opensToward = (fixture: VenueFixture, kind: Kind, target: Cell): boolean =>
-  sidesOf(fixture, kind).some(side => {
-    const offset = turned(SIDE_OFFSETS[side], fixture.rotation);
-    return fixture.x + offset.x === target.x && fixture.y + offset.y === target.y;
-  });
+const opensToward = (fixture: VenueFixture, kind: Kind, target: VenueFixture): boolean =>
+  sidesOf(fixture, kind).some(side => covers(target, cellBeyond(fixture, side)));
 
 // The Fixtures that a Fixture hands Drive or Flow to, and takes it from: both sides of the edge must be open.
 function connectionsOf(fixture: VenueFixture, kind: Kind, at: ReadonlyMap<string, VenueFixture>): VenueFixture[] {
   return sidesOf(fixture, kind).flatMap(side => {
-    const offset = turned(SIDE_OFFSETS[side], fixture.rotation);
-    const neighbour = at.get(keyOf(fixture.x + offset.x, fixture.y + offset.y));
+    const cell = cellBeyond(fixture, side);
+    const neighbour = at.get(keyOf(cell.x, cell.y));
     return neighbour && opensToward(neighbour, kind, fixture) && (kind === 'flow' || sameKindOfEdge(fixture, neighbour)) ? [neighbour] : [];
   });
 }
 
-export const placedOn = (fixtures: readonly VenueFixture[]): Map<string, VenueFixture> => new Map(fixtures.map(fixture => [keyOf(fixture.x, fixture.y), fixture]));
+export const placedOn = (fixtures: readonly VenueFixture[]): Map<string, VenueFixture> => new Map(fixtures.flatMap(fixture => tilesOf(fixture).map((tile): [string, VenueFixture] => [keyOf(tile.x, tile.y), fixture])));
 
 // A Machine takes the Drive it is handed and passes none on.
 export const isMachine = (fixture: VenueFixture): boolean => roleOf(fixture) === 'machine';
@@ -123,7 +132,7 @@ export interface DriveReceipts {
   // The way each Fixture that passes Drive turns, in the groups that are not jammed.
   carried: Map<number, InteriorMotion>;
   // The Machines each Motor's group hands Drive to, and the Motors in that group.
-  served: Map<number, { handed: Set<number>; motors: number; overloaded: number }>;
+  served: Map<number, { handed: Set<number>; motors: number; capacity: number; overloaded: number }>;
   // The Machines and Pumps that a group of Motors has no strength left to drive: the highest ids, past what the Motors can drive.
   overloaded: Set<number>;
 }
@@ -140,8 +149,8 @@ const nodeKey = ({ fixture, side }: Node): string => (side ? `${fixture.id}:${si
 
 // The Fixture across a side, when both sides of the edge are open.
 function across(fixture: VenueFixture, side: FixtureSide, at: ReadonlyMap<string, VenueFixture>): VenueFixture | undefined {
-  const offset = turned(SIDE_OFFSETS[side], fixture.rotation);
-  const neighbour = at.get(keyOf(fixture.x + offset.x, fixture.y + offset.y));
+  const cell = cellBeyond(fixture, side);
+  const neighbour = at.get(keyOf(cell.x, cell.y));
   return neighbour && opensToward(neighbour, 'drive', fixture) && sameKindOfEdge(fixture, neighbour) ? neighbour : undefined;
 }
 
@@ -153,15 +162,12 @@ interface Step {
 }
 
 // A turn is told about the +x or +z axis of the floor. Two cones meshing at a right angle turn opposite ways about their outward axes, so
-// their turns are reversed when both point toward the positive axes or both away. The two side cones of a tee both mesh the stem, so
-// they turn opposite ways about the floor.
+// their turns are reversed when both point toward the positive axes or both away. Two cones across from each other, as the side cones of a tee
+// or the stem and the back of a cross, both mesh the cones between them, so they turn opposite ways about the floor.
 function meshReverses(fixture: VenueFixture, a: FixtureSide, b: FixtureSide): boolean {
-  const positive = (side: FixtureSide): boolean => {
-    const { x, y } = turned(SIDE_OFFSETS[side], fixture.rotation);
-    return x + y > 0;
-  };
-  if (a !== 'front' && b !== 'front') return true;
-  return positive(a) === positive(b);
+  const [first, second] = [a, b].map(side => turned(SIDE_OFFSETS[side], fixture.rotation));
+  if (first!.x + second!.x === 0 && first!.y + second!.y === 0) return true;
+  return first!.x + first!.y > 0 === second!.x + second!.y > 0;
 }
 
 function stepsFrom(node: Node, at: ReadonlyMap<string, VenueFixture>): Step[] {
@@ -184,7 +190,7 @@ function driveReceipts(fixtures: readonly VenueFixture[], at: ReadonlyMap<string
   const received = new Map<number, Set<Turn>>();
   const jammedMachines = new Set<number>();
   const carried = new Map<number, InteriorMotion>();
-  const served = new Map<number, { handed: Set<number>; motors: number; overloaded: number }>();
+  const served = new Map<number, { handed: Set<number>; motors: number; capacity: number; overloaded: number }>();
   const overloaded = new Set<number>();
   let jammed = false;
   for (const group of driveGroups(fixtures, at)) {
@@ -216,8 +222,8 @@ function driveReceipts(fixtures: readonly VenueFixture[], at: ReadonlyMap<string
     }
     const motors = group.filter(fixture => roleOf(fixture) === 'motor');
     const ids = [...new Set(handed.map(([id]) => id))].sort((a, b) => a - b);
-    const capacity = motors.length * interiorBalance.motorCapacity;
-    const share = { handed: new Set(ids.slice(0, capacity)), motors: motors.length, overloaded: Math.max(0, ids.length - capacity) };
+    const capacity = motors.reduce((total, motor) => total + motorStrengthOf(motor), 0);
+    const share = { handed: new Set(ids.slice(0, capacity)), motors: motors.length, capacity, overloaded: Math.max(0, ids.length - capacity) };
     for (const id of ids.slice(capacity)) overloaded.add(id);
     for (const motor of motors) served.set(motor.id, share);
     for (const [id, turn] of handed.filter(([id]) => share.handed.has(id))) received.set(id, (received.get(id) ?? new Set<Turn>()).add(turn));
@@ -437,8 +443,8 @@ function pushesToLinked(pump: number, flow: FlowReach, linked: ReadonlySet<numbe
 
 // The Fixture a side of a Fixture faces, when that Fixture opens toward it for Flow.
 function neighbourOn(fixture: VenueFixture, side: FixtureSide, at: ReadonlyMap<string, VenueFixture>): VenueFixture | undefined {
-  const offset = turned(SIDE_OFFSETS[side], fixture.rotation);
-  const neighbour = at.get(keyOf(fixture.x + offset.x, fixture.y + offset.y));
+  const cell = cellBeyond(fixture, side);
+  const neighbour = at.get(keyOf(cell.x, cell.y));
   return neighbour && opensToward(neighbour, 'flow', fixture) ? neighbour : undefined;
 }
 
@@ -576,7 +582,7 @@ export function circuitOf(start: VenueFixture, at: ReadonlyMap<string, VenueFixt
 // How many Machines and Pumps the Motor's group drives, how many its Motors can drive, and how many are left stopped past that.
 export function interiorMotorLoadOf(allFixtures: readonly VenueFixture[], motor: VenueFixture): { driven: number; capacity: number; overloaded: number } {
   const share = interiorReportOf(allFixtures).drive.served.get(motor.id);
-  return { driven: share?.handed.size ?? 0, capacity: (share?.motors ?? 1) * interiorBalance.motorCapacity, overloaded: share?.overloaded ?? 0 };
+  return { driven: share?.handed.size ?? 0, capacity: share?.capacity ?? motorStrengthOf(motor), overloaded: share?.overloaded ?? 0 };
 }
 
 // The Machines and Pumps that no Motor has the strength to drive.

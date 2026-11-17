@@ -21514,6 +21514,16 @@
     ],
     "flush": true
   },
+  "factory-floor-bevel-cross": {
+    "file": "factory-floor/bevel-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "factory-floor-bevel-tee": {
     "file": "factory-floor/bevel-tee",
     "source": "managed",
@@ -21590,6 +21600,16 @@
     "license": "Own work",
     "footprint": [
       1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-motor-strong": {
+    "file": "factory-floor/motor-strong",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
       1
     ],
     "flush": true

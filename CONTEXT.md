@@ -536,8 +536,12 @@ The turning force a Motor sends through Gears and Shafts to the Machines. A Gear
 _Avoid_: Power (electricity), torque
 
 **Bevel gear**:
-A Fixture of a Factory interior that turns the Drive a quarter turn (the elbow) or splits it three ways (the tee), so that one Motor can serve several Machines. Its cones mesh like Gears at a right angle: a turn is told about the +x or +z axis of the floor, whichever way a Fixture faces, so the Drive reverses between the stem and a side cone only when the two cones point toward the same sign of axis. In a tee the two side cones both mesh the stem, so they turn opposite ways.
+A Fixture of a Factory interior that turns the Drive a quarter turn (the elbow), splits it three ways (the tee) or four ways (the cross), so that one Motor can serve several Machines. Its cones mesh like Gears at a right angle: a turn is told about the +x or +z axis of the floor, whichever way a Fixture faces, so the Drive reverses between the stem and a side cone only when the two cones point toward the same sign of axis. In a tee the two side cones both mesh the stem, so they turn opposite ways; in a cross the cone across from the stem turns opposite to it as well, and the four cones never jam. A cross takes the Drive on any of its sides and gives it to the three others.
 _Avoid_: Gearbox, junction
+
+**Strong motor**:
+A Motor of a Factory interior that covers two tiles and hands its Drive over at one end, in line with its body, never on its sides or its other end. It drives five Machines or Pumps instead of three and draws one and a half times the power of an ordinary Motor, so less per Machine it drives. Its two tiles and its single end make it a layout decision. It is on offer from Tier 3, as is the Bevel gear cross.
+_Avoid_: Big motor, generator
 
 **Flow**:
 The fluid a Tank holds and a Pump sends through Pipes to the Machines. A Pump takes the fluid in at its back and pushes it out of its front, and only does so when it is handed Drive like a Machine; without a Pump, a Tank gives nothing. A Tank feeds at most three Cooling vats; the ones past that, the highest ids first, get no Flow.
@@ -548,7 +552,7 @@ The switch in the main menu of a Production interior that cuts all its power. Of
 _Avoid_: Power switch, shutdown
 
 **Interior economy**:
-What a Factory interior costs and brings. Each Motor draws power from the city's electricity Demand, a fifth of it with nothing to drive. A Motor drives three Machines or Pumps, linked or not; the ones beyond that, the highest ids first, are overloaded: they stop and show red until a Motor is added or one is taken off. An active Machine (a linked one) adds its own speed and yield, and each kind of Machine that runs beyond the first adds a little yield. The bonuses count in full up to half the cap of the Factory's Tier, then every Machine adds less than the one before, and they never reach the cap.
+What a Factory interior costs and brings. Each Motor draws power from the city's electricity Demand, a fifth of it with nothing to drive. A Motor drives three Machines or Pumps, linked or not (five for a Strong motor, and the Motors of a group of Drive add their strengths); the ones beyond that, the highest ids first, are overloaded: they stop and show red until a Motor is added or one is taken off. An active Machine (a linked one) adds its own speed and yield, and each kind of Machine that runs beyond the first adds a little yield. The bonuses count in full up to half the cap of the Factory's Tier, then every Machine adds less than the one before, and they never reach the cap.
 _Avoid_: Upkeep, running cost
 
 **Cooling vat**:
