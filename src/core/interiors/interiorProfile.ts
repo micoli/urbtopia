@@ -61,3 +61,6 @@ export const interiorProfileOf = (type: BuildingType): InteriorProfile | undefin
   if (bonusModel === 'packhouse') return profileOf(family, packhouseBalance, bonusModel);
   return profileOf(family, { gridSizes: layout?.gridSizes ?? service?.gridSizes ?? [], ...layout }, bonusModel);
 };
+
+// A building with a Production interior, whatever kind of Fixtures it takes.
+export const hasProductionInteriorType = (type: string): boolean => interiorProfileOf(type as BuildingType)?.family === 'production';

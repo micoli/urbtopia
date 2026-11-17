@@ -1,8 +1,8 @@
 const texts = {
   'codex.productionInteriors.title': ['Production interiors', 'Intérieurs de production'],
   'codex.productionInteriors.intro': [
-    'The Factory, the Packhouse, the Mill, the Workshop, the Bakery, the Dairy, the Storehouse, the Recycling plant, the Textile mill, the Knitwear factory and the Livestock farm can be fitted out from the inside. Motors, Machines and Lines add speed, yield, sales or room to the building, and the Recycling plant adds Waste capacity and Collection distance. The figures below come straight from the rules, and the last part of each interior shows what yours brings right now.',
-    'L’usine, le conditionnement, la minoterie, l’atelier, la boulangerie, la laiterie, l’entrepôt, l’usine de recyclage, la filature, la tricoterie et l’élevage peuvent être aménagés de l’intérieur. Moteurs, machines et chaînes ajoutent de la vitesse, du rendement, des ventes ou de la place au bâtiment, et l’usine de recyclage ajoute de la capacité de déchets et de la distance de collecte. Les chiffres ci-dessous viennent directement des règles, et la dernière partie de chaque intérieur montre ce que le vôtre apporte en ce moment.',
+    'The Factory, the Packhouse, the Mill, the Workshop, the Bakery, the Dairy, the Storehouse, the Vault, the Material depot, the Recycling plant, the Textile mill, the Knitwear factory, the Livestock farm and the Farm can be fitted out from the inside. Motors, Machines and Lines add speed, yield, sales or room to the building, the Farm adds Field tiles and raises the yield of every Harvest, and the Recycling plant adds Waste capacity and Collection distance. The figures below come straight from the rules, and the last part of each interior shows what yours brings right now.',
+    'L’usine, le conditionnement, la minoterie, l’atelier, la boulangerie, la laiterie, l’entrepôt, la chambre forte, le dépôt de matériaux, l’usine de recyclage, la filature, la tricoterie, l’élevage et la ferme peuvent être aménagés de l’intérieur. Moteurs, machines et chaînes ajoutent de la vitesse, du rendement, des ventes ou de la place au bâtiment, la ferme ajoute des parcelles et augmente le rendement de chaque récolte, et l’usine de recyclage ajoute de la capacité de déchets et de la distance de collecte. Les chiffres ci-dessous viennent directement des règles, et la dernière partie de chaque intérieur montre ce que le vôtre apporte en ce moment.',
   ],
   'codex.serviceInteriors.title': ['Service interiors', 'Intérieurs de service'],
   'codex.serviceInteriors.intro': [
@@ -20,6 +20,8 @@ const texts = {
   'codex.interiors.room': ['Room (tiles)', 'Salle (cases)'],
   'codex.interiors.sales': ['Sales rate', 'Cadence de vente'],
   'codex.interiors.capacity': ['Room for Goods', 'Place pour les biens'],
+  'codex.interiors.fieldCap': ['Field cap added', 'Parcelles de culture ajoutées'],
+  'codex.interiors.harvestPerHour': ['Fields harvested an hour by each farmhand', 'Parcelles récoltées par heure par ouvrier agricole'],
   'codex.interiors.exits': ['Exits of each size', 'Sorties de chaque taille'],
   'codex.interiors.collectionExits': ['Collection exits', 'Sorties camion'],
   'codex.interiors.sorters': ['Sorters', 'Trieuses'],
@@ -42,7 +44,7 @@ const texts = {
   'codex.interiors.part.salesRate': ['Sales rate', 'Cadence de vente'],
   'codex.interiors.part.cheeseYield': ['Cheese yield', 'Rendement en fromage'],
   'codex.interiors.part.creamYield': ['Cream yield', 'Rendement en crème'],
-  'codex.interiors.part.capacity': ['Room for Goods', 'Place pour les biens'],
+  'codex.interiors.part.capacity': ['Room (Goods or Fields)', 'Place (biens ou parcelles)'],
   'codex.interiors.part.schooling': ['Schooling delivered', 'Scolarisation délivrée'],
   'codex.interiors.part.knowledge': ['Knowledge delivered', 'Savoir délivré'],
   'codex.interiors.part.carePrimary': ['Primary care delivered', 'Soins courants délivrés'],

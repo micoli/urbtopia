@@ -3,6 +3,9 @@ import type { Command } from '../engine/commands';
 import type { BuildingType, GameState } from '../engine/state';
 import type { Coord } from '../map/coord';
 
+// The three levels that most demonstrations come in; a few add an expert one that ends on a whole layout.
+export type GuidedLevel = 'simple' | 'intermediate' | 'advanced';
+
 export type DemonstrationText = readonly [english: string, french: string];
 export interface DemonstrationStep {
   id: string;
@@ -20,7 +23,7 @@ export interface Demonstration {
   id: string;
   buildingType: BuildingType;
   buildingId: number;
-  level: 'simple' | 'intermediate' | 'advanced';
+  level: GuidedLevel | 'expert';
   title: DemonstrationText;
   objective: DemonstrationText;
   initial: () => GameState;

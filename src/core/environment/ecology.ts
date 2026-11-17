@@ -60,6 +60,7 @@ export function economicPower(b: Building, saving = 0): number {
 
 function basePower(b: Building): number {
   if (b.type === 'packhouse') return interiorPowerOfBuilding(b);
+  if (b.type === 'farm') return interiorPowerOfBuilding(b);
   if (isIndustryType(b.type)) return industryWeightOf(b.type) * b.tier + interiorBonusOfBuilding(b).power;
   if (isShopType(b.type)) return 0.5;
   if (isOfficeType(b.type)) return officeTierOf(b).power;

@@ -25,6 +25,10 @@ import { knitwearFactoryAdvanced } from './knitwearFactoryAdvanced';
 import { livestockFarmSimple } from './livestockFarmSimple';
 import { livestockFarmIntermediate } from './livestockFarmIntermediate';
 import { livestockFarmAdvanced } from './livestockFarmAdvanced';
+import { farmSimple } from './farmSimple';
+import { farmIntermediate } from './farmIntermediate';
+import { farmAdvanced } from './farmAdvanced';
+import { farmExpert } from './farmExpert';
 import { packhouseAdvanced } from './packhouseAdvanced';
 import { packhouseIntermediate } from './packhouseIntermediate';
 import { packhouseSimple } from './packhouseSimple';
@@ -33,6 +37,10 @@ import { workshopIntermediate } from './workshopIntermediate';
 import { workshopSimple } from './workshopSimple';
 import type { Demonstration } from './scenario';
 import type { BuildingType } from '../engine/state';
+import { interiorFixtureKindOf } from '../interiors/interiorStaff';
 
-export const DEMONSTRATIONS: readonly Demonstration[] = [factorySimple, factoryIntermediate, factoryAdvanced, workshopSimple, workshopIntermediate, workshopAdvanced, packhouseSimple, packhouseIntermediate, packhouseAdvanced, bakerySimple, bakeryIntermediate, bakeryAdvanced, millSimple, millIntermediate, millAdvanced, storehouseSimple, storehouseIntermediate, storehouseAdvanced, textileMillSimple, textileMillIntermediate, textileMillAdvanced, recyclingPlantSimple, recyclingPlantIntermediate, recyclingPlantAdvanced, dairySimple, dairyIntermediate, dairyAdvanced, knitwearFactorySimple, knitwearFactoryIntermediate, knitwearFactoryAdvanced, livestockFarmSimple, livestockFarmIntermediate, livestockFarmAdvanced];
-export const demonstrationsOf = (type: BuildingType) => DEMONSTRATIONS.filter(scenario => scenario.buildingType === type);
+export const DEMONSTRATIONS: readonly Demonstration[] = [factorySimple, factoryIntermediate, factoryAdvanced, workshopSimple, workshopIntermediate, workshopAdvanced, packhouseSimple, packhouseIntermediate, packhouseAdvanced, bakerySimple, bakeryIntermediate, bakeryAdvanced, millSimple, millIntermediate, millAdvanced, storehouseSimple, storehouseIntermediate, storehouseAdvanced, textileMillSimple, textileMillIntermediate, textileMillAdvanced, recyclingPlantSimple, recyclingPlantIntermediate, recyclingPlantAdvanced, dairySimple, dairyIntermediate, dairyAdvanced, knitwearFactorySimple, knitwearFactoryIntermediate, knitwearFactoryAdvanced, livestockFarmSimple, livestockFarmIntermediate, livestockFarmAdvanced, farmSimple, farmIntermediate, farmAdvanced, farmExpert];
+// The building whose demonstrations a type plays: a Vault and a Material depot run the Storehouse interior.
+export const demonstrationTypeOf = (type: BuildingType): BuildingType => interiorFixtureKindOf(type);
+
+export const demonstrationsOf = (type: BuildingType) => DEMONSTRATIONS.filter(scenario => scenario.buildingType === demonstrationTypeOf(type));

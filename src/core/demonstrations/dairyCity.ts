@@ -3,17 +3,17 @@ import { interiorLinksOf } from '../factory/interiorLinks';
 import type { FixtureId, Rotation } from '../engine/state';
 import { BUILDING_ID, lineCity, roomOf } from './lineInterior';
 import { levelTitle, placeTitle, type LevelIntro } from './guidedLevel';
-import type { Demonstration, DemonstrationStep, DemonstrationText } from './scenario';
+import type { Demonstration, DemonstrationStep, DemonstrationText, GuidedLevel } from './scenario';
 
 type Piece = { id: string; fixture: FixtureId; x: number; y: number; rotation: Rotation; label: DemonstrationText; explanation: DemonstrationText };
 export const dairyPiece = (id: string, fixture: FixtureId, x: number, y: number, rotation: Rotation, label: DemonstrationText, explanation: DemonstrationText): Piece => ({ id, fixture, x, y, rotation, label, explanation });
 const t = (en: string, fr: string): DemonstrationText => [en, fr];
-const INTROS: Record<Demonstration['level'], LevelIntro> = {
+const INTROS: Record<GuidedLevel, LevelIntro> = {
   simple: { title: t('A first dairy line', 'Une première chaîne laitière'), objective: t('Connect the milk vat to a counter.', 'Relier la cuve à lait à un comptoir.'), explanation: t('A tank, a driven pump and the milk vat supply one line that ends at the counter.', 'Un réservoir, une pompe entraînée et la cuve à lait alimentent une seule chaîne qui finit au comptoir.'), summary: t('Build one dairy line from the vat to the counter.', 'Construire une chaîne laitière de la cuve au comptoir.') },
   intermediate: { title: t('One pasteuriser, two counters', 'Un pasteurisateur, deux comptoirs'), objective: t('Feed a pasteuriser with its own pump circuit and serve two counters.', 'Alimenter un pasteurisateur avec son propre circuit de pompe et servir deux comptoirs.'), explanation: t('The pasteuriser needs a separate pump circuit, and a splitter shares its products between two counters. A cream maker then unlocks the cream yield bonus.', 'Le pasteurisateur a besoin d’un circuit de pompe séparé, et un séparateur partage ses produits entre deux comptoirs. Un crémier débloque ensuite le bonus de rendement de la crème.'), summary: t('Build a dairy line with a pasteuriser that serves two counters.', 'Construire une chaîne laitière dont le pasteurisateur sert deux comptoirs.') },
   advanced: { title: t('A dairy line without milk flow', 'Une chaîne laitière sans fluide'), objective: t('Find why the counter gets no milk and fix it.', 'Trouver pourquoi le comptoir ne reçoit pas de lait et le corriger.'), explanation: t('The pump motor will be placed facing away from the pump. You will inspect the line without flow, then turn the motor.', 'Le moteur de la pompe sera placé à l’opposé de la pompe. Tu vas inspecter la chaîne sans fluide, puis tourner le moteur.'), summary: t('Diagnose and repair a dairy line without milk flow.', 'Diagnostiquer et réparer une chaîne laitière sans fluide.') },
 };
-export const dairyScenario = (level: Demonstration['level'], pieces: Piece[], tier: number, faulty = false): Demonstration => {
+export const dairyScenario = (level: GuidedLevel, pieces: Piece[], tier: number, faulty = false): Demonstration => {
   const check = (count: number, complete: boolean, noFlow = false): DemonstrationStep['check'] => state => {
     const fixtures = roomOf(state).interior?.fixtures ?? [];
     if (fixtures.length !== count) throw new Error(`expected ${count} fixtures, got ${fixtures.length}`);

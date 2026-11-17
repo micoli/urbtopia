@@ -1,20 +1,24 @@
 import {
-  interiorBonusOfBuilding, interiorCapsOfType, interiorDeclarationOf, interiorExampleOf, interiorFamilyOf, interiorGridSizeOfType, interiorUnlockCitizensOf, isInteriorUnlocked, packhouseExitLimitOf, recyclingGainsOf, recyclingLimitsOf,
+  interiorBonusOfBuilding, interiorCapsOfType, interiorDeclarationOf, interiorExampleOf, interiorFamilyOf, interiorGridSizeOfType, interiorLayoutOf, interiorUnlockCitizensOf, isInteriorUnlocked, packhouseExitLimitOf, recyclingGainsOf, recyclingLimitsOf,
   serviceFurnitureQuality, serviceGridSizeOf, serviceQualityCapOf, serviceQualityOf,
   type Building, type BuildingType, type GameState, type InteriorExample, type InteriorPart, type InteriorRole,
 } from '../core';
+import { valueByTier } from '../core/interiors/valueByTier';
 import type { MessageKey } from '../i18n/messages';
 
-export const PRODUCTION_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'workshop', 'bakery', 'dairy', 'storehouse', 'recyclingPlant', 'textileMill', 'knitwearFactory', 'livestockFarm'];
+export const PRODUCTION_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'workshop', 'bakery', 'dairy', 'storehouse', 'vault', 'materialDepot', 'recyclingPlant', 'textileMill', 'knitwearFactory', 'livestockFarm', 'farm'];
 
 // The interiors with no bonus to speed, yield, sales or room: their gain is the queue that runs by itself.
 const QUEUE_ONLY_TYPES: readonly BuildingType[] = ['workshop'];
+
+// The interiors that add room and nothing else: the Storehouse and the two storages that run its interior.
+const CAPACITY_ONLY_TYPES: readonly BuildingType[] = ['storehouse', 'vault', 'materialDepot'];
 
 // The interiors that add speed and nothing else.
 const SPEED_ONLY_TYPES: readonly BuildingType[] = ['textileMill'];
 
 // The interiors that add yield and nothing else.
-const YIELD_ONLY_TYPES: readonly BuildingType[] = ['livestockFarm'];
+const YIELD_ONLY_TYPES: readonly BuildingType[] = ['livestockFarm', 'farm'];
 
 export const SERVICE_INTERIOR_TYPES: readonly BuildingType[] = ['school', 'library', 'hospital'];
 
@@ -78,10 +82,11 @@ const productionColumns = (type: BuildingType): BenefitColumn[] => {
     { label: 'codex.interiors.recyclers', format: 'count', values: byTier(type, tier => recyclingLimitsOf(tier).recyclers) },
   ];
   if (QUEUE_ONLY_TYPES.includes(type)) return columns;
-  if (type !== 'storehouse' && !YIELD_ONLY_TYPES.includes(type)) columns.push({ label: 'factory.interior.speed', format: 'percent', values: byTier(type, tier => caps(tier).speed) });
-  if (type !== 'storehouse' && !SPEED_ONLY_TYPES.includes(type)) columns.push({ label: 'factory.interior.yield', format: 'percent', values: byTier(type, tier => caps(tier).yield) });
+  if (!CAPACITY_ONLY_TYPES.includes(type) && !YIELD_ONLY_TYPES.includes(type)) columns.push({ label: 'factory.interior.speed', format: 'percent', values: byTier(type, tier => caps(tier).speed) });
+  if (!CAPACITY_ONLY_TYPES.includes(type) && !SPEED_ONLY_TYPES.includes(type)) columns.push({ label: 'factory.interior.yield', format: 'percent', values: byTier(type, tier => caps(tier).yield) });
   if (caps(1).sales !== undefined) columns.push({ label: 'codex.interiors.sales', format: 'percent', values: byTier(type, tier => caps(tier).sales ?? 0) });
-  if (caps(1).capacity !== undefined) columns.push({ label: 'codex.interiors.capacity', format: 'percent', values: byTier(type, tier => caps(tier).capacity ?? 0) });
+  if (caps(1).capacity !== undefined) columns.push({ label: type === 'farm' ? 'codex.interiors.fieldCap' : 'codex.interiors.capacity', format: 'percent', values: byTier(type, tier => caps(tier).capacity ?? 0) });
+  if (type === 'farm') columns.push({ label: 'codex.interiors.harvestPerHour', format: 'count', values: byTier(type, tier => valueByTier(interiorLayoutOf(type)?.harvestPerHour ?? [], tier)) });
   if (type === 'packhouse') columns.push({ label: 'codex.interiors.exits', format: 'count', values: byTier(type, packhouseExitLimitOf) });
   return columns;
 };
@@ -135,7 +140,7 @@ const liveBenefitsOf = (state: GameState, building: Building): LiveBenefit[] => 
   const bonus = interiorBonusOfBuilding(building);
   return PRODUCTION_BENEFITS.filter(({ format }) => !QUEUE_ONLY_TYPES.includes(building.type) || format === 'power').flatMap(({ label, format, read }) => {
     const value = read(bonus);
-    return value === undefined ? [] : [{ label, format, value }];
+    return value === undefined ? [] : [{ label: label === 'codex.interiors.capacity' && building.type === 'farm' ? 'codex.interiors.fieldCap' : label, format, value }];
   });
 };
 

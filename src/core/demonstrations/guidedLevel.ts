@@ -13,6 +13,7 @@ const LEVEL_NAMES: Record<Level, DemonstrationText> = {
   simple: ['Simple', 'Simple'],
   intermediate: ['Intermediate', 'Intermédiaire'],
   advanced: ['Advanced', 'Avancé'],
+  expert: ['Expert', 'Expert'],
 };
 
 export const levelTitle = (building: DemonstrationText, level: Level): DemonstrationText =>

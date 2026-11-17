@@ -21,6 +21,8 @@
       "spinner": 34,
       "knitter": 36,
       "herder": 32,
+      "farmhand": 32,
+      "irrigator": 32,
       "baker": 36,
       "seller": 30,
       "cheesemaker": 38,

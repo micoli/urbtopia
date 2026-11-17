@@ -1,5 +1,5 @@
 import { utilityCapacity, utilityDemand } from '../buildings/city';
-import { farmTier } from '../economy/tiers';
+import { farmFieldCapOf, harvestYieldBonusOf } from './farmInterior';
 import { storageCapacity, storageUsed } from '../economy/storage';
 import { isCropReady } from './growth';
 import { seedStockCapacity, seedStockUsed } from './seeds';
@@ -14,7 +14,7 @@ import type { FieldTile, GameState } from '../engine/state';
 export const FIELD_COST = 5;
 
 export function fieldCap(state: GameState): number {
-  return state.buildings.filter((building) => building.type === 'farm').reduce((total, farm) => total + farmTier(farm).fieldCap, 0);
+  return state.buildings.filter((building) => building.type === 'farm').reduce((total, farm) => total + farmFieldCapOf(farm), 0);
 }
 
 export function layFields(state: GameState, tiles: readonly Coord[]): CommandOutcome {
@@ -105,15 +105,17 @@ export function harvestFields(state: GameState, tiles: readonly Coord[]): Comman
   }
 
   const materials = { ...state.storage.materials };
+  const yieldBonus = harvestYieldBonusOf(state);
   const seedStock = { ...state.seedStock };
   let room = storageCapacity(state).crops - storageUsed(state.storage).crops;
   let seedRoom = seedStockCapacity(state) - seedStockUsed(state);
   const harvested: FieldTile[] = [];
   for (const [species, fields] of bySpecies) {
     let count = fields.length;
-    while (count > 0 && storedYield(species, count) > room) count -= 1;
+    const storedOf = (tiles: number) => Math.round(storedYield(species, tiles) * (1 + yieldBonus));
+    while (count > 0 && storedOf(count) > room) count -= 1;
     if (count === 0) continue;
-    const stored = storedYield(species, count);
+    const stored = storedOf(count);
     const seeds = Math.min(seedsReturned(species, count), seedRoom);
     materials[species] = (materials[species] ?? 0) + stored;
     if (seeds > 0) seedStock[species] = (seedStock[species] ?? 0) + seeds;

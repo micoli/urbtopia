@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { AvatarPatrol, patrolRoute } from './avatarPatrol';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, animalModelOfItem, isVenueType, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, doorwayTurnsOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, animalModelOfItem, isVenueType, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isPlainRole, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, doorwayTurnsOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import type { ScenePlan } from './scenePlan';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
@@ -458,7 +458,7 @@ export class VenueScene {
       const restockable = isRestockable(FIXTURES[fixture.type]);
       const spec = FIXTURES[fixture.type];
       const seller = spec.assigns === 'seller';
-      const good = seller ? fixture.soldGood : spec.assigns === 'restocker' || spec.assigns === 'herder' ? workFocusOf(this.lastFixtures, fixture) : spec.family === 'pen' ? undefined : spec.picks ? fixture.recipe : restockable ? fixture.restock : focusOf(fixture);
+      const good = seller ? fixture.soldGood : spec.assigns === 'farmhand' ? fixture.recipe : spec.assigns === 'restocker' || spec.assigns === 'herder' ? workFocusOf(this.lastFixtures, fixture) : spec.family === 'pen' ? undefined : spec.picks ? fixture.recipe : restockable ? fixture.restock : focusOf(fixture);
       const model = good === undefined ? null : itemModelOf(good);
       if (model && this.ensured(model)) {
         const token = new THREE.Group();
@@ -529,7 +529,7 @@ export class VenueScene {
   // The Staff assigned to a Fixture stands on the diagonal of its corner, turned toward it: a seller behind its Display counter, on the shop side; a baker at the side of its Oven that its gas does not use. A miller is a plain worker, like a Restocker.
   private placeStaff(fixture: VenueFixture, centre: { x: number; z: number }): void {
     const spec = FIXTURES[fixture.type];
-    const model = isRestockable(spec) || spec.assigns === 'miller' || spec.assigns === 'spinner' || spec.assigns === 'herder' ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
+    const model = isRestockable(spec) || spec.assigns === 'miller' || spec.assigns === 'spinner' || spec.assigns === 'herder' || isPlainRole(spec.assigns) ? RESTOCKER_MODEL : isProducerRole(spec.assigns) ? VENUE_STAFF_MODELS.restaurant[0] : VENUE_STAFF_MODELS.supermarket[0];
     if (!model || !this.ensured(model)) return;
     const side = spec.assigns === 'seller' ? turnedOffset(0, -1, fixture.rotation) : spec.flow?.includes('right') || spec.drive?.includes('right') ? turnedOffset(-1, 0, fixture.rotation) : turnedOffset(1, 0, fixture.rotation);
     const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);

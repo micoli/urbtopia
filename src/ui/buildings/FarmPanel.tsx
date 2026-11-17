@@ -8,12 +8,13 @@ import { CropRow } from './CropRow';
 import { ActionButton } from '../common/ActionButton';
 import { ButtonRow } from '../common/ButtonRow';
 import { BlockedReason } from '../common/BlockedReason';
+import { InteriorButton } from '../factory/InteriorButton';
 
 interface FarmPanelProps {
   building: Building;
 }
 
-export function FarmPanel(_props: FarmPanelProps) {
+export function FarmPanel({ building }: FarmPanelProps) {
   const fieldCount = useGame((store) => store.state.fields.length);
   const cap = useGame((store) => fieldCap(store.state));
   const seedsUsed = useGame((store) => seedStockUsed(store.state));
@@ -25,6 +26,7 @@ export function FarmPanel(_props: FarmPanelProps) {
 
   return (
     <section className="farm">
+      <InteriorButton building={building} />
       <p>
           {t('farm.seeds')}: {seedsUsed}/{seedsCapacity}
       </p>

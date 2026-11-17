@@ -159,6 +159,44 @@
       },
       "unlockCitizens": 250
     },
+    "vault": {
+      "family": "production",
+      "bonusModel": "line",
+      "fixtureKind": "storehouse",
+      "layout": {
+        "gridSizes": [6, 6, 7, 7, 8, 8],
+        "speedCaps": [0.05],
+        "yieldCaps": [0.05],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "capacityCaps": [0.1, 0.1, 0.15, 0.15, 0.2, 0.2]
+      },
+      "roles": {
+        "stocker": {
+          "part": "capacity",
+          "posts": [0, 1, 1, 2, 2]
+        }
+      },
+      "unlockCitizens": 250
+    },
+    "materialDepot": {
+      "family": "production",
+      "bonusModel": "line",
+      "fixtureKind": "storehouse",
+      "layout": {
+        "gridSizes": [6, 6, 7, 7, 8, 8],
+        "speedCaps": [0.05],
+        "yieldCaps": [0.05],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "capacityCaps": [0.1, 0.1, 0.15, 0.15, 0.2, 0.2]
+      },
+      "roles": {
+        "stocker": {
+          "part": "capacity",
+          "posts": [0, 1, 1, 2, 2]
+        }
+      },
+      "unlockCitizens": 250
+    },
     "school": {
       "family": "service",
       "roles": {
@@ -302,6 +340,31 @@
         }
       },
       "unlockCitizens": 80
+    },
+    "farm": {
+      "family": "production",
+      "bonusModel": "line",
+      "layout": {
+        "gridSizes": [5, 6, 7, 8, 9],
+        "speedCaps": [0.01],
+        "yieldCaps": [0.05, 0.1, 0.15, 0.2, 0.25],
+        "capacityCaps": [0.1, 0.2, 0.3, 0.4, 0.5],
+        "harvestPerHour": [3, 4, 5, 6, 8],
+        "technicianPosts": [0, 0, 1, 1, 2],
+        "yieldFromExits": true,
+        "requires": "washer"
+      },
+      "roles": {
+        "farmhand": {
+          "part": "yield",
+          "posts": [1, 2, 3, 4, 5]
+        },
+        "irrigator": {
+          "part": "capacity",
+          "posts": [1, 2, 3, 4, 5]
+        }
+      },
+      "unlockCitizens": 60
     }
   }
 }

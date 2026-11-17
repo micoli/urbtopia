@@ -1,8 +1,8 @@
 import type { Building, FixtureId } from '../engine/state';
 import { stackCountOf } from '../economy/counterSlots';
 import { FIXTURES } from '../venues/fixtures';
-import { hasAssignments } from './interiorAssignments';
-import { interiorLayoutOf, isProducerRole } from './interiorStaff';
+import { canAssignStaff } from './interiorAssignments';
+import { interiorLayoutOf, interiorPostsOf, isPlainRole, isProducerRole } from './interiorStaff';
 import { valueByTier } from './valueByTier';
 
 export interface FixtureLimit {
@@ -10,11 +10,13 @@ export interface FixtureLimit {
   max: number;
 }
 
+// A Farm interior has as many Harvest bins and Sprinklers as it has posts of the farmhand and of the irrigator at its Tier.
 // A Bakery has as many Ovens as it has production Slots (a Mill has a few Millstones more from the fourth Tier) and as many Display counters as its Counter has Slots. None for a Fixture that has no such limit.
 export function fixtureLimitOf(building: Building, type: FixtureId): FixtureLimit | undefined {
   const role = FIXTURES[type].assigns;
-  if (role === undefined || !hasAssignments(building)) return undefined;
+  if (role === undefined || !canAssignStaff(building)) return undefined;
   const count = (building.interior?.fixtures ?? []).filter(fixture => FIXTURES[fixture.type].assigns === role).length;
+  if (isPlainRole(role)) return { count, max: interiorPostsOf(building.type, role, building.tier) };
   return { count, max: isProducerRole(role) ? building.slotCount + extraProducersOf(building) : stackCountOf(building.type, building.tier) };
 }
 

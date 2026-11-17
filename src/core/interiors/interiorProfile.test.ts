@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import interiors from '../../../assets/defs/balance/interiors.json' with { type: 'json' };
 import { FIXTURES } from '../venues/fixtures';
 import { PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS } from '../venues/venueVocabulary';
-import { interiorProfileOf } from './interiorProfile';
+import { interiorKindOf } from '../factory/interiorCommands';
+import { hasProductionInteriorType, interiorProfileOf } from './interiorProfile';
+import { interiorFixtureKindOf } from './interiorStaff';
 
 type Family = NonNullable<ReturnType<typeof interiorProfileOf>>['family'];
 
@@ -18,6 +20,7 @@ const SIZES_BY_TIER_1_TO_10: { type: Parameters<typeof interiorProfileOf>[0]; fa
   { type: 'textileMill', family: 'production', sizes: [5, 6, 7, 8, 9, 9, 9, 9, 9, 9] },
   { type: 'knitwearFactory', family: 'production', sizes: [6, 7, 8, 9, 10, 10, 10, 10, 10, 10] },
   { type: 'livestockFarm', family: 'production', sizes: [6, 7, 8, 9, 10, 10, 10, 10, 10, 10] },
+  { type: 'farm', family: 'production', sizes: [5, 6, 7, 8, 9, 9, 9, 9, 9, 9] },
   { type: 'home', family: 'home', sizes: [4, 4, 5, 5, 6, 6, 7, 7, 7, 7] },
   { type: 'home-victorian', family: 'home', sizes: [4, 4, 5, 5, 6, 6, 7, 7, 7, 7] },
   { type: 'school', family: 'service', sizes: [5, 5, 6, 6, 7, 7, 8, 8, 8, 8] },
@@ -39,6 +42,7 @@ const NUMBERS_BY_TIER_1_TO_10: { type: Parameters<typeof interiorProfileOf>[0]; 
   { type: 'textileMill', speed: [0.1, 0.18, 0.26, 0.34, 0.42, 0.42, 0.42, 0.42, 0.42, 0.42], yield: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01], technicians: [0, 0, 1, 1, 2, 2, 2, 2, 2, 2] },
   { type: 'knitwearFactory', speed: [0.1, 0.2, 0.3, 0.4, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], yield: [0.02, 0.04, 0.06, 0.08, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1], sales: [0.1, 0.2, 0.3, 0.4, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], technicians: [0, 0, 1, 1, 2, 2, 2, 2, 2, 2] },
   { type: 'livestockFarm', speed: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01], yield: [0.05, 0.1, 0.15, 0.2, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25], technicians: [0, 0, 1, 1, 2, 2, 2, 2, 2, 2] },
+  { type: 'farm', speed: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01], yield: [0.05, 0.1, 0.15, 0.2, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25], capacity: [0.1, 0.2, 0.3, 0.4, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], technicians: [0, 0, 1, 1, 2, 2, 2, 2, 2, 2] },
 ];
 
 describe('the Interior profile of a type of building', () => {
@@ -48,7 +52,7 @@ describe('the Interior profile of a type of building', () => {
     expect(sizes.map((_, index) => profile?.gridSize(index + 1))).toEqual(sizes);
   });
 
-  it.each(['packhouse', 'workshop', 'recyclingPlant', 'bakery', 'dairy', 'storehouse', 'knitwearFactory', 'livestockFarm'] as const)('runs a Line of crates in the interior of a %s', type => {
+  it.each(['packhouse', 'workshop', 'recyclingPlant', 'bakery', 'dairy', 'storehouse', 'knitwearFactory', 'livestockFarm', 'farm'] as const)('runs a Line of crates in the interior of a %s', type => {
     expect(interiorProfileOf(type)?.line).toBe(true);
   });
 
@@ -82,6 +86,7 @@ describe('the Interior profile of a type of building', () => {
     { type: 'dairy', model: 'line' },
     { type: 'storehouse', model: 'line' },
     { type: 'livestockFarm', model: 'line' },
+    { type: 'farm', model: 'line' },
     { type: 'bakery', model: 'assigned' },
     { type: 'knitwearFactory', model: 'assigned' },
   ] as const)('computes the bonus of a $type with the $model model', ({ type, model }) => {
@@ -92,15 +97,29 @@ describe('the Interior profile of a type of building', () => {
     expect(interiorProfileOf(type)?.bonusModel).toBeUndefined();
   });
 
+  it.each(['vault', 'materialDepot'] as const)('runs the Storehouse interior in a %s', type => {
+    expect(interiorFixtureKindOf(type)).toBe('storehouse');
+    expect(interiorKindOf({ type } as Parameters<typeof interiorKindOf>[0])).toBe('storehouse');
+    expect(interiorProfileOf(type)?.family).toBe('production');
+    expect(interiorProfileOf(type)?.bonusModel).toBe(interiorProfileOf('storehouse')?.bonusModel);
+    expect(hasProductionInteriorType(type)).toBe(true);
+  });
+
+  it('keeps the kind of Fixtures of a type that declares none', () => {
+    expect(interiorFixtureKindOf('storehouse')).toBe('storehouse');
+  });
+
   it('gives nothing to a type of building with no interior', () => {
-    expect(interiorProfileOf('farm')).toBeUndefined();
+    expect(interiorProfileOf('grainSilo')).toBeUndefined();
   });
 
   it.each([
     { family: 'production', kinds: PRODUCTION_INTERIOR_KINDS },
     { family: 'service', kinds: SERVICE_INTERIOR_KINDS },
-  ] as const)('lists as $family kinds exactly the types that interiors.json declares in that family', ({ family, kinds }) => {
-    const declared = Object.entries(interiors.buildings).filter(([, declaration]) => declaration.family === family).map(([type]) => type);
+  ] as const)('lists as $family kinds exactly the types that interiors.json declares in that family with Fixtures of their own', ({ family, kinds }) => {
+    const declared = Object.entries(interiors.buildings)
+      .filter(([, declaration]) => declaration.family === family && !('fixtureKind' in declaration))
+      .map(([type]) => type);
     expect([...kinds].sort()).toEqual(declared.sort());
   });
 

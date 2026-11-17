@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "farm",
+  "category": "machines",
+  "name": {
+    "en": "Sprinkler (Flow on the left)",
+    "fr": "Arroseur (arrivée à gauche)"
+  },
+  "model": "farm-interior-sprinkler-left",
+  "footprint": [1, 1],
+  "price": 450,
+  "minTier": 1,
+  "wear": 0.06,
+  "role": "machine",
+  "flow": ["left"],
+  "capacity": 0.1,
+  "assigns": "irrigator",
+  "family": "sprinkler"
+}

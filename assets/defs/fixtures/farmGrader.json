@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "farm",
+  "category": "machines",
+  "name": {
+    "en": "Grader (Drive on the right)",
+    "fr": "Calibreuse (prise à droite)"
+  },
+  "model": "farm-interior-grader",
+  "footprint": [1, 1],
+  "price": 600,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "machine",
+  "drive": ["right"],
+  "family": "grader",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}

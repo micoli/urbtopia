@@ -31,6 +31,10 @@
               "assigned"
             ]
           },
+          "fixtureKind": {
+            "type": "string",
+            "minLength": 1
+          },
           "unlockCitizens": {
             "type": "integer",
             "minimum": 0,
@@ -149,6 +153,14 @@
                 }
               },
               "capacityCaps": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "harvestPerHour": {
                 "minItems": 1,
                 "type": "array",
                 "items": {
@@ -319,6 +331,8 @@
                 "spinner",
                 "knitter",
                 "herder",
+                "farmhand",
+                "irrigator",
                 "baker",
                 "seller",
                 "cheesemaker",

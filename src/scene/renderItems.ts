@@ -90,7 +90,7 @@ const RAIL_MODELS = [RAIL_STRAIGHT_MODEL, RAIL_CORNER_MODEL];
 const shellOf = (type: VenueType) => definitionOf(type).shell!;
 
 // The interior of a Factory has the same pieces as the interior of a Venue.
-type ProductionShellType = 'factory' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'recyclingPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'school' | 'library' | 'hospital';
+type ProductionShellType = 'factory' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'recyclingPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'farm' | 'school' | 'library' | 'hospital';
 
 const floorShellOf = (type: ProductionShellType = 'factory') => definitionOf(type).floorShell!;
 
@@ -115,6 +115,7 @@ export const VENUE_CORNER_PLACEMENT = {
   textileMill: interiorCornerOf('textileMill'),
   knitwearFactory: interiorCornerOf('knitwearFactory'),
   livestockFarm: interiorCornerOf('livestockFarm'),
+  farm: interiorCornerOf('farm'),
   school: interiorCornerOf('school'),
   library: interiorCornerOf('library'),
   hospital: interiorCornerOf('hospital'),
@@ -136,6 +137,7 @@ export const VENUE_SHELL_MODELS = {
   textileMill: { floor: modelFileOf(floorShellOf('textileMill').floor), wall: modelFileOf(floorShellOf('textileMill').wall), corner: modelFileOf(floorShellOf('textileMill').corner) },
   knitwearFactory: { floor: modelFileOf(floorShellOf('knitwearFactory').floor), wall: modelFileOf(floorShellOf('knitwearFactory').wall), corner: modelFileOf(floorShellOf('knitwearFactory').corner) },
   livestockFarm: { floor: modelFileOf(floorShellOf('livestockFarm').floor), wall: modelFileOf(floorShellOf('livestockFarm').wall), corner: modelFileOf(floorShellOf('livestockFarm').corner) },
+  farm: { floor: modelFileOf(floorShellOf('farm').floor), wall: modelFileOf(floorShellOf('farm').wall), corner: modelFileOf(floorShellOf('farm').corner) },
   school: { floor: modelFileOf(floorShellOf('school').floor), wall: modelFileOf(floorShellOf('school').wall), corner: modelFileOf(floorShellOf('school').corner) },
   library: { floor: modelFileOf(floorShellOf('library').floor), wall: modelFileOf(floorShellOf('library').wall), corner: modelFileOf(floorShellOf('library').corner) },
   hospital: { floor: modelFileOf(floorShellOf('hospital').floor), wall: modelFileOf(floorShellOf('hospital').wall), corner: modelFileOf(floorShellOf('hospital').corner) },

@@ -21,7 +21,7 @@ describe('the Scene plan of a building', () => {
   });
 
   it('gives nothing to a building with neither an interior nor a Venue', () => {
-    expect(scenePlanOf(createBuilding(1, 'farm', 0, 0, 0))).toBeUndefined();
+    expect(scenePlanOf(createBuilding(1, 'grainSilo', 0, 0, 0))).toBeUndefined();
   });
 
   it('keeps a room whose breaker is off dim, and a running one at full light', () => {

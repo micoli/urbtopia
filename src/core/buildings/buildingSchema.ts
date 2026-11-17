@@ -105,6 +105,8 @@ const farmBuilding = z.strictObject({
   ...sited,
   ...panelled,
   ...repeatable,
+  // The interior of the Farm: the models of its floor, its walls and its corner post.
+  floorShell: interiorShell.optional(),
   tiers: tiersOf({ ...homeLook, seedCapacity: count, fieldCap: count }, ['model', 'footprint', 'seedCapacity', 'fieldCap']),
 });
 

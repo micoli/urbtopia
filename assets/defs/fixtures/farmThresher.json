@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "farm",
+  "category": "machines",
+  "name": {
+    "en": "Thresher (Drive on the right)",
+    "fr": "Batteuse (prise à droite)"
+  },
+  "model": "farm-interior-thresher",
+  "footprint": [1, 1],
+  "price": 700,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "drive": ["right"],
+  "family": "thresher",
+  "lineIn": ["back"],
+  "lineOut": ["front"]
+}
