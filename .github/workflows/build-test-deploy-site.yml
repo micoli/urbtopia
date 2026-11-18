@@ -129,6 +129,7 @@ jobs:
           RELEASE_NAME: __URBTOPIA_RELEASE_NAME__
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
       - name: Fail if a server-side key reached the bundle or supabase-js left its lazy chunk
         run: node scripts/checkBundle.ts dist
       - name: Check the Codex images
@@ -153,6 +154,8 @@ jobs:
       actions: read
     outputs:
       release-name: ${{ steps.release-name.outputs.name }}
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - name: Check out the repository with its tags
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -176,6 +179,17 @@ jobs:
         env:
           RELEASE_NAME: ${{ steps.release-name.outputs.name }}
         run: node scripts/stampReleaseName.ts dist "$RELEASE_NAME"
+      - name: Upload the source maps to Sentry
+        if: ${{ env.SENTRY_AUTH_TOKEN != '' }}
+        env:
+          SENTRY_ORG: micoli
+          SENTRY_PROJECT: urbtopia
+          RELEASE_NAME: ${{ steps.release-name.outputs.name }}
+        run: |
+          npx --yes sentry@0.50.0 sourcemap inject dist
+          npx --yes sentry@0.50.0 sourcemap upload dist --release "$RELEASE_NAME"
+      - name: Keep the source maps out of the site
+        run: find dist -name '*.map' -delete
       - name: Upload the site as the Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:

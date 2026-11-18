@@ -1,4 +1,6 @@
+import './instrument';
 import { createRoot } from 'react-dom/client';
+import * as Sentry from '@sentry/react';
 import { App } from './ui/layout/App';
 import { installFpsOverlay, isFpsOverlayRequested } from './ui/system/fpsOverlay';
 import { blockPageZoom } from './ui/system/blockPageZoom';
@@ -26,7 +28,11 @@ if (!isSimulation) {
 }
 
 const root = document.getElementById('app');
-if (root) createRoot(root).render(<App />);
+if (root) createRoot(root, {
+  onUncaughtError: Sentry.reactErrorHandler(),
+  onCaughtError: Sentry.reactErrorHandler(),
+  onRecoverableError: Sentry.reactErrorHandler(),
+}).render(<App />);
 
 if (isFpsOverlayRequested(window.location.search)) installFpsOverlay();
 
