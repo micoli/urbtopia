@@ -3,6 +3,9 @@ import type { Database } from '../../../../src/persistence/cloud/database.types'
 import type { AccountSummary } from '../domain/accounts'
 import { biggestCityStats, groupByCity, type CityGroup } from '../domain/cityGroups'
 import { neutralHandle } from '../domain/handle'
+import { inWindow, type DateWindow } from '../domain/dateFilter'
+import { factsOfSave, type SaveFacts } from '../domain/saveFacts'
+import type { LatestSavedPrefs } from '../domain/savedPrefsTable'
 import { statsOfEnvelope, type SaveStats } from '../domain/saveStats'
 import type { Profile } from '../domain/profiles'
 
@@ -125,6 +128,70 @@ export async function loadLatestSaveStats(client: AdminClient, userIds: string[]
     }),
   )
   return new Map(entries.flatMap(([userId, stats]) => (stats ? [[userId, stats] as const] : [])))
+}
+
+const PREFS_USERS_PER_QUERY = 50
+const FACTS_USERS_PER_QUERY = 10
+
+interface LatestSave {
+  userId: string
+  revision: number
+  savedAt: string
+  cityIds: string[]
+}
+
+// The newest save of each account, kept only when its own date falls in the window: the heavy envelopes are then read for those alone.
+async function listLatestSaves(client: AdminClient, window: DateWindow): Promise<LatestSave[]> {
+  const rows = await fetchAllRows((from, to) => client.from('urb_saves').select('user_id, revision, city_id, client_saved_at').order('user_id').order('revision').range(from, to))
+  const latest = new Map<string, LatestSave>()
+  for (const { user_id, revision, city_id, client_saved_at } of rows) {
+    const known = latest.get(user_id)
+    if (!known) latest.set(user_id, { userId: user_id, revision, savedAt: client_saved_at, cityIds: [city_id] })
+    else {
+      if (!known.cityIds.includes(city_id)) known.cityIds.push(city_id)
+      if (revision > known.revision) Object.assign(known, { revision, savedAt: client_saved_at })
+    }
+  }
+  return [...latest.values()].filter(save => inWindow(Date.parse(save.savedAt), window))
+}
+
+// The `prefs` of the newest save of each account, read from the stored envelope without opening the game state.
+export async function loadLatestSavedPrefs(client: AdminClient, window: DateWindow): Promise<LatestSavedPrefs[]> {
+  const saves = await listLatestSaves(client, window)
+  const revisionOf = new Map(saves.map(save => [save.userId, save.revision]))
+  const latest: LatestSavedPrefs[] = []
+  for (let from = 0; from < saves.length; from += PREFS_USERS_PER_QUERY) {
+    const chunk = saves.slice(from, from + PREFS_USERS_PER_QUERY)
+    const { data, error } = await client.from('urb_saves').select('user_id, revision, client_saved_at, prefs:envelope->prefs').in('user_id', chunk.map(save => save.userId)).in('revision', chunk.map(save => save.revision))
+    if (error) throw new Error(error.message)
+    for (const row of data) if (revisionOf.get(row.user_id) === row.revision) latest.push({ userId: row.user_id, revision: row.revision, savedAt: row.client_saved_at, prefs: row.prefs })
+  }
+  return latest
+}
+
+export interface FactsProgress {
+  loaded: number
+  total: number
+}
+
+// Full envelopes weigh up to 1 MB: a few users per query, and only the facts are kept once each is read.
+export async function loadLatestSaveFacts(client: AdminClient, window: DateWindow, onProgress: (progress: FactsProgress) => void): Promise<SaveFacts[]> {
+  const saves = await listLatestSaves(client, window)
+  const known = new Map(saves.map(save => [save.userId, save]))
+  const facts: SaveFacts[] = []
+  onProgress({ loaded: 0, total: saves.length })
+  for (let from = 0; from < saves.length; from += FACTS_USERS_PER_QUERY) {
+    const chunk = saves.slice(from, from + FACTS_USERS_PER_QUERY)
+    const { data, error } = await client.from('urb_saves').select('user_id, revision, format_version, client_saved_at, envelope').in('user_id', chunk.map(save => save.userId)).in('revision', chunk.map(save => save.revision))
+    if (error) throw new Error(error.message)
+    for (const row of data) {
+      const save = known.get(row.user_id)
+      if (save?.revision !== row.revision) continue
+      facts.push(factsOfSave({ userId: row.user_id, cityIds: save.cityIds, formatVersion: row.format_version, savedAt: row.client_saved_at }, row.envelope))
+    }
+    onProgress({ loaded: Math.min(from + FACTS_USERS_PER_QUERY, saves.length), total: saves.length })
+  }
+  return facts
 }
 
 export async function setBanned(client: AdminClient, userId: string, banned: boolean): Promise<void> {

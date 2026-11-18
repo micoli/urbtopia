@@ -7,9 +7,12 @@ import { countUnread } from '../domain/unreadBadge'
 import { environmentOf, type RouteView } from '../domain/route'
 import { useRoute } from '../store/routeStore'
 import type { Profile } from '../domain/profiles'
+import { DateFilterBar } from './DateFilterBar'
+import { DashboardView } from './DashboardView'
 import { AccountList } from './AccountList'
 import { AccountPanel } from './AccountPanel'
 import { ReportsView } from './ReportsView'
+import { StatsView } from './StatsView'
 import { TopBar } from './TopBar'
 import { ViewTabs } from './ViewTabs'
 
@@ -34,7 +37,12 @@ export function Shell({ profile }: Props) {
     <div className="flex h-full flex-col">
       <TopBar profile={profile} onRefresh={reload} />
       <ViewTabs view={view} onChange={nextView => open(nextView, null)} />
-      {view === 'bug-report' ? (
+      {(view === 'dashboard' || view === 'stats') && <DateFilterBar />}
+      {view === 'dashboard' ? (
+        <DashboardView client={client} accounts={state} />
+      ) : view === 'stats' ? (
+        <StatsView client={client} accounts={state} onOpenAccount={id => open('account', id)} />
+      ) : view === 'bug-report' ? (
         <ReportsView client={client} gameUrl={profile.gameUrl} state={reports.state} reload={reports.reload} selectedId={selectedReportId} onSelect={id => open('bug-report', String(id))} />
       ) : (
         <div className="grid min-h-0 flex-1 grid-cols-[minmax(20rem,26rem)_1fr]">

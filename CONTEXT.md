@@ -1209,7 +1209,7 @@ Looking around the Showcase of another Player account's City in the game, chosen
 _Avoid_: Spectate, preview, load
 
 **Back office**:
-The local tool, never deployed, with which an Admin lists Player accounts, moderates them and inspects their Cloud saves. It runs only on the Admin's machine and acts with the service key of the Supabase project it is pointed at.
+The local tool, never deployed, with which an Admin lists Player accounts, moderates them and inspects their Cloud saves and reads the Preferences kept in their latest ones. It runs only on the Admin's machine and acts with the service key of the Supabase project it is pointed at.
 _Avoid_: Admin panel, dashboard, console
 
 **Bug report**:

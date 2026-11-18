@@ -11,6 +11,8 @@ export function ViewTabs({ view, onChange }: Props) {
     <nav className="flex gap-1 border-b border-zinc-200 bg-white px-4 py-1.5">
       <button className={button(view === 'account' ? 'primary' : 'ghost')} onClick={() => onChange('account')}>Accounts</button>
       <button className={button(view === 'bug-report' ? 'primary' : 'ghost')} onClick={() => onChange('bug-report')}>Bug reports</button>
+      <button className={button(view === 'stats' ? 'primary' : 'ghost')} onClick={() => onChange('stats')}>Stats</button>
+      <button className={button(view === 'dashboard' ? 'primary' : 'ghost')} onClick={() => onChange('dashboard')}>Dashboard</button>
     </nav>
   )
 }
