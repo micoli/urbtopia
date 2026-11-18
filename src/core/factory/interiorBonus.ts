@@ -9,7 +9,7 @@ import { interiorProfileOf } from '../interiors/interiorProfile';
 import { valueByTier } from '../interiors/valueByTier';
 import { interiorDeclarationOf, interiorLayoutOf, interiorPartPresence, isPlainRole, isProducerRole, yieldGroupOf, type InteriorPart } from '../interiors/interiorStaff';
 import { memoizedByLayout } from './memoizedByLayout';
-import { circuitOf, interiorReportOf, isMachine, roleOf } from './interiorLinks';
+import { circuitOf, interiorReportOf, isMachine, motorDrawOf, motorStrengthOf, roleOf } from './interiorLinks';
 import { suppliedGoodsOf } from './interiorLine';
 
 export interface InteriorCaps {
@@ -68,6 +68,9 @@ const coolingOf = memoizedByLayout(allFixtures => {
 // A Motor drives only so many Machines and Pumps, and the others stop; the kinds of Machine that run add to the yield, and a Cooling vat beside a Motor adds to the Machines that Motor drives.
 const bonuses = new WeakMap<readonly VenueFixture[], Map<string, InteriorBonus>>();
 
+const strengthOf = (motors: readonly VenueFixture[]): number => motors.reduce((total, motor) => total + motorStrengthOf(motor), 0);
+const drawOf = (motors: readonly VenueFixture[]): number => motors.reduce((total, motor) => total + motorDrawOf(motor), 0);
+
 export function interiorBonusOf(allFixtures: readonly VenueFixture[], tier: number, type: BuildingType = 'factory'): InteriorBonus {
   const perTier = bonuses.get(allFixtures) ?? new Map<string, InteriorBonus>();
   bonuses.set(allFixtures, perTier);
@@ -83,14 +86,14 @@ function bonusOf(allFixtures: readonly VenueFixture[], tier: number, type: Build
   const caps = interiorCapsOfType(type, tier);
   const { machines, motors, drive, coolantOf } = coolingOf(allFixtures);
   const saving = Math.min(interiorBalance.maxPowerSaving, interiorBalance.boilerPowerSaving * machines.filter(fixture => FIXTURES[fixture.type].heat).length);
-  const busy = motors.length === 0 ? 0 : Math.min(1, drive.received.size / (motors.length * interiorBalance.motorCapacity));
+  const busy = motors.length === 0 ? 0 : Math.min(1, drive.received.size / strengthOf(motors));
   const sum = (key: 'speed' | 'yield') => machines.reduce((total, fixture) => total + (FIXTURES[fixture.type][key] ?? 0) * (1 + coolantOf(fixture)), 0);
   const fixturePower = allFixtures.filter(fixture => fixture.broken !== true).reduce((total, fixture) => total + (FIXTURES[fixture.type].power ?? 0), 0);
   const variety = interiorBalance.varietyYield * Math.max(0, kindsOf(machines) - 1);
   return {
     speed: saturate(sum('speed'), caps.speed),
     yield: saturate(sum('yield') + variety, caps.yield),
-    power: motors.length * interiorBalance.motorPower * (interiorBalance.idlePowerShare + (1 - interiorBalance.idlePowerShare) * busy) * (1 - saving) + fixturePower,
+    power: drawOf(motors) * interiorBalance.motorPower * (interiorBalance.idlePowerShare + (1 - interiorBalance.idlePowerShare) * busy) * (1 - saving) + fixturePower,
   };
 }
 
@@ -99,8 +102,8 @@ const packhousePowerOf = memoizedByLayout((allFixtures): number => {
   const { fixtures, drive } = interiorReportOf(allFixtures);
   const motors = fixtures.filter(fixture => roleOf(fixture) === 'motor');
   if (motors.length === 0) return 0;
-  const busy = Math.min(1, drive.received.size / (motors.length * interiorBalance.motorCapacity));
-  return motors.length * interiorBalance.motorPower * (interiorBalance.idlePowerShare + (1 - interiorBalance.idlePowerShare) * busy);
+  const busy = Math.min(1, drive.received.size / strengthOf(motors));
+  return drawOf(motors) * interiorBalance.motorPower * (interiorBalance.idlePowerShare + (1 - interiorBalance.idlePowerShare) * busy);
 });
 
 // What the Motors of a building's floor ask of the city's power.

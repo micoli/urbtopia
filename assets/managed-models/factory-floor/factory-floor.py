@@ -51,6 +51,25 @@ def motor(rng):
     return parts, {"spin-y": (turning, (0, 0, PIPE_Z))}
 
 
+def motor_strong(rng):
+    """Strong motor, two tiles long, its shaft coming out of the right end at the edge of the second tile: a long finned body on a double base with two feet each,
+    a junction box and a cooling fan housing on top. The Drive leaves it in line with its body."""
+    parts = [block("base", -0.95, 0.95, -0.4, 0.4, 0.0, 0.05, P["iron"])]
+    for k, x in enumerate((-0.7, -0.3, 0.3, 0.7)):
+        parts.append(block(f"foot{k}", x - 0.07, x + 0.07, -0.3, 0.3, 0.05, 0.12, P["blue_dark"]))
+    parts.append(sideways(disc("body", 0.26, 1.5, (0, 0, 0), P["blue"], 10), x=-0.85, z=PIPE_Z))
+    for k in range(9):
+        parts.append(sideways(disc(f"fin{k}", 0.29, 0.03, (0, 0, 0), P["blue_dark"], 10), x=-0.75 + 0.17 * k, z=PIPE_Z))
+    parts += [sideways(disc("rear_cap", 0.24, 0.12, (0, 0, 0), P["iron"], 10), x=-0.93, z=PIPE_Z),
+              sideways(disc("fan_housing", 0.2, 0.1, (0, 0, 0), P["steel_dark"], 10), x=-0.99, z=PIPE_Z),
+              sideways(disc("front_cap", 0.23, 0.1, (0, 0, 0), P["steel_dark"], 10), x=0.65, z=PIPE_Z),
+              block("junction", -0.2, 0.1, -0.1, 0.1, 0.62, 0.74, P["iron"]), block("junction_lid", -0.21, 0.11, -0.11, 0.11, 0.74, 0.77, P["steel_dark"]),
+              block("lamp", 0.0, 0.07, -0.03, 0.03, 0.77, 0.83, P["green"]), block("lamp2", 0.15, 0.22, -0.03, 0.03, 0.77, 0.83, P["red"])]
+    turning = [sideways(disc("shaft", 0.06, 0.3, (0, 0, 0), P["steel"], 6), x=0.7, z=PIPE_Z), sideways(disc("coupling", 0.09, 0.07, (0, 0, 0), P["brass"], 6), x=0.93, z=PIPE_Z),
+               block("key", 0.78, 0.9, -0.012, 0.012, 0.40, 0.42, P["steel_dark"])]
+    return parts, {"spin-x": (turning, (0, 0, PIPE_Z))}
+
+
 # 11 teeth: a tooth on one side of the rim and a gap on the other, so Gears side by side along their rim mesh without turning any of them.
 TEETH = 11
 
@@ -85,6 +104,18 @@ def shaft(rng):
                   horizontal(disc(f"sleeve{k}", 0.075, 0.16, (0, 0, 0), P["brass"], 8), y=y - 0.08, z=0.34),
                   block(f"foot{k}", -0.12, 0.12, y - 0.09, y + 0.09, 0.0, 0.03, P["iron"])]
     return parts, {"spin-y": (turning, (0, 0, PIPE_Z))}
+
+
+def reverser(rng):
+    """Reverser: a straight shaft along y like the Shaft, with a red gearbox housing in the middle that shows the turn is reversed there. Its front rod and its back rod turn opposite ways."""
+    front = [horizontal(disc("rod_front", 0.045, 0.5, (0, 0, 0), P["steel"], 6), y=-0.5, z=0.34), block("key_front", -0.012, 0.012, -0.5, 0.0, 0.385, 0.395, P["steel_dark"])]
+    back = [horizontal(disc("rod_back", 0.045, 0.5, (0, 0, 0), P["steel"], 6), y=0.0, z=0.34), block("key_back", -0.012, 0.012, 0.0, 0.5, 0.385, 0.395, P["steel_dark"])]
+    parts = [block("housing", -0.17, 0.17, -0.17, 0.17, 0.12, 0.5, P["red"]), block("housing_lid", -0.19, 0.19, -0.19, 0.19, 0.5, 0.55, P["steel_dark"]),
+             block("housing_base", -0.2, 0.2, -0.2, 0.2, 0.0, 0.12, P["iron"]), block("lamp", -0.04, 0.04, -0.04, 0.04, 0.55, 0.62, P["yellow"])]
+    for k, y in enumerate((-0.35, 0.35)):
+        parts += [block(f"pedestal{k}", -0.07, 0.07, y - 0.06, y + 0.06, 0.0, 0.26, P["iron"]), block(f"bearing{k}", -0.09, 0.09, y - 0.08, y + 0.08, 0.26, 0.3, P["blue_dark"]),
+                  horizontal(disc(f"sleeve{k}", 0.075, 0.16, (0, 0, 0), P["brass"], 8), y=y - 0.08, z=0.34)]
+    return parts, {"spin-y": (front, (0, 0, PIPE_Z)), "spin-ny": (back, (0, 0, PIPE_Z))}
 
 
 def pump(rng):
@@ -185,6 +216,8 @@ def bevel_toward(parts, side):
             lpm.move(lpm.rotate(part, 90, axis="X"), 0, -0.08, PIPE_Z)
         elif side == "right":
             sideways(part, x=0.08, z=PIPE_Z)
+        elif side == "back":
+            lpm.move(lpm.rotate(part, -90, axis="X"), 0, 0.08, PIPE_Z)
         else:
             lpm.move(lpm.rotate(part, -90, axis="Y"), -0.08, 0, PIPE_Z)
         out.append(part)
@@ -197,6 +230,8 @@ def bevel_stub(side):
         return [horizontal(disc("stub_front", 0.045, 0.28, (0, 0, 0), P["steel"], 6), y=-0.5, z=PIPE_Z), block("bearing_front", -0.09, 0.09, -0.44, -0.32, 0.0, 0.3, P["blue_dark"])]
     if side == "right":
         return [sideways(disc("stub_right", 0.045, 0.28, (0, 0, 0), P["steel"], 6), x=0.22, z=PIPE_Z), block("bearing_right", 0.32, 0.44, -0.09, 0.09, 0.0, 0.3, P["blue_dark"])]
+    if side == "back":
+        return [horizontal(disc("stub_back", 0.045, 0.28, (0, 0, 0), P["steel"], 6), y=0.22, z=PIPE_Z), block("bearing_back", -0.09, 0.09, 0.32, 0.44, 0.0, 0.3, P["blue_dark"])]
     return [sideways(disc("stub_left", 0.045, 0.28, (0, 0, 0), P["steel"], 6), x=-0.5, z=PIPE_Z), block("bearing_left", -0.44, -0.32, -0.09, 0.09, 0.0, 0.3, P["blue_dark"])]
 
 
@@ -211,6 +246,18 @@ def bevel_box(sides):
         cone = bevel_toward(bevel_cone(f"cone_{side}"), side)
         stub = bevel_stub(side)
         spinners[{"front": "spin-y", "right": "spin-x", "left": "spin-nx"}[side]] = ([c for c in cone] + [stub[0]], (0, 0, PIPE_Z))
+        parts.append(stub[1])
+    return parts, spinners
+
+
+def bevel_cross(rng):
+    """Bevel gear cross: the tee with a fourth cone toward the back. A pillar stands where the cradle of the tee was, so that the four cones meet at its head."""
+    parts = [block("base", -0.3, 0.3, -0.3, 0.3, 0.0, 0.05, P["iron"]), block("pillar", -0.07, 0.07, -0.07, 0.07, 0.05, 0.56, P["blue"]), block("pillar_cap", -0.1, 0.1, -0.1, 0.1, 0.56, 0.6, P["blue_dark"])]
+    spinners = {}
+    for side in ("front", "right", "back", "left"):
+        cone = bevel_toward(bevel_cone(f"cone_{side}"), side)
+        stub = bevel_stub(side)
+        spinners[{"front": "spin-y", "right": "spin-x", "back": "spin-ny", "left": "spin-nx"}[side]] = ([c for c in cone] + [stub[0]], (0, 0, PIPE_Z))
         parts.append(stub[1])
     return parts, spinners
 
@@ -377,6 +424,7 @@ if __name__ == "__main__":
         "motor": motor,
         "gear": gear,
         "shaft": shaft,
+        "reverser": reverser,
         "pump": pump,
         "pump-left": mirrored(pump),
         "tank": tank,
@@ -391,6 +439,8 @@ if __name__ == "__main__":
         "boiler": boiler,
         "bevel": bevel_elbow,
         "bevel-tee": bevel_tee,
+        "bevel-cross": bevel_cross,
+        "motor-strong": motor_strong,
     }
     export_all(models, P, 1200, HERE, center=False, ground=False)
     export_all(wall_set(), P, 900, HERE, center=False, ground=False)

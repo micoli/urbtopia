@@ -1275,6 +1275,19 @@
           "type": "number",
           "exclusiveMinimum": 0
         },
+        "strength": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "draw": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "reverses": {
+          "type": "boolean",
+          "const": true
+        },
         "assigns": {
           "type": "string",
           "enum": [

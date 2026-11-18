@@ -92,14 +92,17 @@ describe('Arcade Venue', () => {
   describe('Fixture editing', () => {
     const fixtures = (state: GameState) => arcadeOf(state).venue!.fixtures;
 
-    it('moves and rotates a Fixture, refusing taken cells and the entrance', () => {
+    it('lets a Fixture stand on the entrance, which only lacks a wall', () => {
+      const entrance = entranceCell(1);
+      expect(failure(city(), machine(entrance.x, entrance.y))).toBeNull();
+      expect(failure(send(city(), machine(1, 1)), { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: entrance.x, y: entrance.y })).toBeNull();
+    });
+
+    it('moves and rotates a Fixture, refusing taken cells', () => {
       const placed = send(send(city(), machine(1, 1)), machine(2, 1));
       const moved = send(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: 4, y: 4, rotation: 1 });
       expect(fixtures(moved)[0]).toMatchObject({ x: 4, y: 4, rotation: 1 });
       expect(failure(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: 2, y: 1 })).toBe('error.tilesOccupied');
-      const entrance = entranceCell(1);
-      expect(failure(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 1, x: entrance.x, y: entrance.y })).toBe('error.tilesOccupied');
-      expect(failure(city(), machine(entrance.x, entrance.y))).toBe('error.tilesOccupied');
       expect(failure(placed, { type: 'MoveFixture', buildingId: 1, fixtureId: 99, x: 0, y: 0 })).toBe('error.unknownFixture');
     });
 
@@ -591,7 +594,7 @@ describe('Walls', () => {
     expect(failure(city(), place('hotelWindow', 1, 1))).toBe('error.unknownCommand');
   });
 
-  it('take a cell, which nothing else can use, and cannot stand on the entrance', () => {
+  it('take a cell, which nothing else can use, and cannot close the entrance', () => {
     const state = walled();
     expect(failure(state, place('barrelClimber', 0, 3))).toBe('error.tilesOccupied');
     expect(failure(state, place('arcadeWall', 1, 3))).toBe('error.tilesOccupied');

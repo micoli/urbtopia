@@ -236,8 +236,9 @@ export const takingsDue = (venue: VenueData): number => Math.floor(venue.takings
 export function canPlaceFixture(building: Building & { venue: VenueData }, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
   const size = gridSizeOf(venueTypeOf(building), building.tier);
   const entrance = entranceCell(building.tier);
+  if (FIXTURES[fixture.type].partition && fixtureTiles(fixture).some(tile => tile.x === entrance.x && tile.y === entrance.y)) return false;
   const occupied = new Set(building.venue.fixtures.filter(other => other.id !== ignoreId).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));
-  return fixtureTiles(fixture).every(tile => tile.x >= 0 && tile.y >= 0 && tile.x < size && tile.y < size && !occupied.has(`${tile.x}:${tile.y}`) && !(tile.x === entrance.x && tile.y === entrance.y));
+  return fixtureTiles(fixture).every(tile => tile.x >= 0 && tile.y >= 0 && tile.x < size && tile.y < size && !occupied.has(`${tile.x}:${tile.y}`));
 }
 
 export const venueRankOf = (building: Building & { venue: VenueData }): number => rankOf(venueTypeOf(building), building.venue);

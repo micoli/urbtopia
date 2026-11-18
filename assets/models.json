@@ -21514,6 +21514,16 @@
     ],
     "flush": true
   },
+  "factory-floor-bevel-cross": {
+    "file": "factory-floor/bevel-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "factory-floor-bevel-tee": {
     "file": "factory-floor/bevel-tee",
     "source": "managed",
@@ -21590,6 +21600,16 @@
     "license": "Own work",
     "footprint": [
       1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-motor-strong": {
+    "file": "factory-floor/motor-strong",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
       1
     ],
     "flush": true
@@ -21736,6 +21756,16 @@
   },
   "factory-floor-pump-left": {
     "file": "factory-floor/pump-left",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "factory-floor-reverser": {
+    "file": "factory-floor/reverser",
     "source": "managed",
     "license": "Own work",
     "footprint": [
@@ -25907,6 +25937,16 @@
       "width": 0.85,
       "height": 2.5
     }
+  },
+  "packhouse-floor-conveyor-cross": {
+    "file": "packhouse-floor/conveyor-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
   },
   "packhouse-floor-conveyor-elbow-left": {
     "file": "packhouse-floor/conveyor-elbow-left",

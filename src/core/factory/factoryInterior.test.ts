@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { FIXTURES } from '../venues/fixtures';
 import type { FixtureId, Rotation, VenueFixture } from '../engine/state';
 import { interiorBenefitsOf, interiorBonusOf } from './interiorBonus';
 import { interiorLinksOf, interiorMotionOf, interiorMotorLoadOf, interiorOverloadedOf } from './interiorLinks';
@@ -253,6 +254,112 @@ describe('Bevel gears', () => {
     const fixtures = (lathe: FixtureId) => [put('factoryMotor', 3, 3), put('factoryBevel', 3, 4, 3), put('factoryGear', 4, 4, 1), put('factoryGear', 5, 4, 1), put(lathe, 5, 5, 2)];
     expect(linkedTypes(fixtures('factoryLatheCcw'))).toEqual(['factoryLatheCcw']);
     expect(linkedTypes(fixtures('factoryLatheCw'))).toEqual([]);
+  });
+});
+
+describe('Bevel gear cross', () => {
+  const cross = () => put('factoryBevelCross', 3, 4, 2);
+
+  it('shares one Motor between the three other sides of the cross', () => {
+    const fixtures = [put('factoryMotor', 3, 3), cross(), put('factoryPress', 2, 4, 3), put('factoryPress', 4, 4, 1), put('factoryPress', 3, 5, 2)];
+    expect(linkedTypes(fixtures)).toEqual(['factoryPress', 'factoryPress', 'factoryPress']);
+  });
+
+  it('does not jam: its four cones turn each other in a ring', () => {
+    const fixtures = [put('factoryMotor', 3, 3), cross(), put('factoryPress', 2, 4, 3), put('factoryPress', 4, 4, 1), put('factoryPress', 3, 5, 2)];
+    expect(interiorLinksOf(fixtures).jammed).toBe(false);
+  });
+
+  it('turns the cone across from the stem the opposite way, and the two side cones opposite ways', () => {
+    const middle = cross();
+    const { front, back, left, right } = interiorMotionOf([put('factoryMotor', 3, 3), middle]).get(middle.id) as Record<string, string>;
+    expect(back).not.toBe(front);
+    expect(left).not.toBe(right);
+  });
+
+  it('feeds a Gear, turned the way its cone turns, on a side', () => {
+    const fixtures = (lathe: FixtureId) => [put('factoryMotor', 3, 3), cross(), put('factoryShaft', 3, 5), put(lathe, 3, 6, 2)];
+    const turning = (['factoryLatheCw', 'factoryLatheCcw'] as const).filter(lathe => linkedTypes(fixtures(lathe)).length === 1);
+    expect(turning).toHaveLength(1);
+  });
+
+  it('can be fed on any side and give the Drive to the others', () => {
+    const fixtures = [put('factoryMotor', 3, 5, 2), put('factoryBevelCross', 3, 4, 0), put('factoryPress', 2, 4, 3), put('factoryPress', 4, 4, 1), put('factoryPress', 3, 3, 0)];
+    expect(linkedTypes(fixtures)).toHaveLength(3);
+  });
+});
+
+describe('Strong motor', () => {
+  const strong = (x = 3, y = 3, rotation: Rotation = 1) => put('factoryMotorStrong', x, y, rotation);
+
+  it('drives a Machine through the end of its body, in line with it', () => {
+    const fixtures = [strong(), put('factoryShaft', 3, 5), put('factoryPress', 3, 6, 2)];
+    expect(linkedTypes(fixtures)).toEqual(['factoryPress']);
+  });
+
+  it('hands nothing over through its other end or its sides', () => {
+    expect(linkedTypes([strong(), put('factoryShaft', 3, 2), put('factoryPress', 3, 1, 0)])).toEqual([]);
+    expect(linkedTypes([strong(), put('factoryShaft', 2, 3, 1), put('factoryPress', 1, 3, 3)])).toEqual([]);
+  });
+
+  it('is reached from the first tile as well as from the second when turned the other way', () => {
+    const fixtures = [strong(3, 3, 3), put('factoryShaft', 3, 2), put('factoryPress', 3, 1, 0)];
+    expect(linkedTypes(fixtures)).toEqual(['factoryPress']);
+  });
+
+  it('drives five Machines where a Motor drives three', () => {
+    const floor = [strong(), put('factoryShaft', 3, 5), put('factoryBevelCross', 3, 6, 2), put('factoryPress', 2, 6, 3), put('factoryPress', 4, 6, 1),
+      put('factoryShaft', 3, 7), put('factoryBevelCross', 3, 8, 2), put('factoryPress', 2, 8, 3), put('factoryPress', 4, 8, 1),
+      put('factoryShaft', 3, 9), put('factoryBevelCross', 3, 10, 2), put('factoryPress', 2, 10, 3), put('factoryPress', 4, 10, 1)];
+    expect(interiorMotorLoadOf(floor, floor[0]!)).toEqual({ driven: 5, capacity: 5, overloaded: 1 });
+    expect(interiorOverloadedOf(floor).size).toBe(1);
+  });
+
+  it('adds its strength to the Motors that share its Drive', () => {
+    const floor = [strong(), put('factoryMotor', 3, 8, 2), put('factoryShaft', 3, 5), put('factoryShaft', 3, 6), put('factoryShaft', 3, 7)];
+    expect(interiorMotorLoadOf(floor, floor[0]!).capacity).toBe(8);
+  });
+
+  it('occupies two tiles that nothing else may share', () => {
+    expect(FIXTURES.factoryMotorStrong.footprint).toEqual([2, 1]);
+  });
+
+  it('draws more power than a Motor, but less per Machine it can drive', () => {
+    const idleOf = (type: FixtureId) => interiorBonusOf([put(type, 3, 3)], 5).power;
+    expect(idleOf('factoryMotorStrong')).toBeCloseTo(idleOf('factoryMotor') * FIXTURES.factoryMotorStrong.draw!);
+    expect(idleOf('factoryMotorStrong') / FIXTURES.factoryMotorStrong.strength!).toBeLessThan(idleOf('factoryMotor') / 3);
+  });
+});
+
+describe('Reverser', () => {
+  const lathes = ['factoryLatheCw', 'factoryLatheCcw'] as const;
+  const turning = (carrier: FixtureId) => lathes.find(lathe => linkedTypes([put('factoryMotor', 3, 3), put(carrier, 3, 4), put(lathe, 3, 5, 2)]).length === 1);
+
+  it('hands the Drive on like a Shaft, turned the other way', () => {
+    expect(turning('factoryShaft')).toBeDefined();
+    expect(turning('factoryReverser')).toBeDefined();
+    expect(turning('factoryReverser')).not.toBe(turning('factoryShaft'));
+  });
+
+  it('turns back the way it was when a second Reverser follows', () => {
+    const fixtures = (lathe: FixtureId) => [put('factoryMotor', 3, 3), put('factoryReverser', 3, 4), put('factoryReverser', 3, 5), put(lathe, 3, 6, 2)];
+    expect(lathes.find(lathe => linkedTypes(fixtures(lathe)).length === 1)).toBe(turning('factoryShaft'));
+  });
+
+  it('reverses only what lies beyond it: the Shaft before it keeps the turn of the Motor', () => {
+    const before = put('factoryShaft', 3, 4);
+    const reverser = put('factoryReverser', 3, 5);
+    const beyond = put('factoryShaft', 3, 6);
+    const motion = interiorMotionOf([put('factoryMotor', 3, 3), before, reverser, beyond]);
+    const halves = motion.get(reverser.id) as Record<string, string>;
+    expect(halves.back).toBe(motion.get(before.id));
+    expect(halves.front).not.toBe(halves.back);
+    expect(motion.get(beyond.id)).toBe(halves.front);
+  });
+
+  it('is on offer in every interior that runs on Drive', () => {
+    const reversers = Object.values(FIXTURES).filter(spec => spec.reverses);
+    expect(reversers).toHaveLength(Object.values(FIXTURES).filter(spec => spec.role === 'shaft' && !spec.reverses).length);
   });
 });
 
