@@ -3,6 +3,7 @@ import { CROWD_DENSITIES, prefsStore, TAX_BADGE_THRESHOLDS, type Language, type 
 import { t } from '../../i18n/t';
 import { RadioChipGroup } from '../common/RadioChipGroup';
 import { SwitchField } from '../common/SwitchField';
+import { FloatingMenuSettings } from './FloatingMenuSettings';
 import { SettingRow } from './SettingRow';
 import { SettingsSection } from './SettingsSection';
 
@@ -68,6 +69,7 @@ export function DisplaySettings() {
           </SettingRow>
         )}
       </SettingsSection>
+      <FloatingMenuSettings />
       <SettingsSection title={t('settings.section.performance')} icon="power">
         <SwitchField label={t('prefs.sunShadows')} description={t('prefs.sunShadows.description')} checked={sunShadows} onChange={setSunShadows} />
         {sunShadows && <SwitchField label={t('prefs.objectShadows')} description={t('prefs.objectShadows.description')} checked={objectShadows} onChange={setObjectShadows} />}

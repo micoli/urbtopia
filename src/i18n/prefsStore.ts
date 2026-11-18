@@ -21,6 +21,11 @@ export interface Prefs {
   confirmSale: boolean;
   showReach: boolean;
   autoOpenSelection: boolean;
+  floatingMenu: boolean;
+  floatingMove: boolean;
+  floatingRotate: boolean;
+  floatingRepair: boolean;
+  floatingSell: boolean;
   showProductionPreview: boolean;
   showRecipeStock: boolean;
   showAutoProductionBadge: boolean;
@@ -68,7 +73,7 @@ export function defaultLanguage(browserLanguage: string | undefined): Language {
 }
 
 export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs {
-  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrians: true, pedestrianModel: 'stickman', trafficDensity: 'normal', pedestrianDensity: 'normal', confirmSale: true, showReach: true, autoOpenSelection: true, showProductionPreview: true, showRecipeStock: false, showAutoProductionBadge: false, showTaxBadges: true, taxBadgeThreshold: 20, managementTabs: true, debug: false, pickMode: '3d', debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, sunShadows: true, shinyModels: true, objectShadows: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1, codexFavorites: [] };
+  const fallback: Prefs = { language: defaultLanguage(browserLanguage), layout: 'C', traffic: true, pedestrians: true, pedestrianModel: 'stickman', trafficDensity: 'normal', pedestrianDensity: 'normal', confirmSale: true, showReach: true, autoOpenSelection: true, floatingMenu: true, floatingMove: true, floatingRotate: true, floatingRepair: true, floatingSell: true, showProductionPreview: true, showRecipeStock: false, showAutoProductionBadge: false, showTaxBadges: true, taxBadgeThreshold: 20, managementTabs: true, debug: false, pickMode: '3d', debugOffsetX: 0, debugOffsetY: 0, alwaysDay: false, fineRotation: false, sunShadows: true, shinyModels: true, objectShadows: false, signInPrompt: true, advisor: false, advisorSuggestionsOpen: true, advisorContextLevel: DEFAULT_CONTEXT_LEVEL, serviceCoverageType: 'school', matchSpeed: 1, codexFavorites: [] };
   if (raw === null) return fallback;
   try {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
@@ -83,6 +88,11 @@ export function parsePrefs(raw: string | null, browserLanguage?: string): Prefs 
       confirmSale: typeof parsed.confirmSale === 'boolean' ? parsed.confirmSale : fallback.confirmSale,
       showReach: typeof parsed.showReach === 'boolean' ? parsed.showReach : fallback.showReach,
       autoOpenSelection: typeof parsed.autoOpenSelection === 'boolean' ? parsed.autoOpenSelection : fallback.autoOpenSelection,
+      floatingMenu: typeof parsed.floatingMenu === 'boolean' ? parsed.floatingMenu : fallback.floatingMenu,
+      floatingMove: typeof parsed.floatingMove === 'boolean' ? parsed.floatingMove : fallback.floatingMove,
+      floatingRotate: typeof parsed.floatingRotate === 'boolean' ? parsed.floatingRotate : fallback.floatingRotate,
+      floatingRepair: typeof parsed.floatingRepair === 'boolean' ? parsed.floatingRepair : fallback.floatingRepair,
+      floatingSell: typeof parsed.floatingSell === 'boolean' ? parsed.floatingSell : fallback.floatingSell,
       showProductionPreview: typeof parsed.showProductionPreview === 'boolean' ? parsed.showProductionPreview : fallback.showProductionPreview,
       showRecipeStock: typeof parsed.showRecipeStock === 'boolean' ? parsed.showRecipeStock : fallback.showRecipeStock,
       showAutoProductionBadge: typeof parsed.showAutoProductionBadge === 'boolean' ? parsed.showAutoProductionBadge : fallback.showAutoProductionBadge,
@@ -123,9 +133,9 @@ function readStored(): string | null {
   }
 }
 
-function writeStored({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, autoOpenSelection, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, pickMode, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, sunShadows, shinyModels, objectShadows, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed, codexFavorites }: Prefs): void {
+function writeStored({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, autoOpenSelection, floatingMenu, floatingMove, floatingRotate, floatingRepair, floatingSell, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, pickMode, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, sunShadows, shinyModels, objectShadows, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed, codexFavorites }: Prefs): void {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, autoOpenSelection, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, pickMode, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, sunShadows, shinyModels, objectShadows, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed, codexFavorites }));
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ language, layout, traffic, pedestrians, pedestrianModel, trafficDensity, pedestrianDensity, confirmSale, showReach, autoOpenSelection, floatingMenu, floatingMove, floatingRotate, floatingRepair, floatingSell, showProductionPreview, showRecipeStock, showAutoProductionBadge, showTaxBadges, taxBadgeThreshold, managementTabs, debug, pickMode, debugOffsetX, debugOffsetY, alwaysDay, fineRotation, sunShadows, shinyModels, objectShadows, signInPrompt, advisor, advisorSuggestionsOpen, advisorContextLevel, serviceCoverageType, matchSpeed, codexFavorites }));
   } catch {
     // Preferences are a convenience: the game works without storing them.
   }
@@ -143,6 +153,11 @@ export interface PrefsStore extends Prefs {
   setConfirmSale: (confirmSale: boolean) => void;
   setShowReach: (showReach: boolean) => void;
   setAutoOpenSelection: (autoOpenSelection: boolean) => void;
+  setFloatingMenu: (floatingMenu: boolean) => void;
+  setFloatingMove: (floatingMove: boolean) => void;
+  setFloatingRotate: (floatingRotate: boolean) => void;
+  setFloatingRepair: (floatingRepair: boolean) => void;
+  setFloatingSell: (floatingSell: boolean) => void;
   setShowProductionPreview: (showProductionPreview: boolean) => void;
   setShowRecipeStock: (showRecipeStock: boolean) => void;
   setShowAutoProductionBadge: (showAutoProductionBadge: boolean) => void;
@@ -211,6 +226,26 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   },
   setAutoOpenSelection: (autoOpenSelection) => {
     set({ autoOpenSelection });
+    writeStored(get());
+  },
+  setFloatingMenu: (floatingMenu) => {
+    set({ floatingMenu });
+    writeStored(get());
+  },
+  setFloatingMove: (floatingMove) => {
+    set({ floatingMove });
+    writeStored(get());
+  },
+  setFloatingRotate: (floatingRotate) => {
+    set({ floatingRotate });
+    writeStored(get());
+  },
+  setFloatingRepair: (floatingRepair) => {
+    set({ floatingRepair });
+    writeStored(get());
+  },
+  setFloatingSell: (floatingSell) => {
+    set({ floatingSell });
     writeStored(get());
   },
   setShowProductionPreview: (showProductionPreview) => {
