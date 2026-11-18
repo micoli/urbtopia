@@ -202,9 +202,24 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: read
     steps:
+      - name: Check out the repository with its history and tags
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
       - name: Create the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_NAME: ${{ needs.package-site.outputs.release-name }}
         run: gh release create "$RELEASE_NAME" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "$RELEASE_NAME" --generate-notes
+      - name: Publish the Release note prepared in the pull requests, if there is one
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_NAME: ${{ needs.package-site.outputs.release-name }}
+        run: node scripts/releaseNoteFromPulls.ts "$RELEASE_NAME"

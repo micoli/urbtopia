@@ -1,8 +1,6 @@
-import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { parseReleaseNoteContent, styleProblems, withReleaseNote } from '../src/releaseNotes/releaseNote.ts';
+import { readFileSync } from 'node:fs';
+import { parseReleaseNoteContent, styleProblems } from '../src/releaseNotes/releaseNote.ts';
+import { publishOnRelease } from './releaseNoteGithub.ts';
 
 const [tag, notePath] = process.argv.slice(2);
 if (!tag || !notePath) {
@@ -18,16 +16,5 @@ if (!note) {
 
 for (const problem of styleProblems(note)) console.warn(`Style: ${problem}`);
 
-const gh = (...args: string[]): string => execFileSync('gh', args, { encoding: 'utf8' });
-const directory = mkdtempSync(join(tmpdir(), 'release-note-'));
-
-const body = gh('release', 'view', tag, '--json', 'body', '--jq', '.body');
-const bodyFile = join(directory, 'body.md');
-writeFileSync(bodyFile, withReleaseNote(body, note));
-gh('release', 'edit', tag, '--notes-file', bodyFile);
-
-const assetFile = join(directory, 'release-note.json');
-writeFileSync(assetFile, `${JSON.stringify(note, null, 2)}\n`);
-gh('release', 'upload', tag, assetFile, '--clobber');
-
+publishOnRelease(tag, note);
 console.log(`Release note published on ${tag}`);
