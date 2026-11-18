@@ -13,12 +13,14 @@ vi.mock('../tourism/GatheringBadges', () => ({ GatheringBadges: () => 'gathering
 vi.mock('../sanction/SanctionBadges', () => ({ SanctionBadges: () => 'sanctions' }));
 vi.mock('../common/WorkingIndicators', () => ({ WorkingIndicators: () => 'working' }));
 vi.mock('../parcels/ParcelTags', () => ({ ParcelTags: () => 'parcels' }));
+vi.mock('../buildings/LocatorArrow', () => ({ LocatorArrow: () => 'locator' }));
+vi.mock('../buildings/BuildingFloatingBar', () => ({ BuildingFloatingBar: () => 'buildingBar' }));
 
 describe('floating badges', () => {
   it('hides every badge during the heatmap and restores them when it closes', () => {
     context.serviceCoverageOpen = false;
     const normal = renderToStaticMarkup(<FloatingBadges />);
-    for (const name of ['collect', 'gatherings', 'sanctions', 'working', 'parcels']) expect(normal).toContain(name);
+    for (const name of ['collect', 'gatherings', 'sanctions', 'working', 'parcels', 'buildingBar']) expect(normal).toContain(name);
     context.serviceCoverageOpen = true;
     expect(renderToStaticMarkup(<FloatingBadges />)).toBe('');
     context.serviceCoverageOpen = false;

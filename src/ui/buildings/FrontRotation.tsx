@@ -21,7 +21,7 @@ export function FrontRotation({ building }: { building: Building }) {
   );
 }
 
-function otherFronts(state: GameState, building: Building): Rotation[] {
+export function otherFronts(state: GameState, building: Building): Rotation[] {
   if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return [];
   if (isPirateCoveInUse(state, building)) return [];
   const withoutBuilding = { ...state, buildings: state.buildings.filter((candidate) => candidate.id !== building.id) };

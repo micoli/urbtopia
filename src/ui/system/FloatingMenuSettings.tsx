@@ -12,14 +12,20 @@ export const FloatingMenuSettings = memo(function FloatingMenuSettings() {
   const floatingRotate = useStore(prefsStore, (store) => store.floatingRotate);
   const floatingRepair = useStore(prefsStore, (store) => store.floatingRepair);
   const floatingSell = useStore(prefsStore, (store) => store.floatingSell);
-  const { setFloatingMenu, setFloatingMove, setFloatingRotate, setFloatingRepair, setFloatingSell } = prefsStore.getState();
+  const floatingSellBuilding = useStore(prefsStore, (store) => store.floatingSellBuilding);
+  const floatingCollect = useStore(prefsStore, (store) => store.floatingCollect);
+  const floatingInterior = useStore(prefsStore, (store) => store.floatingInterior);
+  const { setFloatingMenu, setFloatingMove, setFloatingRotate, setFloatingRepair, setFloatingSell, setFloatingSellBuilding, setFloatingCollect, setFloatingInterior } = prefsStore.getState();
   return (
     <SettingsSection title={t('settings.section.floatingMenu')} icon="selectionPanel">
       <SwitchField label={t('prefs.floatingMenu')} description={t('prefs.floatingMenu.description')} checked={floatingMenu} onChange={setFloatingMenu} />
       <SwitchField label={t('prefs.floatingMove')} checked={floatingMove} disabled={!floatingMenu} onChange={setFloatingMove} />
       <SwitchField label={t('prefs.floatingRotate')} checked={floatingRotate} disabled={!floatingMenu} onChange={setFloatingRotate} />
       <SwitchField label={t('prefs.floatingRepair')} checked={floatingRepair} disabled={!floatingMenu} onChange={setFloatingRepair} />
+      <SwitchField label={t('prefs.floatingSellBuilding')} checked={floatingSellBuilding} disabled={!floatingMenu} onChange={setFloatingSellBuilding} />
       <SwitchField label={t('prefs.floatingSell')} checked={floatingSell} disabled={!floatingMenu} onChange={setFloatingSell} />
+      <SwitchField label={t('prefs.floatingCollect')} checked={floatingCollect} disabled={!floatingMenu} onChange={setFloatingCollect} />
+      <SwitchField label={t('prefs.floatingInterior')} checked={floatingInterior} disabled={!floatingMenu} onChange={setFloatingInterior} />
     </SettingsSection>
   );
 });

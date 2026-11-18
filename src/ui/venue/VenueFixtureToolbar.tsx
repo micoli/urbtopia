@@ -39,14 +39,14 @@ export function VenueFixtureToolbar({ venueId }: VenueFixtureToolbarProps) {
   if (!fixture || movingId !== null || !anchor) return null;
   const canRotate = floating.rotate && !FIXTURES[fixture.type].wall;
   const canRepair = floating.repair && needsRepair;
-  if (!floating.move && !canRotate && !canRepair && !floating.sell) return null;
+  if (!floating.move && !canRotate && !canRepair && !floating.sellItem) return null;
   return (
     <>
       <div className="venue-fixture-toolbar" style={{ left: anchor.x, top: anchor.y }}>
         {floating.move ? <IconButton size="md" tone="light" label={t('venue.move')} onClick={() => venueStore.getState().startMove(fixture.id)}><Icon name="move" /></IconButton> : null}
         {canRotate ? <IconButton size="md" tone="light" label={t('venue.rotate')} onClick={rotate}><Icon name="rotateRight" /></IconButton> : null}
         {canRepair ? <IconButton size="md" tone="warning" label={t('venue.repair')} onClick={repair}><Icon name="repair" /></IconButton> : null}
-        {floating.sell ? <IconButton size="md" tone="danger" label={t('panel.sell')} onClick={() => setConfirmingSell(true)}><Icon name="trash" /></IconButton> : null}
+        {floating.sellItem ? <IconButton size="md" tone="danger" label={t('panel.sell')} onClick={() => setConfirmingSell(true)}><Icon name="trash" /></IconButton> : null}
       </div>
       {confirmingSell ? (
         <Dialog role="alertdialog">
