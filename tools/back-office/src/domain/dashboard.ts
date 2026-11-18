@@ -1,4 +1,6 @@
 import { DIFFICULTIES, TUTORIAL_STEPS } from '../../../../src/core'
+import { BUILDING_ENTRIES, isRetired, kindOf } from '../../../../src/core/buildings/buildingDefinitions'
+import { FEATURES } from './contentFeatures'
 import { formatPrefValue } from './savedPrefsTable'
 import type { SaveFacts } from './saveFacts'
 
@@ -14,6 +16,29 @@ export interface Spread {
   p95: number
 }
 
+export interface CrossTable {
+  rows: string[]
+  columns: string[]
+  cells: number[][]
+  largest: number
+}
+
+export interface UnbuiltKind {
+  kind: string
+  // Every building of the kind that can still be built, and those no City has.
+  total: number
+  ids: string[]
+}
+
+export interface ContentDashboard {
+  // Cities counted: the latest save of each City made in the period, readable by this game version.
+  cities: number
+  topTypes: Bucket[]
+  byKind: Bucket[]
+  features: { group: string; items: Bucket[] }[]
+  unbuilt: UnbuiltKind[]
+}
+
 export interface Dashboard {
   users: number
   readable: number
@@ -21,6 +46,8 @@ export interface Dashboard {
   progression: { citizens: Bucket[]; spreads: { label: string; spread: Spread | null }[]; tutorial: Bucket[] }
   settings: { difficulty: Bucket[]; politics: Bucket[]; challenge: Bucket[]; formatVersion: Bucket[] }
   prefs: { key: string; values: Bucket[] }[]
+  crossings: { title: string; table: CrossTable }[]
+  content: ContentDashboard
   health: { readability: Bucket[]; prefsCoverage: Bucket[]; size: Bucket[]; largestSize: number }
 }
 
@@ -36,6 +63,8 @@ export const NEUTRAL_LABELS: ReadonlySet<string> = new Set([NOT_IN_SAVE, OTHER_V
 export const SAVE_SIZE_LIMIT = 1_048_576
 const DAY_MS = 86_400_000
 const TOP_VALUES = 8
+
+const TOP_TYPES = 15
 
 const count = (label: string, predicate: () => number): Bucket => ({ label, count: predicate() })
 
@@ -86,14 +115,58 @@ function prefDistributions(saves: readonly SaveFacts[]): Dashboard['prefs'] {
   })
 }
 
+// Counts how many pairs fall in each cell; the columns follow the given order, then the others, and the rows go from the most to the least frequent.
+export function crossTab(pairs: readonly { row: string; column: string }[], columnOrder: readonly string[] = []): CrossTable {
+  const rowTotals = new Map<string, number>()
+  const columnSet = new Set<string>()
+  const counts = new Map<string, number>()
+  for (const { row, column } of pairs) {
+    rowTotals.set(row, (rowTotals.get(row) ?? 0) + 1)
+    columnSet.add(column)
+    counts.set(`${row}\u0000${column}`, (counts.get(`${row}\u0000${column}`) ?? 0) + 1)
+  }
+  const columns = [...columnOrder.filter(column => columnSet.has(column)), ...[...columnSet].filter(column => !columnOrder.includes(column)).sort((a, b) => a.localeCompare(b))]
+  const rows = [...rowTotals].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([row]) => row)
+  const cells = rows.map(row => columns.map(column => counts.get(`${row}\u0000${column}`) ?? 0))
+  return { rows, columns, cells, largest: Math.max(0, ...cells.flat()) }
+}
+
+function contentDashboard(cities: readonly SaveFacts[]): ContentDashboard {
+  const contents = cities.flatMap(save => (save.city.readable ? [save.city.facts.content] : []))
+  const citiesWith = (predicate: (content: (typeof contents)[number]) => boolean) => contents.filter(predicate).length
+  const typeCities = new Map<string, number>()
+  const kindCities = new Map<string, number>()
+  for (const content of contents) {
+    const types = Object.keys(content.buildingTypes)
+    for (const type of types) typeCities.set(type, (typeCities.get(type) ?? 0) + 1)
+    for (const kind of new Set(types.map(type => kindOf(type) ?? 'unknown'))) kindCities.set(kind, (kindCities.get(kind) ?? 0) + 1)
+  }
+  const ranked = (counts: ReadonlyMap<string, number>) => [...counts].map(([label, total]) => ({ label, count: total })).sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+  const catalog = BUILDING_ENTRIES.filter(entry => !isRetired(entry.id))
+  const kinds = [...new Set(catalog.map(entry => entry.kind))]
+  const unbuilt = contents.length === 0 ? [] : kinds
+    .map((kind): UnbuiltKind => ({ kind, total: catalog.filter(entry => entry.kind === kind).length, ids: catalog.filter(entry => entry.kind === kind && !typeCities.has(entry.id)).map(entry => entry.id) }))
+    .filter(entry => entry.ids.length > 0)
+    .sort((a, b) => b.ids.length - a.ids.length || a.kind.localeCompare(b.kind))
+  const groups = [...new Set(FEATURES.map(feature => feature.group))]
+  return {
+    cities: contents.length,
+    topTypes: ranked(typeCities).slice(0, TOP_TYPES),
+    byKind: ranked(kindCities),
+    features: groups.map(group => ({ group, items: FEATURES.filter(feature => feature.group === group).map(feature => count(feature.label, () => citiesWith(content => content.features[feature.id] === true))) })),
+    unbuilt,
+  }
+}
+
 // Every figure comes from the latest save of each user, whatever the preferences the game knows today.
-export function buildDashboard(saves: readonly SaveFacts[], accounts: AccountKinds, now: number): Dashboard {
-  const cities = saves.flatMap(save => (save.city.readable ? [save.city.facts] : []))
+// `saves` are the latest save of each user; `cities` the latest save of each City, which the content indicators read.
+export function buildDashboard(saves: readonly SaveFacts[], accounts: AccountKinds, now: number, cities: readonly SaveFacts[] = saves): Dashboard {
+  const readableCities = saves.flatMap(save => (save.city.readable ? [save.city.facts] : []))
   const age = (save: SaveFacts) => now - Date.parse(save.savedAt)
-  const yesNo = (flag: (city: (typeof cities)[number]) => boolean, yes: string, no: string) => [count(yes, () => cities.filter(flag).length), count(no, () => cities.filter(city => !flag(city)).length)]
+  const yesNo = (flag: (city: (typeof readableCities)[number]) => boolean, yes: string, no: string) => [count(yes, () => readableCities.filter(flag).length), count(no, () => readableCities.filter(city => !flag(city)).length)]
   return {
     users: saves.length,
-    readable: cities.length,
+    readable: readableCities.length,
     activity: {
       accountKind: [
         count('Email', () => saves.filter(save => accounts.get(save.userId)?.anonymous === false).length),
@@ -108,22 +181,24 @@ export function buildDashboard(saves: readonly SaveFacts[], accounts: AccountKin
       cities: tally(saves.map(save => `${save.cityIds.length} ${save.cityIds.length === 1 ? 'city' : 'cities'}`), ['1 city', '2 cities', '3 cities']),
     },
     progression: {
-      citizens: inTranches(cities.map(city => city.citizens), CITIZEN_TRANCHES),
+      citizens: inTranches(readableCities.map(city => city.citizens), CITIZEN_TRANCHES),
       spreads: [
-        { label: 'Citizens', spread: spreadOf(cities.map(city => city.citizens)) },
-        { label: 'Urbs', spread: spreadOf(cities.map(city => city.urbs)) },
-        { label: 'Buildings', spread: spreadOf(cities.map(city => city.buildings)) },
-        { label: 'Owned parcels', spread: spreadOf(cities.map(city => city.parcels)) },
+        { label: 'Citizens', spread: spreadOf(readableCities.map(city => city.citizens)) },
+        { label: 'Urbs', spread: spreadOf(readableCities.map(city => city.urbs)) },
+        { label: 'Buildings', spread: spreadOf(readableCities.map(city => city.buildings)) },
+        { label: 'Owned parcels', spread: spreadOf(readableCities.map(city => city.parcels)) },
       ],
-      tutorial: tally(cities.map(city => city.tutorialStep ?? 'over'), [...TUTORIAL_STEPS, 'over']),
+      tutorial: tally(readableCities.map(city => city.tutorialStep ?? 'over'), [...TUTORIAL_STEPS, 'over']),
     },
     settings: {
-      difficulty: tally(cities.map(city => city.difficulty), DIFFICULTIES),
+      difficulty: tally(readableCities.map(city => city.difficulty), DIFFICULTIES),
       politics: yesNo(city => city.hasPolitics, 'Politics active', 'No politics'),
       challenge: yesNo(city => city.hasChallenge, 'Challenge in progress', 'No challenge'),
       formatVersion: tally(saves.map(save => `v${save.formatVersion}`)).sort((a, b) => Number(b.label.slice(1)) - Number(a.label.slice(1))),
     },
     prefs: prefDistributions(saves),
+    crossings: [{ title: 'Language by difficulty', table: crossTab(saves.flatMap(save => (save.city.readable ? [{ row: Object.hasOwn(save.prefs, 'language') ? formatPrefValue(save.prefs.language) : NOT_IN_SAVE, column: save.city.facts.difficulty }] : [])), DIFFICULTIES) }],
+    content: contentDashboard(cities),
     health: {
       readability: tally(saves.map(save => (save.city.readable ? 'Readable' : `Unreadable: ${save.city.reason}`)), ['Readable']),
       prefsCoverage: [

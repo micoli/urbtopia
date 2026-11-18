@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { loadLatestSaveFacts, type AdminClient, type FactsProgress } from '../api/supabaseAdmin'
+import { loadLatestSaveFacts, type AdminClient, type FactsProgress, type LoadedFacts } from '../api/supabaseAdmin'
 import { windowOf } from '../domain/dateFilter'
-import type { SaveFacts } from '../domain/saveFacts'
 import { useDateFilter } from '../store/dateFilterStore'
 
-export type SaveFactsState = { kind: 'loading'; progress: FactsProgress | null } | { kind: 'error'; message: string } | { kind: 'ready'; facts: SaveFacts[] }
+export type SaveFactsState = { kind: 'loading'; progress: FactsProgress | null } | { kind: 'error'; message: string } | { kind: 'ready'; facts: LoadedFacts }
 
 export function useSaveFacts(client: AdminClient) {
   const filter = useDateFilter(store => store.filter)

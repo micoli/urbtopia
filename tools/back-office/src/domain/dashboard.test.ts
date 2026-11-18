@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { buildDashboard, spreadOf } from './dashboard'
+import { buildDashboard, crossTab, spreadOf } from './dashboard'
 import type { CityFacts, SaveFacts } from './saveFacts'
 
 const NOW = Date.parse('2026-11-19T12:00:00Z')
 const DAY = 86_400_000
 
-const city = (patch: Partial<CityFacts> = {}): CityFacts => ({ citizens: 50, urbs: 100, buildings: 10, parcels: 4, difficulty: 'cozy', tutorialStep: null, hasPolitics: false, hasChallenge: false, ...patch })
+const city = (patch: Partial<CityFacts> = {}): CityFacts => ({ content: { buildingTypes: {}, features: {} }, citizens: 50, urbs: 100, buildings: 10, parcels: 4, difficulty: 'cozy', tutorialStep: null, hasPolitics: false, hasChallenge: false, ...patch })
 
 const save = (userId: string, patch: Partial<SaveFacts> & { facts?: Partial<CityFacts> } = {}): SaveFacts => {
   const { facts, ...rest } = patch
-  return { userId, cityIds: ['c1'], formatVersion: 19, savedAt: new Date(NOW - DAY).toISOString(), size: 1000, prefs: {}, city: { readable: true, facts: city(facts) }, ...rest }
+  return { userId, cityId: 'c1', cityIds: ['c1'], formatVersion: 19, savedAt: new Date(NOW - DAY).toISOString(), size: 1000, prefs: {}, city: { readable: true, facts: city(facts) }, ...rest }
 }
 
 const accounts = new Map([['a', { anonymous: false }], ['b', { anonymous: true }]])
@@ -97,5 +97,67 @@ describe('buildDashboard', () => {
     expect(dashboard.users).toBe(0)
     expect(dashboard.prefs).toEqual([])
     expect(dashboard.progression.spreads.every(row => row.spread === null)).toBe(true)
+  })
+  it('crosses the language of the preferences with the difficulty, in the order of the difficulties', () => {
+    const dashboard = buildDashboard([
+      save('a', { prefs: { language: 'fr' }, facts: { difficulty: 'hard' } }),
+      save('b', { prefs: { language: 'fr' }, facts: { difficulty: 'cozy' } }),
+      save('x', { prefs: { language: 'en' }, facts: { difficulty: 'cozy' } }),
+      save('y', { facts: { difficulty: 'cozy' } }),
+      save('z', { prefs: { language: 'en' }, city: { readable: false, reason: 'invalid-state' } }),
+    ], accounts, NOW)
+    expect(dashboard.crossings[0]!.table).toEqual({ rows: ['fr', '— not in the save', 'en'], columns: ['cozy', 'hard'], cells: [[1, 1], [1, 0], [1, 0]], largest: 1 })
+  })
+})
+
+describe('crossTab', () => {
+  it('counts each pair and orders the rows by frequency', () => {
+    const table = crossTab([{ row: 'b', column: 'x' }, { row: 'a', column: 'y' }, { row: 'a', column: 'y' }, { row: 'a', column: 'x' }], ['y', 'x'])
+    expect(table).toEqual({ rows: ['a', 'b'], columns: ['y', 'x'], cells: [[2, 1], [0, 1]], largest: 2 })
+  })
+
+  it('has nothing without pairs', () => {
+    expect(crossTab([])).toEqual({ rows: [], columns: [], cells: [], largest: 0 })
+  })
+})
+
+describe('content of the cities', () => {
+  const withContent = (userId: string, cityId: string, buildingTypes: Record<string, number>, features: Record<string, boolean> = {}) =>
+    save(userId, { cityId, facts: { content: { buildingTypes, features } } })
+
+  it('counts the cities holding each building type, not the buildings', () => {
+    const { content } = buildDashboard([], accounts, NOW, [withContent('a', 'c1', { workshop: 5, factory: 1 }), withContent('a', 'c2', { workshop: 2 }), withContent('b', 'c1', {})])
+    expect(content.cities).toBe(3)
+    expect(content.topTypes).toEqual([{ label: 'workshop', count: 2 }, { label: 'factory', count: 1 }])
+  })
+
+  it('counts the cities with at least one building of each kind', () => {
+    const { content } = buildDashboard([], accounts, NOW, [withContent('a', 'c1', { workshop: 1, factory: 1 }), withContent('b', 'c1', { workshop: 3 })])
+    expect(content.byKind[0]).toEqual({ label: 'production', count: 2 })
+  })
+
+  it('lists the buildings of the catalog that no city has', () => {
+    const { content } = buildDashboard([], accounts, NOW, [withContent('a', 'c1', { workshop: 1 })])
+    const all = content.unbuilt.flatMap(entry => entry.ids)
+    expect(all).not.toContain('workshop')
+    expect(all.length).toBeGreaterThan(0)
+    expect(content.unbuilt.every(entry => entry.ids.length <= entry.total)).toBe(true)
+  })
+
+  it('does not call the whole catalog unbuilt when there is no city to look at', () => {
+    expect(buildDashboard([], accounts, NOW, []).content.unbuilt).toEqual([])
+    expect(buildDashboard([], accounts, NOW, [save('a', { city: { readable: false, reason: 'invalid-json' } })]).content.unbuilt).toEqual([])
+  })
+
+  it('counts the cities with each feature, by group', () => {
+    const { content } = buildDashboard([], accounts, NOW, [withContent('a', 'c1', {}, { rails: true, market: true }), withContent('b', 'c1', {}, { rails: true })])
+    expect(content.features.find(group => group.group === 'Transport')?.items.find(item => item.label === 'Rails')?.count).toBe(2)
+    expect(content.features.find(group => group.group === 'Economy and land')?.items.find(item => item.label === 'Market unlocked')?.count).toBe(1)
+  })
+
+  it('reads the cities of the period separately from the latest save of each user', () => {
+    const dashboard = buildDashboard([withContent('a', 'c1', { workshop: 1 })], accounts, NOW, [withContent('a', 'c1', { workshop: 1 }), withContent('a', 'c2', { factory: 1 })])
+    expect(dashboard.users).toBe(1)
+    expect(dashboard.content.cities).toBe(2)
   })
 })

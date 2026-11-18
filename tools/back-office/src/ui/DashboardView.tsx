@@ -19,7 +19,7 @@ export function DashboardView({ client, accounts }: Props) {
   const dashboard = useMemo(() => {
     if (state.kind !== 'ready') return null
     const kinds = new Map(accounts.kind === 'ready' ? accounts.accounts.map(account => [account.id, { anonymous: account.anonymous }]) : [])
-    return buildDashboard(state.facts, kinds, Date.now())
+    return buildDashboard(state.facts.users, kinds, Date.now(), state.facts.cities)
   }, [state, accounts])
 
   if (state.kind === 'loading') {

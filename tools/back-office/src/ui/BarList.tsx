@@ -3,11 +3,13 @@ import { formatNumber } from '../domain/format'
 
 interface Props {
   buckets: Bucket[]
+  // The whole the percentages are taken of, when the parts are not exclusive (a City can hold several building types).
+  total?: number
 }
 
-export function BarList({ buckets }: Props) {
-  const total = buckets.reduce((sum, bucket) => sum + bucket.count, 0)
-  const largest = Math.max(1, ...buckets.map(bucket => bucket.count))
+export function BarList({ buckets, total: whole }: Props) {
+  const total = whole ?? buckets.reduce((sum, bucket) => sum + bucket.count, 0)
+  const largest = whole ?? Math.max(1, ...buckets.map(bucket => bucket.count))
   return (
     <ul className="flex flex-col gap-1 text-xs">
       {buckets.map(bucket => (

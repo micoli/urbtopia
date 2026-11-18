@@ -3,7 +3,7 @@ import { newGame } from '../../../../src/core'
 import { serializeEnvelope } from '../../../../src/persistence/envelope'
 import { factsOfSave } from './saveFacts'
 
-const meta = { userId: 'u', cityIds: ['c'], formatVersion: 19, savedAt: '2026-11-19T10:00:00Z' }
+const meta = { userId: 'u', cityId: 'c', cityIds: ['c'], formatVersion: 19, savedAt: '2026-11-19T10:00:00Z' }
 const envelopeOf = (prefs?: Record<string, unknown>) => JSON.parse(serializeEnvelope(newGame({ seed: 'amber-fox-4821', now: 1_700_000_000_000 }), 1_700_000_000_000, prefs)) as unknown
 
 describe('factsOfSave', () => {
@@ -12,6 +12,11 @@ describe('factsOfSave', () => {
     expect(facts.prefs).toEqual({ language: 'fr', futureKey: [1] })
     expect(facts.city).toMatchObject({ readable: true, facts: { difficulty: 'cozy', hasPolitics: false, hasChallenge: false } })
     expect(facts.size).toBeGreaterThan(0)
+  })
+
+  it('counts the building types and spots the features of the city', () => {
+    const facts = factsOfSave(meta, envelopeOf())
+    expect(facts.city.readable && facts.city.facts.content).toMatchObject({ buildingTypes: expect.any(Object), features: { rails: false, market: false, trade: false } })
   })
 
   it('still gives the preferences of a save the game cannot read', () => {

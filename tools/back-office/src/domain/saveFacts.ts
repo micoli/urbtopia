@@ -1,15 +1,25 @@
 import { difficultyOf, totalCitizens, type Difficulty } from '../../../../src/core'
 import { parseEnvelope, type ParseFailure } from '../../../../src/persistence/envelope'
+import { FEATURES } from './contentFeatures'
 import { prefsOfSave } from './savedPrefsTable'
 
 export interface SaveMeta {
   userId: string
+  // The City this save belongs to, and every City of the user.
+  cityId: string
   cityIds: readonly string[]
   formatVersion: number
   savedAt: string
 }
 
+// What the City holds, by building type and by feature: the ground of the content indicators.
+export interface CityContent {
+  buildingTypes: Record<string, number>
+  features: Record<string, boolean>
+}
+
 export interface CityFacts {
+  content: CityContent
   citizens: number
   urbs: number
   buildings: number
@@ -49,7 +59,17 @@ export function factsOfSave(meta: SaveMeta, envelope: unknown): SaveFacts {
         tutorialStep: state.tutorial,
         hasPolitics: state.politics !== undefined,
         hasChallenge: state.challenge !== undefined,
+        content: {
+          buildingTypes: countTypes(state.buildings.map(building => building.type)),
+          features: Object.fromEntries(FEATURES.map(feature => [feature.id, feature.present(state)])),
+        },
       },
     },
   }
+}
+
+function countTypes(types: readonly string[]): Record<string, number> {
+  const counts: Record<string, number> = {}
+  for (const type of types) counts[type] = (counts[type] ?? 0) + 1
+  return counts
 }
