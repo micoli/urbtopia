@@ -9,6 +9,7 @@ import { Dialog } from '../common/Dialog';
 import { useGame } from '../common/hooks';
 import { Icon } from '../common/Icon';
 import { IconButton } from '../common/IconButton';
+import { FloatingMenuItems } from '../layout/FloatingMenuItems';
 import { useFloatingActions } from '../layout/useFloatingActions';
 import { useFixtureCommands } from './useFixtureCommands';
 
@@ -37,16 +38,19 @@ export function VenueFixtureToolbar({ venueId }: VenueFixtureToolbarProps) {
   }, [venueId]);
 
   if (!fixture || movingId !== null || !anchor) return null;
-  const canRotate = floating.rotate && !FIXTURES[fixture.type].wall;
-  const canRepair = floating.repair && needsRepair;
+  const turnable = !FIXTURES[fixture.type].wall;
+  const canRotate = floating.rotate && (turnable || floating.showDisabled);
+  const canRepair = floating.repair && (needsRepair || floating.showDisabled);
   if (!floating.move && !canRotate && !canRepair && !floating.sellItem) return null;
   return (
     <>
-      <div className="venue-fixture-toolbar" style={{ left: anchor.x, top: anchor.y }}>
+      <div className={`venue-fixture-toolbar${floating.radial ? ' floating-menu--radial' : ''}`} style={{ left: anchor.x, top: anchor.y }}>
+        <FloatingMenuItems radial={floating.radial}>
         {floating.move ? <IconButton size="md" tone="light" label={t('venue.move')} onClick={() => venueStore.getState().startMove(fixture.id)}><Icon name="move" /></IconButton> : null}
-        {canRotate ? <IconButton size="md" tone="light" label={t('venue.rotate')} onClick={rotate}><Icon name="rotateRight" /></IconButton> : null}
-        {canRepair ? <IconButton size="md" tone="warning" label={t('venue.repair')} onClick={repair}><Icon name="repair" /></IconButton> : null}
+        {canRotate ? <IconButton size="md" tone="light" label={t('venue.rotate')} disabled={!turnable} onClick={rotate}><Icon name="rotateRight" /></IconButton> : null}
+        {canRepair ? <IconButton size="md" tone="warning" label={t('venue.repair')} disabled={!needsRepair} onClick={repair}><Icon name="repair" /></IconButton> : null}
         {floating.sellItem ? <IconButton size="md" tone="danger" label={t('panel.sell')} onClick={() => setConfirmingSell(true)}><Icon name="trash" /></IconButton> : null}
+        </FloatingMenuItems>
       </div>
       {confirmingSell ? (
         <Dialog role="alertdialog">

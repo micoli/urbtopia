@@ -15,10 +15,14 @@ export const FloatingMenuSettings = memo(function FloatingMenuSettings() {
   const floatingSellBuilding = useStore(prefsStore, (store) => store.floatingSellBuilding);
   const floatingCollect = useStore(prefsStore, (store) => store.floatingCollect);
   const floatingInterior = useStore(prefsStore, (store) => store.floatingInterior);
-  const { setFloatingMenu, setFloatingMove, setFloatingRotate, setFloatingRepair, setFloatingSell, setFloatingSellBuilding, setFloatingCollect, setFloatingInterior } = prefsStore.getState();
+  const floatingRadial = useStore(prefsStore, (store) => store.floatingRadial);
+  const floatingShowDisabled = useStore(prefsStore, (store) => store.floatingShowDisabled);
+  const { setFloatingMenu, setFloatingMove, setFloatingRotate, setFloatingRepair, setFloatingSell, setFloatingSellBuilding, setFloatingCollect, setFloatingInterior, setFloatingRadial, setFloatingShowDisabled } = prefsStore.getState();
   return (
     <SettingsSection title={t('settings.section.floatingMenu')} icon="selectionPanel">
       <SwitchField label={t('prefs.floatingMenu')} description={t('prefs.floatingMenu.description')} checked={floatingMenu} onChange={setFloatingMenu} />
+      <SwitchField label={t('prefs.floatingRadial')} description={t('prefs.floatingRadial.description')} checked={floatingRadial} disabled={!floatingMenu} onChange={setFloatingRadial} />
+      <SwitchField label={t('prefs.floatingShowDisabled')} description={t('prefs.floatingShowDisabled.description')} checked={floatingShowDisabled} disabled={!floatingMenu} onChange={setFloatingShowDisabled} />
       <SwitchField label={t('prefs.floatingMove')} checked={floatingMove} disabled={!floatingMenu} onChange={setFloatingMove} />
       <SwitchField label={t('prefs.floatingRotate')} checked={floatingRotate} disabled={!floatingMenu} onChange={setFloatingRotate} />
       <SwitchField label={t('prefs.floatingRepair')} checked={floatingRepair} disabled={!floatingMenu} onChange={setFloatingRepair} />

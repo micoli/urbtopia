@@ -9,6 +9,7 @@ import { useGame, useUi } from '../common/hooks';
 import { Icon } from '../common/Icon';
 import { IconButton } from '../common/IconButton';
 import { placeProjected, useFrameLoop } from '../common/useProjectedPosition';
+import { FloatingMenuItems } from '../layout/FloatingMenuItems';
 import { useFloatingActions } from '../layout/useFloatingActions';
 import { otherFronts } from './FrontRotation';
 import { useSelectedBuilding } from './useSelectedBuilding';
@@ -47,20 +48,22 @@ export function BuildingFloatingBar() {
   }, [building]);
 
   if (!building || tool) return null;
-  const canCollect = floating.collect && collectable;
-  const canOpenInterior = floating.interior && interiorAccess !== 'none';
+  const canCollect = floating.collect && (collectable || floating.showDisabled);
+  const canOpenInterior = floating.interior && (interiorAccess !== 'none' || floating.showDisabled);
   if (!canCollect && !canOpenInterior && !floating.move && !floating.rotate && !floating.sellBuilding) return null;
   const turn = () => {
     const fronts = otherFronts(gameStore.getState().state, building);
     gameStore.getState().send({ type: 'MoveBuilding', id: building.id, x: building.x, y: building.y, rotation: nextFront(fronts, building.rotation, 1) });
   };
   return (
-    <div ref={bar} className="building-floating-bar">
-      {canCollect ? <IconButton size="md" tone="accent" label={t('panel.collect')} onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}><Icon name="money" /></IconButton> : null}
-      {canOpenInterior ? <IconButton size="md" tone="light" label={t('panel.interior')} disabled={interiorAccess === 'locked'} onClick={() => venueStore.getState().open(building.id)}><Icon name="build" /></IconButton> : null}
+    <div ref={bar} className={`building-floating-bar${floating.radial ? ' floating-menu--radial' : ''}`}>
+      <FloatingMenuItems radial={floating.radial}>
+      {canCollect ? <IconButton size="md" tone="accent" label={t('panel.collect')} disabled={!collectable} onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}><Icon name="money" /></IconButton> : null}
+      {canOpenInterior ? <IconButton size="md" tone="light" label={t('panel.interior')} disabled={interiorAccess !== 'open'} onClick={() => venueStore.getState().open(building.id)}><Icon name="build" /></IconButton> : null}
       {floating.move ? <IconButton size="md" tone="light" label={t('panel.move')} onClick={moveSelected}><Icon name="move" /></IconButton> : null}
       {floating.rotate ? <IconButton size="md" tone="light" label={t('panel.rotateRight')} disabled={!canTurn} onClick={turn}><Icon name="rotateRight" /></IconButton> : null}
       {floating.sellBuilding ? <IconButton size="md" tone="danger" label={t('panel.sell')} onClick={sellSelected}><Icon name="trash" /></IconButton> : null}
+      </FloatingMenuItems>
     </div>
   );
 }

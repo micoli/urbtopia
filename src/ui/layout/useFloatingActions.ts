@@ -9,9 +9,11 @@ interface FloatingActions {
   sellBuilding: boolean;
   collect: boolean;
   interior: boolean;
+  radial: boolean;
+  showDisabled: boolean;
 }
 
-// Which actions of the floating menu are on: each display setting counts only while the master switch is on.
+// Which actions of the floating menu are on, each display setting counting only while the master switch is on, whether the menu is spread on an arc, and whether the buttons that cannot be used are kept, greyed out.
 export function useFloatingActions(): FloatingActions {
   const enabled = useStore(prefsStore, store => store.floatingMenu);
   const move = useStore(prefsStore, store => store.floatingMove);
@@ -21,5 +23,7 @@ export function useFloatingActions(): FloatingActions {
   const sellBuilding = useStore(prefsStore, store => store.floatingSellBuilding);
   const collect = useStore(prefsStore, store => store.floatingCollect);
   const interior = useStore(prefsStore, store => store.floatingInterior);
-  return { move: enabled && move, rotate: enabled && rotate, repair: enabled && repair, sellItem: enabled && sellItem, sellBuilding: enabled && sellBuilding, collect: enabled && collect, interior: enabled && interior };
+  const radial = useStore(prefsStore, store => store.floatingRadial);
+  const showDisabled = useStore(prefsStore, store => store.floatingShowDisabled);
+  return { move: enabled && move, rotate: enabled && rotate, repair: enabled && repair, sellItem: enabled && sellItem, sellBuilding: enabled && sellBuilding, collect: enabled && collect, interior: enabled && interior, radial, showDisabled };
 }
