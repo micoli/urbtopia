@@ -3,7 +3,7 @@ import { entranceCell } from '../venues/shared';
 import { isVenueType } from '../venues/profiles';
 import { fixtureRefund, fixtureTiles } from '../venues/venues';
 import { hireFeeOf } from '../venues/staff';
-import { repairCost, restored } from '../venues/wear';
+import { needsRepair, repairCost, restored } from '../venues/wear';
 import type { CommandError, CommandOutcome } from '../engine/commands';
 import type { Building, FixtureId, InteriorData, GameState, Rotation, VenueFixture, VenueType } from '../engine/state';
 import type { FixtureVenue } from '../venues/fixtures';
@@ -188,10 +188,10 @@ export const repairInteriorFixture = (state: GameState, buildingId: number, fixt
     return { interior: { ...interior, fixtures: interior.fixtures.map(candidate => (candidate === fixture ? restored(fixture) : candidate)) }, urbs: -cost };
   });
 
-// Repairs the worn Fixtures one after the other, in the order they were placed, as far as the city's Urbs go.
+// Repairs the Fixtures due for a repair one after the other, in the order they were placed, as far as the city's Urbs go.
 export const repairAllInteriorFixtures = (state: GameState, buildingId: number): CommandOutcome =>
   editInterior(state, buildingId, isInteriorBuilding, (_factory, interior) => {
-    const worn = interior.fixtures.filter(fixture => repairCost(fixture) > 0);
+    const worn = interior.fixtures.filter(needsRepair);
     if (worn.length === 0) return { key: 'error.nothingToRepair' };
     let urbs = state.urbs;
     const repaired = new Set<number>();

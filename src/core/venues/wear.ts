@@ -4,6 +4,7 @@ import type { VenueFixture } from '../engine/state';
 
 export const WEAR = {
   perPlay: 0.5,
+  repairBelow: 90,
   breakdownBelow: 40,
   maxBreakdownChance: 0.5,
   repairRatio: 0.6,
@@ -17,6 +18,9 @@ export const conditionOf = (fixture: VenueFixture): number => fixture.condition 
 export const isBroken = (fixture: VenueFixture): boolean => fixture.broken === true;
 
 export const isWorn = (fixture: VenueFixture): boolean => conditionOf(fixture) < 100;
+
+// A Fixture is due for a repair once its Condition has fallen under the threshold: the wear bar, the repair button and the toolbar all follow it.
+export const needsRepair = (fixture: VenueFixture): boolean => conditionOf(fixture) < WEAR.repairBelow;
 
 export const repairCost = (fixture: VenueFixture): number => {
   if (!isWorn(fixture)) return 0;

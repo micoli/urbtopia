@@ -1,5 +1,5 @@
 import { useGame } from '../common/hooks';
-import { canPlaceFixture, canStandOnInterior, isInteriorBuilding, isVenue, type Building, type Rotation, type VenueFixture } from '../../core';
+import { canPlaceFixture, canStandOnInterior, hasServiceInterior, isHomeType, isInteriorBuilding, isVenue, needsRepair as fixtureNeedsRepair, type Building, type Rotation, type VenueFixture } from '../../core';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
 
@@ -20,15 +20,21 @@ function nextRotationOf(building: Building | undefined, fixture: VenueFixture): 
 
 export function useFixtureCommands(venueId: number, fixture: VenueFixture | undefined) {
   const onFloor = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && isInteriorBuilding(candidate)));
+  const repairable = useGame(store => store.state.buildings.some(candidate => candidate.id === venueId && !isHomeType(candidate.type) && !hasServiceInterior(candidate)));
+  const needsRepair = repairable && fixture !== undefined && fixtureNeedsRepair(fixture);
   const rotate = () => {
     if (!fixture) return;
     const building = gameStore.getState().state.buildings.find(candidate => candidate.id === venueId);
     gameStore.getState().send({ type: onFloor ? 'MoveInteriorFixture' : 'MoveFixture', buildingId: venueId, fixtureId: fixture.id, x: fixture.x, y: fixture.y, rotation: nextRotationOf(building, fixture) });
+  };
+  const repair = () => {
+    if (!fixture) return;
+    gameStore.getState().send({ type: onFloor ? 'RepairInteriorFixture' : 'RepairFixture', buildingId: venueId, fixtureId: fixture.id });
   };
   const sell = () => {
     if (!fixture) return;
     gameStore.getState().send({ type: onFloor ? 'RemoveInteriorFixture' : 'RemoveFixture', buildingId: venueId, fixtureId: fixture.id });
     venueStore.getState().selectPlaced(null);
   };
-  return { rotate, sell };
+  return { rotate, repair, needsRepair, sell };
 }

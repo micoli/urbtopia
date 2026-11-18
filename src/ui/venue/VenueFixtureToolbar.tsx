@@ -15,7 +15,7 @@ interface VenueFixtureToolbarProps {
   venueId: number;
 }
 
-// Move, rotate and delete, right under the selected piece of furniture.
+// Move, rotate, repair when worn and delete, right under the selected piece of furniture.
 export function VenueFixtureToolbar({ venueId }: VenueFixtureToolbarProps) {
   const placedId = useStore(venueStore, store => store.placedId);
   const movingId = useStore(venueStore, store => store.movingId);
@@ -23,7 +23,7 @@ export function VenueFixtureToolbar({ venueId }: VenueFixtureToolbarProps) {
     const building = store.state.buildings.find(candidate => candidate.id === venueId);
     return (building?.venue?.fixtures ?? building?.interior?.fixtures)?.find(candidate => candidate.id === placedId);
   });
-  const { rotate, sell } = useFixtureCommands(venueId, fixture);
+  const { rotate, repair, needsRepair, sell } = useFixtureCommands(venueId, fixture);
   const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
   const [confirmingSell, setConfirmingSell] = useState(false);
 
@@ -40,6 +40,7 @@ export function VenueFixtureToolbar({ venueId }: VenueFixtureToolbarProps) {
       <div className="venue-fixture-toolbar" style={{ left: anchor.x, top: anchor.y }}>
         <IconButton size="md" tone="light" label={t('venue.move')} onClick={() => venueStore.getState().startMove(fixture.id)}><Icon name="move" /></IconButton>
         {FIXTURES[fixture.type].wall ? null : <IconButton size="md" tone="light" label={t('venue.rotate')} onClick={rotate}><Icon name="rotateRight" /></IconButton>}
+        {needsRepair ? <IconButton size="md" tone="warning" label={t('venue.repair')} onClick={repair}><Icon name="repair" /></IconButton> : null}
         <IconButton size="md" tone="danger" label={t('panel.sell')} onClick={() => setConfirmingSell(true)}><Icon name="trash" /></IconButton>
       </div>
       {confirmingSell ? (

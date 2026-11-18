@@ -633,6 +633,11 @@
   color: var(--color-white);
 }
 
+.icon-button--warning {
+  background: var(--color-warning);
+  color: var(--color-on-warning);
+}
+
 .icon-button:disabled {
   opacity: 0.4;
   cursor: not-allowed;

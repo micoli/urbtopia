@@ -3,7 +3,7 @@ import { ButtonHTMLAttributes } from 'react';
 interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'aria-label'> {
     label: string;
     size?: 'sm' | 'md' | 'lg';
-    tone?: 'subtle' | 'light' | 'accent' | 'danger';
+    tone?: 'subtle' | 'light' | 'accent' | 'danger' | 'warning';
 }
 
 export function IconButton({ label, size = 'sm', tone = 'subtle', className, type = 'button', ...rest }: IconButtonProps) {

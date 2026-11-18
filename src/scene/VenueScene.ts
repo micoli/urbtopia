@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { AvatarPatrol, patrolRoute } from './avatarPatrol';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { FIXTURES, PARQUET_MODELS, animalModelOfItem, isVenueType, isRestockable, conditionOf, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isPlainRole, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, doorwayTurnsOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
+import { FIXTURES, PARQUET_MODELS, animalModelOfItem, isVenueType, isRestockable, conditionOf, needsRepair, WEAR, entranceCell, fixtureFootprint, fixtureIdsOf, focusOf, hostWallOf, isPlainRole, isProducerRole, workFocusOf, itemModelOf, partitionPieceOf, doorwayTurnsOf, type Coord, type GoodId, type FixtureVenue, type LinePath, type InteriorAvatars, type VenueFixture } from '../core';
 import { ModelLibrary } from './modelLibrary';
 import type { ScenePlan } from './scenePlan';
 import { VENUE_CORNER_PLACEMENT, VENUE_SHELL_MODELS } from './renderItems';
@@ -25,13 +25,12 @@ const BROKEN_COLOR = 0xe5484d;
 const ENTRANCE_COLOR = 0xe8d9a8;
 const VALID_COLOR = 0x35d07f;
 const INVALID_COLOR = 0xe5484d;
-const WEAR_BAR_FROM_CONDITION = 90;
 const WEAR_BAR_ORANGE_HUE = 30 / 360;
 const WEAR_BAR_GREEN_HUE = 120 / 360;
 const WEAR_BAR_BACK = 0x1b1f2b;
 const WEAR_BAR_WIDTH = 0.8;
 const WEAR_BAR_THICKNESS = 0.1;
-const WEAR_BAR_HEIGHT = 1.4;
+const WEAR_BAR_LIFT = 0.14;
 // The Good of an Oven or of a Display counter stands on top of the furniture: on the roof of the oven, away from its chimney and its fan, and on the roof of the case, in the middle of the shop half of the tile.
 const OVEN_ROOF = 1.0;
 const OVEN_ROOF_DEPTH = 0.2;
@@ -104,6 +103,7 @@ export class VenueScene {
   private avatars: readonly InteriorAvatars[] = [];
   private patrols: AvatarPatrol[] = [];
   private wearRoot = new THREE.Group();
+  private wearBars: { bar: THREE.Group; corners: readonly THREE.Vector3[] }[] = [];
   private shelfStock = new ShelfStockLayer(() => { this.dirty = true; });
   private raycaster = new THREE.Raycaster();
   private pickMode: 'base' | '3d' = '3d';
@@ -338,19 +338,20 @@ export class VenueScene {
     this.markTiles(this.warningRoot, tiles, WARNING_COLOR);
   }
 
-  // A bar shows once a Fixture is worn: its Condition has fallen to 90 %. A Factory interior reads it as what is left, a Venue as what is lost.
+  // A bar shows once a Fixture is worn: it is due for a repair. A Factory interior reads it as what is left, a Venue as what is lost.
   private setWear(fixtures: readonly VenueFixture[], remaining = false): void {
     this.clear(this.wearRoot, true);
+    this.wearBars = [];
     for (const fixture of fixtures) {
       const condition = conditionOf(fixture);
-      if (condition > WEAR_BAR_FROM_CONDITION || (remaining && !FIXTURES[fixture.type].wear)) continue;
+      if (!needsRepair(fixture) || (remaining && !FIXTURES[fixture.type].wear)) continue;
       const { width, depth } = fixtureFootprint(fixture.type, fixture.rotation);
       const bar = new THREE.Group();
-      bar.position.set(fixture.x + width / 2, WEAR_BAR_HEIGHT, fixture.y + depth / 2);
-      bar.quaternion.copy(this.camera.quaternion);
+      const corners = CORNER_OFFSETS.map(({ x, y }) => new THREE.Vector3(fixture.x + x * width, 0, fixture.y + y * depth));
+      this.wearBars.push({ bar, corners });
       const back = new THREE.Mesh(new THREE.PlaneGeometry(WEAR_BAR_WIDTH, WEAR_BAR_THICKNESS), new THREE.MeshBasicMaterial({ color: WEAR_BAR_BACK, depthTest: false }));
       const wear = remaining ? Math.max(condition, 1) / 100 : (100 - condition) / 100;
-      const hue = remaining ? WEAR_BAR_GREEN_HUE * condition / WEAR_BAR_FROM_CONDITION : WEAR_BAR_ORANGE_HUE * condition / WEAR_BAR_FROM_CONDITION;
+      const hue = remaining ? WEAR_BAR_GREEN_HUE * condition / WEAR.repairBelow : WEAR_BAR_ORANGE_HUE * condition / WEAR.repairBelow;
       const fill = new THREE.Mesh(new THREE.PlaneGeometry(WEAR_BAR_WIDTH * wear, WEAR_BAR_THICKNESS), new THREE.MeshBasicMaterial({ color: new THREE.Color().setHSL(hue, 0.9, 0.5), depthTest: false }));
       fill.position.set(-WEAR_BAR_WIDTH * (1 - wear) / 2, 0, 0.001);
       back.renderOrder = 11;
@@ -358,7 +359,25 @@ export class VenueScene {
       bar.add(back, fill);
       this.wearRoot.add(bar);
     }
+    this.placeWearBars();
     this.dirty = true;
+  }
+
+  // Each bar sits just above the corner of its Fixture's footprint that is highest on the screen, and faces the camera.
+  private placeWearBars(): void {
+    this.camera.updateMatrixWorld();
+    const projected = new THREE.Vector3(), lift = new THREE.Vector3(0, 1, 0).applyQuaternion(this.camera.quaternion).multiplyScalar(WEAR_BAR_LIFT);
+    for (const { bar, corners } of this.wearBars) {
+      let top = corners[0]!, highest = -Infinity;
+      for (const corner of corners) {
+        const height = projected.copy(corner).project(this.camera).y;
+        if (height <= highest) continue;
+        highest = height;
+        top = corner;
+      }
+      bar.position.copy(top).add(lift);
+      bar.quaternion.copy(this.camera.quaternion);
+    }
   }
 
   private markTiles(root: THREE.Group, tiles: readonly Coord[], color: number): void {
@@ -780,6 +799,7 @@ export class VenueScene {
     this.camera.position.set(focusX + Math.sin(this.yaw) * Math.cos(pitch) * distance, Math.sin(pitch) * distance, focusZ + Math.cos(this.yaw) * Math.cos(pitch) * distance);
     this.camera.lookAt(focusX, 0.3, focusZ);
     this.showWalls();
+    this.placeWearBars();
   }
 
   // The perimeter walls on the side the camera looks from would hide the room: they show only when they stand behind it.

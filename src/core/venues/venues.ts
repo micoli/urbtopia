@@ -34,7 +34,7 @@ export { RESTAURANT, INGREDIENT_FAMILIES, INGREDIENTS, dishPrice, familyOf, isIn
 export type { Layout, LayoutHint } from './layout';
 export type { RoomReport } from './rules';
 export { EVENT, eventBudgetOf, eventMultiplierOf, isEventActive, isEventScheduled, inCooldown, eventBoundaries } from './events';
-export { WEAR, conditionOf, isBroken, repairCost, technicianRepairCost } from './wear';
+export { WEAR, conditionOf, isBroken, needsRepair, repairCost, technicianRepairCost } from './wear';
 export { STAFF, STAFF_ROLES, FRONT_ROLE, hiredOf, hireFeeOf, minTierOfRole, postsOf, postsAtTier, staffRolesOf, totalStaff, wagesPerHour } from './staff';
 export { MAX_RANK, earnedOf, nextRankAt, rankOf } from './rank';
 
