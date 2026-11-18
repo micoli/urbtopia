@@ -1715,6 +1715,8 @@ export const CATALOG = {
   'level.nothingToBuild': ['Nothing to build on this Level yet.', 'Rien à construire sur ce niveau pour le moment.'],
   'camera.rotateLeft': ['Rotate left', 'Pivoter à gauche'],
   'camera.rotateRight': ['Rotate right', 'Pivoter à droite'],
+  'camera.autoOpenSelection': ['Auto-open details on selection', 'Ouvrir les détails à la sélection'],
+  'selection.expand': ['Show details', 'Afficher les détails'],
   'tool.perTile': ['per tile', 'par tuile'],
   "build.publicFacilities": ["Public facilities", "Équipements publics"],
   "error.buildingLimitReached": ["Build limit reached: more Citizens unlock more copies.", "Limite atteinte : plus de citoyens débloquent des exemplaires supplémentaires."],

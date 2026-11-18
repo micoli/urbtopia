@@ -3,7 +3,9 @@ import type { Building } from '../../core';
 import { venueStore } from '../../store/venueStore';
 import { PanelHeader } from '../common/PanelHeader';
 import { venuePanelTitle } from './venuePanelTitle';
-import { useVenueFixtureSelected, VenueFixturePanel } from './VenueFixturePanel';
+import { VenueFixturePanel } from './VenueFixturePanel';
+import { useVenueFixtureExpansion } from './useVenueFixtureExpansion';
+import { VenueFixtureMiniBar } from './VenueFixtureMiniBar';
 import { VenuePanelContent } from './VenuePanelContent';
 
 interface VenueSheetProps {
@@ -14,12 +16,12 @@ interface VenueSheetProps {
 export function VenueSheet({ venue }: VenueSheetProps) {
   const panel = useStore(venueStore, store => store.panel);
   const closePanel = useStore(venueStore, store => store.closePanel);
-  const selected = useVenueFixtureSelected(venue.id);
-  if (!selected && !panel) return null;
+  const { fixtureType, open: fixtureOpen, expand } = useVenueFixtureExpansion(venue.id);
+  if (fixtureType === null && !panel) return null;
   return (
     <section className="sheet">
-      {selected ? (
-        <VenueFixturePanel venueId={venue.id} />
+      {fixtureType !== null ? (
+        fixtureOpen ? <VenueFixturePanel venueId={venue.id} /> : <VenueFixtureMiniBar fixtureType={fixtureType} onExpand={expand} />
       ) : (
         <>
           {venuePanelTitle(panel) ? <PanelHeader title={venuePanelTitle(panel)} onClose={closePanel} /> : null}

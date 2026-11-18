@@ -2,6 +2,7 @@ import { t } from '../../i18n/t';
 import { sceneHandle } from '../../store/sceneHandle';
 import { IconButton } from '../common/IconButton';
 import { Icon } from '../common/Icon';
+import { AutoOpenSelectionToggle } from './AutoOpenSelectionToggle';
 import { LevelSelector } from './LevelSelector';
 
 export function StaticButtons() {
@@ -14,6 +15,7 @@ export function StaticButtons() {
       <IconButton size="md" tone="light" label={t('camera.rotateRight')} onClick={() => sceneHandle.current?.camera.rotate(1)}>
         <Icon name="rotateRight" />
       </IconButton>
+      <AutoOpenSelectionToggle />
     </div>
   );
 }
