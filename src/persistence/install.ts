@@ -2,6 +2,7 @@ import { dialogStore } from '../store/dialogStore';
 import { catchUpInChunks } from '../store/catchUpInChunks';
 import { bootResult, gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
+import { measureSave, recordLoad, recordSaveFailure } from '../monitoring/gameMetrics';
 import { createAutosave } from './autosave';
 import { saveNowHandle } from './saveNow';
 import { installBackOffice } from '../backOffice/installBackOffice';
@@ -40,12 +41,14 @@ export function installPersistence(): () => void {
   }
 
   nameOpenCity(rawSaveStore, gameStore.getState().state.seed);
+  recordLoad(bootResult.kind, bootResult.kind === 'failed' ? bootResult.reason : undefined);
 
   const autosave = createAutosave({
     save: () => {
       if (readOnlyStore.getState().readOnly) return;
-      const outcome = saveSession.save(gameStore.getState().state, Date.now());
+      const outcome = measureSave(() => saveSession.save(gameStore.getState().state, Date.now()));
       if (outcome.ok) return requestPersistence();
+      recordSaveFailure(outcome.reason);
       if (outcome.reason === 'quota') dialogStore.getState().setSaveFailed(true);
     },
   });

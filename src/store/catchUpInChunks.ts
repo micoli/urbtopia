@@ -1,4 +1,5 @@
 import { GAME_CONFIG } from '../core';
+import { measureTick } from '../monitoring/gameMetrics';
 import { gameStore, type createGameStore } from './gameStore';
 
 type GameStoreApi = ReturnType<typeof createGameStore>;
@@ -13,9 +14,9 @@ const nextFrame = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 // Short gaps (the one-second tick) go straight through. A tick that arrives while a replay runs is dropped: the replay reaches `now` itself.
 export async function catchUpInChunks(now: number, store: GameStoreApi = gameStore): Promise<void> {
   if (running) return;
-  if (store.getState().paused) return store.getState().tick(now);
+  if (store.getState().paused) return measureTick(() => store.getState().tick(now));
   const gap = now - store.getState().state.lastSeen;
-  if (gap <= CHUNK_MS) return store.getState().tick(now);
+  if (gap <= CHUNK_MS) return measureTick(() => store.getState().tick(now));
 
   running = true;
   try {
