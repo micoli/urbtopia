@@ -8,6 +8,8 @@ import { hideSplashAfterFailsafe } from './ui/system/splash';
 import { installPersistence } from './persistence/install';
 import { installErrorRecorder } from './bugReports/recentErrors';
 import { cityBucket, installGameMetrics } from './monitoring/gameMetrics';
+import { installDisplaySettingsMetrics } from './monitoring/displaySettingsMetrics';
+import { prefsStore } from './i18n/prefsStore';
 import { readGpuName } from './bugReports/reportContext';
 import { registerServiceWorker } from './pwa/registerServiceWorker';
 import { installStaleChunkReload } from './pwa/reloadOnStaleChunk';
@@ -29,6 +31,7 @@ if (!isSimulation) {
   installPersistence();
   const gpu = readGpuName() ?? 'unknown';
   const device = window.matchMedia('(pointer: coarse)').matches ? 'touch' : 'desktop';
+  installDisplaySettingsMetrics(prefsStore);
   installGameMetrics(() => ({ gpu, device, city_size: cityBucket(gameStore.getState().state.buildings.length) }));
 }
 
