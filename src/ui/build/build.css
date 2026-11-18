@@ -117,6 +117,13 @@
 [data-layout='A'] .confirm-pad {
   bottom: 76px;
 }
+
+/* On a narrow screen the pad would sit on the camera buttons of the side dock layout: it rises above them. */
+@media (max-width: 600px) {
+  [data-layout='C'] .confirm-pad {
+    bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+}
 .build-toolbar { display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-6); align-items: start; margin-bottom: var(--space-6); }
 .build-toolbar .flyout-item { width: 100%; justify-content: center; }
 .build-search { display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseReleaseNote, parseReleaseNoteContent, styleProblems, withReleaseNote, type ReleaseNoteContent } from './releaseNote';
+import { mergeReleaseNotes, parseReleaseNote, parseReleaseNoteContent, styleProblems, withReleaseNote, type ReleaseNoteContent } from './releaseNote';
 
 const NOTE: ReleaseNoteContent = {
   title: { en: 'Rotate your venues', fr: 'Tournez vos salles' },
@@ -21,6 +21,36 @@ describe('parseReleaseNoteContent', () => {
     ['an item that is not text', { ...NOTE, items: { en: [3], fr: ['x'] } }],
   ])('refuses %s', (_name, value) => {
     expect(parseReleaseNoteContent(value)).toBeNull();
+  });
+});
+
+describe('a note longer than one pull request may write', () => {
+  const long: ReleaseNoteContent = { ...NOTE, items: { en: Array.from({ length: 8 }, (_, index) => `item ${index}`), fr: Array.from({ length: 8 }, (_, index) => `élément ${index}`) } };
+
+  it('is refused by default and accepted when the limit is lifted', () => {
+    expect(parseReleaseNoteContent(long)).toBeNull();
+    expect(parseReleaseNoteContent(long, Number.POSITIVE_INFINITY)).toEqual(long);
+  });
+
+  it('is read back from a release body', () => {
+    expect(parseReleaseNote(withReleaseNote(null, long))).toEqual(long);
+  });
+});
+
+describe('mergeReleaseNotes', () => {
+  const second: ReleaseNoteContent = { title: { en: 'Second', fr: 'Seconde' }, items: { en: ['b1', 'b2'], fr: ['B1', 'B2'] } };
+  const first: ReleaseNoteContent = { title: { en: 'First', fr: 'Première' }, items: { en: ['a1', 'b2'], fr: ['A1', 'B2'] } };
+
+  it('has nothing to say without a note', () => {
+    expect(mergeReleaseNotes([])).toBeNull();
+  });
+
+  it('keeps a single note as it is', () => {
+    expect(mergeReleaseNotes([NOTE])).toEqual(NOTE);
+  });
+
+  it('takes the title of the newest note and every item, newest first, without repeating a sentence', () => {
+    expect(mergeReleaseNotes([second, first])).toEqual({ title: second.title, items: { en: ['b1', 'b2', 'a1'], fr: ['B1', 'B2', 'A1'] } });
   });
 });
 

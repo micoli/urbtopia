@@ -6,6 +6,7 @@ import { VenueScene } from '../../scene/VenueScene';
 import { planCrowd } from '../../scene/venueCrowd';
 import { gameStore } from '../../store/gameStore';
 import { venueSceneHandle } from '../../store/venueSceneHandle';
+import { fixtureSelectionKey, registerSelectionTap } from '../../store/selectionExpansionStore';
 import { venueStore } from '../../store/venueStore';
 
 // What the canvas edits: the interior of a Venue, a Factory, a Packhouse or a Home.
@@ -178,6 +179,7 @@ export function VenueCanvas({ venueId, venueType }: VenueCanvasProps) {
       }
       const tapped = fixtureAt(venueId, cell, fixtureId);
       selectPlaced(tapped?.id ?? null);
+      registerSelectionTap(tapped ? fixtureSelectionKey(venueId, tapped.id) : null);
     };
     sync();
     const unsubscribeGame = gameStore.subscribe(sync);

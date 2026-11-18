@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from 'zustand';
-import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, canAssignStaff, hasProductionInterior, hasServiceInterior, isBroken, isInteriorBuilding, isHomeType, repairCost, WEAR } from '../../core';
+import { FIXTURES, conditionOf, fixtureRefund, homeFixtureRefund, canAssignStaff, hasProductionInterior, hasServiceInterior, isBroken, isInteriorBuilding, isHomeType, needsRepair, repairCost, WEAR } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { venueStore } from '../../store/venueStore';
@@ -54,7 +54,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
         </PanelSection>
       ) : null}
       <PanelSection id="usage" title={t('panel.section.usage')}>
-        {partition ? null : <p><strong>{t('venue.condition')}</strong>: {Math.round(conditionOf(fixture))} %</p>}
+        {partition ? null : <p><strong>{t('venue.condition')}</strong>: {Math.floor(conditionOf(fixture))} %</p>}
         {partition ? null : isBroken(fixture) ? <p className="note note--danger">{t('venue.broken')}</p> : conditionOf(fixture) < WEAR.breakdownBelow ? <p className="note note--warn">{t('venue.worn')}</p> : null}
         {interiorOwner ? <InteriorMachineStatus factory={interiorOwner} fixture={fixture} /> : null}
         {interiorOwner && movingId === null ? <ExitRestock packhouse={interiorOwner} fixture={fixture} /> : null}
@@ -71,7 +71,7 @@ export function VenueFixtureActions({ venueId }: VenueFixtureActionsProps) {
           </>
         ) : null}
       </PanelSection>
-      {!inHome && !inService && Math.round(100-conditionOf(fixture)) > 2
+      {!inHome && !inService && needsRepair(fixture)
           ? <ActionButton variant="primary" onClick={() => send({ type: onFloor ? 'RepairInteriorFixture' : 'RepairFixture', buildingId: venueId, fixtureId: fixture.id })}>
             <Icon name="repair" /> {t('venue.repair')} <UrbsAmount value={repairCost(fixture)} />
           </ActionButton>

@@ -5,6 +5,7 @@ import { gameStore } from '../../store/gameStore';
 import { harvestEffects } from '../../store/harvestEffects';
 import { pickDotStore } from '../../store/pickDotStore';
 import { sceneHandle } from '../../store/sceneHandle';
+import { accessSelectionKey, buildingSelectionKey, registerSelectionTap } from '../../store/selectionExpansionStore';
 import { uiStore } from '../../store/uiStore';
 import { pointerKindOf } from '../../tools/aim';
 import { FACILITIES, isFacilityType, wasteKindOf } from '../../core';
@@ -63,6 +64,8 @@ export function SceneCanvas() {
         if (ui.tool && ui.pointerKind === 'mouse') return ui.clickTile(tile, shiftKey);
         if (ui.tool) return ui.pinTile(tile);
         ui.tapTile(tile, buildingId);
+        const { selectedBuildingId, selectedAccess } = uiStore.getState();
+        registerSelectionTap(selectedBuildingId !== null ? buildingSelectionKey(selectedBuildingId) : selectedAccess ? accessSelectionKey(selectedAccess) : null);
       },
       onLongPress: (buildingId) => {
         const ui = uiStore.getState();

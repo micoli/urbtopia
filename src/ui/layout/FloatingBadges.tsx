@@ -4,6 +4,7 @@ import { SanctionBadges } from '../sanction/SanctionBadges';
 import { WorkingIndicators } from '../common/WorkingIndicators';
 import { ParcelTags } from '../parcels/ParcelTags';
 import { LocatorArrow } from '../buildings/LocatorArrow';
+import { BuildingFloatingBar } from '../buildings/BuildingFloatingBar';
 import { useGame, useShowcase, useUi } from '../common/hooks';
 
 export function FloatingBadges() {
@@ -19,5 +20,6 @@ export function FloatingBadges() {
     <SanctionBadges />
     <ParcelTags />
     <LocatorArrow />
+    <BuildingFloatingBar />
   </>;
 }

@@ -2,6 +2,7 @@ import { t } from '../../i18n/t';
 import { venueSceneHandle } from '../../store/venueSceneHandle';
 import { Icon } from '../common/Icon';
 import { IconButton } from '../common/IconButton';
+import { AutoOpenSelectionToggle } from '../layout/AutoOpenSelectionToggle';
 
 export function VenueRotateButtons() {
   return (
@@ -12,6 +13,7 @@ export function VenueRotateButtons() {
       <IconButton size="md" tone="light" label={t('camera.rotateRight')} onClick={() => venueSceneHandle.current?.rotate(1)}>
         <Icon name="rotateRight" />
       </IconButton>
+      <AutoOpenSelectionToggle />
     </div>
   );
 }

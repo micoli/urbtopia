@@ -246,6 +246,60 @@
   z-index: 9;
 }
 
+.side-panel-mini {
+  position: fixed;
+  right: 12px;
+  bottom: calc(72px + env(safe-area-inset-bottom));
+  max-width: calc(100% - 24px);
+  z-index: 9;
+}
+
+.selection-mini-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  min-height: 48px;
+  padding: var(--space-4) var(--space-12);
+  border: var(--surface-edge);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  backdrop-filter: var(--surface-blur);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  touch-action: manipulation;
+}
+
+.selection-mini-bar__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.building-floating-bar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 7;
+  display: flex;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+}
+
+.building-floating-bar button {
+  transform: scale(0.8);
+}
+
+.floating-radial-item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(calc(var(--arc-x) - 50%), calc(var(--arc-y) - 50%));
+}
+
 .dock-button:disabled {
   opacity: 0.4;
 }

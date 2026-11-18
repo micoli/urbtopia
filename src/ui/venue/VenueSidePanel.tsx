@@ -2,11 +2,13 @@ import { useStore } from 'zustand';
 import { hasProductionInterior, hasServiceInterior, isVenue, type Building } from '../../core';
 import { venueStore } from '../../store/venueStore';
 import { PanelHeader } from '../common/PanelHeader';
-import { useVenueFixtureSelected, VenueFixturePanel } from './VenueFixturePanel';
+import { VenueFixturePanel } from './VenueFixturePanel';
 import { InteriorManagement } from '../factory/InteriorManagement';
 import { InteriorStaff } from '../factory/InteriorStaff';
 import { InteriorParquet } from './InteriorParquet';
 import { VenuePanelContent } from './VenuePanelContent';
+import { useVenueFixtureExpansion } from './useVenueFixtureExpansion';
+import { VenueFixtureMiniBar } from './VenueFixtureMiniBar';
 import { venuePanelTitle } from './venuePanelTitle';
 
 interface VenueSidePanelProps {
@@ -18,9 +20,16 @@ interface VenueSidePanelProps {
 export function VenueSidePanel({ venue }: VenueSidePanelProps) {
   const panel = useStore(venueStore, store => store.panel);
   const closePanel = useStore(venueStore, store => store.closePanel);
-  const selected = useVenueFixtureSelected(venue.id);
+  const { fixtureType, open: fixtureOpen, expand } = useVenueFixtureExpansion(venue.id);
   const title = venuePanelTitle(panel);
-  if (selected) {
+  if (fixtureType !== null && !fixtureOpen) {
+    return (
+      <div className="side-panel-mini">
+        <VenueFixtureMiniBar fixtureType={fixtureType} onExpand={expand} />
+      </div>
+    );
+  }
+  if (fixtureOpen) {
     return (
       <aside className="side-panel">
         <VenueFixturePanel venueId={venue.id} />

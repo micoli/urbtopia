@@ -4,13 +4,14 @@ import { sceneHandle } from '../../store/sceneHandle';
 import { venueStore } from '../../store/venueStore';
 import { shouldRenderFrame } from '../../scene/renderBudget';
 
-export type ProjectedAnchor = 'center' | 'above';
+export type ProjectedAnchor = 'center' | 'above' | 'below';
 
 type Projected = NonNullable<ReturnType<NonNullable<typeof sceneHandle.current>['project']>>;
 
 const ANCHOR_TRANSFORM: Record<ProjectedAnchor, string> = {
     center: 'translate(-50%, -50%)',
     above: 'translate(-50%, -100%)',
+    below: 'translate(-50%, 0)',
 };
 
 const frameCallbacks = new Set<() => void>();
