@@ -10,8 +10,8 @@ describe('installDisplaySettingsMetrics', () => {
     const report = vi.fn();
     installDisplaySettingsMetrics(prefs({ traffic: true, layout: 'B' }), report);
     expect(report).toHaveBeenCalledTimes(DISPLAY_SETTINGS.length);
-    expect(report).toHaveBeenCalledWith('display_setting', { setting: 'traffic', value: 'true' });
-    expect(report).toHaveBeenCalledWith('display_setting', { setting: 'layout', value: 'B' });
+    expect(report).toHaveBeenCalledWith('display_setting', { setting: 'traffic', setting_value: 'true' });
+    expect(report).toHaveBeenCalledWith('display_setting', { setting: 'layout', setting_value: 'B' });
   });
 
   it('reports only the setting that changed, with its new value', () => {
@@ -21,7 +21,7 @@ describe('installDisplaySettingsMetrics', () => {
     report.mockClear();
     store.setState({ sunShadows: true });
     expect(report).toHaveBeenCalledOnce();
-    expect(report).toHaveBeenCalledWith('display_setting_changed', { setting: 'sunShadows', value: 'true' });
+    expect(report).toHaveBeenCalledWith('display_setting_changed', { setting: 'sunShadows', setting_value: 'true' });
   });
 
   it('ignores a change outside the display settings', () => {

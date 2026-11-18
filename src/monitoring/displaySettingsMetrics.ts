@@ -42,11 +42,11 @@ export const sentryCountReporter: CountReporter = (name, attributes) => {
 
 // `display_setting` counts the sessions that start with a value; `display_setting_changed` counts the Players who switch it.
 export function installDisplaySettingsMetrics(store: StoreApi<Prefs>, report: CountReporter = sentryCountReporter): () => void {
-  for (const setting of DISPLAY_SETTINGS) report('display_setting', { setting, value: String(store.getState()[setting]) });
+  for (const setting of DISPLAY_SETTINGS) report('display_setting', { setting, setting_value: String(store.getState()[setting]) });
   return store.subscribe((prefs, previous) => {
     for (const setting of DISPLAY_SETTINGS) {
       if (prefs[setting] === previous[setting]) continue;
-      report('display_setting_changed', { setting, value: String(prefs[setting]) });
+      report('display_setting_changed', { setting, setting_value: String(prefs[setting]) });
     }
   });
 }
