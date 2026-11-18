@@ -3,6 +3,9 @@ import type { Database } from '../../../../src/persistence/cloud/database.types'
 import type { AccountSummary } from '../domain/accounts'
 import { biggestCityStats, groupByCity, type CityGroup } from '../domain/cityGroups'
 import { neutralHandle } from '../domain/handle'
+import { inWindow, type DateWindow } from '../domain/dateFilter'
+import { factsOfSave, type SaveFacts } from '../domain/saveFacts'
+import type { LatestSavedPrefs } from '../domain/savedPrefsTable'
 import { statsOfEnvelope, type SaveStats } from '../domain/saveStats'
 import type { Profile } from '../domain/profiles'
 
@@ -125,6 +128,90 @@ export async function loadLatestSaveStats(client: AdminClient, userIds: string[]
     }),
   )
   return new Map(entries.flatMap(([userId, stats]) => (stats ? [[userId, stats] as const] : [])))
+}
+
+const PREFS_USERS_PER_QUERY = 50
+const SAVES_PER_BATCH = 5
+
+interface LatestSave {
+  userId: string
+  cityId: string
+  revision: number
+  savedAt: string
+  cityIds: string[]
+}
+
+interface LatestSaves {
+  // The newest save of each account, when its own date falls in the window.
+  users: LatestSave[]
+  // The newest save of each City, when its own date falls in the window; the newest save of each account in `users` is among them.
+  cities: LatestSave[]
+}
+
+async function listLatestSaves(client: AdminClient, window: DateWindow): Promise<LatestSaves> {
+  const rows = await fetchAllRows((from, to) => client.from('urb_saves').select('user_id, revision, city_id, client_saved_at').order('user_id').order('revision').range(from, to))
+  const newestOfCity = new Map<string, LatestSave>()
+  const newestOfUser = new Map<string, LatestSave>()
+  const cityIdsOf = new Map<string, string[]>()
+  for (const { user_id, revision, city_id, client_saved_at } of rows) {
+    const cityIds = cityIdsOf.get(user_id) ?? []
+    if (!cityIds.includes(city_id)) cityIds.push(city_id)
+    cityIdsOf.set(user_id, cityIds)
+    const save: LatestSave = { userId: user_id, cityId: city_id, revision, savedAt: client_saved_at, cityIds }
+    const cityKey = `${user_id}/${city_id}`
+    if (revision > (newestOfCity.get(cityKey)?.revision ?? 0)) newestOfCity.set(cityKey, save)
+    if (revision > (newestOfUser.get(user_id)?.revision ?? 0)) newestOfUser.set(user_id, save)
+  }
+  const inPeriod = (save: LatestSave) => inWindow(Date.parse(save.savedAt), window)
+  return { users: [...newestOfUser.values()].filter(inPeriod), cities: [...newestOfCity.values()].filter(inPeriod) }
+}
+
+// The `prefs` of the newest save of each account, read from the stored envelope without opening the game state.
+export async function loadLatestSavedPrefs(client: AdminClient, window: DateWindow): Promise<LatestSavedPrefs[]> {
+  const { users } = await listLatestSaves(client, window)
+  const revisionOf = new Map(users.map(save => [save.userId, save.revision]))
+  const latest: LatestSavedPrefs[] = []
+  for (let from = 0; from < users.length; from += PREFS_USERS_PER_QUERY) {
+    const chunk = users.slice(from, from + PREFS_USERS_PER_QUERY)
+    const { data, error } = await client.from('urb_saves').select('user_id, revision, client_saved_at, prefs:envelope->prefs').in('user_id', chunk.map(save => save.userId)).in('revision', chunk.map(save => save.revision))
+    if (error) throw new Error(error.message)
+    for (const row of data) if (revisionOf.get(row.user_id) === row.revision) latest.push({ userId: row.user_id, revision: row.revision, savedAt: row.client_saved_at, prefs: row.prefs })
+  }
+  return latest
+}
+
+export interface FactsProgress {
+  loaded: number
+  total: number
+}
+
+export interface LoadedFacts {
+  // The latest save of each user.
+  users: SaveFacts[]
+  // The latest save of each City: the users' saves are among them, as the same objects.
+  cities: SaveFacts[]
+}
+
+// Full envelopes weigh up to 1 MB: a few saves at a time, one exact query each, and only the facts are kept once each is read.
+export async function loadLatestSaveFacts(client: AdminClient, window: DateWindow, onProgress: (progress: FactsProgress) => void): Promise<LoadedFacts> {
+  const { users, cities } = await listLatestSaves(client, window)
+  const isUserLatest = new Set(users.map(save => `${save.userId}/${save.revision}`))
+  const loaded: LoadedFacts = { users: [], cities: [] }
+  onProgress({ loaded: 0, total: cities.length })
+  for (let from = 0; from < cities.length; from += SAVES_PER_BATCH) {
+    const batch = cities.slice(from, from + SAVES_PER_BATCH)
+    const rows = await Promise.all(batch.map(async save => {
+      const { data, error } = await client.from('urb_saves').select('format_version, client_saved_at, envelope').eq('user_id', save.userId).eq('revision', save.revision).single()
+      if (error) throw new Error(error.message)
+      return factsOfSave({ userId: save.userId, cityId: save.cityId, cityIds: save.cityIds, formatVersion: data.format_version, savedAt: data.client_saved_at }, data.envelope)
+    }))
+    batch.forEach((save, index) => {
+      loaded.cities.push(rows[index]!)
+      if (isUserLatest.has(`${save.userId}/${save.revision}`)) loaded.users.push(rows[index]!)
+    })
+    onProgress({ loaded: Math.min(from + SAVES_PER_BATCH, cities.length), total: cities.length })
+  }
+  return loaded
 }
 
 export async function setBanned(client: AdminClient, userId: string, banned: boolean): Promise<void> {

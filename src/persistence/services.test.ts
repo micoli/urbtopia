@@ -8,7 +8,7 @@ const DAY = 24 * 3_600_000;
 
 describe('public facilities save compatibility', () => {
   it('loads a frozen version-8 city with Public facilities unchanged', () => {
-    expect(parseEnvelope(JSON.stringify(saveV8))).toEqual({ ok: true, state: { ...saveV8.state, seedStock: {}, fields: [], tradeLedger: [], adaptationUntil: Math.max(saveV8.state.adaptationUntil, saveV8.state.lastSeen + 24 * 3_600_000) }, savedAt: saveV8.savedAt });
+    expect(parseEnvelope(JSON.stringify(saveV8))).toEqual({ ok: true, state: { ...saveV8.state, seedStock: {}, fields: [], tradeLedger: [], adaptationUntil: Math.max(saveV8.state.adaptationUntil, saveV8.state.lastSeen + 24 * 3_600_000) }, savedAt: saveV8.savedAt, prefs: {} });
   });
 
   it('keeps Home Tiers of a version-7 save and starts an Adaptation period', () => {
@@ -23,6 +23,6 @@ describe('public facilities save compatibility', () => {
     const buildings = FACILITY_TYPES.map((type, index) => createBuilding(index + 1, type, 50 + index, 50, 0));
     const state = { ...newGame({ seed: 'facilities-save', now: 0 }), nextId: buildings.length + 1, buildings };
     const loaded = parseEnvelope(serializeEnvelope(state, 100));
-    expect(loaded).toEqual({ ok: true, state, savedAt: 100 });
+    expect(loaded).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 });

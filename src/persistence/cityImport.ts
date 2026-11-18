@@ -16,7 +16,7 @@ export function importCityFile(store: SaveStore, text: string, now: number, city
 
   const base = (readExportedCityName(text) ?? cityNameFromSeed(parsed.state.seed)).slice(0, MAX_CITY_NAME_LENGTH - 2);
   const taken = registry.cities.flatMap((entry) => (entry.name === null ? [] : [entry.name]));
-  new CityScopedSaveStore(store, () => cityId).put(SAVE_KEY, serializeEnvelope(parsed.state, parsed.savedAt));
+  new CityScopedSaveStore(store, () => cityId).put(SAVE_KEY, serializeEnvelope(parsed.state, parsed.savedAt, parsed.prefs));
   writeRegistry(store, { ...registry, cities: [...registry.cities, { id: cityId, name: uniqueCityName(taken, base), createdAt: now }] });
   return { ok: true, cityId };
 }

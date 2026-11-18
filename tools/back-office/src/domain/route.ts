@@ -1,7 +1,7 @@
 import { isLocalUrl, type Profile } from './profiles'
 
 export type Environment = 'production' | 'local'
-export type RouteView = 'account' | 'bug-report'
+export type RouteView = 'account' | 'bug-report' | 'stats' | 'dashboard'
 
 export interface Route {
   environment: Environment | null
@@ -12,7 +12,7 @@ export interface Route {
 export type ResolvedRoute = Route & { environment: Environment }
 
 const ENVIRONMENTS: readonly string[] = ['production', 'local']
-const VIEWS: readonly string[] = ['account', 'bug-report']
+const VIEWS: readonly string[] = ['account', 'bug-report', 'stats', 'dashboard']
 
 export function environmentOf(profile: Profile): Environment {
   return isLocalUrl(profile.url) ? 'local' : 'production'

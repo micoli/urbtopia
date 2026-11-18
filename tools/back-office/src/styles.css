@@ -21,6 +21,29 @@ canvas {
   display: block;
 }
 
+/* Chart colors: the validated categorical slots, stepped for each surface. A slot belongs to the order of the parts, never to a rank. */
+:root {
+  --chart-surface: #fff;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --series-6: #008300;
+  --series-neutral: var(--color-zinc-300);
+  --series-track: var(--color-zinc-100);
+}
+
+html.dark {
+  --chart-surface: var(--color-zinc-50);
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #0ca30c;
+}
+
 /* Dark theme: the components use the Tailwind palette directly, so the palette is remapped instead of restyling each one. */
 html.dark {
   color-scheme: dark;

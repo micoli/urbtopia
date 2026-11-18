@@ -7,23 +7,23 @@ describe('farming save compatibility', () => {
   it('migrates a frozen version-8 city to version 9 with an empty seed stock and a congestion Adaptation period', () => {
     expect(CURRENT_VERSION).toBe(19);
     const loaded = parseEnvelope(JSON.stringify(saveV8));
-    expect(loaded).toEqual({ ok: true, state: { ...saveV8.state, seedStock: {}, fields: [], tradeLedger: [], adaptationUntil: Math.max(saveV8.state.adaptationUntil, saveV8.state.lastSeen + 24 * 3_600_000) }, savedAt: saveV8.savedAt });
+    expect(loaded).toEqual({ ok: true, state: { ...saveV8.state, seedStock: {}, fields: [], tradeLedger: [], adaptationUntil: Math.max(saveV8.state.adaptationUntil, saveV8.state.lastSeen + 24 * 3_600_000) }, savedAt: saveV8.savedAt, prefs: {} });
   });
 
   it('round-trips a seed stock', () => {
     const state = { ...newGame({ seed: 'seed-stock-save', now: 0 }), seedStock: { wheat: 4, corn: 1 } };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it('round-trips Crop Materials in the Materials compartment', () => {
     const state = { ...newGame({ seed: 'crop-materials-save', now: 0 }), storage: { materials: { wheat: 7, wood: 2 }, goods: {} } };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it('round-trips Field tiles with and without a planted Crop', () => {
     const fields = [{ x: 50, y: 50 }, { x: 51, y: 50, crop: { species: 'wheat' as const, plantedAt: 1_700_000_000_000 } }];
     const state = { ...newGame({ seed: 'fields-save', now: 0 }), fields };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it.each([

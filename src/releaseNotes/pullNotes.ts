@@ -1,4 +1,4 @@
-import { parseReleaseNote, type ReleaseNoteContent } from './releaseNote';
+import { parseReleaseNote, type ReleaseNoteContent } from './releaseNote.ts';
 
 export interface Pull {
   number: number;

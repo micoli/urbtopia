@@ -25,10 +25,19 @@ function recoverFractionalShelfReturns(state: unknown): unknown {
   return { ...value, storage: { ...storage, goods } };
 }
 
-export type ParseResult = { ok: true; state: GameState; savedAt: number } | { ok: false; reason: ParseFailure; detail?: string };
+// The Player's preferences ride next to the state as plain keys and values: no schema, no version, never migrated.
+export type SavedPrefs = Record<string, unknown>;
 
-export function serializeEnvelope(state: GameState, savedAt: number): string {
-  return JSON.stringify({ format: FORMAT, version: CURRENT_VERSION, savedAt, state: withoutOpenRound(state) });
+export type ParseResult = { ok: true; state: GameState; savedAt: number; prefs: SavedPrefs } | { ok: false; reason: ParseFailure; detail?: string };
+
+export function serializeEnvelope(state: GameState, savedAt: number, prefs: SavedPrefs = {}): string {
+  const envelope = { format: FORMAT, version: CURRENT_VERSION, savedAt, state: withoutOpenRound(state) };
+  return JSON.stringify(Object.keys(prefs).length === 0 ? envelope : { ...envelope, prefs });
+}
+
+function prefsOf(envelope: Record<string, unknown>): SavedPrefs {
+  const { prefs } = envelope;
+  return typeof prefs === 'object' && prefs !== null && !Array.isArray(prefs) ? (prefs as SavedPrefs) : {};
 }
 
 export function readVersion(text: string): number | null {
@@ -64,5 +73,5 @@ export function parseEnvelope(text: string, { currentVersion = CURRENT_VERSION, 
   // Version 14 briefly returned fractional shelf stock to integer-only storage.
   const first = checkGameState(migrated);
   const check = !first.ok && version === 14 ? checkGameState(recoverFractionalShelfReturns(migrated)) : first;
-  return check.ok ? { ok: true, state: check.state, savedAt: envelope.savedAt } : { ok: false, reason: 'invalid-state', detail: check.reason };
+  return check.ok ? { ok: true, state: check.state, savedAt: envelope.savedAt, prefs: prefsOf(envelope) } : { ok: false, reason: 'invalid-state', detail: check.reason };
 }

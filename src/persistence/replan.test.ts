@@ -35,7 +35,7 @@ describe('a Replan in the save', () => {
   it('loads a save without a Replan as a City with none in progress', () => {
     const state = city();
     const loaded = parseEnvelope(serializeEnvelope(state, 100));
-    expect(loaded).toEqual({ ok: true, state, savedAt: 100 });
+    expect(loaded).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
     expect(loaded.ok && loaded.state.replan).toBeUndefined();
   });
 
@@ -43,7 +43,7 @@ describe('a Replan in the save', () => {
     const state = replanning();
     expect(state.buildings).toHaveLength(0);
     expect(state.replan?.stash.buildings).toHaveLength(2);
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it('accepts objects placed before what they need while it lasts', () => {

@@ -251,7 +251,7 @@ describe('transit save format', () => {
   });
   it('round-trips mixed fleets, networks, frequencies and fractional coal', () => {
     const state = { ...transferCity(), storage: { materials: { coal: .25 }, goods: {} } };
-    expect(parseEnvelope(serializeEnvelope(state, 0))).toEqual({ ok: true, state, savedAt: 0 });
+    expect(parseEnvelope(serializeEnvelope(state, 0))).toEqual({ ok: true, state, savedAt: 0, prefs: {} });
     expect(validateGameState({ ...state, transitFleet: [{ ...state.transitFleet![0], lineId: 900 }] })).toBeNull();
     expect(validateGameState({ ...state, rails: [{ x: 1, y: 0, exits: ['up'] }] })).toBeNull();
   });

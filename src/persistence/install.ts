@@ -1,3 +1,5 @@
+import { prefsStore } from '../i18n/prefsStore';
+import { adoptSavedPrefs, currentSavedPrefs } from './savedPrefs';
 import { dialogStore } from '../store/dialogStore';
 import { catchUpInChunks } from '../store/catchUpInChunks';
 import { bootResult, gameStore } from '../store/gameStore';
@@ -40,13 +42,14 @@ export function installPersistence(): () => void {
     dialogStore.getState().setRecovery({ reason: bootResult.reason, raw: bootResult.raw });
   }
 
+  if (bootResult.kind === 'loaded') adoptSavedPrefs(bootResult.prefs);
   nameOpenCity(rawSaveStore, gameStore.getState().state.seed);
   recordLoad(bootResult.kind, bootResult.kind === 'failed' ? bootResult.reason : undefined);
 
   const autosave = createAutosave({
     save: () => {
       if (readOnlyStore.getState().readOnly) return;
-      const outcome = measureSave(() => saveSession.save(gameStore.getState().state, Date.now()));
+      const outcome = measureSave(() => saveSession.save(gameStore.getState().state, Date.now(), currentSavedPrefs()));
       if (outcome.ok) return requestPersistence();
       recordSaveFailure(outcome.reason);
       if (outcome.reason === 'quota') dialogStore.getState().setSaveFailed(true);
@@ -59,7 +62,10 @@ export function installPersistence(): () => void {
     onLost: () => readOnlyStore.getState().set(true),
     onRegained: () => {
       const loaded = saveSession.load();
-      if (loaded.kind === 'loaded') gameStore.getState().replaceState(loaded.state, 'tick');
+      if (loaded.kind === 'loaded') {
+        adoptSavedPrefs(loaded.prefs);
+        gameStore.getState().replaceState(loaded.state, 'tick');
+      }
       readOnlyStore.getState().set(false);
       void catchUpInChunks(Date.now());
     },
@@ -71,6 +77,10 @@ export function installPersistence(): () => void {
     if (store.state === previous.state) return;
     if (store.lastChange === 'tick') return autosave.onPassiveChange();
     autosave.onCommand();
+  });
+
+  const unsubscribePrefs = prefsStore.subscribe((store, previous) => {
+    if (store !== previous) autosave.onCommand();
   });
 
   const onVisibility = () => {
@@ -105,6 +115,7 @@ export function installPersistence(): () => void {
     disposeSolidarity();
     disposeShipments();
     unsubscribe();
+    unsubscribePrefs();
     document.removeEventListener('visibilitychange', onVisibility);
     window.removeEventListener('pagehide', autosave.flush);
     window.removeEventListener('storage', onStorage);

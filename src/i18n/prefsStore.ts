@@ -151,7 +151,13 @@ function writeStored({ language, layout, traffic, pedestrians, pedestrianModel, 
   }
 }
 
+// Every preference as a plain key and value, the form in which the save keeps them.
+export function savedPrefsOf(prefs: Prefs): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(prefs).filter(([, value]) => typeof value !== 'function'));
+}
+
 export interface PrefsStore extends Prefs {
+  applySavedPrefs: (saved: Record<string, unknown>) => void;
   setLanguage: (language: Language) => void;
   setLayout: (layout: Layout) => void;
   setTraffic: (traffic: boolean) => void;
@@ -199,6 +205,13 @@ const browserLanguage = typeof navigator === 'undefined' ? undefined : navigator
 
 export const prefsStore = createStore<PrefsStore>((set, get) => ({
   ...parsePrefs(readStored(), browserLanguage),
+  applySavedPrefs: (saved) => {
+    const valid = parsePrefs(JSON.stringify(saved), browserLanguage);
+    const applied = Object.keys(saved).filter((key) => Object.hasOwn(valid, key));
+    if (applied.length === 0) return;
+    set(Object.fromEntries(applied.map((key) => [key, valid[key as keyof Prefs]])));
+    writeStored(get());
+  },
   setLanguage: (language) => {
     set({ language });
     writeStored(get());

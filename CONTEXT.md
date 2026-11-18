@@ -916,8 +916,12 @@ _Avoid_: Hour (alone)
 A glass window of a powered building that shows light at Night. Each window is lit on its own: about 60% of them are lit at least once in a Night, switched on between 22:00 and 00:30 and off between 00:30 and 05:30, drawn from the window's place and the number of the Day cycle. A building without power keeps its windows dark. Purely visual: never saved and never read by the simulation.
 _Avoid_: Night lights, street lamp (a separate thing, not modelled)
 
+**Preference**:
+A choice of the Player about how the game looks and behaves for them (language, layout, display settings, Always day…), never about the city itself. The save keeps the Preferences as plain keys and values next to the city, without a schema or a version, so they follow the city to another device, through the Cloud save or an export. The device keeps a copy to start with before any city is read; a city saved before Preferences were kept leaves the device's own.
+_Avoid_: Option, config
+
 **Always day**:
-A setting of the device, outside the save, that shows the map in Daytime light at all times without changing the Day cycle or power. Off by default.
+A Preference that shows the map in Daytime light at all times without changing the Day cycle or power. Off by default.
 
 **Seed**:
 The text code generated for each game that fixes all of its chance-based outcomes.
@@ -1205,7 +1209,7 @@ Looking around the Showcase of another Player account's City in the game, chosen
 _Avoid_: Spectate, preview, load
 
 **Back office**:
-The local tool, never deployed, with which an Admin lists Player accounts, moderates them and inspects their Cloud saves. It runs only on the Admin's machine and acts with the service key of the Supabase project it is pointed at.
+The local tool, never deployed, with which an Admin lists Player accounts, moderates them and inspects their Cloud saves and reads the Preferences kept in their latest ones. It runs only on the Admin's machine and acts with the service key of the Supabase project it is pointed at.
 _Avoid_: Admin panel, dashboard, console
 
 **Bug report**:

@@ -1,5 +1,5 @@
 import type { GameState } from '../core';
-import { CURRENT_VERSION, parseEnvelope, serializeEnvelope } from './envelope';
+import { CURRENT_VERSION, parseEnvelope, serializeEnvelope, type SavedPrefs } from './envelope';
 import { BACKUP_KEY, SAVE_KEY, versionedBackupKey, type SaveStore } from './saveStore';
 import type { SaveSession } from './saveSession';
 
@@ -34,8 +34,8 @@ export function restoreBackup(store: SaveStore, session: SaveSession): RestoreRe
 
 
 // The City name rides next to the envelope, outside the state, so the format version does not change.
-export function exportEnvelope(state: GameState, savedAt: number, cityName: string | null): string {
-  const envelope = JSON.parse(serializeEnvelope(state, savedAt)) as Record<string, unknown>;
+export function exportEnvelope(state: GameState, savedAt: number, cityName: string | null, prefs: SavedPrefs = {}): string {
+  const envelope = JSON.parse(serializeEnvelope(state, savedAt, prefs)) as Record<string, unknown>;
   return JSON.stringify(cityName === null ? envelope : { ...envelope, cityName });
 }
 
