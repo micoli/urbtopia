@@ -7,10 +7,12 @@ import { blockPageZoom } from './ui/system/blockPageZoom';
 import { hideSplashAfterFailsafe } from './ui/system/splash';
 import { installPersistence } from './persistence/install';
 import { installErrorRecorder } from './bugReports/recentErrors';
+import { cityBucket, installGameMetrics } from './monitoring/gameMetrics';
+import { readGpuName } from './bugReports/reportContext';
 import { registerServiceWorker } from './pwa/registerServiceWorker';
 import { installStaleChunkReload } from './pwa/reloadOnStaleChunk';
 import { catchUpInChunks } from './store/catchUpInChunks';
-import { isSimulation } from './store/gameStore';
+import { gameStore, isSimulation } from './store/gameStore';
 import { installEventEffects } from './store/installEventEffects';
 import { liveCommandGateway } from './store/liveCommandGateway';
 import '@fontsource-variable/inter';
@@ -25,6 +27,9 @@ if (!isSimulation) {
   setInterval(() => void catchUpInChunks(Date.now()), TICK_INTERVAL_MS);
   void catchUpInChunks(Date.now());
   installPersistence();
+  const gpu = readGpuName() ?? 'unknown';
+  const device = window.matchMedia('(pointer: coarse)').matches ? 'touch' : 'desktop';
+  installGameMetrics(() => ({ gpu, device, city_size: cityBucket(gameStore.getState().state.buildings.length) }));
 }
 
 const root = document.getElementById('app');
