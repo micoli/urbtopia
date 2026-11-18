@@ -110,7 +110,7 @@ describe('envelope', () => {
 
   it('survives a round trip unchanged', () => {
     const result = parseEnvelope(serializeEnvelope(state, T0));
-    expect(result).toEqual({ ok: true, state, savedAt: T0 });
+    expect(result).toEqual({ ok: true, state, savedAt: T0, prefs: {} });
   });
 
   it('loads the frozen version 3 fixture', () => {
@@ -202,7 +202,28 @@ describe('SaveSession', () => {
 
   it('loads what it saved', () => {
     session.save(state, T0);
-    expect(session.load()).toEqual({ kind: 'loaded', state, savedAt: T0 });
+    expect(session.load()).toEqual({ kind: 'loaded', state, savedAt: T0, prefs: {} });
+  });
+
+  it('loads the preferences it saved, whatever their keys and values', () => {
+    const prefs = { language: 'fr', someFutureKey: { nested: [1, 2] } };
+    session.save(state, T0, prefs);
+    expect(session.load()).toMatchObject({ kind: 'loaded', prefs });
+  });
+
+  it('loads a save written before preferences existed with none', () => {
+    store.put(SAVE_KEY, JSON.stringify({ format: FORMAT, version: CURRENT_VERSION, savedAt: T0, state }));
+    expect(session.load()).toMatchObject({ kind: 'loaded', prefs: {} });
+  });
+
+  it.each([['an array', [1]], ['a string', 'dark'], ['null', null]])('ignores preferences that are %s', (_label, prefs) => {
+    store.put(SAVE_KEY, JSON.stringify({ format: FORMAT, version: CURRENT_VERSION, savedAt: T0, state, prefs }));
+    expect(session.load()).toMatchObject({ kind: 'loaded', prefs: {} });
+  });
+
+  it('keeps the format version unchanged when preferences are saved', () => {
+    session.save(state, T0, { language: 'fr' });
+    expect(JSON.parse(store.get(SAVE_KEY) ?? '')).toMatchObject({ version: CURRENT_VERSION, prefs: { language: 'fr' } });
   });
 
   it('keeps an unreadable save untouched and refuses to overwrite it', () => {

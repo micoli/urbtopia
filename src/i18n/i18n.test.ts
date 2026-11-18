@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { FR } from './fr';
 import { MESSAGES } from './messages';
-import { DEBUG_OFFSET_LIMIT, defaultLanguage, parsePrefs, PREFS_KEY, prefsStore } from './prefsStore';
+import { DEBUG_OFFSET_LIMIT, defaultLanguage, parsePrefs, PREFS_KEY, prefsStore, savedPrefsOf } from './prefsStore';
 
 describe('catalogs', () => {
   it('translate every message key in French, and nothing more', () => {
@@ -162,5 +162,38 @@ describe('pick mode preference', () => {
     expect(parsePrefs(null)).toMatchObject({ pickMode: '3d' });
     expect(parsePrefs(JSON.stringify({ pickMode: 'base' }))).toMatchObject({ pickMode: 'base' });
     expect(parsePrefs(JSON.stringify({ pickMode: 'laser' }))).toMatchObject({ pickMode: '3d' });
+  });
+
+  it('exports every preference as plain data, without the setters', () => {
+    const saved = savedPrefsOf(prefsStore.getState());
+    expect(saved).toMatchObject({ language: expect.any(String), traffic: expect.any(Boolean) });
+    expect(Object.values(saved).some((value) => typeof value === 'function')).toBe(false);
+  });
+
+  it('applies the saved preferences it knows and keeps the others as they are', () => {
+    prefsStore.getState().setTraffic(true);
+    prefsStore.getState().setLayout('C');
+    prefsStore.getState().applySavedPrefs({ layout: 'B', unknownKey: 1, traffic: 'maybe' });
+    expect(prefsStore.getState().layout).toBe('B');
+    expect(prefsStore.getState()).not.toHaveProperty('unknownKey');
+    prefsStore.getState().setLayout('C');
+  });
+
+  it('does not let a saved preference named like a prototype reach the store', () => {
+    prefsStore.getState().applySavedPrefs(JSON.parse('{"__proto__":{"polluted":true}}') as Record<string, unknown>);
+    expect(Object.getPrototypeOf(prefsStore.getState())).toBe(Object.prototype);
+    expect(prefsStore.getState()).not.toHaveProperty('polluted');
+  });
+
+  it('never throws on a saved preference of any type, for any key', () => {
+    const values = [null, 0, -1, 1e308, 'x', '', true, false, [], [1, 'a', null], {}, { a: { b: [] } }];
+    const keys = [...Object.keys(savedPrefsOf(prefsStore.getState())), 'unknownKey', 'constructor', 'toString', '__proto__'];
+    for (const key of keys) {
+      for (const value of values) {
+        const saved = JSON.parse(`{"${key}":${JSON.stringify(value)}}`) as Record<string, unknown>;
+        expect(() => prefsStore.getState().applySavedPrefs(saved)).not.toThrow();
+      }
+    }
+    expect(Object.getPrototypeOf(prefsStore.getState())).toBe(Object.prototype);
   });
 });

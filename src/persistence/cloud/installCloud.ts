@@ -5,6 +5,7 @@ import { cloudStore } from '../../store/cloudStore';
 import { gameStore } from '../../store/gameStore';
 import { readOnlyStore } from '../../store/readOnlyStore';
 import { parseEnvelope } from '../envelope';
+import { adoptSavedPrefs } from '../savedPrefs';
 import { openCityId, saveSession, saveStore } from '../instance';
 import { SAVE_KEY } from '../saveStore';
 import { cloudEnabled } from './cloudConfig';
@@ -60,6 +61,7 @@ export function installCloudSync(): () => void {
           if (!parsed.ok) return;
           saveSession.backupNow();
           saveStore.put(SAVE_KEY, envelope);
+          adoptSavedPrefs(parsed.prefs);
           gameStore.getState().replaceState(advance(parsed.state, Date.now()).state, 'tick');
         },
         keepAsPreviousVersion: () => saveSession.backupNow(),

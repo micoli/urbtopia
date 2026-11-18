@@ -5,12 +5,12 @@ import { parseEnvelope, serializeEnvelope } from './envelope';
 describe('water save compatibility', () => {
   it('loads a save without Water tiles unchanged', () => {
     const state = newGame({ seed: 'no-water', now: 0 });
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it('round-trips Water tiles', () => {
     const state = { ...newGame({ seed: 'water-save', now: 0 }), waterTiles: [{ x: 50, y: 50 }, { x: 51, y: 50 }] };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it.each([
@@ -31,17 +31,17 @@ describe('boat save compatibility', () => {
 
   it('round-trips Boats', () => {
     const state = { ...base(), boats: [{ id: 11, family: 'pleasure' as const, marinaId: 10, x: 50, y: 50 }] };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it('round-trips a Fishing boat with its catch clock', () => {
     const state = { ...base(), boats: [{ id: 11, family: 'fishing' as const, marinaId: 10, x: 50, y: 50, catchSince: 1_700_000_000_000 }] };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it('round-trips a Casino boat with its Tier', () => {
     const state = { ...base(), boats: [{ id: 11, family: 'casino' as const, marinaId: 10, x: 50, y: 50, tier: 2 }] };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it.each([
@@ -68,7 +68,7 @@ describe('bridge save compatibility', () => {
 
   it('round-trips Bridges', () => {
     const state = { ...base(), bridges: [{ x: 52, y: 50, length: 2, axis: 'x' as const }] };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it.each([
@@ -89,18 +89,18 @@ describe('Bridge over infrastructure save compatibility', () => {
 
   it('round-trips a Road Bridge', () => {
     const state = { ...base(), bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'road' as const }] };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it('round-trips a tiered Road Bridge and rejects a ramp with another tier', () => {
     const tiered = { ...base(), roads: base().roads.map((road) => ({ ...road, tier: 2 })), bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'road' as const, tier: 2 }] };
-    expect(parseEnvelope(serializeEnvelope(tiered, 100))).toEqual({ ok: true, state: tiered, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(tiered, 100))).toEqual({ ok: true, state: tiered, savedAt: 100, prefs: {} });
     expect(parseEnvelope(serializeEnvelope({ ...tiered, roads: base().roads } as never, 100))).toMatchObject({ ok: false, reason: 'invalid-state' });
   });
 
   it('round-trips a BRT Bridge', () => {
     const state = { ...base(), roads: [], brtRoads: [{ x: 52, y: 50, exits: ['W' as const] }, { x: 56, y: 50, exits: ['E' as const] }], bridges: [{ x: 53, y: 50, length: 3, axis: 'x' as const, carrier: 'brt' as const }] };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it.each([
@@ -120,7 +120,7 @@ describe('Footbridge save compatibility', () => {
 
   it('round-trips a Footbridge', () => {
     const state = { ...base(), bridges: [{ x: 50, y: 50, length: 1, axis: 'x' as const, carrier: 'pedestrian' as const, side: -1 as const }] };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it.each([

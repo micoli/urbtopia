@@ -8,7 +8,7 @@ describe('underground save compatibility', () => {
   it('loads a save without underground as a city with no underground', () => {
     const state = base();
     const loaded = parseEnvelope(serializeEnvelope(state, 100));
-    expect(loaded).toEqual({ ok: true, state, savedAt: 100 });
+    expect(loaded).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
     expect(loaded.ok && loaded.state.walkways).toBeUndefined();
     expect(loaded.ok && loaded.state.tunnels).toBeUndefined();
     expect(loaded.ok && loaded.state.pedestrianAccesses).toBeUndefined();
@@ -21,7 +21,7 @@ describe('underground save compatibility', () => {
       tunnels: [{ x: 50, y: 50, exits: ['E' as const] }, { x: 51, y: 50, exits: ['W' as const] }],
       pedestrianAccesses: [{ x: 52, y: 50 }],
     };
-    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100 });
+    expect(parseEnvelope(serializeEnvelope(state, 100))).toEqual({ ok: true, state, savedAt: 100, prefs: {} });
   });
 
   it.each([

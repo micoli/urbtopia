@@ -1,10 +1,10 @@
 import type { GameState } from '../core';
-import { CURRENT_VERSION, parseEnvelope, readVersion, serializeEnvelope, type ParseFailure, type ParseOptions } from './envelope';
+import { CURRENT_VERSION, parseEnvelope, readVersion, serializeEnvelope, type ParseFailure, type ParseOptions, type SavedPrefs } from './envelope';
 import { BACKUP_KEY, SAVE_KEY, SaveQuotaError, versionedBackupKey, type SaveStore } from './saveStore';
 
 export type LoadResult =
   | { kind: 'none' }
-  | { kind: 'loaded'; state: GameState; savedAt: number }
+  | { kind: 'loaded'; state: GameState; savedAt: number; prefs: SavedPrefs }
   | { kind: 'failed'; reason: ParseFailure; detail?: string; raw: string };
 
 export type SaveOutcome = { ok: true } | { ok: false; reason: 'locked' | 'quota' };
@@ -24,16 +24,16 @@ export class SaveSession {
     if (result.ok) {
       const version = readVersion(raw) ?? CURRENT_VERSION;
       if (version < (this.options.currentVersion ?? CURRENT_VERSION)) this.backUpBeforeMigration(version, raw);
-      return { kind: 'loaded', state: result.state, savedAt: result.savedAt };
+      return { kind: 'loaded', state: result.state, savedAt: result.savedAt, prefs: result.prefs };
     }
     this.locked = true;
     return { kind: 'failed', reason: result.reason, detail: result.detail, raw };
   }
 
-  save(state: GameState, now: number): SaveOutcome {
+  save(state: GameState, now: number, prefs: SavedPrefs = {}): SaveOutcome {
     if (this.locked) return { ok: false, reason: 'locked' };
     try {
-      this.store.put(SAVE_KEY, serializeEnvelope(state, now));
+      this.store.put(SAVE_KEY, serializeEnvelope(state, now, prefs));
       return { ok: true };
     } catch (error) {
       if (error instanceof SaveQuotaError) return { ok: false, reason: 'quota' };
