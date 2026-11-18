@@ -7,8 +7,9 @@ import { blockPageZoom } from './ui/system/blockPageZoom';
 import { hideSplashAfterFailsafe } from './ui/system/splash';
 import { installPersistence } from './persistence/install';
 import { installErrorRecorder } from './bugReports/recentErrors';
-import { cityBucket, installGameMetrics } from './monitoring/gameMetrics';
+import { cityBucket, installGameMetrics, setGameAttributes } from './monitoring/gameMetrics';
 import { installDisplaySettingsMetrics } from './monitoring/displaySettingsMetrics';
+import { openCityId } from './persistence/instance';
 import { prefsStore } from './i18n/prefsStore';
 import { readGpuName } from './bugReports/reportContext';
 import { registerServiceWorker } from './pwa/registerServiceWorker';
@@ -28,11 +29,12 @@ installEventEffects(liveCommandGateway);
 if (!isSimulation) {
   setInterval(() => void catchUpInChunks(Date.now()), TICK_INTERVAL_MS);
   void catchUpInChunks(Date.now());
-  installPersistence();
   const gpu = readGpuName() ?? 'unknown';
   const device = window.matchMedia('(pointer: coarse)').matches ? 'touch' : 'desktop';
+  setGameAttributes(() => ({ gpu, device, city_size: cityBucket(gameStore.getState().state.buildings.length), city_id: openCityId() }));
+  installPersistence();
   installDisplaySettingsMetrics(prefsStore);
-  installGameMetrics(() => ({ gpu, device, city_size: cityBucket(gameStore.getState().state.buildings.length) }));
+  installGameMetrics();
 }
 
 const root = document.getElementById('app');

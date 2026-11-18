@@ -35,13 +35,13 @@ function newToken(): string {
 }
 
 export function installPersistence(): () => void {
-  recordLoad(bootResult.kind, bootResult.kind === 'failed' ? bootResult.reason : undefined);
   if (bootResult.kind === 'failed') {
     if (bootResult.detail) console.warn(`Save rejected: ${bootResult.detail}`);
     dialogStore.getState().setRecovery({ reason: bootResult.reason, raw: bootResult.raw });
   }
 
   nameOpenCity(rawSaveStore, gameStore.getState().state.seed);
+  recordLoad(bootResult.kind, bootResult.kind === 'failed' ? bootResult.reason : undefined);
 
   const autosave = createAutosave({
     save: () => {

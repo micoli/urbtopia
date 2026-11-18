@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react';
 import type { StoreApi } from 'zustand/vanilla';
 import type { Prefs } from '../i18n/prefsStore';
+import { gameAttributes } from './gameMetrics';
 
 export const DISPLAY_SETTINGS = [
   'language',
@@ -37,7 +38,7 @@ export const DISPLAY_SETTINGS = [
 export type CountReporter = (name: string, attributes: Record<string, string>) => void;
 
 export const sentryCountReporter: CountReporter = (name, attributes) => {
-  Sentry.metrics.count(name, 1, { attributes });
+  Sentry.metrics.count(name, 1, { attributes: { ...gameAttributes(), ...attributes } });
 };
 
 // `display_setting` counts the sessions that start with a value; `display_setting_changed` counts the Players who switch it.

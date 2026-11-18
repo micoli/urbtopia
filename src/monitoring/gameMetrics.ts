@@ -33,7 +33,7 @@ export function recordSaveFailure(reason: string): void {
 }
 
 export function recordLoad(kind: string, reason?: string): void {
-  Sentry.metrics.count('load_result', 1, { attributes: { kind, reason: reason ?? 'none' } });
+  Sentry.metrics.count('load_result', 1, { attributes: { ...describe(), kind, reason: reason ?? 'none' } });
 }
 
 function flushWindows(): void {
@@ -42,9 +42,16 @@ function flushWindows(): void {
   saveWindow.flush(attributes);
 }
 
-export function installGameMetrics(describeGame: () => MetricAttributes): void {
+export function setGameAttributes(describeGame: () => MetricAttributes): void {
   describe = describeGame;
-  installFrameSampler(new FrameSampler(describeGame));
+}
+
+export function gameAttributes(): MetricAttributes {
+  return describe();
+}
+
+export function installGameMetrics(): void {
+  installFrameSampler(new FrameSampler(gameAttributes));
   setInterval(flushWindows, FLUSH_INTERVAL_MS);
   window.addEventListener('pagehide', flushWindows);
 }
