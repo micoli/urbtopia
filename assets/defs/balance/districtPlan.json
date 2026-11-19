@@ -1,0 +1,35 @@
+{
+  "$schema": "../schemas/balance-district-plan.schema.json",
+  "boardRadius": 4,
+  "sameCategoryScore": 1,
+  "pairScores": [
+    {
+      "between": ["habitat", "park"],
+      "score": 3
+    },
+    {
+      "between": ["habitat", "service"],
+      "score": 2
+    },
+    {
+      "between": ["habitat", "commerce"],
+      "score": 1
+    },
+    {
+      "between": ["habitat", "industry"],
+      "score": -2
+    },
+    {
+      "between": ["park", "water"],
+      "score": 2
+    },
+    {
+      "between": ["commerce", "service"],
+      "score": 1
+    },
+    {
+      "between": ["industry", "water"],
+      "score": -1
+    }
+  ]
+}

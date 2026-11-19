@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { HEX_CATEGORIES } from '../districtPlan/districtPlanVocabulary.ts';
 import { SANCTIONABLE_FACTOR_IDS } from '../environment/needFactors.ts';
 import { INTERIOR_FAMILIES_ALL, INTERIOR_PARTS_ALL, INTERIOR_ROLES_ALL, STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
 
@@ -141,6 +142,22 @@ export const homeInteriorBalanceSchema = z
     refundRatio: share,
   })
   .meta({ title: 'Home interior balance', description: 'assets/defs/balance/homeInterior.json: the size of a Home interior by Tier, the weights of the groups of its Comfort and the Well-being it adds at most.' });
+
+const hexCategory = z.enum(HEX_CATEGORIES);
+
+// How a game of the District plan is scored: the size of its board, and what each pair of touching edges is worth.
+export const districtPlanBalanceSchema = z
+  .strictObject({
+    ...schemaField,
+    boardRadius: z.int().min(1),
+    sameCategoryScore: z.int(),
+    // A pair of different categories not listed here is worth nothing.
+    pairScores: z
+      .array(z.strictObject({ between: z.tuple([hexCategory, hexCategory]), score: z.int() }))
+      .refine(pairs => pairs.every(({ between }) => between[0] !== between[1]), 'a pair needs two different categories, the same category is scored by sameCategoryScore')
+      .refine(pairs => new Set(pairs.map(({ between }) => [...between].sort().join('|'))).size === pairs.length, 'a pair of categories is listed once, in either order'),
+  })
+  .meta({ title: 'District plan balance', description: 'assets/defs/balance/districtPlan.json: the board of the District plan and the score of each pair of touching edges.' });
 
 // What building a road costs per tile, and how fast a car drives on it, by road Tier.
 export const trafficBalanceSchema = z

@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 import type { Reference } from './collections.ts';
-import { economyBalanceSchema, factoryInteriorBalanceSchema, homeInteriorBalanceSchema, interiorsBalanceSchema, knowledgeBalanceSchema, packhouseInteriorBalanceSchema, politicsBalanceSchema, sanctionsBalanceSchema, trafficBalanceSchema, transitReachBalanceSchema, venuesBalanceSchema, wasteBalanceSchema } from '../src/core/balance/balanceSchemas.ts';
+import { districtPlanBalanceSchema, economyBalanceSchema, factoryInteriorBalanceSchema, homeInteriorBalanceSchema, interiorsBalanceSchema, knowledgeBalanceSchema, packhouseInteriorBalanceSchema, politicsBalanceSchema, sanctionsBalanceSchema, trafficBalanceSchema, transitReachBalanceSchema, venuesBalanceSchema, wasteBalanceSchema } from '../src/core/balance/balanceSchemas.ts';
 import { bridgeInfrastructureSchema, railsInfrastructureSchema, hedgesInfrastructureSchema, roadsInfrastructureSchema, sceneryInfrastructureSchema } from '../src/core/infrastructure/infrastructureSchemas.ts';
 import { natureDescriptionsSchema, NATURE_DESCRIPTION_VALUES } from '../src/core/descriptions/descriptionSchemas.ts';
 import { templateProblems } from '../src/core/descriptions/descriptionProblems.ts';
@@ -26,6 +26,7 @@ export const SINGLETONS = {
   economy: { file: 'assets/defs/balance/economy.json', title: 'Economy balance', schemaName: 'balance-economy', schema: economyBalanceSchema },
   venues: { file: 'assets/defs/balance/venues.json', title: 'Venues balance', schemaName: 'balance-venues', schema: venuesBalanceSchema },
   homeInterior: { file: 'assets/defs/balance/homeInterior.json', title: 'Home interior balance', schemaName: 'balance-home-interior', schema: homeInteriorBalanceSchema },
+  districtPlan: { file: 'assets/defs/balance/districtPlan.json', title: 'District plan balance', schemaName: 'balance-district-plan', schema: districtPlanBalanceSchema },
   factoryInterior: { file: 'assets/defs/balance/factoryInterior.json', title: 'Factory interior balance', schemaName: 'balance-factory-interior', schema: factoryInteriorBalanceSchema },
   packhouseInterior: { file: 'assets/defs/balance/packhouseInterior.json', title: 'Packhouse interior balance', schemaName: 'balance-packhouse-interior', schema: packhouseInteriorBalanceSchema },
   interiors: { file: 'assets/defs/balance/interiors.json', title: 'Interiors balance', schemaName: 'balance-interiors', schema: interiorsBalanceSchema },

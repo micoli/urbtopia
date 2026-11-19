@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "boardRadius": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "sameCategoryScore": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "pairScores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "between": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "string",
+                "enum": [
+                  "habitat",
+                  "park",
+                  "commerce",
+                  "industry",
+                  "service",
+                  "water"
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "habitat",
+                  "park",
+                  "commerce",
+                  "industry",
+                  "service",
+                  "water"
+                ]
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "score": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "between",
+          "score"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "boardRadius",
+    "sameCategoryScore",
+    "pairScores"
+  ],
+  "additionalProperties": false,
+  "title": "District plan balance",
+  "description": "assets/defs/balance/districtPlan.json: the board of the District plan and the score of each pair of touching edges."
+}
