@@ -1,8 +1,6 @@
 import { DISTRICT_PLAN } from './districtPlanBalance';
 import type { PlacedHex } from './districtScore';
-import { cellKey, distanceBetween, neighboursOf, type Cell } from './hexGrid';
-
-const CENTRE: Cell = { q: 0, r: 0 };
+import { CENTRE, cellKey, distanceBetween, neighboursOf, type Cell } from './hexGrid';
 
 export const isPlacementValid = (placed: readonly PlacedHex[], cell: Cell): boolean => {
   if (distanceBetween(CENTRE, cell) > DISTRICT_PLAN.boardRadius) return false;

@@ -150,6 +150,15 @@ export const districtPlanBalanceSchema = z
   .strictObject({
     ...schemaField,
     boardRadius: z.int().min(1),
+    // The Hexes of a Deck by Tier, and how many of the next Hexes the player sees.
+    deckSizes: z.array(z.int().min(1)).min(1),
+    previewCount: count,
+    // A Hex has a majority category and a run of contiguous edges of another category; the length of that run is one of these.
+    minorEdgeCounts: z.array(z.int().min(1).max(5)).min(1),
+    // The score per Hex of the Deck that earns each Rank.
+    rankScorePerHex: z
+      .strictObject({ bronze: positive, silver: positive, gold: positive })
+      .refine(({ bronze, silver, gold }) => bronze < silver && silver < gold, 'the scores of the Ranks must rise from bronze to gold'),
     sameCategoryScore: z.int(),
     // A pair of different categories not listed here is worth nothing.
     pairScores: z

@@ -10,6 +10,52 @@
       "minimum": 1,
       "maximum": 9007199254740991
     },
+    "deckSizes": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9007199254740991
+      }
+    },
+    "previewCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "minorEdgeCounts": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5
+      }
+    },
+    "rankScorePerHex": {
+      "type": "object",
+      "properties": {
+        "bronze": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "silver": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "gold": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "bronze",
+        "silver",
+        "gold"
+      ],
+      "additionalProperties": false
+    },
     "sameCategoryScore": {
       "type": "integer",
       "minimum": -9007199254740991,
@@ -66,6 +112,10 @@
   },
   "required": [
     "boardRadius",
+    "deckSizes",
+    "previewCount",
+    "minorEdgeCounts",
+    "rankScorePerHex",
     "sameCategoryScore",
     "pairScores"
   ],

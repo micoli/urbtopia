@@ -1,6 +1,6 @@
 # Hex grid and score
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: none
 Spec: ../spec.md
 

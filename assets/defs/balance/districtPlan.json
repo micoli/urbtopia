@@ -1,6 +1,14 @@
 {
   "$schema": "../schemas/balance-district-plan.schema.json",
   "boardRadius": 4,
+  "deckSizes": [24, 28, 32, 36, 40],
+  "previewCount": 2,
+  "minorEdgeCounts": [1, 2, 3],
+  "rankScorePerHex": {
+    "bronze": 1.5,
+    "silver": 3,
+    "gold": 4
+  },
   "sameCategoryScore": 1,
   "pairScores": [
     {

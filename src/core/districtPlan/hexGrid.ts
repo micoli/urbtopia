@@ -5,6 +5,8 @@ export interface Cell {
 
 export const EDGE_COUNT = 6;
 
+export const CENTRE: Cell = { q: 0, r: 0 };
+
 // Edge 0 faces east, then the edges go round counter-clockwise in steps of 60°.
 const DIRECTIONS: readonly Cell[] = [
   { q: 1, r: 0 },
