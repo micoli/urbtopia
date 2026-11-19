@@ -1,6 +1,6 @@
 # District plan screen
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 04
 Spec: ../spec.md
 

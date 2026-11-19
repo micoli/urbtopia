@@ -1,0 +1,96 @@
+.district-backdrop .dialog {
+  width: min(96vw, 52rem);
+  max-height: 96dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.district-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 0;
+}
+
+.district-hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+}
+
+.district-hud__label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.district-hud__gain {
+  margin-left: 0.4rem;
+  color: var(--hex-park);
+}
+
+.district-hud__gain--loss {
+  color: var(--hex-invalid);
+}
+
+.district-hud__thresholds {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.district-board {
+  position: relative;
+  width: 100%;
+  height: min(58dvh, 34rem);
+  touch-action: none;
+  border-radius: var(--radius-md);
+  background: var(--color-venue);
+}
+
+.district-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.district-hand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.district-hand__current .hex-glyph {
+  width: 4rem;
+  height: 4rem;
+}
+
+.district-hand__next {
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0.7;
+}
+
+.district-hand__next .hex-glyph {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.district-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.hex-glyph__wedge {
+  stroke: var(--hex-edge);
+  stroke-width: 0.03;
+}
+
+.hex-glyph__wedge--habitat { fill: var(--hex-habitat); }
+.hex-glyph__wedge--park { fill: var(--hex-park); }
+.hex-glyph__wedge--commerce { fill: var(--hex-commerce); }
+.hex-glyph__wedge--industry { fill: var(--hex-industry); }
+.hex-glyph__wedge--service { fill: var(--hex-service); }
+.hex-glyph__wedge--water { fill: var(--hex-water); }

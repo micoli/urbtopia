@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import type { Building, BuildingKind } from '../../core';
 import { CasinoPanel } from '../casino/CasinoPanel';
+import { DistrictPanel } from '../district/DistrictPanel';
 import { VenuePanel } from '../venue/VenuePanel';
 import { FarmPanel } from './FarmPanel';
 import { HomePanel } from './HomePanel';
@@ -21,6 +22,7 @@ export const PANEL_BY_KIND: Partial<Record<BuildingKind, ComponentType<{ buildin
   pirateCove: PirateCovePanel,
   stands: StandsPanel,
   casino: CasinoPanel,
+  planning: DistrictPanel,
   venue: VenuePanel,
   shop: ShopPanel,
   office: OfficePanel,

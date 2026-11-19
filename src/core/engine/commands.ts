@@ -24,6 +24,8 @@ import { marketQuote } from '../economy/market';
 import { donationQuote } from '../economy/solidarity';
 import { harvestFields, layFields, plantFields, removeFields } from '../farming/fields';
 import { buySeeds, sellSeeds } from '../farming/seeds';
+import { giveUpDistrictGame, placeDistrictHex, startDistrictGame } from '../districtPlan/districtCommands';
+import type { Cell } from '../districtPlan/hexGrid';
 import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
 import { boatsOfMarina, buyBoat, sellBoat, upgradeBoat } from '../water/boats';
@@ -163,6 +165,9 @@ export type Command =
   | { readonly type: 'RepairInteriorFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RepairAllInteriorFixtures'; readonly buildingId: number }
   | { readonly type: 'SetInteriorParquet'; readonly buildingId: number; readonly parquet?: number }
+  | { readonly type: 'StartDistrictGame'; readonly buildingId: number }
+  | { readonly type: 'PlaceDistrictHex'; readonly buildingId: number; readonly cell: Cell; readonly rotation: number }
+  | { readonly type: 'GiveUpDistrictGame'; readonly buildingId: number }
   | { readonly type: 'HireInteriorTechnician'; readonly buildingId: number }
   | { readonly type: 'ReleaseInteriorTechnician'; readonly buildingId: number }
   | { readonly type: 'HireInteriorStaff'; readonly buildingId: number; readonly role: InteriorRole }
@@ -294,6 +299,9 @@ export type ErrorKey =
   | 'error.noWaterForPirateShip'
   | 'error.unknownBoat'
   | 'error.waterInUse'
+  | 'error.districtGameUnderWay'
+  | 'error.noDistrictGame'
+  | 'error.invalidDistrictPlacement'
   | 'error.noSeeds'
   | 'error.nothingToPlant'
   | 'error.seedStockFull'
@@ -540,6 +548,12 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return repairAllInteriorFixtures(state, command.buildingId);
     case 'SetInteriorParquet':
       return setInteriorParquet(state, command.buildingId, command.parquet);
+    case 'StartDistrictGame':
+      return startDistrictGame(state, command.buildingId);
+    case 'PlaceDistrictHex':
+      return placeDistrictHex(state, command.buildingId, command.cell, command.rotation);
+    case 'GiveUpDistrictGame':
+      return giveUpDistrictGame(state, command.buildingId);
     case 'SetInteriorBreaker':
       return setInteriorBreaker(state, command.buildingId, command.off);
     case 'HireInteriorTechnician':
