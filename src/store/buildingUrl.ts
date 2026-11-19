@@ -1,5 +1,7 @@
-import { hasProductionInterior, hasServiceInterior, isHomeInteriorUnlocked, isHomeType, isInteriorUnlocked, isVenue, type Building, type GameState } from '../core';
+import { hasProductionInterior, hasServiceInterior, isHomeInteriorUnlocked, isHomeType, isInteriorUnlocked, isPlanningOffice, isVenue, type Building, type GameState } from '../core';
+import { districtStore } from './districtStore';
 import { gameStore } from './gameStore';
+import { openInterior } from './openInterior';
 import { sceneHandle } from './sceneHandle';
 import { uiStore } from './uiStore';
 import { venueStore } from './venueStore';
@@ -32,9 +34,9 @@ export function writeBuildingTarget(search: string, target: BuildingTarget): str
   return written === '' ? '' : `?${written}`;
 }
 
-// Whether the player could open the interior of this building from its panel: a Venue, a Home once furnishing is unlocked, a Production or Service interior once its Citizens threshold is reached.
+// Whether the player could open the interior of this building from its panel: a Planning office, which opens the District plan, a Venue, a Home once furnishing is unlocked, a Production or Service interior once its Citizens threshold is reached.
 export function canOpenInterior(state: GameState, building: Building): boolean {
-  if (isVenue(building)) return true;
+  if (isPlanningOffice(building) || isVenue(building)) return true;
   if (isHomeType(building.type)) return isHomeInteriorUnlocked(state);
   return (hasProductionInterior(building) || hasServiceInterior(building)) && isInteriorUnlocked(state, building.type);
 }
@@ -47,13 +49,15 @@ export function applyBuildingTarget(search: string): void {
   const building = state.buildings.find(candidate => candidate.id === buildingId);
   if (!building) return;
   uiStore.getState().select(building.id);
-  if (interior && canOpenInterior(state, building)) venueStore.getState().open(building.id);
+  if (interior && canOpenInterior(state, building)) openInterior(building);
   const params = new URLSearchParams(search);
   if (!params.has('x') && !params.has('z')) sceneHandle.current?.focusOnTile(building);
 }
 
 // What the URL says now: the interior that is open, or else the building that is selected.
 export function currentBuildingTarget(): BuildingTarget {
+  const districtId = districtStore.getState().officeId;
+  if (districtId !== null) return { buildingId: districtId, interior: true };
   const venueId = venueStore.getState().venueId;
   if (venueId !== null) return { buildingId: venueId, interior: true };
   return { buildingId: uiStore.getState().selectedBuildingId, interior: false };

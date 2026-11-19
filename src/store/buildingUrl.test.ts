@@ -7,6 +7,7 @@ const { applyBuildingTarget, currentBuildingTarget, readBuildingTarget, writeBui
 const { gameStore } = await import('./gameStore');
 const { uiStore } = await import('./uiStore');
 const { venueStore } = await import('./venueStore');
+const { districtStore } = await import('./districtStore');
 
 describe('readBuildingTarget', () => {
   it('reads the building id and whether the interior is asked for', () => {
@@ -46,11 +47,13 @@ describe('applyBuildingTarget', () => {
     gameStore.getState().replaceState(city(), 'tick');
     uiStore.getState().select(null);
     venueStore.getState().close();
+    districtStore.getState().close();
   });
 
   afterEach(() => {
     uiStore.getState().select(null);
     venueStore.getState().close();
+    districtStore.getState().close();
   });
 
   it('selects the building that the id names', () => {
@@ -63,6 +66,15 @@ describe('applyBuildingTarget', () => {
     applyBuildingTarget('?building=1&interior');
     expect(uiStore.getState().selectedBuildingId).toBe(1);
     expect(venueStore.getState().venueId).toBe(1);
+  });
+
+  it('opens the District plan, not a room, for a Planning office', () => {
+    gameStore.getState().replaceState({ ...city(), buildings: [...homes, createBuilding(3, 'planningOffice', 65, 50, 0)] }, 'tick');
+    applyBuildingTarget('?building=3&interior');
+    expect(uiStore.getState().selectedBuildingId).toBe(3);
+    expect(districtStore.getState().officeId).toBe(3);
+    expect(venueStore.getState().venueId).toBeNull();
+    expect(currentBuildingTarget()).toEqual({ buildingId: 3, interior: true });
   });
 
   it('does not open the interior of a building that has none, but still selects it', () => {
