@@ -76,7 +76,8 @@ function renameFloorToInterior(state: unknown): unknown {
   };
 }
 
-export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }), 14: finishTutorialsOfPlacedVenues, 15: startWasteAdaptation, 16: startKnowledgeAdaptation, 17: startJobSearchAdaptation, 18: renameFloorToInterior };
+// 19 to 20: the games of a Planning office are new optional data on a building, so nothing moves.
+export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }), 14: finishTutorialsOfPlacedVenues, 15: startWasteAdaptation, 16: startKnowledgeAdaptation, 17: startJobSearchAdaptation, 18: renameFloorToInterior, 19: state => state };
 
 export function migrate(state: unknown, fromVersion: number, toVersion: number, steps: Record<number, MigrationStep> = MIGRATIONS): unknown {
   let current = state;
