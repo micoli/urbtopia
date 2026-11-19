@@ -15,7 +15,7 @@
   },
   "tiers": [
     {
-      "model": "buildings-library-2x2",
+      "model": "buildings-planning-office-2x2-2f",
       "footprint": [2, 2]
     },
     {
