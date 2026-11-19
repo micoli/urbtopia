@@ -1,14 +1,17 @@
+import type { ReactNode } from 'react';
 import { DISTRICT_PLAN, type DistrictRank } from '../../core';
 import { t } from '../../i18n/t';
 import type { DistrictView } from './useDistrictGame';
 
 interface DistrictHudProps {
   view: DistrictView;
+  // The buttons that stand next to the best score.
+  actions?: ReactNode;
 }
 
 const rankText = (rank: DistrictRank | undefined): string => (rank ? t(`district.rank.${rank}`) : t('district.noRank'));
 
-export function DistrictHud({ view }: DistrictHudProps) {
+export function DistrictHud({ view, actions }: DistrictHudProps) {
   const deckSize = view.game?.deckSize ?? 0;
   const thresholds = (['bronze', 'silver', 'gold'] as const).map(rank => `${t(`district.rank.${rank}`)} ${Math.ceil(DISTRICT_PLAN.rankScorePerHex[rank] * deckSize)}`).join(' · ');
   return (
@@ -30,6 +33,7 @@ export function DistrictHud({ view }: DistrictHudProps) {
         <span className="district-hud__label">{t('district.best')}</span>
         <strong>{view.bestScore === undefined ? '—' : `${view.bestScore} · ${rankText(view.bestRank)}`}</strong>
       </div>
+      {actions ? <div className="district-hud__actions">{actions}</div> : null}
       {deckSize > 0 ? <p className="district-hud__thresholds">{thresholds}</p> : null}
     </div>
   );

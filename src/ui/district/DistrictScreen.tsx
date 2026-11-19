@@ -5,10 +5,12 @@ import { t } from '../../i18n/t';
 import { Dialog } from '../common/Dialog';
 import { DistrictCanvas } from './DistrictCanvas';
 import { DistrictCloseButton } from './DistrictCloseButton';
-import { DistrictControls } from './DistrictControls';
 import { DistrictFloatingActions } from './DistrictFloatingActions';
+import { DistrictGameButtons } from './DistrictGameButtons';
 import { DistrictHand } from './DistrictHand';
 import { DistrictHud } from './DistrictHud';
+import { DistrictLessonButton } from './DistrictLessonButton';
+import { DistrictUndoButton } from './DistrictUndoButton';
 import { DistrictViewButtons } from './DistrictViewButtons';
 import { useDistrictGame } from './useDistrictGame';
 
@@ -24,20 +26,17 @@ export function DistrictScreen({ building }: DistrictScreenProps) {
       <Dialog.Title>{t('district.title')}</Dialog.Title>
       <Dialog.Body>
         <div className="district-screen">
-          <DistrictCloseButton onClick={() => districtStore.getState().close()} />
-          <DistrictHud view={view} />
+          <DistrictCloseButton onClick={() => districtStore.getState().close()}><DistrictLessonButton /></DistrictCloseButton>
+          <DistrictHud view={view} actions={<DistrictGameButtons building={building} view={view} />} />
           <div className="district-stage">
             <DistrictCanvas board={view.board} candidates={view.candidates} picked={view.picked} interactive onAnchor={setAnchor} />
             <DistrictFloatingActions building={building} view={view} anchor={anchor} />
             <DistrictViewButtons />
           </div>
-          <DistrictHand current={view.current} upcoming={view.upcoming} />
+          {view.game ? <DistrictHand current={view.current} upcoming={view.upcoming}><DistrictUndoButton building={building} view={view} /></DistrictHand> : null}
           <p className="district-hint">{view.game === undefined ? t('district.start') : view.over ? t('district.gameOver') : t('district.hint')}</p>
         </div>
       </Dialog.Body>
-      <Dialog.Actions>
-        <DistrictControls building={building} view={view} />
-      </Dialog.Actions>
     </Dialog>
   );
 }
