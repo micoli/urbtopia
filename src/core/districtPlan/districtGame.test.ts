@@ -38,7 +38,15 @@ describe('starting a game', () => {
 
   it('puts the first Hex of the Deck at the centre', () => {
     const office = started();
-    expect(boardOf(context, office.game!)[0]!.hex).toEqual(deckOf('seed', 1, 1, 24)[0]);
+    expect(boardOf(context, office.game!)[0]!.hex).toEqual(deckOf('seed', 1, 24)[0]);
+  });
+
+  it('plays the same Deck in every game of the office', () => {
+    const first = started();
+    const second = started(1, officeOf(giveUp(first)));
+    expect(second.gameNumber).toBe(2);
+    expect(handOf(context, second.game!)).toEqual(handOf(context, first.game!));
+    expect(boardOf(context, second.game!)).toEqual(boardOf(context, first.game!));
   });
 
   it('refuses while a game is under way', () => {
@@ -50,7 +58,7 @@ describe('placing a Hex', () => {
   it('adds the placement with its rotation, and the Hex turned on the board', () => {
     const office = officeOf(placeHex(context, started(), { q: 1, r: 0 }, 2));
     expect(office.game?.placements).toHaveLength(2);
-    const deck = deckOf('seed', 1, 1, 24);
+    const deck = deckOf('seed', 1, 24);
     expect(boardOf(context, office.game!)[1]).toEqual({ cell: { q: 1, r: 0 }, hex: rotateHex(deck[1]!, 2) });
   });
 
@@ -72,7 +80,7 @@ describe('placing a Hex', () => {
 
   it('shows the Hex to place and the next two', () => {
     const office = started();
-    const deck = deckOf('seed', 1, 1, 24);
+    const deck = deckOf('seed', 1, 24);
     expect(handOf(context, office.game!)).toEqual({ current: deck[1], upcoming: [deck[2], deck[3]] });
   });
 

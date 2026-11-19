@@ -6,9 +6,9 @@ import { EDGE_COUNT } from './hexGrid';
 
 export const deckSizeOf = (tier: number): number => DISTRICT_PLAN.deckSizes[Math.min(tier, DISTRICT_PLAN.deckSizes.length) - 1]!;
 
-// The Deck of a game: the same for the same Seed, office and game number, and not the same for another game.
-export const deckOf = (seed: string, officeId: number, gameNumber: number, size: number): Hex[] => {
-  let rngState = hashSeed(`${seed}:district-plan:${officeId}:${gameNumber}`);
+// The Deck of an office: every game of the office plays the same one, so a better score comes from better placements and not from a better draw.
+export const deckOf = (seed: string, officeId: number, size: number): Hex[] => {
+  let rngState = hashSeed(`${seed}:district-plan:${officeId}:1`);
   const draw = (count: number): number => {
     const drawn = nextRandom(rngState);
     rngState = drawn.rngState;

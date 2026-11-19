@@ -43,7 +43,7 @@ export type DistrictOutcome = { readonly office: DistrictOffice } | { readonly r
 
 export const isGameOver = (game: DistrictGame): boolean => game.placements.length >= game.deckSize;
 
-const deckOfGame = (context: DistrictContext, game: DistrictGame): Hex[] => deckOf(context.seed, context.officeId, game.number, game.deckSize);
+const deckOfGame = (context: DistrictContext, game: DistrictGame): Hex[] => deckOf(context.seed, context.officeId, game.deckSize);
 
 export const boardOf = (context: DistrictContext, game: DistrictGame): PlacedHex[] => {
   const deck = deckOfGame(context, game);

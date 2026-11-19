@@ -15,7 +15,7 @@ Decisions: [ADR 0090](../../docs/adr/0090-the-district-plan-is-a-hex-placement-g
 - A Hex has six typed edges using two Hex categories (Habitat, Park, Commerce, Industry, Service, Water); it is turned in steps of 60°.
 - The board is hexagonal, in axial coordinates, with a radius of 4 around the Start hex, which the Deck imposes at the centre. Each Hex placed must touch a Hex already placed.
 - A game uses a Deck of 24 Hexes at Tier 1 (28, 32, 36, 40 at Tiers 2 to 5), with the next 2 in view. No timer. It ends when the Deck is empty. A game can be given up; the best score is kept.
-- The Deck is drawn from the game's Seed and the game number, so a game is reproducible.
+- The Deck is drawn from the game's Seed and the office, and every game of an office plays the same one: a better score comes from better placements, not from a better draw.
 - Score: for each pair of touching edges, the value of the pair table (below). An edge that touches nothing counts for nothing.
 - Rejeu at will; a better score replaces the best one.
 

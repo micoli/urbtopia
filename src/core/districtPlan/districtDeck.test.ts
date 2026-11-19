@@ -12,33 +12,32 @@ describe('the Deck of a game', () => {
     { tier: 9, size: 40 },
   ])('holds $size Hexes at Tier $tier', ({ tier, size }) => {
     expect(deckSizeOf(tier)).toBe(size);
-    expect(deckOf('seed', 1, 1, deckSizeOf(tier))).toHaveLength(size);
+    expect(deckOf('seed', 1, deckSizeOf(tier))).toHaveLength(size);
   });
 
-  it('is the same for the same Seed, office and game number', () => {
-    expect(deckOf('seed', 7, 3, 24)).toEqual(deckOf('seed', 7, 3, 24));
+  it('is the same for the same Seed and office, whatever the game', () => {
+    expect(deckOf('seed', 7, 24)).toEqual(deckOf('seed', 7, 24));
   });
 
   it.each([
-    { name: 'another game number', other: deckOf('seed', 7, 4, 24) },
-    { name: 'another office', other: deckOf('seed', 8, 3, 24) },
-    { name: 'another Seed', other: deckOf('other', 7, 3, 24) },
+    { name: 'another office', other: deckOf('seed', 8, 24) },
+    { name: 'another Seed', other: deckOf('other', 7, 24) },
   ])('is not the same for $name', ({ other }) => {
-    expect(other).not.toEqual(deckOf('seed', 7, 3, 24));
+    expect(other).not.toEqual(deckOf('seed', 7, 24));
   });
 
   it('starts the same way when the Deck is longer', () => {
-    expect(deckOf('seed', 1, 1, 40).slice(0, 24)).toEqual(deckOf('seed', 1, 1, 24));
+    expect(deckOf('seed', 1, 40).slice(0, 24)).toEqual(deckOf('seed', 1, 24));
   });
 
   it('only draws valid Hexes with two categories each', () => {
-    const deck = deckOf('seed', 1, 1, 400);
+    const deck = deckOf('seed', 1, 400);
     expect(deck.every(isHexValid)).toBe(true);
     expect(deck.every(hex => new Set(hex.edges).size === 2)).toBe(true);
   });
 
   it('draws every category over many Hexes', () => {
-    const categories = new Set(deckOf('seed', 1, 1, 400).flatMap(hex => hex.edges));
+    const categories = new Set(deckOf('seed', 1, 400).flatMap(hex => hex.edges));
     expect(categories.size).toBe(6);
   });
 });
