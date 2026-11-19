@@ -27,11 +27,11 @@ describe('the District plan HUD', () => {
     const html = renderToStaticMarkup(<DistrictHud view={view()} />);
     expect(html).toContain('<strong>12</strong>');
     expect(html).toContain('<strong>20</strong>');
-    expect(html).toContain(`${t('district.rank.bronze')} 36 · ${t('district.rank.silver')} 72 · ${t('district.rank.gold')} 96`);
+    expect(html).toContain(`${t('district.rank.bronze')} 60 · ${t('district.rank.silver')} 84 · ${t('district.rank.gold')} 108`);
   });
 
   it('scales the scores of the Ranks with the Deck', () => {
-    expect(renderToStaticMarkup(<DistrictHud view={view({ game: { number: 1, deckSize: 40, placements: [] } })} />)).toContain(`${t('district.rank.gold')} 160`);
+    expect(renderToStaticMarkup(<DistrictHud view={view({ game: { number: 1, deckSize: 40, placements: [] } })} />)).toContain(`${t('district.rank.gold')} 180`);
   });
 
   it('shows what the picked cell would give, and marks a loss', () => {

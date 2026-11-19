@@ -68,7 +68,7 @@ All of these values live in `assets/defs/balance/districtPlan.json`, never in co
 ## Screen
 
 - A scene of its own: a hexagonal slab built in code per Hex, its top split into six wedges coloured by category, with one existing low-poly model per category standing on it (house, apple tree, shop, workshop, school, water tower), fitted to the width of its edges. No third-party hexagon kit.
-- On a phone: touch a free cell next to a placed Hex, a ghost shows the score gained, a button turns the Hex, another validates it. No undo after validation, no drag and drop.
+- On a phone: touch a free cell next to a placed Hex, a ghost shows the score gained, a button turns the Hex, another validates it. An undo button takes back the last Hex, down to the Start hex. No drag and drop.
 - Motion uses the `--duration-*` and `--ease-out` tokens and stops under `prefers-reduced-motion`. Colours, radii and sizes come from `src/tokens.css`. Icons come from `iconRegistry.ts`. See ADR 0051.
 
 ## Teaching
@@ -78,4 +78,4 @@ All of these values live in `assets/defs/balance/districtPlan.json`, never in co
 ## Out of scope
 
 - The hexagonal grid is for this game only; it shares nothing with the square grid of the city.
-- A cooldown, an undo, a score-proportional bonus and Hexes that copy the city's buildings were rejected (ADR 0090).
+- A cooldown, a score-proportional bonus and Hexes that copy the city's buildings were rejected (ADR 0090).

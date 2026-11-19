@@ -1,6 +1,6 @@
 import type { CommandError, CommandOutcome } from '../engine/commands';
 import type { Building, GameState } from '../engine/state';
-import { giveUp, placeHex, startGame, EMPTY_DISTRICT_OFFICE, type DistrictContext, type DistrictOffice, type DistrictOutcome, type DistrictRefusal } from './districtGame';
+import { giveUp, placeHex, startGame, undoHex, EMPTY_DISTRICT_OFFICE, type DistrictContext, type DistrictOffice, type DistrictOutcome, type DistrictRefusal } from './districtGame';
 import type { Cell } from './hexGrid';
 
 const REFUSALS: Record<DistrictRefusal, CommandError['key']> = {
@@ -8,6 +8,7 @@ const REFUSALS: Record<DistrictRefusal, CommandError['key']> = {
   noGameUnderWay: 'error.noDistrictGame',
   invalidPlacement: 'error.invalidDistrictPlacement',
   invalidRotation: 'error.unknownCommand',
+  nothingToUndo: 'error.nothingToUndo',
 };
 
 export const isPlanningOffice = (building: Building): boolean => building.type === 'planningOffice';
@@ -26,3 +27,5 @@ export const startDistrictGame = (state: GameState, buildingId: number): Command
 export const placeDistrictHex = (state: GameState, buildingId: number, cell: Cell, rotation: number): CommandOutcome => editDistrict(state, buildingId, (office, context) => placeHex(context, office, cell, rotation));
 
 export const giveUpDistrictGame = (state: GameState, buildingId: number): CommandOutcome => editDistrict(state, buildingId, office => giveUp(office));
+
+export const undoDistrictHex = (state: GameState, buildingId: number): CommandOutcome => editDistrict(state, buildingId, office => undoHex(office));

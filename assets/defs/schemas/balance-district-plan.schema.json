@@ -91,6 +91,44 @@
       ],
       "additionalProperties": false
     },
+    "categoryWeights": {
+      "type": "object",
+      "properties": {
+        "habitat": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "park": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "commerce": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "industry": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "service": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "water": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "habitat",
+        "park",
+        "commerce",
+        "industry",
+        "service",
+        "water"
+      ],
+      "additionalProperties": false
+    },
     "deckSizes": {
       "minItems": 1,
       "type": "array",
@@ -197,6 +235,7 @@
     "wellbeingCaps",
     "radii",
     "rankShares",
+    "categoryWeights",
     "deckSizes",
     "previewCount",
     "minorEdgeCounts",

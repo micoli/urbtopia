@@ -24,7 +24,7 @@ import { marketQuote } from '../economy/market';
 import { donationQuote } from '../economy/solidarity';
 import { harvestFields, layFields, plantFields, removeFields } from '../farming/fields';
 import { buySeeds, sellSeeds } from '../farming/seeds';
-import { giveUpDistrictGame, placeDistrictHex, startDistrictGame } from '../districtPlan/districtCommands';
+import { giveUpDistrictGame, placeDistrictHex, startDistrictGame, undoDistrictHex } from '../districtPlan/districtCommands';
 import type { Cell } from '../districtPlan/hexGrid';
 import { layWater } from '../water/waterTiles';
 import { removeWater } from '../water/removeWater';
@@ -168,6 +168,7 @@ export type Command =
   | { readonly type: 'StartDistrictGame'; readonly buildingId: number }
   | { readonly type: 'PlaceDistrictHex'; readonly buildingId: number; readonly cell: Cell; readonly rotation: number }
   | { readonly type: 'GiveUpDistrictGame'; readonly buildingId: number }
+  | { readonly type: 'UndoDistrictHex'; readonly buildingId: number }
   | { readonly type: 'HireInteriorTechnician'; readonly buildingId: number }
   | { readonly type: 'ReleaseInteriorTechnician'; readonly buildingId: number }
   | { readonly type: 'HireInteriorStaff'; readonly buildingId: number; readonly role: InteriorRole }
@@ -302,6 +303,7 @@ export type ErrorKey =
   | 'error.districtGameUnderWay'
   | 'error.noDistrictGame'
   | 'error.invalidDistrictPlacement'
+  | 'error.nothingToUndo'
   | 'error.noSeeds'
   | 'error.nothingToPlant'
   | 'error.seedStockFull'
@@ -554,6 +556,8 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return placeDistrictHex(state, command.buildingId, command.cell, command.rotation);
     case 'GiveUpDistrictGame':
       return giveUpDistrictGame(state, command.buildingId);
+    case 'UndoDistrictHex':
+      return undoDistrictHex(state, command.buildingId);
     case 'SetInteriorBreaker':
       return setInteriorBreaker(state, command.buildingId, command.off);
     case 'HireInteriorTechnician':

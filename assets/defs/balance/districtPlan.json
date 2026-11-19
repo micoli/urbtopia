@@ -16,13 +16,21 @@
     "silver": 0.7,
     "gold": 1
   },
+  "categoryWeights": {
+    "habitat": 3,
+    "park": 3,
+    "commerce": 2,
+    "industry": 1,
+    "service": 2,
+    "water": 1
+  },
   "deckSizes": [24, 28, 32, 36, 40],
   "previewCount": 2,
   "minorEdgeCounts": [1, 2, 3],
   "rankScorePerHex": {
-    "bronze": 1.5,
-    "silver": 3,
-    "gold": 4
+    "bronze": 2.5,
+    "silver": 3.5,
+    "gold": 4.5
   },
   "sameCategoryScore": 1,
   "pairScores": [

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createBuilding, newGame, type Building, type GameState } from '../index';
-import { giveUpDistrictGame, placeDistrictHex, startDistrictGame } from './districtCommands';
+import { giveUpDistrictGame, placeDistrictHex, startDistrictGame, undoDistrictHex } from './districtCommands';
 import type { CommandOutcome } from '../engine/commands';
 
 const office = (tier = 1): Building => ({ ...createBuilding(7, 'planningOffice', 50, 50, 0), tier });
@@ -27,6 +27,11 @@ describe('the District plan commands', () => {
     expect(districtOf(gaveUp)).toEqual({ gameNumber: 1 });
   });
 
+  it('take back the last Hex', () => {
+    const placed = stateOf(placeDistrictHex(stateOf(startDistrictGame(city(office()), 7)), 7, { q: 1, r: 0 }, 0));
+    expect(districtOf(stateOf(undoDistrictHex(placed, 7)))!.game!.placements).toHaveLength(1);
+  });
+
   it('change only the building they name', () => {
     const other = { ...createBuilding(8, 'home', 60, 60, 0) };
     const state = stateOf(startDistrictGame(city(office(), other), 7));
@@ -38,6 +43,7 @@ describe('the District plan commands', () => {
     { name: 'a building that is not a Planning office', run: (state: GameState) => startDistrictGame({ ...state, buildings: [...state.buildings, createBuilding(8, 'home', 60, 60, 0)] }, 8), key: 'error.unknownBuilding' },
     { name: 'a game that is already under way', run: (state: GameState) => startDistrictGame(stateOf(startDistrictGame(state, 7)), 7), key: 'error.districtGameUnderWay' },
     { name: 'a Hex without a game', run: (state: GameState) => placeDistrictHex(state, 7, { q: 1, r: 0 }, 0), key: 'error.noDistrictGame' },
+    { name: 'taking back a Hex with only the Start hex on the board', run: (state: GameState) => undoDistrictHex(stateOf(startDistrictGame(state, 7)), 7), key: 'error.nothingToUndo' },
     { name: 'giving up without a game', run: (state: GameState) => giveUpDistrictGame(state, 7), key: 'error.noDistrictGame' },
     { name: 'a cell that touches nothing', run: (state: GameState) => placeDistrictHex(stateOf(startDistrictGame(state, 7)), 7, { q: 3, r: 0 }, 0), key: 'error.invalidDistrictPlacement' },
     { name: 'a rotation of 6', run: (state: GameState) => placeDistrictHex(stateOf(startDistrictGame(state, 7)), 7, { q: 1, r: 0 }, 6), key: 'error.unknownCommand' },

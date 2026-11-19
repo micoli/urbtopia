@@ -7,17 +7,23 @@ import { isHexValid } from './hex';
 describe('the District plan demonstration', () => {
   const checkpoints = compileDemonstration(districtDemonstration);
   const officeOf = (index: number) => checkpoints[index]!.state.buildings.find(building => building.id === districtDemonstration.buildingId)!;
+  const contextOf = (index: number) => ({ seed: checkpoints[index]!.state.seed, officeId: districtDemonstration.buildingId });
 
-  it('plays six Hexes and every step checks the score it explains', () => {
+  it('plays six Hexes, and every step checks the score it explains', () => {
     expect(officeOf(checkpoints.length - 1).district?.game?.placements).toHaveLength(6);
-    const scores = checkpoints.map((_, index) => scoreOfGame({ seed: checkpoints[index]!.state.seed, officeId: districtDemonstration.buildingId }, officeOf(index).district!.game!));
-    expect(scores).toEqual([0, 1, 4, 7, 10, 16, 16]);
+    const scores = checkpoints.map((_, index) => scoreOfGame(contextOf(index), officeOf(index).district!.game!));
+    expect(scores[0]).toBe(0);
+    expect(scores.slice(1).every((score, index) => score >= scores[index]!)).toBe(true);
+  });
+
+  it('earns something with each Hex it places', () => {
+    const scores = checkpoints.map((_, index) => scoreOfGame(contextOf(index), officeOf(index).district!.game!));
+    for (let index = 2; index < 6; index++) expect(scores[index]!, `Hex ${index + 1}`).toBeGreaterThan(scores[index - 1]!);
   });
 
   it('only places valid Hexes', () => {
     const last = officeOf(checkpoints.length - 1);
-    const board = boardOf({ seed: checkpoints[0]!.state.seed, officeId: districtDemonstration.buildingId }, last.district!.game!);
-    expect(board.every(({ hex }) => isHexValid(hex))).toBe(true);
+    expect(boardOf(contextOf(checkpoints.length - 1), last.district!.game!).every(({ hex }) => isHexValid(hex))).toBe(true);
   });
 
   it('has a text in both languages for every part of every step', () => {
@@ -34,8 +40,15 @@ describe('the District plan demonstration', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  it('says in each step the pairs it makes, in the language of the player', () => {
+    const step = districtDemonstration.steps[2]!;
+    expect(step.explanation[0]).toMatch(/beside .* (is worth|costs)/);
+    expect(step.explanation[1]).toMatch(/à côté (de|d’).* (vaut|coûte|ne vaut rien)/);
+    expect(step.explanation[1]).not.toMatch(/de [AEIOUH]/);
+  });
+
   it('breaks on a score that no longer matches its explanation', () => {
-    const outdated = { ...districtDemonstration, steps: districtDemonstration.steps.map(step => (step.id === 'park' ? { ...step, check: () => { throw new Error('expected a score of 5, got 4'); } } : step)) };
-    expect(() => compileDemonstration(outdated)).toThrow(/park/);
+    const outdated = { ...districtDemonstration, steps: districtDemonstration.steps.map((step, index) => (index === 2 ? { ...step, check: () => { throw new Error('expected a score of 5, got 4'); } } : step)) };
+    expect(() => compileDemonstration(outdated)).toThrow(/hex-3/);
   });
 });

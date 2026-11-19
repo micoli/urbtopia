@@ -37,7 +37,7 @@ export interface DistrictContext {
   readonly officeId: number;
 }
 
-export type DistrictRefusal = 'gameUnderWay' | 'noGameUnderWay' | 'invalidPlacement' | 'invalidRotation';
+export type DistrictRefusal = 'gameUnderWay' | 'noGameUnderWay' | 'invalidPlacement' | 'invalidRotation' | 'nothingToUndo';
 
 export type DistrictOutcome = { readonly office: DistrictOffice } | { readonly refusal: DistrictRefusal };
 
@@ -79,6 +79,13 @@ export const placeHex = (context: DistrictContext, office: DistrictOffice, cell:
   if (!Number.isInteger(rotation) || rotation < 0 || rotation >= EDGE_COUNT) return { refusal: 'invalidRotation' };
   if (!isPlacementValid(boardOf(context, game), cell)) return { refusal: 'invalidPlacement' };
   return { office: withGame(context, office, { ...game, placements: [...game.placements, { cell, rotation }] }) };
+};
+
+// Takes back the last Hex placed, one at a time, down to the Start hex; a finished game is under way again, and the best score stays.
+export const undoHex = (office: DistrictOffice): DistrictOutcome => {
+  const game = office.game;
+  if (!game || game.placements.length <= 1) return { refusal: 'nothingToUndo' };
+  return { office: { ...office, game: { ...game, placements: game.placements.slice(0, -1) } } };
 };
 
 // The game in hand is dropped; the best score stays.

@@ -33,7 +33,7 @@ describe('the Planning office panel', () => {
   });
 
   it('shows the Rank of the best score and the bonus it gives out of the cap of the Tier', () => {
-    const html = render(3, 72);
+    const html = render(3, 84);
     expect(html).toContain(t('district.rank.silver'));
     expect(html).toContain('+4.2 / 6');
   });

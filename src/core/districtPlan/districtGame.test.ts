@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EMPTY_DISTRICT_OFFICE, boardOf, giveUp, handOf, isGameOver, placeHex, scoreOfGame, startGame, type DistrictContext, type DistrictOffice, type DistrictOutcome } from './districtGame';
+import { EMPTY_DISTRICT_OFFICE, boardOf, giveUp, handOf, isGameOver, placeHex, scoreOfGame, startGame, undoHex, type DistrictContext, type DistrictOffice, type DistrictOutcome } from './districtGame';
 import { deckOf } from './districtDeck';
 import { isPlacementValid } from './districtPlacement';
 import { CENTRE, cellsOfBoard } from './hexGrid';
@@ -143,5 +143,35 @@ describe('a Tier raised during a game', () => {
   it('leaves the game under way with the Deck it started with', () => {
     const office = started(1);
     expect(placeHex(context, office, { q: 1, r: 0 }, 0)).toHaveProperty('office.game.deckSize', 24);
+  });
+});
+
+describe('taking back a Hex', () => {
+  it('removes the last Hex placed and gives its place in the Deck back to the hand', () => {
+    const before = started();
+    const placed = officeOf(placeHex(context, before, { q: 1, r: 0 }, 2));
+    const undone = officeOf(undoHex(placed));
+    expect(undone.game).toEqual(before.game);
+    expect(handOf(context, undone.game!)).toEqual(handOf(context, before.game!));
+  });
+
+  it('can be repeated back to the Start hex, and no further', () => {
+    let office = officeOf(placeHex(context, officeOf(placeHex(context, started(), { q: 1, r: 0 }, 0)), { q: 2, r: 0 }, 0));
+    office = officeOf(undoHex(office));
+    office = officeOf(undoHex(office));
+    expect(office.game?.placements).toHaveLength(1);
+    expect(undoHex(office)).toEqual({ refusal: 'nothingToUndo' });
+  });
+
+  it('reopens a finished game and keeps the best score', () => {
+    const over = playOut(started());
+    const undone = officeOf(undoHex(over));
+    expect(isGameOver(undone.game!)).toBe(false);
+    expect(undone.game?.placements).toHaveLength(over.game!.placements.length - 1);
+    expect(undone.best).toBe(over.best);
+  });
+
+  it('refuses without a game', () => {
+    expect(undoHex(EMPTY_DISTRICT_OFFICE)).toEqual({ refusal: 'nothingToUndo' });
   });
 });

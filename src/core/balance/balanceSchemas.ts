@@ -158,6 +158,8 @@ export const districtPlanBalanceSchema = z
     radii: z.array(z.int().min(1)).min(1),
     // The share of the cap each Rank gives.
     rankShares: z.strictObject({ bronze: share, silver: share, gold: share }).refine(({ bronze, silver, gold }) => bronze < silver && silver < gold, 'the shares of the Ranks must rise from bronze to gold'),
+    // How often each category is drawn for the edges of a Hex: a Deck with more Habitat and Park can reach Gold more often.
+    categoryWeights: z.strictObject(Object.fromEntries(HEX_CATEGORIES.map(category => [category, positive])) as Record<(typeof HEX_CATEGORIES)[number], z.ZodNumber>),
     // The Hexes of a Deck by Tier, and how many of the next Hexes the player sees.
     deckSizes: z.array(z.int().min(1)).min(1),
     previewCount: count,

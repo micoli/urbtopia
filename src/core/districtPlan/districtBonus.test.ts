@@ -6,7 +6,7 @@ import { districtBonusOf, districtCapOf, districtRadiusOf, officeBonusOf } from 
 const building = (id: number, type: Building['type'], x: number, y: number): Building => createBuilding(id, type, x, y, 0);
 const city = (...buildings: Building[]): GameState => ({ ...newGame({ seed: 'district', now: 0 }), tutorial: null, adaptationUntil: 0, buildings });
 
-// An office whose best game scored this much on a Deck of 24 Hexes: below 36 nothing, 36 Bronze, 72 Silver, 96 Gold.
+// An office whose best game scored this much on a Deck of 24 Hexes: below 60 nothing, 60 Bronze, 84 Silver, 108 Gold.
 const playedOffice = (id: number, x: number, y: number, score: number | undefined, tier = 1): Building => {
   const district: DistrictOffice = score === undefined ? { gameNumber: 0 } : { gameNumber: 1, best: { score, game: { number: 1, deckSize: 24, placements: [] } } };
   return { ...building(id, 'planningOffice', x, y), tier, district };
@@ -26,10 +26,10 @@ describe('the Well-being bonus of a Planning office', () => {
   });
 
   it.each([
-    { score: 35, bonus: 0 },
-    { score: 36, bonus: 1.2 },
-    { score: 72, bonus: 2.1 },
-    { score: 96, bonus: 3 },
+    { score: 59, bonus: 0 },
+    { score: 60, bonus: 1.2 },
+    { score: 84, bonus: 2.1 },
+    { score: 108, bonus: 3 },
     { score: 400, bonus: 3 },
   ])('is $bonus for a best score of $score at Tier 1', ({ score, bonus }) => {
     expect(officeBonusOf(playedOffice(1, 50, 50, score))).toBeCloseTo(bonus);
@@ -41,12 +41,12 @@ describe('the Well-being bonus of a Planning office', () => {
   });
 
   it('follows the Tier of the office at once: the same score earns the new cap', () => {
-    expect(officeBonusOf(playedOffice(1, 50, 50, 96, 1))).toBe(3);
-    expect(officeBonusOf(playedOffice(1, 50, 50, 96, 3))).toBe(6);
+    expect(officeBonusOf(playedOffice(1, 50, 50, 108, 1))).toBe(3);
+    expect(officeBonusOf(playedOffice(1, 50, 50, 108, 3))).toBe(6);
   });
 
   it('reaches the Homes inside its radius and not the ones beyond it', () => {
-    const office = playedOffice(1, 50, 50, 96);
+    const office = playedOffice(1, 50, 50, 108);
     const near = building(2, 'home', 53, 51);
     const far = building(3, 'home', 50 + districtRadiusOf(1) + 40, 51);
     const state = city(office, near, far);
@@ -56,8 +56,8 @@ describe('the Well-being bonus of a Planning office', () => {
 
   it('takes the best of the offices that reach a Home, never their sum', () => {
     const near = building(2, 'home', 53, 51);
-    const gold = playedOffice(1, 50, 50, 96);
-    const silver = playedOffice(4, 56, 50, 72);
+    const gold = playedOffice(1, 50, 50, 108);
+    const silver = playedOffice(4, 56, 50, 84);
     expect(districtBonusOf(city(gold, silver, near), near)).toBe(3);
     expect(districtBonusOf(city(silver, near), near)).toBeCloseTo(2.1);
   });
@@ -69,7 +69,7 @@ describe('the Well-being bonus of a Planning office', () => {
 
   it('raises the Well-being of a Home in reach by its bonus', () => {
     const home = building(2, 'home', 53, 51);
-    const withOffice = homeBenefits(city(playedOffice(1, 50, 50, 96), home), home).wellbeing;
+    const withOffice = homeBenefits(city(playedOffice(1, 50, 50, 108), home), home).wellbeing;
     const without = homeBenefits(city(home), home).wellbeing;
     expect(withOffice - without).toBeCloseTo(3);
   });

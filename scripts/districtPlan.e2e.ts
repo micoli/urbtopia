@@ -40,6 +40,13 @@ test.describe('district plan', () => {
     await page.getByRole('button', { name: 'Place' }).click();
     await expect(page.getByText('Hexes left').locator('xpath=following-sibling::strong')).toHaveText('22');
 
+    // Undo takes the Hex back, and the player places it again.
+    await page.getByRole('button', { name: 'Take back the last Hex' }).click();
+    await expect(page.getByText('Hexes left').locator('xpath=following-sibling::strong')).toHaveText('23');
+    await page.mouse.click(tap.x, tap.y);
+    await page.getByRole('button', { name: 'Place' }).click();
+    await expect(page.getByText('Hexes left').locator('xpath=following-sibling::strong')).toHaveText('22');
+
     // The others are picked in the store, so the test does not depend on the pixels of the board.
     for (let left = 22; left > 0; left--) {
       await page.evaluate(async () => {

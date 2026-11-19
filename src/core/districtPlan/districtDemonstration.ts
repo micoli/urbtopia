@@ -3,12 +3,27 @@ import { newGame } from '../engine/newGame';
 import type { Command } from '../engine/commands';
 import type { GameState } from '../engine/state';
 import type { Demonstration, DemonstrationStep, DemonstrationText } from '../demonstrations/scenario';
-import { DISTRICT_PLAN } from './districtPlanBalance';
+import { deckOf } from './districtDeck';
 import { scoreOfGame } from './districtGame';
-import type { Cell } from './hexGrid';
+import { isPlacementValid } from './districtPlacement';
+import { DISTRICT_PLAN } from './districtPlanBalance';
+import type { HexCategory } from './districtPlanVocabulary';
+import { pairScoreOf, scoreOf, type PlacedHex } from './districtScore';
+import { rotateHex, type Hex } from './hex';
+import { CENTRE, EDGE_COUNT, cellKey, cellsOfBoard, neighbourOf, oppositeEdge, type Cell } from './hexGrid';
 
 const OFFICE_ID = 1;
-const SEED = 'district-demo-2';
+const SEED = 'district-demo';
+const LESSON_HEXES = 6;
+
+const CATEGORY_NAMES: Record<HexCategory, DemonstrationText> = {
+  habitat: ['Habitat', 'Habitat'],
+  park: ['Park', 'Parc'],
+  commerce: ['Commerce', 'Commerce'],
+  industry: ['Industry', 'Industrie'],
+  service: ['Service', 'Service'],
+  water: ['Water', 'Eau'],
+};
 
 const officeOf = (state: GameState) => {
   const office = state.buildings.find(candidate => candidate.id === OFFICE_ID);
@@ -25,81 +40,113 @@ const checkBoard = (hexes: number, score: number): DemonstrationStep['check'] =>
   if (actual !== score) throw new Error(`expected a score of ${score}, got ${actual}`);
 };
 
-const place = (cell: Cell, rotation: number): Command => ({ type: 'PlaceDistrictHex', buildingId: OFFICE_ID, cell, rotation });
+// A pair of touching edges that a placement makes.
+interface Pair {
+  mine: HexCategory;
+  theirs: HexCategory;
+  score: number;
+}
+
+interface Move {
+  cell: Cell;
+  rotation: number;
+  pairs: Pair[];
+  gain: number;
+}
+
+const pairsOf = (board: readonly PlacedHex[], cell: Cell, hex: Hex): Pair[] => {
+  const byCell = new Map(board.map(item => [cellKey(item.cell), item]));
+  return Array.from({ length: EDGE_COUNT }, (_, edge) => edge).flatMap(edge => {
+    const neighbour = byCell.get(cellKey(neighbourOf(cell, edge)));
+    if (!neighbour) return [];
+    const mine = hex.edges[edge]!;
+    const theirs = neighbour.hex.edges[oppositeEdge(edge)]!;
+    return [{ mine, theirs, score: pairScoreOf(mine, theirs) }];
+  });
+};
+
+// Each Hex of the lesson goes where it earns the most: the first of the best cells, turned the fewest times.
+const bestMove = (board: readonly PlacedHex[], hex: Hex): Move => {
+  let best: Move | undefined;
+  for (const cell of cellsOfBoard(DISTRICT_PLAN.boardRadius)) {
+    if (!isPlacementValid(board, cell)) continue;
+    for (let rotation = 0; rotation < EDGE_COUNT; rotation++) {
+      const pairs = pairsOf(board, cell, rotateHex(hex, rotation));
+      const gain = pairs.reduce((sum, pair) => sum + pair.score, 0);
+      if (!best || gain > best.gain) best = { cell, rotation, pairs, gain };
+    }
+  }
+  return best!;
+};
 
 const text = (english: string, french: string): DemonstrationText => [english, french];
 
-const steps: readonly DemonstrationStep[] = [
-  {
-    id: 'start',
-    title: text('Start a game', 'Lancer une partie'),
-    objective: text('Begin a District plan with a Deck of Hexes.', 'Commencer un plan de quartier avec une pioche d’hexagones.'),
-    action: text('Press New game. The first Hex, the Start hex, is placed at the centre of the board for you.', 'Appuie sur Nouvelle partie. Le premier hexagone, celui de départ, est posé pour toi au centre du plateau.'),
-    explanation: text('Each of the six edges of a Hex has a category: Habitat, Park, Commerce, Industry, Service or Water. The score comes from the edges that touch.', 'Chacun des six bords d’un hexagone a une catégorie : Habitat, Parc, Commerce, Industrie, Service ou Eau. Le score vient des bords qui se touchent.'),
-    result: text('The board holds the Start hex and the score is 0.', 'Le plateau contient l’hexagone de départ et le score est de 0.'),
-    commands: [{ type: 'StartDistrictGame', buildingId: OFFICE_ID }],
-    check: checkBoard(1, 0),
-  },
-  {
-    id: 'match',
-    title: text('Match two edges', 'Assortir deux bords'),
-    objective: text('Place the next Hex so that its edge meets an edge of the Start hex.', 'Poser l’hexagone suivant pour que son bord rencontre un bord de celui de départ.'),
-    action: text('Pick the cell to the west of the Start hex and turn the Hex twice, so that its Commerce edge faces the Habitat edge.', 'Choisis la case à l’ouest de l’hexagone de départ et fais tourner l’hexagone deux fois, pour que son bord Commerce fasse face au bord Habitat.'),
-    explanation: text('A Hex goes on a free cell that touches a Hex already placed. Habitat beside Commerce is worth +1.', 'Un hexagone se pose sur une case libre qui touche un hexagone déjà posé. Habitat à côté de Commerce vaut +1.'),
-    result: text('The score is 1.', 'Le score est de 1.'),
-    commands: [place({ q: -1, r: 0 }, 2)],
-    check: checkBoard(2, 1),
-  },
-  {
-    id: 'park',
-    title: text('Put a Park beside the Habitat', 'Mettre un Parc à côté de l’Habitat'),
-    objective: text('Earn more with a good neighbour.', 'Gagner davantage avec un bon voisin.'),
-    action: text('Pick the cell south-west of the Start hex and turn the Hex twice: its Park edge faces the Habitat edge.', 'Choisis la case au sud-ouest de l’hexagone de départ et fais tourner l’hexagone deux fois : son bord Parc fait face au bord Habitat.'),
-    explanation: text('Habitat beside Park is worth +3, the best pair. The Water edge beside Commerce is worth nothing: some pairs simply do not count.', 'Habitat à côté de Parc vaut +3, la meilleure paire. Le bord Eau à côté de Commerce ne vaut rien : certaines paires ne comptent pas.'),
-    result: text('The score is 4.', 'Le score est de 4.'),
-    commands: [place({ q: -1, r: 1 }, 2)],
-    check: checkBoard(3, 4),
-  },
-  {
-    id: 'water',
-    title: text('Touch two Hexes at once', 'Toucher deux hexagones à la fois'),
-    objective: text('Score on more than one edge with a single Hex.', 'Marquer sur plusieurs bords avec un seul hexagone.'),
-    action: text('Place the next Hex between them, to the west of the Park Hex, turned three times.', 'Pose l’hexagone suivant entre eux, à l’ouest de celui du Parc, tourné trois fois.'),
-    explanation: text('Park beside Water is worth +2 and Service beside Commerce +1: every edge that touches counts, so a cell with two neighbours pays twice.', 'Parc à côté d’Eau vaut +2 et Service à côté de Commerce +1 : chaque bord qui touche compte, une case à deux voisins paie donc deux fois.'),
-    result: text('The score is 7.', 'Le score est de 7.'),
-    commands: [place({ q: -2, r: 1 }, 3)],
-    check: checkBoard(4, 7),
-  },
-  {
-    id: 'industry',
-    title: text('Keep Industry away from Habitat', 'Éloigner l’Industrie de l’Habitat'),
-    objective: text('Avoid a pair that costs points.', 'Éviter une paire qui fait perdre des points.'),
-    action: text('Place the next Hex north of the Start hex and turn it once: its Park edge faces the Habitat, and its other Park edge faces the Industry of the Hex to the west.', 'Pose l’hexagone suivant au nord de celui de départ et fais-le tourner une fois : son bord Parc fait face à l’Habitat, et son autre bord Parc fait face à l’Industrie de l’hexagone voisin.'),
-    explanation: text('Habitat beside Industry is worth −2. A Park between them keeps the peace: Park beside Habitat is +3, and Park beside Industry is 0.', 'Habitat à côté d’Industrie vaut −2. Un Parc entre les deux garde la paix : Parc à côté d’Habitat vaut +3, et Parc à côté d’Industrie 0.'),
-    result: text('The score is 10.', 'Le score est de 10.'),
-    commands: [place({ q: 0, r: -1 }, 1)],
-    check: checkBoard(5, 10),
-  },
-  {
-    id: 'pair',
-    title: text('Make two good pairs with one Hex', 'Faire deux bonnes paires avec un hexagone'),
-    objective: text('Finish this first plan with the best move.', 'Terminer ce premier plan par le meilleur coup.'),
-    action: text('Place the last Hex of the lesson below the Water Hex, without turning it: both its Habitat edges meet a Park.', 'Pose le dernier hexagone de la leçon sous celui de l’Eau, sans le tourner : ses deux bords Habitat rencontrent un Parc.'),
-    explanation: text('Two Habitat–Park pairs at once are worth +6. Turning a Hex before placing it is how you find such a cell.', 'Deux paires Habitat–Parc d’un coup valent +6. Tourner un hexagone avant de le poser est la façon de trouver une telle case.'),
-    result: text('The score is 16.', 'Le score est de 16.'),
-    commands: [place({ q: -2, r: 2 }, 0)],
-    check: checkBoard(6, 16),
-  },
-  {
+const turnsText = (rotation: number): DemonstrationText =>
+  rotation === 0 ? text('without turning it', 'sans le tourner') : text(`after turning it ${rotation} time${rotation === 1 ? '' : 's'}`, `après l’avoir tourné ${rotation} fois`);
+
+const pairText = ({ mine, theirs, score }: Pair): DemonstrationText => {
+  const [mineEnglish, mineFrench] = CATEGORY_NAMES[mine];
+  const [theirsEnglish, theirsFrench] = CATEGORY_NAMES[theirs];
+  const worth = score === 0 ? text('is worth nothing', 'ne vaut rien') : score > 0 ? text(`is worth +${score}`, `vaut +${score}`) : text(`costs ${-score}`, `coûte ${-score}`);
+  return text(`${mineEnglish} beside ${theirsEnglish} ${worth[0]}`, `${mineFrench} à côté ${/^[AEIOUH]/.test(theirsFrench) ? 'd’' : 'de '}${theirsFrench} ${worth[1]}`);
+};
+
+const ORDINALS: readonly DemonstrationText[] = [text('first', 'premier'), text('second', 'deuxième'), text('third', 'troisième'), text('fourth', 'quatrième'), text('fifth', 'cinquième'), text('sixth', 'sixième')];
+
+// The lesson plays the first Hexes of the Deck of its own city, each where it earns the most, and says in each step what the touching edges are worth.
+const lesson = (): { steps: DemonstrationStep[]; moves: Move[] } => {
+  const deck = deckOf(SEED, OFFICE_ID, DISTRICT_PLAN.deckSizes[0]!);
+  const board: PlacedHex[] = [{ cell: CENTRE, hex: deck[0]! }];
+  const moves: Move[] = [];
+  const steps: DemonstrationStep[] = [
+    {
+      id: 'start',
+      title: text('Start a game', 'Lancer une partie'),
+      objective: text('Begin a District plan with a Deck of Hexes.', 'Commencer un plan de quartier avec une pioche d’hexagones.'),
+      action: text('Press New game. The first Hex, the Start hex, is placed at the centre of the board for you.', 'Appuie sur Nouvelle partie. Le premier hexagone, celui de départ, est posé pour toi au centre du plateau.'),
+      explanation: text('Each of the six edges of a Hex has a category: Habitat, Park, Commerce, Industry, Service or Water. The score comes from the edges that touch.', 'Chacun des six bords d’un hexagone a une catégorie : Habitat, Parc, Commerce, Industrie, Service ou Eau. Le score vient des bords qui se touchent.'),
+      result: text('The board holds the Start hex and the score is 0.', 'Le plateau contient l’hexagone de départ et le score est de 0.'),
+      commands: [{ type: 'StartDistrictGame', buildingId: OFFICE_ID }],
+      check: checkBoard(1, 0),
+    },
+  ];
+  let score = 0;
+  for (let index = 1; index < LESSON_HEXES; index++) {
+    const move = bestMove(board, deck[index]!);
+    board.push({ cell: move.cell, hex: rotateHex(deck[index]!, move.rotation) });
+    moves.push(move);
+    score = scoreOf(board);
+    const [ordinalEnglish, ordinalFrench] = ORDINALS[index]!;
+    const [turnEnglish, turnFrench] = turnsText(move.rotation);
+    const pairs = move.pairs.map(pairText);
+    steps.push({
+      id: `hex-${index + 1}`,
+      title: text(`The ${ordinalEnglish} Hex`, `Le ${ordinalFrench} hexagone`),
+      objective: text('Place the Hex where its edges earn the most.', 'Poser l’hexagone là où ses bords rapportent le plus.'),
+      action: text(`Place it where the ghost shows, ${turnEnglish}.`, `Pose-le là où le fantôme le montre, ${turnFrench}.`),
+      explanation: text(
+        `A Hex goes on a free cell that touches a Hex already placed. Here: ${pairs.map(pair => pair[0]).join('; ')}.`,
+        `Un hexagone se pose sur une case libre qui touche un hexagone déjà posé. Ici : ${pairs.map(pair => pair[1]).join(' ; ')}.`,
+      ),
+      result: text(`The Hex earns ${move.gain}: the score is ${score}.`, `L’hexagone rapporte ${move.gain} : le score est de ${score}.`),
+      commands: [{ type: 'PlaceDistrictHex', buildingId: OFFICE_ID, cell: move.cell, rotation: move.rotation } satisfies Command],
+      check: checkBoard(index + 1, score),
+    });
+  }
+  steps.push({
     id: 'rank',
     title: text('Rank and bonus', 'Rang et bonus'),
     objective: text('See what a whole game earns.', 'Voir ce que rapporte une partie entière.'),
     action: text('A real game has 24 Hexes at Tier 1: play on until the Deck is empty.', 'Une vraie partie compte 24 hexagones au niveau 1 : continue jusqu’à ce que la pioche soit vide.'),
-    explanation: text(`The best score of the office sets its Rank: Bronze from ${DISTRICT_PLAN.rankScorePerHex.bronze} points per Hex of the Deck, Silver from ${DISTRICT_PLAN.rankScorePerHex.silver}, Gold from ${DISTRICT_PLAN.rankScorePerHex.gold}. The Rank gives the Homes around the office a Well-being bonus, up to the cap of its Tier.`, `Le meilleur score du bureau fixe son rang : Bronze à partir de ${DISTRICT_PLAN.rankScorePerHex.bronze} points par hexagone de la pioche, Argent à partir de ${DISTRICT_PLAN.rankScorePerHex.silver}, Or à partir de ${DISTRICT_PLAN.rankScorePerHex.gold}. Le rang donne aux logements autour du bureau un bonus de bien-être, jusqu’au plafond de son niveau.`),
+    explanation: text(
+      `The best score of the office sets its Rank: Bronze from ${DISTRICT_PLAN.rankScorePerHex.bronze} points per Hex of the Deck, Silver from ${DISTRICT_PLAN.rankScorePerHex.silver}, Gold from ${DISTRICT_PLAN.rankScorePerHex.gold}. Every Deck can be played to Gold. The Rank gives the Homes around the office a Well-being bonus, up to the cap of its Tier.`,
+      `Le meilleur score du bureau fixe son rang : Bronze à partir de ${DISTRICT_PLAN.rankScorePerHex.bronze} points par hexagone de la pioche, Argent à partir de ${DISTRICT_PLAN.rankScorePerHex.silver}, Or à partir de ${DISTRICT_PLAN.rankScorePerHex.gold}. Chaque pioche peut être jouée jusqu’à l’Or. Le rang donne aux logements autour du bureau un bonus de bien-être, jusqu’au plafond de son niveau.`,
+    ),
     result: text('You can play as often as you like: only your best score counts.', 'Tu peux rejouer autant que tu veux : seul ton meilleur score compte.'),
-    check: checkBoard(6, 16),
-  },
-];
+    check: checkBoard(LESSON_HEXES, score),
+  });
+  return { steps, moves };
+};
 
 export const districtDemonstration: Demonstration = {
   id: 'district-plan-simple',
@@ -114,5 +161,5 @@ export const districtDemonstration: Demonstration = {
     buildings: [createBuilding(OFFICE_ID, 'planningOffice', 60, 56, 0)],
     nextId: 100,
   }),
-  steps,
+  steps: lesson().steps,
 };

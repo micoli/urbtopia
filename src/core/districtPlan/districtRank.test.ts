@@ -3,12 +3,12 @@ import { rankOf } from './districtRank';
 
 describe('the Rank of a score', () => {
   it.each([
-    { score: 35, deckSize: 24, rank: undefined },
-    { score: 36, deckSize: 24, rank: 'bronze' },
-    { score: 71, deckSize: 24, rank: 'bronze' },
-    { score: 72, deckSize: 24, rank: 'silver' },
-    { score: 95, deckSize: 24, rank: 'silver' },
-    { score: 96, deckSize: 24, rank: 'gold' },
+    { score: 59, deckSize: 24, rank: undefined },
+    { score: 60, deckSize: 24, rank: 'bronze' },
+    { score: 83, deckSize: 24, rank: 'bronze' },
+    { score: 84, deckSize: 24, rank: 'silver' },
+    { score: 107, deckSize: 24, rank: 'silver' },
+    { score: 108, deckSize: 24, rank: 'gold' },
     { score: 500, deckSize: 24, rank: 'gold' },
     { score: -10, deckSize: 24, rank: undefined },
   ])('gives $rank to $score on a Deck of $deckSize', ({ score, deckSize, rank }) => {
@@ -16,7 +16,7 @@ describe('the Rank of a score', () => {
   });
 
   it('asks more of a longer Deck', () => {
-    expect(rankOf(80, 24)).toBe('silver');
-    expect(rankOf(80, 40)).toBe('bronze');
+    expect(rankOf(105, 24)).toBe('silver');
+    expect(rankOf(105, 40)).toBe('bronze');
   });
 });

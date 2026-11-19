@@ -544,7 +544,7 @@ The type of an edge of a Hex: Habitat, Park, Commerce, Industry, Service or Wate
 _Avoid_: Zone, Good category
 
 **Deck**:
-The Hexes of one game of the District plan, drawn from the game's Seed and the office, the same in every game of the office, with the next two in view. Its size grows with the Tier of the Planning office (24 Hexes at Tier 1). The game ends when it is empty.
+The Hexes of one game of the District plan, drawn from the game's Seed and the office, the same in every game of the office and always playable to Gold, with the next two in view. Its size grows with the Tier of the Planning office (24 Hexes at Tier 1). The game ends when it is empty.
 _Avoid_: Pile, Pioche, Draw pile
 
 **Start hex**:
