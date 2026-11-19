@@ -6,6 +6,7 @@ import { districtStore } from '../../store/districtStore';
 import { gameStore } from '../../store/gameStore';
 import { ActionButton } from '../common/ActionButton';
 import { Icon } from '../common/Icon';
+import { DistrictDemonstrationDialog } from './DistrictDemonstrationDialog';
 import { DistrictGiveUpDialog } from './DistrictGiveUpDialog';
 import type { DistrictView } from './useDistrictGame';
 
@@ -17,6 +18,7 @@ interface DistrictControlsProps {
 export function DistrictControls({ building, view }: DistrictControlsProps) {
   const rotation = useStore(districtStore, store => store.rotation);
   const [confirmGiveUp, setConfirmGiveUp] = useState(false);
+  const [showLesson, setShowLesson] = useState(false);
   const send = gameStore.getState().send;
   const underWay = view.game !== undefined && !view.over;
 
@@ -46,7 +48,9 @@ export function DistrictControls({ building, view }: DistrictControlsProps) {
       ) : (
         <ActionButton variant="primary" onClick={startGame}><Icon name="play" /> {t('district.newGame')}</ActionButton>
       )}
+      <ActionButton onClick={() => setShowLesson(true)}><Icon name="info" /> {t('district.howToPlay')}</ActionButton>
       <ActionButton onClick={() => districtStore.getState().close()}>{t('district.close')}</ActionButton>
+      {showLesson ? <DistrictDemonstrationDialog onClose={() => setShowLesson(false)} /> : null}
       {confirmGiveUp ? <DistrictGiveUpDialog onStay={() => setConfirmGiveUp(false)} onGiveUp={giveUp} /> : null}
     </>
   );

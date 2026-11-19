@@ -19,7 +19,7 @@ export function DistrictScreen({ building }: DistrictScreenProps) {
       <Dialog.Body>
         <div className="district-screen">
           <DistrictHud view={view} />
-          <DistrictCanvas view={view} />
+          <DistrictCanvas board={view.board} candidates={view.candidates} picked={view.picked} interactive />
           <DistrictHand current={view.current} upcoming={view.upcoming} />
           <p className="district-hint">{view.game === undefined ? t('district.start') : view.over ? t('district.gameOver') : t('district.hint')}</p>
         </div>

@@ -1008,6 +1008,7 @@ export const CATALOG = {
   'district.keepPlaying': ['Keep playing', 'Continuer'],
   'district.newGame': ['New game', 'Nouvelle partie'],
   'district.close': ['Close', 'Fermer'],
+  'district.howToPlay': ['How to play', 'Comment jouer'],
   'district.start': ['Start a game to draw your first Hexes.', 'Lancez une partie pour tirer vos premiers hexagones.'],
   'district.hint': ['Touch a free cell next to a Hex, turn the Hex, then place it.', 'Touchez une case libre à côté d’un hexagone, faites tourner le vôtre, puis posez-le.'],
   'district.gameOver': ['Game over. Your best score is kept.', 'Partie terminée. Votre meilleur score est conservé.'],

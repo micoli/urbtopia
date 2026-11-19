@@ -1,6 +1,6 @@
 # Demonstration, Guide and codex
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 05
 Spec: ../spec.md
 

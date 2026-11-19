@@ -94,3 +94,22 @@
 .hex-glyph__wedge--industry { fill: var(--hex-industry); }
 .hex-glyph__wedge--service { fill: var(--hex-service); }
 .hex-glyph__wedge--water { fill: var(--hex-water); }
+
+.district-demo__step {
+  margin: 0;
+}
+
+.district-demo__phases {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.district-demo__phases dt {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.district-demo__phases dd {
+  margin: 0;
+}
