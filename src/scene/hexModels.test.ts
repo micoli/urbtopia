@@ -15,7 +15,7 @@ describe('the models standing on a Hex', () => {
     expect(others).toEqual([]);
     expect(slot!.x).toBeCloseTo(0);
     expect(slot!.z).toBeCloseTo(0);
-    expect(slot!.extent).toBeCloseTo(0.72);
+    expect(slot!.extent).toBeCloseTo(0.6);
   });
 
   it('puts one model per category on a Hex split in two halves, on opposite sides', () => {
@@ -34,9 +34,9 @@ describe('the models standing on a Hex', () => {
     expect(north!.z).toBeLessThan(-0.4);
   });
 
-  it('draws a model wider the more edges its category has', () => {
+  it('draws a model wider the more edges its category has, up to three edges', () => {
     const extentOf = (count: number) => modelSlotsOf([...Array(count).fill('service'), ...Array(6 - count).fill('park')] as HexCategory[], 1).find(slot => slot.category === 'service')!.extent;
-    expect([1, 2, 3, 4].map(extentOf)).toEqual([0.36, 0.48, 0.6, 0.72].map(value => expect.closeTo(value, 6)));
+    expect([1, 2, 3, 4, 5].map(extentOf)).toEqual([0.36, 0.48, 0.6, 0.6, 0.6].map(value => expect.closeTo(value, 6)));
   });
 
   it('scales with the size of the Hex', () => {

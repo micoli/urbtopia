@@ -1,17 +1,23 @@
 import * as THREE from 'three';
 import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { DISTRICT_PLAN, HEX_CATEGORIES, HEX_EDGE_COUNT, type Cell, type Hex, type HexCategory, type PlacedHex } from '../core';
+import { DISTRICT_PLAN, HEX_CATEGORIES, HEX_EDGE_COUNT, type Cell, type DistrictSeam, type Hex, type HexCategory, type PlacedHex } from '../core';
 import { modelFileOf } from '../core/models/modelFiles';
 import { modelSlotsOf } from './hexModels';
-import { cellToPoint, cornerOf, pointToCell } from './hexLayout';
+import { cellToPoint, cornerOf, edgeCorners, pointToCell } from './hexLayout';
 import { ModelLibrary } from './modelLibrary';
 import { renderPixelRatio, wantsAntialias } from './renderBudget';
 import { ZOOM, clampPan, nextZoom, pinchZoom } from './venueZoom';
 
 const SIZE = 1;
 const TILE_SCALE = 0.94;
-const THICKNESS = 0.22;
-const GHOST_LIFT = 0.18;
+const THICKNESS = 0.12;
+const GHOST_LIFT = 0.1;
+// The plinth under the whole board, and the bar that marks a seam where two edges of the same category meet, shown on the Hex picked before it is placed.
+const PLINTH_DEPTH = 0.3;
+const PLINTH_MARGIN = 0.9;
+const SEAM_WIDTH = 0.07;
+const SEAM_HEIGHT = 0.035;
+const SEAM_SHARE = 0.7;
 const PLATE = 0.03;
 const TAP_DISTANCE = 6;
 const BOARD_HALF_WIDTH = 9;
@@ -60,6 +66,10 @@ export class DistrictPlanScene {
   private topMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: 0.8 });
   private plateGeometry = new THREE.CylinderGeometry(SIZE * TILE_SCALE, SIZE * TILE_SCALE, PLATE, 6);
   private baseGeometry = new THREE.CylinderGeometry(SIZE * TILE_SCALE, SIZE * TILE_SCALE, THICKNESS, 6);
+  private plinthGeometry: THREE.CylinderGeometry;
+  private plinthMaterial: THREE.MeshStandardMaterial;
+  private seamGeometry = new THREE.BoxGeometry(1, SEAM_HEIGHT, SEAM_WIDTH);
+  private seamMaterial: THREE.MeshBasicMaterial;
   private candidateMaterial: THREE.MeshBasicMaterial;
   private invalidMaterial: THREE.MeshBasicMaterial;
   private raycaster = new THREE.Raycaster();
@@ -68,7 +78,7 @@ export class DistrictPlanScene {
   private library = new ModelLibrary();
   private modelsReady = false;
   private lastBoard: readonly PlacedHex[] = [];
-  private lastGhost: { cell: Cell; hex: Hex; valid: boolean } | null = null;
+  private lastGhost: { cell: Cell; hex: Hex; valid: boolean; seams: readonly DistrictSeam[] } | null = null;
   private tapHandler: ((cell: Cell) => void) | null = null;
   private anchorHandler: ((anchor: { x: number; y: number } | null) => void) | null = null;
   private lastAnchor = '';
@@ -92,7 +102,15 @@ export class DistrictPlanScene {
     this.baseMaterial = new THREE.MeshStandardMaterial({ color: tokenColor('--hex-base'), roughness: 0.9 });
     this.candidateMaterial = new THREE.MeshBasicMaterial({ color: tokenColor('--hex-candidate'), transparent: true, opacity: 0.28 });
     this.invalidMaterial = new THREE.MeshBasicMaterial({ color: tokenColor('--hex-invalid'), transparent: true, opacity: 0.55 });
-    this.scene.add(new THREE.AmbientLight(0xffffff, 1.1), this.directionalLight(), this.board, this.candidates, this.ghost);
+    this.seamMaterial = new THREE.MeshBasicMaterial({ color: tokenColor('--hex-seam') });
+    // A hexagon of hexagons: its corners lie where the neighbours of a cell lie, half a turn off the cells themselves.
+    const plinthRadius = DISTRICT_PLAN.boardRadius * Math.sqrt(3) * SIZE + PLINTH_MARGIN;
+    this.plinthGeometry = new THREE.CylinderGeometry(plinthRadius, plinthRadius, PLINTH_DEPTH, 6);
+    this.plinthMaterial = new THREE.MeshStandardMaterial({ color: tokenColor('--hex-plinth'), roughness: 0.95 });
+    const plinth = new THREE.Mesh(this.plinthGeometry, this.plinthMaterial);
+    plinth.rotation.y = Math.PI / 6;
+    plinth.position.y = -PLINTH_DEPTH / 2;
+    this.scene.add(new THREE.AmbientLight(0xffffff, 1.1), this.directionalLight(), plinth, this.board, this.candidates, this.ghost);
     this.placeCamera();
     canvas.addEventListener('pointerdown', this.handlePointerDown);
     canvas.addEventListener('pointermove', this.handlePointerMove);
@@ -186,6 +204,15 @@ export class DistrictPlanScene {
     this.render();
   }
 
+  private seamBar(seam: DistrictSeam, lift: number): THREE.Mesh {
+    const [from, to] = edgeCorners(cellToPoint(seam.cell, SIZE), SIZE * TILE_SCALE, seam.edge);
+    const bar = new THREE.Mesh(this.seamGeometry, this.seamMaterial);
+    bar.scale.x = Math.hypot(to.x - from.x, to.z - from.z) * SEAM_SHARE;
+    bar.position.set((from.x + to.x) / 2, THICKNESS + lift + SEAM_HEIGHT / 2 + 0.004, (from.z + to.z) / 2);
+    bar.rotation.y = -Math.atan2(to.z - from.z, to.x - from.x);
+    return bar;
+  }
+
   // The cells a Hex may go on.
   setCandidates(cells: readonly Cell[]): void {
     this.fill(this.candidates, cells.map(cell => this.plate(cell, this.candidateMaterial)));
@@ -193,9 +220,9 @@ export class DistrictPlanScene {
   }
 
   // The Hex in hand over the cell picked, lifted above the board; a cell that cannot take it is red.
-  setGhost(ghost: { cell: Cell; hex: Hex; valid: boolean } | null): void {
+  setGhost(ghost: { cell: Cell; hex: Hex; valid: boolean; seams: readonly DistrictSeam[] } | null): void {
     this.lastGhost = ghost;
-    this.fill(this.ghost, ghost ? [ghost.valid ? this.slab(ghost.cell, ghost.hex, 0.8, GHOST_LIFT) : this.plate(ghost.cell, this.invalidMaterial)] : []);
+    this.fill(this.ghost, ghost ? [ghost.valid ? this.slab(ghost.cell, ghost.hex, 0.8, GHOST_LIFT) : this.plate(ghost.cell, this.invalidMaterial), ...ghost.seams.map(seam => this.seamBar(seam, GHOST_LIFT))] : []);
     this.render();
   }
 
@@ -284,7 +311,7 @@ export class DistrictPlanScene {
         this.geometries.splice(this.geometries.indexOf(object.geometry), 1);
       }
       const material = object.material as THREE.Material;
-      if (material !== this.baseMaterial && material !== this.topMaterial && material !== this.candidateMaterial && material !== this.invalidMaterial) material.dispose();
+      if (material !== this.baseMaterial && material !== this.topMaterial && material !== this.candidateMaterial && material !== this.invalidMaterial && material !== this.seamMaterial) material.dispose();
     }
     for (const child of object.children) this.disposeOf(child);
   }
@@ -435,7 +462,7 @@ export class DistrictPlanScene {
     this.canvas.removeEventListener('pointercancel', this.handlePointerCancel);
     this.canvas.removeEventListener('wheel', this.handleWheel);
     for (const group of [this.board, this.candidates, this.ghost]) this.fill(group, []);
-    for (const resource of [this.baseGeometry, this.plateGeometry, this.baseMaterial, this.topMaterial, this.candidateMaterial, this.invalidMaterial]) resource.dispose();
+    for (const resource of [this.baseGeometry, this.plateGeometry, this.plinthGeometry, this.seamGeometry, this.baseMaterial, this.topMaterial, this.plinthMaterial, this.candidateMaterial, this.invalidMaterial, this.seamMaterial]) resource.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
   }

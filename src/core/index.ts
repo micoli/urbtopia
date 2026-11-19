@@ -328,3 +328,5 @@ export { isHexValid, rotateHex } from './districtPlan/hex';
 export type { Hex } from './districtPlan/hex';
 export { CENTRE as DISTRICT_CENTRE, EDGE_COUNT as HEX_EDGE_COUNT, cellKey, cellsOfBoard, neighbourOf as hexNeighbourOf } from './districtPlan/hexGrid';
 export type { Cell } from './districtPlan/hexGrid';
+export { matchingSeams as districtMatchingSeams, seamsAround as districtSeamsAround } from './districtPlan/districtSeams';
+export type { Seam as DistrictSeam } from './districtPlan/districtSeams';

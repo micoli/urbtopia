@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useStore } from 'zustand';
 import {
-  DISTRICT_PLAN, cellsOfBoard, districtBoardOf, districtBoardScoreOf, districtHandOf, districtRankOf, districtScoreOf, isDistrictGameOver, isDistrictPlacementValid, rotateHex,
-  type Building, type Cell, type DistrictGame, type DistrictOffice, type DistrictRank, type Hex, type PlacedHex, EMPTY_DISTRICT_OFFICE,
+  DISTRICT_PLAN, cellsOfBoard, districtBoardOf, districtMatchingSeams, districtSeamsAround, districtBoardScoreOf, districtHandOf, districtRankOf, districtScoreOf, isDistrictGameOver, isDistrictPlacementValid, rotateHex,
+  type Building, type Cell, type DistrictGame, type DistrictSeam, type DistrictOffice, type DistrictRank, type Hex, type PlacedHex, EMPTY_DISTRICT_OFFICE,
 } from '../../core';
 import { districtStore } from '../../store/districtStore';
 import { useGame } from '../common/hooks';
@@ -19,7 +19,8 @@ export interface DistrictView {
   hexesLeft: number;
   // The cells the Hex in hand may go on, and what the picked cell would give once the Hex is turned as chosen.
   candidates: Cell[];
-  picked: { cell: Cell; hex: Hex; valid: boolean } | null;
+  // The seams are where two edges of the same category meet the Hexes around the cell, shown before the Hex is placed.
+  picked: { cell: Cell; hex: Hex; valid: boolean; seams: DistrictSeam[] } | null;
   gain: number | null;
   bestScore: number | undefined;
   bestRank: DistrictRank | undefined;
@@ -45,7 +46,8 @@ export function useDistrictGame(building: Building): DistrictView {
   const over = game ? isDistrictGameOver(game) : false;
   const candidates = useMemo(() => (game && !over ? BOARD_CELLS.filter(candidate => isDistrictPlacementValid(played.board, candidate)) : []), [game, over, played.board]);
   const turned = played.current ? rotateHex(played.current, rotation) : undefined;
-  const picked = cell && turned && !over ? { cell, hex: turned, valid: isDistrictPlacementValid(played.board, cell) } : null;
+  const pickedValid = cell !== null && turned !== undefined && !over && isDistrictPlacementValid(played.board, cell);
+  const picked = cell && turned && !over ? { cell, hex: turned, valid: pickedValid, seams: pickedValid ? districtSeamsAround(districtMatchingSeams([...played.board, { cell, hex: turned }]), cell) : [] } : null;
   const gain = picked?.valid ? districtBoardScoreOf([...played.board, { cell: picked.cell, hex: picked.hex }]) - played.score : null;
 
   return {

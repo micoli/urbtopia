@@ -11,7 +11,8 @@ export interface ModelSlot {
 const WEDGE_REACH = 0.55;
 const SMALLEST_EXTENT = 0.24;
 const EXTENT_PER_EDGE = 0.12;
-const LARGEST_EXTENT = 0.72;
+// A model never grows past what three edges allow, however many edges its category has.
+const LARGEST_EXTENT = 0.6;
 
 // One model per category present on the Hex, standing at the middle of the edges of that category: in the heart of the Hex when it has them all around, nearer the rim when it has a few, and drawn wider as it has more edges.
 export const modelSlotsOf = (edges: readonly HexCategory[], size: number): ModelSlot[] => {
