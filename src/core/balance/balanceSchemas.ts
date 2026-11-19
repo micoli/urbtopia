@@ -144,12 +144,15 @@ export const homeInteriorBalanceSchema = z
   .meta({ title: 'Home interior balance', description: 'assets/defs/balance/homeInterior.json: the size of a Home interior by Tier, the weights of the groups of its Comfort and the Well-being it adds at most.' });
 
 const hexCategory = z.enum(HEX_CATEGORIES);
+const filledText = z.string().regex(/\S/, 'must not be blank');
 
 // How a game of the District plan is scored: the size of its board, and what each pair of touching edges is worth.
 export const districtPlanBalanceSchema = z
   .strictObject({
     ...schemaField,
     boardRadius: z.int().min(1),
+    // The model that stands for each category on a Hex, by Model id.
+    categoryModels: z.strictObject(Object.fromEntries(HEX_CATEGORIES.map(category => [category, filledText])) as Record<(typeof HEX_CATEGORIES)[number], z.ZodString>),
     // By Tier of the Planning office: the most Well-being it adds to a Home in reach, and the reach in tiles.
     wellbeingCaps: z.array(positive).min(1),
     radii: z.array(z.int().min(1)).min(1),

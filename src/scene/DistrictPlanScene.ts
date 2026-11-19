@@ -1,6 +1,10 @@
 import * as THREE from 'three';
-import { HEX_CATEGORIES, HEX_EDGE_COUNT, type Cell, type Hex, type HexCategory, type PlacedHex } from '../core';
+import { clone as cloneModel } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { DISTRICT_PLAN, HEX_CATEGORIES, HEX_EDGE_COUNT, type Cell, type Hex, type HexCategory, type PlacedHex } from '../core';
+import { modelFileOf } from '../core/models/modelFiles';
+import { modelSlotsOf } from './hexModels';
 import { cellToPoint, cornerOf, pointToCell } from './hexLayout';
+import { ModelLibrary } from './modelLibrary';
 import { renderPixelRatio, wantsAntialias } from './renderBudget';
 
 const SIZE = 1;
@@ -55,6 +59,10 @@ export class DistrictPlanScene {
   private raycaster = new THREE.Raycaster();
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -THICKNESS);
   private geometries: THREE.BufferGeometry[] = [];
+  private library = new ModelLibrary();
+  private modelsReady = false;
+  private lastBoard: readonly PlacedHex[] = [];
+  private lastGhost: { cell: Cell; hex: Hex; valid: boolean } | null = null;
   private tapHandler: ((cell: Cell) => void) | null = null;
   private pointerStart: { x: number; y: number } | null = null;
   private width = 1;
@@ -73,6 +81,16 @@ export class DistrictPlanScene {
     this.camera.lookAt(0, 0, 0);
     canvas.addEventListener('pointerdown', this.onPointerDown);
     canvas.addEventListener('pointerup', this.onPointerUp);
+    void this.loadModels();
+  }
+
+  // The Hexes are drawn at once, bare; the models stand on them as soon as they have arrived.
+  private async loadModels(): Promise<void> {
+    await this.library.ensure(HEX_CATEGORIES.map(category => modelFileOf(DISTRICT_PLAN.categoryModels[category])));
+    if (this.disposed) return;
+    this.modelsReady = true;
+    this.setBoard(this.lastBoard);
+    this.setGhost(this.lastGhost);
   }
 
   private directionalLight(): THREE.DirectionalLight {
@@ -100,6 +118,7 @@ export class DistrictPlanScene {
   }
 
   setBoard(placed: readonly PlacedHex[]): void {
+    this.lastBoard = placed;
     this.fill(this.board, placed.map(({ cell, hex }) => this.slab(cell, hex, 1, 0)));
     this.render();
   }
@@ -112,6 +131,7 @@ export class DistrictPlanScene {
 
   // The Hex in hand over the cell picked, lifted above the board; a cell that cannot take it is red.
   setGhost(ghost: { cell: Cell; hex: Hex; valid: boolean } | null): void {
+    this.lastGhost = ghost;
     this.fill(this.ghost, ghost ? [ghost.valid ? this.slab(ghost.cell, ghost.hex, 0.8, GHOST_LIFT) : this.plate(ghost.cell, this.invalidMaterial)] : []);
     this.render();
   }
@@ -128,7 +148,43 @@ export class DistrictPlanScene {
     top.position.y = THICKNESS + 0.002;
     top.scale.set(TILE_SCALE, 1, TILE_SCALE);
     group.add(base, top);
+    if (this.modelsReady) group.add(this.models(hex, opacity));
     return group;
+  }
+
+  // The model of each category of the Hex, standing on its slab, fitted to the width its slot allows.
+  private models(hex: Hex, opacity: number): THREE.Group {
+    const holder = new THREE.Group();
+    holder.userData.library = true;
+    const owned: THREE.Material[] = [];
+    holder.userData.owned = owned;
+    for (const slot of modelSlotsOf(hex.edges, SIZE)) {
+      const model = cloneModel(this.library.get(modelFileOf(DISTRICT_PLAN.categoryModels[slot.category])));
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const scale = slot.extent / Math.max(size.x, size.z);
+      model.scale.setScalar(scale);
+      model.position.set(slot.x - center.x * scale, THICKNESS + 0.004 - box.min.y * scale, slot.z - center.z * scale);
+      if (opacity < 1) this.fade(model, opacity, owned);
+      holder.add(model);
+    }
+    return holder;
+  }
+
+  // Models are shared by every Hex: a translucent one gets materials of its own, which go with it.
+  private fade(model: THREE.Object3D, opacity: number, owned: THREE.Material[]): void {
+    model.traverse(child => {
+      if (!(child instanceof THREE.Mesh)) return;
+      const faded = (Array.isArray(child.material) ? child.material : [child.material]).map((material: THREE.Material) => {
+        const copy = material.clone();
+        copy.transparent = true;
+        copy.opacity = opacity;
+        owned.push(copy);
+        return copy;
+      });
+      child.material = Array.isArray(child.material) ? faded : faded[0]!;
+    });
   }
 
   private fadedMaterial(source: THREE.MeshStandardMaterial, opacity: number): THREE.MeshStandardMaterial {
@@ -153,17 +209,21 @@ export class DistrictPlanScene {
     for (const child of children) group.add(child);
   }
 
-  // Geometries and materials shared by every Hex are kept; those made for one slab go with it.
+  // Geometries and materials shared by every Hex, and the models of the library, are kept; those made for one slab go with it.
   private disposeOf(object: THREE.Object3D): void {
-    object.traverse(child => {
-      if (!(child instanceof THREE.Mesh)) return;
-      if (this.geometries.includes(child.geometry)) {
-        child.geometry.dispose();
-        this.geometries.splice(this.geometries.indexOf(child.geometry), 1);
+    if (object.userData.library) {
+      for (const material of object.userData.owned as THREE.Material[]) material.dispose();
+      return;
+    }
+    if (object instanceof THREE.Mesh) {
+      if (this.geometries.includes(object.geometry)) {
+        object.geometry.dispose();
+        this.geometries.splice(this.geometries.indexOf(object.geometry), 1);
       }
-      const material = child.material as THREE.Material;
+      const material = object.material as THREE.Material;
       if (material !== this.baseMaterial && material !== this.topMaterial && material !== this.candidateMaterial && material !== this.invalidMaterial) material.dispose();
-    });
+    }
+    for (const child of object.children) this.disposeOf(child);
   }
 
   private onPointerDown = (event: PointerEvent): void => {

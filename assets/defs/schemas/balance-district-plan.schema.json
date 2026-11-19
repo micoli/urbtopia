@@ -10,6 +10,44 @@
       "minimum": 1,
       "maximum": 9007199254740991
     },
+    "categoryModels": {
+      "type": "object",
+      "properties": {
+        "habitat": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "park": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "commerce": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "industry": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "service": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "water": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "habitat",
+        "park",
+        "commerce",
+        "industry",
+        "service",
+        "water"
+      ],
+      "additionalProperties": false
+    },
     "wellbeingCaps": {
       "minItems": 1,
       "type": "array",
@@ -155,6 +193,7 @@
   },
   "required": [
     "boardRadius",
+    "categoryModels",
     "wellbeingCaps",
     "radii",
     "rankShares",
