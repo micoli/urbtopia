@@ -67,7 +67,7 @@ All of these values live in `assets/defs/balance/districtPlan.json`, never in co
 
 ## Screen
 
-- A scene of its own: a hexagonal prism built in code per Hex, coloured by category, with the existing low-poly models standing on it at a small scale. No third-party hexagon kit.
+- A scene of its own: a hexagonal slab built in code per Hex, its top split into six wedges coloured by category. The existing low-poly models standing on it at a small scale come later. No third-party hexagon kit.
 - On a phone: touch a free cell next to a placed Hex, a ghost shows the score gained, a button turns the Hex, another validates it. No undo after validation, no drag and drop.
 - Motion uses the `--duration-*` and `--ease-out` tokens and stops under `prefers-reduced-motion`. Colours, radii and sizes come from `src/tokens.css`. Icons come from `iconRegistry.ts`. See ADR 0051.
 

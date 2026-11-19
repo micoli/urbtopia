@@ -20,7 +20,7 @@ The interiors are all puzzles of flows on a closed grid. The District plan is a 
 - **Edge cases.** Demolishing an office removes its bonus and its entry in the save. A Tier raised during a game keeps the Deck of that game, applies the new cap at once to the best score, and sizes the next game. A game that is given up leaves the best score alone.
 - **Saved per office:** the game number, the Hexes placed in the game under way with their position and rotation (to resume on a phone), the best score and the layout of the best score. The save version goes up.
 - **Gesture on a phone.** The player touches a free cell next to a Hex placed. A ghost shows the score gained; a button turns the Hex, another validates it. There is no undo after validation and no drag and drop.
-- **Drawing.** A hexagonal prism built in code, coloured by Hex category, with the existing low-poly models standing on it at a small scale. No third-party hexagon kit.
+- **Drawing.** A hexagonal slab built in code, its top split into six wedges coloured by the Hex category of each edge (the colours are tokens, `--hex-*`), seen from above at an angle and drawn only when something changes. The existing low-poly models standing on the slab at a small scale are a later touch, not part of the first screen. No third-party hexagon kit.
 - **Teaching.** A guided demonstration of 6 Hexes (ADR 0080), a Guide page and a codex entry, in FR and EN.
 
 ## Why
