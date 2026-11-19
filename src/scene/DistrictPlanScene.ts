@@ -6,6 +6,7 @@ import { modelSlotsOf } from './hexModels';
 import { cellToPoint, cornerOf, pointToCell } from './hexLayout';
 import { ModelLibrary } from './modelLibrary';
 import { renderPixelRatio, wantsAntialias } from './renderBudget';
+import { ZOOM, clampPan, nextZoom, pinchZoom } from './venueZoom';
 
 const SIZE = 1;
 const TILE_SCALE = 0.94;
@@ -13,10 +14,15 @@ const THICKNESS = 0.22;
 const GHOST_LIFT = 0.18;
 const PLATE = 0.03;
 const TAP_DISTANCE = 6;
-const BOARD_HALF_WIDTH = 8.4;
-const BOARD_MIN_HALF_HEIGHT = 6.6;
-const CAMERA_DISTANCE = 20;
-const CAMERA_ELEVATION = (52 * Math.PI) / 180;
+const BOARD_HALF_WIDTH = 9;
+const BOARD_MIN_HALF_HEIGHT = 5.6;
+// The isometric pitch of the interiors; the board is seen from 60° round, and a hexagon repeats every 60°, so the view turns by that step.
+const CAMERA_DISTANCE = 40;
+const VIEW_PITCH = Math.atan(1 / Math.SQRT2);
+const START_YAW = Math.PI / 3;
+const TURN_STEP = Math.PI / 3;
+const PAN_SIZE = 10;
+const TURN_SPEED = 10;
 
 const tokenColor = (name: string): THREE.Color => new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue(name).trim());
 
@@ -64,7 +70,17 @@ export class DistrictPlanScene {
   private lastBoard: readonly PlacedHex[] = [];
   private lastGhost: { cell: Cell; hex: Hex; valid: boolean } | null = null;
   private tapHandler: ((cell: Cell) => void) | null = null;
-  private pointerStart: { x: number; y: number } | null = null;
+  private anchorHandler: ((anchor: { x: number; y: number } | null) => void) | null = null;
+  private lastAnchor = '';
+  private zoom = 1;
+  private pan = { x: 0, z: 0 };
+  private yaw = START_YAW;
+  private yawTarget = START_YAW;
+  private turning = 0;
+  private pointers = new Map<number, { x: number; y: number }>();
+  private pointerDown: { x: number; y: number; ground: THREE.Vector3 | null } | null = null;
+  private dragged = false;
+  private lastPinchDistance = 0;
   private width = 1;
   private height = 1;
   private disposed = false;
@@ -77,10 +93,12 @@ export class DistrictPlanScene {
     this.candidateMaterial = new THREE.MeshBasicMaterial({ color: tokenColor('--hex-candidate'), transparent: true, opacity: 0.28 });
     this.invalidMaterial = new THREE.MeshBasicMaterial({ color: tokenColor('--hex-invalid'), transparent: true, opacity: 0.55 });
     this.scene.add(new THREE.AmbientLight(0xffffff, 1.1), this.directionalLight(), this.board, this.candidates, this.ghost);
-    this.camera.position.set(0, CAMERA_DISTANCE * Math.sin(CAMERA_ELEVATION), CAMERA_DISTANCE * Math.cos(CAMERA_ELEVATION));
-    this.camera.lookAt(0, 0, 0);
-    canvas.addEventListener('pointerdown', this.onPointerDown);
-    canvas.addEventListener('pointerup', this.onPointerUp);
+    this.placeCamera();
+    canvas.addEventListener('pointerdown', this.handlePointerDown);
+    canvas.addEventListener('pointermove', this.handlePointerMove);
+    canvas.addEventListener('pointerup', this.handlePointerUp);
+    canvas.addEventListener('pointercancel', this.handlePointerCancel);
+    canvas.addEventListener('wheel', this.handleWheel, { passive: false });
     void this.loadModels();
   }
 
@@ -103,18 +121,63 @@ export class DistrictPlanScene {
     this.tapHandler = handler;
   }
 
+  // The cell under the Hex that is picked, as the pixel below it on the canvas, so that the buttons can follow it.
+  onAnchor(handler: (anchor: { x: number; y: number } | null) => void): void {
+    this.anchorHandler = handler;
+  }
+
   resize(width: number, height: number): void {
     this.width = Math.max(1, width);
     this.height = Math.max(1, height);
+    this.fitCamera();
+    this.render();
+  }
+
+  private fitCamera(): void {
     this.renderer.setSize(this.width, this.height, false);
     const aspect = this.width / this.height;
-    const halfHeight = Math.max(BOARD_MIN_HALF_HEIGHT, BOARD_HALF_WIDTH / aspect);
+    const halfHeight = Math.max(BOARD_MIN_HALF_HEIGHT, BOARD_HALF_WIDTH / aspect) / this.zoom;
     this.camera.left = -halfHeight * aspect;
     this.camera.right = halfHeight * aspect;
     this.camera.top = halfHeight;
     this.camera.bottom = -halfHeight;
+    this.pan = clampPan(this.pan, this.zoom, PAN_SIZE);
+    this.placeCamera();
     this.camera.updateProjectionMatrix();
-    this.render();
+  }
+
+  private placeCamera(): void {
+    const focus = new THREE.Vector3(this.pan.x, 0.1, this.pan.z);
+    this.camera.position.set(
+      focus.x + Math.sin(this.yaw) * Math.cos(VIEW_PITCH) * CAMERA_DISTANCE,
+      focus.y + Math.sin(VIEW_PITCH) * CAMERA_DISTANCE,
+      focus.z + Math.cos(this.yaw) * Math.cos(VIEW_PITCH) * CAMERA_DISTANCE,
+    );
+    this.camera.lookAt(focus);
+    this.camera.updateMatrixWorld();
+  }
+
+  // Turns the board by a sixth of a turn, as the buttons of an interior turn a room; the turn is instant for those who ask for less motion.
+  rotate(direction: number): void {
+    this.yawTarget += direction * TURN_STEP;
+    if (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      this.yaw = this.yawTarget;
+      this.placeCamera();
+      this.render();
+      return;
+    }
+    if (this.turning) return;
+    let last = performance.now();
+    const step = (now: number): void => {
+      const delta = (now - last) / 1000;
+      last = now;
+      const difference = this.yawTarget - this.yaw;
+      this.yaw = Math.abs(difference) < 0.002 ? this.yawTarget : this.yaw + difference * Math.min(1, delta * TURN_SPEED);
+      this.placeCamera();
+      this.render();
+      this.turning = this.yaw === this.yawTarget || this.disposed ? 0 : requestAnimationFrame(step);
+    };
+    this.turning = requestAnimationFrame(step);
   }
 
   setBoard(placed: readonly PlacedHex[]): void {
@@ -226,30 +289,151 @@ export class DistrictPlanScene {
     for (const child of object.children) this.disposeOf(child);
   }
 
-  private onPointerDown = (event: PointerEvent): void => {
-    this.pointerStart = { x: event.clientX, y: event.clientY };
+  private groundAt(clientX: number, clientY: number): THREE.Vector3 | null {
+    const bounds = this.canvas.getBoundingClientRect();
+    const ndc = new THREE.Vector2(((clientX - bounds.left) / bounds.width) * 2 - 1, -(((clientY - bounds.top) / bounds.height) * 2 - 1));
+    this.raycaster.setFromCamera(ndc, this.camera);
+    return this.raycaster.ray.intersectPlane(this.groundPlane, new THREE.Vector3());
+  }
+
+  private handlePointerDown = (event: PointerEvent): void => {
+    this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (this.pointers.size >= 2) {
+      this.pointerDown = null;
+      this.dragged = true;
+      this.lastPinchDistance = this.pinchDistance();
+      return;
+    }
+    this.pointerDown = { x: event.clientX, y: event.clientY, ground: this.groundAt(event.clientX, event.clientY) };
+    this.dragged = false;
+    try {
+      this.canvas.setPointerCapture(event.pointerId);
+    } catch {
+      // A pointer that is no longer active cannot be captured; the drag still works inside the canvas.
+    }
   };
 
-  private onPointerUp = (event: PointerEvent): void => {
-    const start = this.pointerStart;
-    this.pointerStart = null;
-    if (!start || Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_DISTANCE) return;
-    const bounds = this.canvas.getBoundingClientRect();
-    const ndc = new THREE.Vector2(((event.clientX - bounds.left) / bounds.width) * 2 - 1, -(((event.clientY - bounds.top) / bounds.height) * 2 - 1));
-    this.raycaster.setFromCamera(ndc, this.camera);
-    const hit = this.raycaster.ray.intersectPlane(this.groundPlane, new THREE.Vector3());
+  // Dragging with the button down moves the board under the pointer, and two fingers zoom.
+  private handlePointerMove = (event: PointerEvent): void => {
+    if (this.pointers.has(event.pointerId)) this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (this.pointers.size >= 2) {
+      this.handlePinch();
+      return;
+    }
+    const start = this.pointerDown;
+    if (!start || !(this.dragged || Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_DISTANCE)) return;
+    this.dragged = true;
+    this.canvas.style.cursor = 'grabbing';
+    const now = this.groundAt(event.clientX, event.clientY);
+    if (!start.ground || !now) return;
+    this.pan = clampPan({ x: this.pan.x + start.ground.x - now.x, z: this.pan.z + start.ground.z - now.z }, this.zoom, PAN_SIZE);
+    this.fitCamera();
+    this.render();
+  };
+
+  private handlePointerUp = (event: PointerEvent): void => {
+    this.pointers.delete(event.pointerId);
+    this.lastPinchDistance = 0;
+    const start = this.pointerDown;
+    this.pointerDown = null;
+    this.canvas.style.cursor = '';
+    if (this.canvas.hasPointerCapture(event.pointerId)) this.canvas.releasePointerCapture(event.pointerId);
+    if (!start || this.dragged) return;
+    const hit = this.groundAt(event.clientX, event.clientY);
     if (hit) this.tapHandler?.(pointToCell({ x: hit.x, z: hit.z }, SIZE));
   };
+
+  private handlePointerCancel = (event: PointerEvent): void => {
+    this.pointers.delete(event.pointerId);
+    this.lastPinchDistance = 0;
+    this.pointerDown = null;
+  };
+
+  private pinchPoints(): [{ x: number; y: number }, { x: number; y: number }] | null {
+    const [a, b] = [...this.pointers.values()];
+    return a && b ? [a, b] : null;
+  }
+
+  private pinchDistance(): number {
+    const points = this.pinchPoints();
+    return points ? Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y) : 0;
+  }
+
+  private handlePinch(): void {
+    const points = this.pinchPoints();
+    if (!points) return;
+    const distance = this.pinchDistance();
+    const previous = this.lastPinchDistance;
+    this.lastPinchDistance = distance;
+    if (previous === 0) return;
+    this.zoomAround(pinchZoom(this.zoom, distance / previous), (points[0].x + points[1].x) / 2, (points[0].y + points[1].y) / 2);
+  }
+
+  // The wheel zooms around the point under the pointer, which stays where it is on the screen.
+  private handleWheel = (event: WheelEvent): void => {
+    event.preventDefault();
+    this.zoomAround(nextZoom(this.zoom, event.deltaY), event.clientX, event.clientY);
+  };
+
+  private zoomAround(zoom: number, clientX: number, clientY: number): void {
+    if (zoom === this.zoom || zoom < ZOOM.min || zoom > ZOOM.max) return;
+    const before = this.groundAt(clientX, clientY);
+    this.zoom = zoom;
+    this.fitCamera();
+    const after = this.groundAt(clientX, clientY);
+    if (before && after) {
+      this.pan = clampPan({ x: this.pan.x + before.x - after.x, z: this.pan.z + before.z - after.z }, this.zoom, PAN_SIZE);
+      this.fitCamera();
+    }
+    this.render();
+  }
+
+  // The middle of a cell on the canvas, in pixels.
+  screenCenterOf(cell: Cell): { x: number; y: number } {
+    const point = cellToPoint(cell, SIZE);
+    const projected = new THREE.Vector3(point.x, THICKNESS, point.z).project(this.camera);
+    return { x: ((projected.x + 1) / 2) * this.width, y: ((1 - projected.y) / 2) * this.height };
+  }
+
+  // The lowest point of the picked cell on the canvas, in pixels.
+  private publishAnchor(): void {
+    const cell = this.lastGhost?.cell;
+    let anchor: { x: number; y: number } | null = null;
+    if (cell) {
+      const centre = cellToPoint(cell, SIZE);
+      const corner = new THREE.Vector3();
+      let bottom = -Infinity;
+      let left = Infinity;
+      let right = -Infinity;
+      for (let index = 0; index < HEX_EDGE_COUNT; index++) {
+        const point = cornerOf(centre, SIZE * TILE_SCALE, index);
+        corner.set(point.x, THICKNESS, point.z).project(this.camera);
+        bottom = Math.max(bottom, ((1 - corner.y) / 2) * this.height);
+        left = Math.min(left, ((corner.x + 1) / 2) * this.width);
+        right = Math.max(right, ((corner.x + 1) / 2) * this.width);
+      }
+      anchor = { x: Math.round((left + right) / 2), y: Math.round(bottom) };
+    }
+    const key = anchor ? `${anchor.x},${anchor.y}` : '';
+    if (key === this.lastAnchor) return;
+    this.lastAnchor = key;
+    this.anchorHandler?.(anchor);
+  }
 
   render(): void {
     if (this.disposed) return;
     this.renderer.render(this.scene, this.camera);
+    this.publishAnchor();
   }
 
   dispose(): void {
     this.disposed = true;
-    this.canvas.removeEventListener('pointerdown', this.onPointerDown);
-    this.canvas.removeEventListener('pointerup', this.onPointerUp);
+    cancelAnimationFrame(this.turning);
+    this.canvas.removeEventListener('pointerdown', this.handlePointerDown);
+    this.canvas.removeEventListener('pointermove', this.handlePointerMove);
+    this.canvas.removeEventListener('pointerup', this.handlePointerUp);
+    this.canvas.removeEventListener('pointercancel', this.handlePointerCancel);
+    this.canvas.removeEventListener('wheel', this.handleWheel);
     for (const group of [this.board, this.candidates, this.ghost]) this.fill(group, []);
     for (const resource of [this.baseGeometry, this.plateGeometry, this.baseMaterial, this.topMaterial, this.candidateMaterial, this.invalidMaterial]) resource.dispose();
     this.renderer.dispose();

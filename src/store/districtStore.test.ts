@@ -17,6 +17,17 @@ describe('the District plan screen store', () => {
     }
   });
 
+  it('turns the Hex back a step at a time, from none to the last step and round again', () => {
+    districtStore.getState().open(7);
+    districtStore.getState().rotateBack();
+    expect(districtStore.getState().rotation).toBe(5);
+    districtStore.getState().rotateBack();
+    expect(districtStore.getState().rotation).toBe(4);
+    districtStore.getState().rotate();
+    districtStore.getState().rotate();
+    expect(districtStore.getState().rotation).toBe(0);
+  });
+
   it('forgets the draft once a Hex is placed, but keeps the office open', () => {
     districtStore.getState().open(7);
     districtStore.getState().selectCell({ q: 1, r: 0 });

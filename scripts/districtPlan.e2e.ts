@@ -1,8 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-const HALF_HEIGHT_MIN = 6.6;
-const HALF_WIDTH = 8.4;
-
 test.describe('district plan', () => {
   test.use({ viewport: { width: 1280, height: 900 } });
 
@@ -28,13 +25,18 @@ test.describe('district plan', () => {
     await page.getByRole('button', { name: 'New game' }).click();
     await expect(page.getByText('Hexes left').locator('xpath=following-sibling::strong')).toHaveText('23');
 
-    // The first Hex goes where the player taps: the cell east of the Start hex.
-    const board = page.getByTestId('district-board');
-    const box = (await board.boundingBox())!;
-    const pixelsPerUnit = box.height / (2 * Math.max(HALF_HEIGHT_MIN, HALF_WIDTH / (box.width / box.height)));
-    await page.mouse.click(box.x + box.width / 2 + Math.sqrt(3) * pixelsPerUnit, box.y + box.height / 2);
+    // The first Hex goes where the player taps: the cell east of the Start hex, wherever the isometric view puts it.
+    const tap = await page.evaluate(async () => {
+      const { districtSceneHandle } = await import('../src/store/districtSceneHandle.ts');
+      const canvas = document.querySelector('[data-testid="district-board"] canvas')!.getBoundingClientRect();
+      const centre = districtSceneHandle.current!.screenCenterOf({ q: 1, r: 0 });
+      return { x: canvas.left + centre.x, y: canvas.top + centre.y };
+    });
+    await page.mouse.click(tap.x, tap.y);
     await expect(page.getByRole('button', { name: 'Place' })).toBeEnabled();
-    await page.getByRole('button', { name: 'Turn' }).click();
+    await page.getByRole('button', { name: 'Turn', exact: true }).click();
+    await page.getByRole('button', { name: 'Turn the other way' }).click();
+    await page.getByRole('button', { name: 'Turn', exact: true }).click();
     await page.getByRole('button', { name: 'Place' }).click();
     await expect(page.getByText('Hexes left').locator('xpath=following-sibling::strong')).toHaveText('22');
 

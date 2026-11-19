@@ -1002,6 +1002,7 @@ export const CATALOG = {
   'district.hand': ['Hex to place', 'Hexagone à poser'],
   'district.next': ['Next Hexes', 'Hexagones suivants'],
   'district.rotate': ['Turn', 'Tourner'],
+  'district.rotateBack': ['Turn the other way', 'Tourner dans l’autre sens'],
   'district.place': ['Place', 'Poser'],
   'district.giveUp': ['Give up', 'Abandonner'],
   'district.giveUpConfirm': ['Give up this game? Your best score is kept.', 'Abandonner cette partie ? Votre meilleur score est conservé.'],

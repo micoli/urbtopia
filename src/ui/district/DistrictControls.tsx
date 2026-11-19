@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useStore } from 'zustand';
 import type { Building } from '../../core';
 import { t } from '../../i18n/t';
 import { districtStore } from '../../store/districtStore';
@@ -16,17 +15,11 @@ interface DistrictControlsProps {
 }
 
 export function DistrictControls({ building, view }: DistrictControlsProps) {
-  const rotation = useStore(districtStore, store => store.rotation);
   const [confirmGiveUp, setConfirmGiveUp] = useState(false);
   const [showLesson, setShowLesson] = useState(false);
   const send = gameStore.getState().send;
   const underWay = view.game !== undefined && !view.over;
 
-  const place = () => {
-    if (!view.picked?.valid) return;
-    send({ type: 'PlaceDistrictHex', buildingId: building.id, cell: view.picked.cell, rotation });
-    districtStore.getState().clearDraft();
-  };
   const startGame = () => {
     send({ type: 'StartDistrictGame', buildingId: building.id });
     districtStore.getState().clearDraft();
@@ -41,15 +34,12 @@ export function DistrictControls({ building, view }: DistrictControlsProps) {
     <>
       {underWay ? (
         <>
-          <ActionButton onClick={() => districtStore.getState().rotate()}><Icon name="rotateRight" /> {t('district.rotate')}</ActionButton>
-          <ActionButton variant="primary" disabled={!view.picked?.valid} onClick={place}><Icon name="check" /> {t('district.place')}</ActionButton>
           <ActionButton variant="danger" onClick={() => setConfirmGiveUp(true)}>{t('district.giveUp')}</ActionButton>
         </>
       ) : (
         <ActionButton variant="primary" onClick={startGame}><Icon name="play" /> {t('district.newGame')}</ActionButton>
       )}
       <ActionButton onClick={() => setShowLesson(true)}><Icon name="info" /> {t('district.howToPlay')}</ActionButton>
-      <ActionButton onClick={() => districtStore.getState().close()}>{t('district.close')}</ActionButton>
       {showLesson ? <DistrictDemonstrationDialog onClose={() => setShowLesson(false)} /> : null}
       {confirmGiveUp ? <DistrictGiveUpDialog onStay={() => setConfirmGiveUp(false)} onGiveUp={giveUp} /> : null}
     </>

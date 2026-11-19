@@ -10,6 +10,7 @@ export interface DistrictStore {
   close: () => void;
   selectCell: (cell: Cell | null) => void;
   rotate: () => void;
+  rotateBack: () => void;
   clearDraft: () => void;
 }
 
@@ -21,5 +22,6 @@ export const districtStore = createStore<DistrictStore>((set) => ({
   close: () => set({ officeId: null, cell: null, rotation: 0 }),
   selectCell: (cell) => set({ cell }),
   rotate: () => set(store => ({ rotation: (store.rotation + 1) % HEX_EDGE_COUNT })),
+  rotateBack: () => set(store => ({ rotation: (store.rotation + HEX_EDGE_COUNT - 1) % HEX_EDGE_COUNT })),
   clearDraft: () => set({ cell: null, rotation: 0 }),
 }));

@@ -7,6 +7,8 @@ import { t } from '../../i18n/t';
 import { ActionButton } from '../common/ActionButton';
 import { Dialog } from '../common/Dialog';
 import { DistrictCanvas } from './DistrictCanvas';
+import { DistrictCloseButton } from './DistrictCloseButton';
+import { DistrictViewButtons } from './DistrictViewButtons';
 
 interface DistrictDemonstrationDialogProps {
   onClose: () => void;
@@ -31,12 +33,16 @@ export function DistrictDemonstrationDialog({ onClose }: DistrictDemonstrationDi
   const game = state.buildings.find(building => building.id === districtDemonstration.buildingId)?.district?.game;
   const board = useMemo(() => (game ? districtBoardOf({ seed: state.seed, officeId: districtDemonstration.buildingId }, game) : []), [game, state.seed]);
   return (
-    <Dialog>
+    <Dialog className="district-backdrop">
       <Dialog.Title>{textOf(districtDemonstration.title)}</Dialog.Title>
       <Dialog.Body>
         <div className="district-screen">
+          <DistrictCloseButton onClick={onClose} />
           <p className="district-demo__step">{index + 1} / {checkpoints.length} · <strong>{textOf(step.title)}</strong></p>
-          <DistrictCanvas board={board} candidates={NO_CELLS} picked={null} interactive={false} />
+          <div className="district-stage">
+            <DistrictCanvas board={board} candidates={NO_CELLS} picked={null} interactive={false} />
+            <DistrictViewButtons />
+          </div>
           <dl className="district-demo__phases">
             {PHASES.map(([phase, label]) => (
               <div key={phase}>
@@ -50,7 +56,6 @@ export function DistrictDemonstrationDialog({ onClose }: DistrictDemonstrationDi
       <Dialog.Actions>
         <ActionButton disabled={index === 0} onClick={() => setIndex(index - 1)}>{t('demo.previous')}</ActionButton>
         <ActionButton variant="primary" disabled={index === checkpoints.length - 1} onClick={() => setIndex(index + 1)}>{t('demo.next')}</ActionButton>
-        <ActionButton onClick={onClose}>{t('district.close')}</ActionButton>
       </Dialog.Actions>
     </Dialog>
   );
