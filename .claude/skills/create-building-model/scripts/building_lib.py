@@ -1800,9 +1800,14 @@ def add_feature(spec, parts, feature):
             across, ridge_z = 0.0, top + roof_height(spec)
         else:
             _, across, _, ridge_z = slope_frame(spec)
-        x, y = _to_xy(spec, roof_dimensions(spec)[0] * 0.25, across)
-        parts.append(lpm.prism("vent", 6, 0.032, 0.085, at=(x, y, ridge_z - 0.03), color=PALETTE_NAMES.index("slate")))
-        parts.append(lpm.prism("vent_cap", 6, 0.042, 0.016, at=(x, y, ridge_z + 0.055), color=PALETTE_NAMES.index("slate_dark")))
+        # Optional: a row of `count` vents `spacing` apart, drawn `scale` times larger, with a cap of its own color; the defaults give the single small vent.
+        count, scale, spacing = feature.get("count", 1), feature.get("scale", 1.0), feature.get("spacing", 0.0)
+        cap = PALETTE_NAMES.index(feature["cap"]) if "cap" in feature else PALETTE_NAMES.index("slate_dark")
+        for index in range(count):
+            x, y = _to_xy(spec, roof_dimensions(spec)[0] * 0.25 + (index - (count - 1) / 2) * spacing, across)
+            suffix = "" if count == 1 else f"_{index}"
+            parts.append(lpm.prism(f"vent{suffix}", 6, 0.032 * scale, 0.085 * scale, at=(x, y, ridge_z - 0.03), color=PALETTE_NAMES.index("slate")))
+            parts.append(lpm.prism(f"vent_cap{suffix}", 6, 0.042 * scale, 0.016 * scale, at=(x, y, ridge_z + 0.055 * scale), color=cap))
     elif kind == "antenna":
         parts.append(lpm.prism("antenna_pole", 6, 0.008, 0.28, at=(-body_width * 0.2, 0, top), color=dark))
         for level, bar in enumerate((0.13, 0.1, 0.07)):

@@ -313,6 +313,7 @@ export type BuildingId =
   | 'pirate-patch-grass'
   | 'pirate-patch-grass-foliage'
   | 'pirateCove'
+  | 'planningOffice'
   | 'policeStation'
   | 'powerPlant'
   | 'railStation'

@@ -1,0 +1,43 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "planning",
+  "section": "build.leisure",
+  "cost": 500,
+  "unlockCitizens": 150,
+  "requiresRoad": true,
+  "name": {
+    "en": "Planning office",
+    "fr": "Bureau d'urbanisme"
+  },
+  "description": {
+    "en": "Plan a district on its own board: place Hexes drawn from a Deck and match their edges. The best plan raises the Well-being of the Homes around the office, more at each Tier. Unlocks at {unlockCitizens} Citizens, costs {cost} Urbs; upgrades give {tierCount} Tiers.",
+    "fr": "Dessinez un quartier sur son propre plateau : posez des hexagones tirés d'une pioche et assortissez leurs bords. Le meilleur plan augmente le bien-être des logements autour du bureau, de plus en plus à chaque niveau. Se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs ; {tierCount} niveaux."
+  },
+  "tiers": [
+    {
+      "model": "buildings-planning-office-2x2-2f",
+      "footprint": [2, 2]
+    },
+    {
+      "upgradeCost": {
+        "urbs": 300
+      }
+    },
+    {
+      "upgradeCost": {
+        "urbs": 700
+      }
+    },
+    {
+      "upgradeCost": {
+        "urbs": 1500
+      }
+    },
+    {
+      "upgradeCost": {
+        "urbs": 3500
+      }
+    }
+  ],
+  "extraCopyCitizens": [600, 1500]
+}

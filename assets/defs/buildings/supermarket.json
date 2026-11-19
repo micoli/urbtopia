@@ -69,6 +69,22 @@
       "footprint": [3, 2]
     }
   ],
+  "solarPanels": {
+    "panels": [
+      {
+        "model": "industrial-solar-panel-landscape",
+        "x": 0.117,
+        "y": -0.214,
+        "z": 0,
+        "rotationX": 0,
+        "rotationY": 0,
+        "rotationZ": 0,
+        "scale": 0.9
+      }
+    ],
+    "cost": 250,
+    "unlockCitizens": 150
+  },
   "rankAt": [1200, 5000],
   "staffRoles": ["manager", "cashier", "stocker", "security"],
   "frontRole": "cashier",

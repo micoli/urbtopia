@@ -1,0 +1,53 @@
+export const meta = {
+  title: 'The District plan',
+  summary: 'Place Hexes on a board, match their edges, and raise the Well-being of the Homes around a Planning office.',
+  order: 56,
+};
+
+## What it is
+
+The **Planning office** hosts a short placement game, the **District plan**. It opens from the side panel of the office, on a screen of its own: the city stands still while you play, and nothing in it changes until the game ends with a better score than before. You can play as often as you like.
+
+## How a game goes
+
+A game is a **Deck** of **Hexes**: 24 at Tier 1, and more at each Tier of the office (28, 32, 36, 40). Each Hex has six edges, and each edge has a category: **Habitat**, **Park**, **Commerce**, **Industry**, **Service** or **Water**. A Hex mixes two categories.
+
+Every game of an office plays the **same Deck**: a better score comes from better placements, not from a better draw. Every Deck can be played to Gold: a game that looks impossible is only a matter of finding the right cells.
+
+The first Hex of the Deck, the **Start hex**, is already at the centre of the board. For each other Hex:
+
+1. **Touch a free cell** next to a Hex already placed, within four cells of the centre. A ghost shows the Hex there, and the score it would earn.
+2. **Turn** the Hex, one step of 60° at a time, until its edges fit.
+3. **Place** it. **Undo** takes back the last Hex, one at a time, down to the Start hex.
+
+You see the Hex in hand and the next two. The game ends when the Deck is empty. You can give up a game at any time: your best score stays.
+
+## Scoring
+
+Every pair of edges that touch scores. An edge that touches nothing counts for nothing.
+
+| Pair | Score |
+| --- | --- |
+| Habitat – Park | +3 |
+| Habitat – Service | +2 |
+| Habitat – Commerce | +1 |
+| Habitat – Industry | −2 |
+| Park – Water | +2 |
+| Commerce – Service | +1 |
+| Industry – Water | −1 |
+| Two edges of the same category | +1 |
+| Any other pair | 0 |
+
+The pairs follow the Well-being of a real city: Habitat likes Parks and Services and does not like Industry.
+
+## Rank and bonus
+
+The best score of an office gives it a **Rank**, by points per Hex of the Deck: **Bronze** from 2.5, **Silver** from 3.5, **Gold** from 4.5. A longer Deck asks for more points, so the Rank stays as hard to reach.
+
+The Rank gives the **Homes within reach** of the office a **Well-being bonus**: 40 % of the cap of the Tier for Bronze, 70 % for Silver, 100 % for Gold. The cap and the reach grow with the Tier of the office. A Home takes the **best** bonus among the offices that reach it: they never add up. An office that was never played gives nothing, and never takes anything away.
+
+If you demolish an office, its bonus and its games go with it. If you upgrade it during a game, the game keeps the Deck it started with; the new cap counts at once for your best score, and the next game uses the Deck of the new Tier.
+
+## Learning it
+
+Press **How to play** on the District plan screen for a short demonstration: six Hexes, and why each one goes where it does.

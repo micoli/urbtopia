@@ -14,6 +14,7 @@ import { selectionFocus } from '../../store/selectionFocus';
 import { readCameraView, writeCameraView, type CameraView } from '../../scene/cameraUrl';
 import { applyBuildingTarget, currentBuildingTarget, writeBuildingTarget } from '../../store/buildingUrl';
 import { venueStore } from '../../store/venueStore';
+import { districtStore } from '../../store/districtStore';
 import { crowdFactor } from '../../scene/crowdDensity';
 import { isAlwaysDayRequested, pinnedCycleHourOf } from '../../store/dayCycleFlags';
 import { hideSplash, setSplashProgress } from '../system/splash';
@@ -140,6 +141,7 @@ export function SceneCanvas() {
     const unsubscribeBuildingUrl = [
       uiStore.subscribe((store, previous) => { if (store.selectedBuildingId !== previous.selectedBuildingId) syncBuildingUrl(); }),
       venueStore.subscribe((store, previous) => { if (store.venueId !== previous.venueId) syncBuildingUrl(); }),
+      districtStore.subscribe((store, previous) => { if (store.officeId !== previous.officeId) syncBuildingUrl(); }),
     ];
     const unsubscribeGame = gameStore.subscribe((store, previous) => {
       if (store.state === previous.state) return;

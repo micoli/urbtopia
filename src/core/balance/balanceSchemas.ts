@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { HEX_CATEGORIES } from '../districtPlan/districtPlanVocabulary.ts';
 import { SANCTIONABLE_FACTOR_IDS } from '../environment/needFactors.ts';
 import { INTERIOR_FAMILIES_ALL, INTERIOR_PARTS_ALL, INTERIOR_ROLES_ALL, STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
 
@@ -141,6 +142,41 @@ export const homeInteriorBalanceSchema = z
     refundRatio: share,
   })
   .meta({ title: 'Home interior balance', description: 'assets/defs/balance/homeInterior.json: the size of a Home interior by Tier, the weights of the groups of its Comfort and the Well-being it adds at most.' });
+
+const hexCategory = z.enum(HEX_CATEGORIES);
+const filledText = z.string().regex(/\S/, 'must not be blank');
+
+// How a game of the District plan is scored: the size of its board, and what each pair of touching edges is worth.
+export const districtPlanBalanceSchema = z
+  .strictObject({
+    ...schemaField,
+    boardRadius: z.int().min(1),
+    // The model that stands for each category on a Hex, by Model id.
+    categoryModels: z.strictObject(Object.fromEntries(HEX_CATEGORIES.map(category => [category, filledText])) as Record<(typeof HEX_CATEGORIES)[number], z.ZodString>),
+    // By Tier of the Planning office: the most Well-being it adds to a Home in reach, and the reach in tiles.
+    wellbeingCaps: z.array(positive).min(1),
+    radii: z.array(z.int().min(1)).min(1),
+    // The share of the cap each Rank gives.
+    rankShares: z.strictObject({ bronze: share, silver: share, gold: share }).refine(({ bronze, silver, gold }) => bronze < silver && silver < gold, 'the shares of the Ranks must rise from bronze to gold'),
+    // How often each category is drawn for the edges of a Hex: a Deck with more Habitat and Park can reach Gold more often.
+    categoryWeights: z.strictObject(Object.fromEntries(HEX_CATEGORIES.map(category => [category, positive])) as Record<(typeof HEX_CATEGORIES)[number], z.ZodNumber>),
+    // The Hexes of a Deck by Tier, and how many of the next Hexes the player sees.
+    deckSizes: z.array(z.int().min(1)).min(1),
+    previewCount: count,
+    // A Hex has a majority category and a run of contiguous edges of another category; the length of that run is one of these.
+    minorEdgeCounts: z.array(z.int().min(1).max(5)).min(1),
+    // The score per Hex of the Deck that earns each Rank.
+    rankScorePerHex: z
+      .strictObject({ bronze: positive, silver: positive, gold: positive })
+      .refine(({ bronze, silver, gold }) => bronze < silver && silver < gold, 'the scores of the Ranks must rise from bronze to gold'),
+    sameCategoryScore: z.int(),
+    // A pair of different categories not listed here is worth nothing.
+    pairScores: z
+      .array(z.strictObject({ between: z.tuple([hexCategory, hexCategory]), score: z.int() }))
+      .refine(pairs => pairs.every(({ between }) => between[0] !== between[1]), 'a pair needs two different categories, the same category is scored by sameCategoryScore')
+      .refine(pairs => new Set(pairs.map(({ between }) => [...between].sort().join('|'))).size === pairs.length, 'a pair of categories is listed once, in either order'),
+  })
+  .meta({ title: 'District plan balance', description: 'assets/defs/balance/districtPlan.json: the board of the District plan and the score of each pair of touching edges.' });
 
 // What building a road costs per tile, and how fast a car drives on it, by road Tier.
 export const trafficBalanceSchema = z

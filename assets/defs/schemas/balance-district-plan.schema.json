@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "boardRadius": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "categoryModels": {
+      "type": "object",
+      "properties": {
+        "habitat": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "park": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "commerce": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "industry": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "service": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "water": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "habitat",
+        "park",
+        "commerce",
+        "industry",
+        "service",
+        "water"
+      ],
+      "additionalProperties": false
+    },
+    "wellbeingCaps": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      }
+    },
+    "radii": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9007199254740991
+      }
+    },
+    "rankShares": {
+      "type": "object",
+      "properties": {
+        "bronze": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "silver": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "gold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "bronze",
+        "silver",
+        "gold"
+      ],
+      "additionalProperties": false
+    },
+    "categoryWeights": {
+      "type": "object",
+      "properties": {
+        "habitat": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "park": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "commerce": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "industry": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "service": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "water": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "habitat",
+        "park",
+        "commerce",
+        "industry",
+        "service",
+        "water"
+      ],
+      "additionalProperties": false
+    },
+    "deckSizes": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9007199254740991
+      }
+    },
+    "previewCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "minorEdgeCounts": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5
+      }
+    },
+    "rankScorePerHex": {
+      "type": "object",
+      "properties": {
+        "bronze": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "silver": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "gold": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "bronze",
+        "silver",
+        "gold"
+      ],
+      "additionalProperties": false
+    },
+    "sameCategoryScore": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "pairScores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "between": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "string",
+                "enum": [
+                  "habitat",
+                  "park",
+                  "commerce",
+                  "industry",
+                  "service",
+                  "water"
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "habitat",
+                  "park",
+                  "commerce",
+                  "industry",
+                  "service",
+                  "water"
+                ]
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "score": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "between",
+          "score"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "boardRadius",
+    "categoryModels",
+    "wellbeingCaps",
+    "radii",
+    "rankShares",
+    "categoryWeights",
+    "deckSizes",
+    "previewCount",
+    "minorEdgeCounts",
+    "rankScorePerHex",
+    "sameCategoryScore",
+    "pairScores"
+  ],
+  "additionalProperties": false,
+  "title": "District plan balance",
+  "description": "assets/defs/balance/districtPlan.json: the board of the District plan and the score of each pair of touching edges."
+}

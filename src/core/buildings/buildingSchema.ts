@@ -227,6 +227,15 @@ const officeBuilding = z.strictObject({
   tiers: tiersOf({ ...homeLook, jobs: z.int().min(1), power: positive }, ['model', 'footprint', 'jobs', 'power']),
 });
 
+// A Planning office hosts the District plan; its Tier sets the size of the Deck and the reach and cap of the Well-being it adds, from `districtPlan.json`.
+const planningBuilding = z.strictObject({
+  kind: z.literal('planning'),
+  ...identity,
+  ...sited,
+  ...repeatable,
+  tiers: tiersOf(homeLook, ['model', 'footprint']),
+});
+
 // The Marina: the number of Boats each Tier moors.
 const marinaBuilding = z.strictObject({
   kind: z.literal('marina'),
@@ -280,7 +289,7 @@ const venueBuilding = z.strictObject({
 });
 
 export const buildingSchema = z
-  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, greenBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, shopBuilding, officeBuilding, venueBuilding, marinaBuilding, pirateCoveBuilding, standsBuilding, seaSceneryBuilding, transitStopBuilding])
+  .discriminatedUnion('kind', [standardBuilding, sportBuilding, natureBuilding, homeBuilding, productionBuilding, farmBuilding, storageBuilding, utilityBuilding, greenBuilding, solarBuilding, batteryBuilding, backupBuilding, facilityBuilding, casinoBuilding, shopBuilding, officeBuilding, venueBuilding, planningBuilding, marinaBuilding, pirateCoveBuilding, standsBuilding, seaSceneryBuilding, transitStopBuilding])
   .refine(building => building.kind === 'nature' || !building.accessModes || building.requiresRoad, { message: 'accessModes needs requiresRoad', path: ['accessModes'] })
   .meta({ title: 'Building', description: 'A building of Urbtopia, one file per building id in assets/defs/buildings.' });
 

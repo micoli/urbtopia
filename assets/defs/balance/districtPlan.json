@@ -1,0 +1,66 @@
+{
+  "$schema": "../schemas/balance-district-plan.schema.json",
+  "boardRadius": 4,
+  "categoryModels": {
+    "habitat": "buildings-house-1x1-1f-colonial-a",
+    "park": "buildings-apple-tree-1x1",
+    "commerce": "buildings-shop-general-1x1-t1-tone-a",
+    "industry": "buildings-workshop-2x2-t1-tone-a",
+    "service": "buildings-school-2x2",
+    "water": "buildings-watertower-1x1-t1-tone-a"
+  },
+  "wellbeingCaps": [3, 4, 6, 8, 10],
+  "radii": [4, 5, 6, 7, 8],
+  "rankShares": {
+    "bronze": 0.4,
+    "silver": 0.7,
+    "gold": 1
+  },
+  "categoryWeights": {
+    "habitat": 3,
+    "park": 3,
+    "commerce": 2,
+    "industry": 1,
+    "service": 2,
+    "water": 1
+  },
+  "deckSizes": [24, 28, 32, 36, 40],
+  "previewCount": 2,
+  "minorEdgeCounts": [1, 2, 3],
+  "rankScorePerHex": {
+    "bronze": 2.5,
+    "silver": 3.5,
+    "gold": 4.5
+  },
+  "sameCategoryScore": 1,
+  "pairScores": [
+    {
+      "between": ["habitat", "park"],
+      "score": 3
+    },
+    {
+      "between": ["habitat", "service"],
+      "score": 2
+    },
+    {
+      "between": ["habitat", "commerce"],
+      "score": 1
+    },
+    {
+      "between": ["habitat", "industry"],
+      "score": -2
+    },
+    {
+      "between": ["park", "water"],
+      "score": 2
+    },
+    {
+      "between": ["commerce", "service"],
+      "score": 1
+    },
+    {
+      "between": ["industry", "water"],
+      "score": -1
+    }
+  ]
+}

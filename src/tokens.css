@@ -14,6 +14,20 @@
   --color-white: #fff;
   --color-black: #000;
 
+  /* Hex categories of the District plan */
+  --hex-habitat: #f0a35e;
+  --hex-park: #5fbf6a;
+  --hex-commerce: #d96ba0;
+  --hex-industry: #8d8f99;
+  --hex-service: #7b6fd6;
+  --hex-water: #3aaee0;
+  --hex-base: #2a3042;
+  --hex-edge: #11151f;
+  --hex-plinth: #181c29;
+  --hex-seam: #fff3b0;
+  --hex-candidate: #ffffff;
+  --hex-invalid: #e5484d;
+
   /* Light overlays on dark surfaces */
   --white-a04: rgba(255, 255, 255, 0.04);
   --white-a05: rgba(255, 255, 255, 0.05);

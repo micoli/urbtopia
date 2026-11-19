@@ -694,6 +694,7 @@ export type ModelId =
   | 'buildings-pirate-cove-t1'
   | 'buildings-pirate-cove-t2'
   | 'buildings-pirate-cove-t3'
+  | 'buildings-planning-office-2x2-2f'
   | 'buildings-police-station-2x2'
   | 'buildings-police-station-2x2-3f'
   | 'buildings-police-station-2x2-4f'

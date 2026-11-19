@@ -1,9 +1,9 @@
 import { useRef } from 'react';
-import { footprintOf, isHomeInteriorUnlocked, isHomeType, isInteriorBuilding, isInteriorUnlocked, isVenue, nextFront, officeYieldMultiplierOf, type Building, type GameState } from '../../core';
+import { footprintOf, isHomeInteriorUnlocked, isHomeType, isInteriorBuilding, isInteriorUnlocked, isPlanningOffice, isVenue, nextFront, officeYieldMultiplierOf, type Building, type GameState } from '../../core';
 import { t } from '../../i18n/t';
 import { gameStore } from '../../store/gameStore';
 import { sceneHandle } from '../../store/sceneHandle';
-import { venueStore } from '../../store/venueStore';
+import { openInterior } from '../../store/openInterior';
 import { collectBadgeLabel } from '../collect/CollectBadge';
 import { useGame, useUi } from '../common/hooks';
 import { Icon } from '../common/Icon';
@@ -20,7 +20,7 @@ type InteriorAccess = 'none' | 'locked' | 'open';
 
 // Whether a building has an interior to open, and whether the city has grown enough to open it; a plain string keeps the store selector stable.
 function interiorAccessOf(state: GameState, building: Building): InteriorAccess {
-  if (isVenue(building)) return 'open';
+  if (isVenue(building) || isPlanningOffice(building)) return 'open';
   if (isInteriorBuilding(building)) return isInteriorUnlocked(state, building.type) ? 'open' : 'locked';
   if (isHomeType(building.type)) return isHomeInteriorUnlocked(state) ? 'open' : 'locked';
   return 'none';
@@ -59,7 +59,7 @@ export function BuildingFloatingBar() {
     <div ref={bar} className={`building-floating-bar${floating.radial ? ' floating-menu--radial' : ''}`}>
       <FloatingMenuItems radial={floating.radial}>
       {canCollect ? <IconButton size="md" tone="accent" label={t('panel.collect')} disabled={!collectable} onClick={() => gameStore.getState().send({ type: 'Collect', buildingId: building.id })}><Icon name="money" /></IconButton> : null}
-      {canOpenInterior ? <IconButton size="md" tone="light" label={t('panel.interior')} disabled={interiorAccess !== 'open'} onClick={() => venueStore.getState().open(building.id)}><Icon name="build" /></IconButton> : null}
+      {canOpenInterior ? <IconButton size="md" tone="light" label={isPlanningOffice(building) ? t('district.title') : t('panel.interior')} disabled={interiorAccess !== 'open'} onClick={() => openInterior(building)}><Icon name="build" /></IconButton> : null}
       {floating.move ? <IconButton size="md" tone="light" label={t('panel.move')} onClick={moveSelected}><Icon name="move" /></IconButton> : null}
       {floating.rotate ? <IconButton size="md" tone="light" label={t('panel.rotateRight')} disabled={!canTurn} onClick={turn}><Icon name="rotateRight" /></IconButton> : null}
       {floating.sellBuilding ? <IconButton size="md" tone="danger" label={t('panel.sell')} onClick={sellSelected}><Icon name="trash" /></IconButton> : null}

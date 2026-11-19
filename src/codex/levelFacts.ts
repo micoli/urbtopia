@@ -8,6 +8,7 @@ import { t } from '../i18n/t';
 import type { MessageKey } from '../i18n/messages';
 import { isHomeCodexId, solarBaseOf, type CodexId } from './catalog';
 import { runningCostFactsOf } from './runningCostFacts';
+import { districtCapOf, districtRadiusOf } from '../core/districtPlan/districtBonus';
 
 export interface LevelFact {
   label: MessageKey;
@@ -206,6 +207,7 @@ const FACT_RULES: Record<BuildingKind, (id: BuildingType, level: number) => Leve
   solar: (_id, level) => [profileFact('codex.profile.solar', level)],
   green: greenFacts,
   nature: greenFacts,
+  planning: (_id, level) => [numericFact('codex.fact.radius', tier => districtRadiusOf(tier), level), numericFact('codex.fact.wellbeing', tier => districtCapOf(tier), level)],
   marina: (_id, level) => [numericFact('codex.fact.boats', tier => marinaCapacity({ tier }), level)],
   pirateCove: (_id, level) => [numericFact('codex.fact.seatCap', tier => seatCapOf({ tier }), level)],
   stands: () => [],

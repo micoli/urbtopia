@@ -17352,6 +17352,17 @@
     "scale": 1,
     "rotationOffset": 180
   },
+  "buildings-planning-office-2x2-2f": {
+    "file": "buildings/planning-office-2x2-2f",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      2,
+      2
+    ],
+    "scale": 1,
+    "rotationOffset": 180
+  },
   "buildings-police-station-2x2": {
     "file": "buildings/police-station-2x2",
     "source": "managed",
