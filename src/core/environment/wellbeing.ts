@@ -20,6 +20,7 @@ import { greenBeltBonusOf } from '../politics/ordinanceEffects';
 import { incineratorPenaltyOf, odorPenaltyOf } from '../waste/wasteNuisance';
 import { buildingsOfType } from '../buildings/buildingIndex';
 import { comfortBonusOf } from '../homes/homeInterior';
+import { districtBonusOf } from '../districtPlan/districtBonus';
 import { careWellbeingOf } from '../interiors/serviceInterior';
 import { servingFacilitiesOf } from '../services/services';
 
@@ -103,9 +104,10 @@ function computeHomeBenefits(state: GameState, home: Building, coalRates: Readon
   const knowledgeBonus = Math.max(0, Math.min(knowledgeEffect(state, 'wellbeing'), WELLBEING_LIMIT - withServices - walkingBonus - beltBonus));
   const comfortBonus = Math.max(0, Math.min(comfortBonusOf(home), WELLBEING_LIMIT - withServices - walkingBonus - beltBonus - knowledgeBonus));
   const careBonus = Math.max(0, Math.min(careBonusOf(state, home, congestion), WELLBEING_LIMIT - withServices - walkingBonus - beltBonus - knowledgeBonus - comfortBonus));
-  const withoutSolidarity = withServices + walkingBonus + beltBonus + knowledgeBonus + comfortBonus + careBonus - pollutionPenalty - odorPenalty - servicePenalty - congestionPenalty - gatheringPenalty - unemploymentPenalty;
+  const districtBonus = Math.max(0, Math.min(districtBonusOf(state, home), WELLBEING_LIMIT - withServices - walkingBonus - beltBonus - knowledgeBonus - comfortBonus - careBonus));
+  const withoutSolidarity = withServices + walkingBonus + beltBonus + knowledgeBonus + comfortBonus + careBonus + districtBonus - pollutionPenalty - odorPenalty - servicePenalty - congestionPenalty - gatheringPenalty - unemploymentPenalty;
   const solidarity = Math.min(solidarityBonus(state), WELLBEING_LIMIT - withoutSolidarity);
-  return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, odorPenalty, servicePenalty, congestionPenalty, gatheringPenalty, unemploymentPenalty, walkingBonus, knowledgeBonus, comfortBonus, solidarityBonus: solidarity };
+  return { ...green, wellbeing: withoutSolidarity + solidarity, serviceBonus: withServices - green.wellbeing, pollutionPenalty, odorPenalty, servicePenalty, congestionPenalty, gatheringPenalty, unemploymentPenalty, walkingBonus, knowledgeBonus, comfortBonus, districtBonus, solidarityBonus: solidarity };
 }
 
 export function cityBenefits(state: GameState, coalRates: ReadonlyMap<number, number> = energyStats(state).coalRates) {

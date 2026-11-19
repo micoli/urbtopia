@@ -150,6 +150,11 @@ export const districtPlanBalanceSchema = z
   .strictObject({
     ...schemaField,
     boardRadius: z.int().min(1),
+    // By Tier of the Planning office: the most Well-being it adds to a Home in reach, and the reach in tiles.
+    wellbeingCaps: z.array(positive).min(1),
+    radii: z.array(z.int().min(1)).min(1),
+    // The share of the cap each Rank gives.
+    rankShares: z.strictObject({ bronze: share, silver: share, gold: share }).refine(({ bronze, silver, gold }) => bronze < silver && silver < gold, 'the shares of the Ranks must rise from bronze to gold'),
     // The Hexes of a Deck by Tier, and how many of the next Hexes the player sees.
     deckSizes: z.array(z.int().min(1)).min(1),
     previewCount: count,

@@ -10,6 +10,49 @@
       "minimum": 1,
       "maximum": 9007199254740991
     },
+    "wellbeingCaps": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      }
+    },
+    "radii": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9007199254740991
+      }
+    },
+    "rankShares": {
+      "type": "object",
+      "properties": {
+        "bronze": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "silver": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "gold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "bronze",
+        "silver",
+        "gold"
+      ],
+      "additionalProperties": false
+    },
     "deckSizes": {
       "minItems": 1,
       "type": "array",
@@ -112,6 +155,9 @@
   },
   "required": [
     "boardRadius",
+    "wellbeingCaps",
+    "radii",
+    "rankShares",
     "deckSizes",
     "previewCount",
     "minorEdgeCounts",

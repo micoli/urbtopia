@@ -1,6 +1,6 @@
 # Planning office and Well-being bonus
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 02
 Spec: ../spec.md
 

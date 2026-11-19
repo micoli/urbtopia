@@ -15,6 +15,7 @@ import type { VenueTutorialStep, VenueTutorialType } from '../progression/venueT
 import type { Difficulty } from './difficulty';
 import type { PoliticsState } from '../politics/politics';
 import type { DonationRecord } from '../economy/solidarity';
+import type { DistrictOffice } from '../districtPlan/districtGame';
 
 export type BuildingType = BuildingId;
 
@@ -185,6 +186,8 @@ export interface Building extends Coord {
   name?: string;
   venue?: VenueData;
   interior?: InteriorData;
+  // Planning office only: its games of the District plan.
+  district?: DistrictOffice;
   attraction?: AttractionData;
   club?: ClubData;
   // Stands only: the Pirate cove they belong to.
