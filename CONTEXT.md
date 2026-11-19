@@ -527,6 +527,34 @@ _Avoid_: Venue, room (a Hotel's Room is a bed with a bathroom), apartment
 A note from 0 to 100 of a Home interior, built from how many of the Citizens' daily needs it covers (sleeping, eating, cooking, washing, leisure) and, with diminishing returns, from its decor. It only adds a small bonus to the Well-being of the Home, capped by the Home's Tier; an empty interior is never penalized.
 _Avoid_: Standing (a Hotel Room's class), Reputation, Happiness
 
+**Planning office**:
+A building with Tiers that opens the District plan from its side panel and anchors its reward: the Homes within its radius receive the Well-being bonus of its best Rank. It is unlocked at 150 Citizens and has a Build limit with an Escalating price. Overlapping offices never add up: a Home takes the best bonus that reaches it. An office that was never played, or was demolished, changes nothing.
+_Avoid_: Town planning, Architect's office
+
+**District plan**:
+The hex placement game of a Planning office, played on its own screen outside the city: the player places Hexes from a Deck on a hexagonal board and is scored on how well their edges fit. The best score of the office decides its Rank. It has no effect on Parcels, roads or the simulation other than the Well-being bonus of the Planning office.
+_Avoid_: Neighbourhood game, puzzle, minigame
+
+**Hex**:
+A hexagonal piece of the District plan with six typed edges, two Hex categories per Hex, turned in steps of 60° before it is placed. Not a tile of the map, a Lot of a Trade or a Parcel.
+_Avoid_: Tile, Card, Piece
+
+**Hex category**:
+The type of an edge of a Hex: Habitat, Park, Commerce, Industry, Service or Water. Not a Good category.
+_Avoid_: Zone, Good category
+
+**Deck**:
+The Hexes of one game of the District plan, drawn from the game's Seed and the game number, with the next two in view. Its size grows with the Tier of the Planning office (24 Hexes at Tier 1). The game ends when it is empty.
+_Avoid_: Pile, Pioche, Draw pile
+
+**Start hex**:
+The Hex the Deck imposes at the centre of the board; the board then grows by Hexes that touch a Hex already placed, within a radius of 4.
+_Avoid_: Seed hex (the Seed is the game's random stream)
+
+**Rank**:
+Bronze, Silver or Gold: the level reached by the best score of a Planning office, giving 40 %, 70 % or 100 % of the Well-being cap of its Tier. The thresholds scale with the size of the Deck.
+_Avoid_: Level, Star, Medal
+
 **Machine**:
 A Fixture of a Factory interior that needs Drive, Flow or both, and a given turning direction for its Drive. Linked, it contributes to the bonus of the Factory; unlinked, it contributes nothing.
 _Avoid_: Equipment, Workshop
