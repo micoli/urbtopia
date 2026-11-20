@@ -23,6 +23,15 @@ export function definitionProblems(): string[] {
   ];
 }
 
+// A file read mid-write (a branch switch, a save) must not crash the dev server.
+const problemsOrReadFailure = (): string[] => {
+  try {
+    return definitionProblems();
+  } catch (error) {
+    return [error instanceof Error ? error.message : String(error)];
+  }
+};
+
 const report = (problems: string[]) => `Invalid game object definitions:\n${problems.join('\n')}`;
 
 // Production ships data checked here and never parses it: a build fails on an invalid file, the dev server reports it at start and on each change.
@@ -42,7 +51,7 @@ export function validateDefinitions(): Plugin {
     configureServer(server) {
       server.watcher.on('all', (_event, file) => {
         if (!WATCHED.some(path => file.includes(path))) return;
-        const problems = definitionProblems();
+        const problems = problemsOrReadFailure();
         if (!problems.length) return;
         server.config.logger.error(report(problems));
         server.ws.send({ type: 'error', err: { message: report(problems), stack: '' } });
