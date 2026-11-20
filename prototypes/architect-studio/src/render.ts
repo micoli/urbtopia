@@ -2,6 +2,7 @@
 // x = right (seen from outside), y = up, z = outward normal.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { ViewHelper } from 'three/addons/helpers/ViewHelper.js';
 import { loadSlotModels, slotModel } from './slotModels.ts';
 import {
@@ -33,6 +34,8 @@ export type SlotRef = Edge & { roof?: boolean }; // roof: the ghost marks the do
 const T = 0.1;
 const SEAM = 0.004;
 const OVERHANG = 0.12;
+const FILLET = 0.05; // radius of the rounded outer corners of the walls
+const FILLET_SEGMENTS = 3;
 const SIDE_ROTATION = [Math.PI, Math.PI / 2, 0, -Math.PI / 2];
 
 const glassMaterial = new THREE.MeshStandardMaterial({ color: '#8fc8e8', roughness: 0.1, metalness: 0.2, transparent: true, opacity: 0.75 });
@@ -55,10 +58,42 @@ function box(
   return mesh;
 }
 
-function buildSlot(brick: Brick, wall: THREE.Material): THREE.Group {
+interface Corners {
+  left: boolean;
+  right: boolean;
+}
+
+// Wall piece whose outer face is rounded at the ends that meet a convex corner, so that two walls make a rounded corner.
+function wallPiece(parent: THREE.Object3D, width: number, height: number, x: number, y: number, round: Corners, material: THREE.Material): void {
+  const [x0, x1] = [x - width / 2, x + width / 2];
+  const r = Math.min(FILLET, width / 2);
+  const left = round.left && x0 <= -0.5;
+  const right = round.right && x1 >= 0.5;
+  const shape = new THREE.Shape();
+  shape.moveTo(x0, T);
+  shape.lineTo(x1, T);
+  if (right) {
+    shape.lineTo(x1, r);
+    shape.absarc(x1 - r, r, r, 0, -Math.PI / 2, true);
+  } else shape.lineTo(x1, 0);
+  if (left) {
+    shape.lineTo(x0 + r, 0);
+    shape.absarc(x0 + r, r, r, -Math.PI / 2, Math.PI, true);
+  } else shape.lineTo(x0, 0);
+  shape.closePath();
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false, curveSegments: FILLET_SEGMENTS });
+  geometry.rotateX(-Math.PI / 2);
+  geometry.translate(0, y - height / 2, 0);
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+}
+
+function buildSlot(brick: Brick, wall: THREE.Material, corners: Corners): THREE.Group {
   const g = new THREE.Group();
   const w = (size: [number, number, number], pos: [number, number, number]) =>
-    box(g, [size[0] + SEAM, size[1] + SEAM, size[2]], [pos[0], pos[1] - SEAM / 2 - 0.003, pos[2]], wall);
+    wallPiece(g, size[0] + SEAM, size[1] + SEAM, pos[0], pos[1] - SEAM / 2 - 0.003, corners, wall);
   const z = -T / 2;
   const model = brick === 'wall' ? undefined : slotModel(brick);
   switch (brick) {
@@ -137,10 +172,24 @@ function clipHalfPlane(poly: [number, number][], g: (x: number, z: number) => nu
 
 // Roof surface = lowest of several planes over a rectangle: every corner and hip line comes out exact,
 // including where the overhang differs from side to side.
-function lowestPlaneGeometry(xl: number, xr: number, z0: number, z1: number, planes: Plane[]): THREE.BufferGeometry {
+// Rectangle, clockwise from the north-west corner, with the corners flagged in `rounded` cut by a quarter circle.
+function roundedRectangle(xl: number, xr: number, z0: number, z1: number, rounded: boolean[]): [number, number][] {
+  const r = Math.min(ROOF_FILLET, (xr - xl) / 2, (z1 - z0) / 2);
+  const corners: [number, number, number, number][] = [[xl, z0, 1, 1], [xr, z0, -1, 1], [xr, z1, -1, -1], [xl, z1, 1, -1]];
+  return corners.flatMap(([x, z, sx, sz], i) => {
+    if (!rounded[i]) return [[x, z] as [number, number]];
+    const [cx, cz] = [x + sx * r, z + sz * r];
+    return Array.from({ length: ROOF_FILLET_STEPS + 1 }, (_, k) => {
+      const [cos, sin] = [Math.cos(((Math.PI / 2) * k) / ROOF_FILLET_STEPS), Math.sin(((Math.PI / 2) * k) / ROOF_FILLET_STEPS)];
+      return (i % 2 === 0 ? [cx - sx * r * cos, cz - sz * r * sin] : [cx - sx * r * sin, cz - sz * r * cos]) as [number, number];
+    });
+  });
+}
+
+function lowestPlaneGeometry(xl: number, xr: number, z0: number, z1: number, planes: Plane[], rounded: boolean[] = []): THREE.BufferGeometry {
   const positions: number[] = [];
   planes.forEach((plane, k) => {
-    let poly: [number, number][] = [[xl, z0], [xr, z0], [xr, z1], [xl, z1]];
+    let poly: [number, number][] = roundedRectangle(xl, xr, z0, z1, rounded);
     planes.forEach((other, j) => {
       if (j !== k && poly.length) poly = clipHalfPlane(poly, (x, z) => plane(x, z) - other(x, z));
     });
@@ -246,6 +295,32 @@ interface EaveEdge {
   overhang: number;
 }
 
+const ROOF_FILLET = 0.08; // radius of the rounded outer corners of the eaves
+const ROOF_FILLET_STEPS = 4;
+
+const edgeDirection = (e: EaveEdge): [number, number] => {
+  const length = Math.hypot(e.ex - e.sx, e.ez - e.sz);
+  return [(e.ex - e.sx) / length, (e.ez - e.sz) / length];
+};
+
+// A free corner (overhang on both sides) that turns outward: the eave is rounded there.
+function roundsCorner(prev: EaveEdge, cur: EaveEdge): boolean {
+  if (prev.overhang === 0 || cur.overhang === 0 || prev.dir === cur.dir) return false;
+  const [px, pz] = edgeDirection(prev);
+  const [cx, cz] = edgeDirection(cur);
+  return px * cz - pz * cx > 0;
+}
+
+// Points of the quarter circle that rounds an eave corner, from the eave line of `prev` to the one of `cur`.
+function cornerArc(corner: number[], prev: EaveEdge, cur: EaveEdge): number[][] {
+  const [pn, cn] = [DIR_DELTA[prev.dir]!, DIR_DELTA[cur.dir]!];
+  const [cx, cz] = [corner[0]! - ROOF_FILLET * (pn[0]! + cn[0]!), corner[2]! - ROOF_FILLET * (pn[1]! + cn[1]!)];
+  return Array.from({ length: ROOF_FILLET_STEPS + 1 }, (_, i) => {
+    const t = ((Math.PI / 2) * i) / ROOF_FILLET_STEPS;
+    return [cx + ROOF_FILLET * (Math.cos(t) * pn[0]! + Math.sin(t) * cn[0]!), corner[1]!, cz + ROOF_FILLET * (Math.cos(t) * pn[1]! + Math.sin(t) * cn[1]!)];
+  });
+}
+
 function boundaryLoops(cells: Set<string>, overhangOf: (c: number, r: number, dir: Dir) => number): EaveEdge[][] {
   const edges: EaveEdge[] = [];
   for (const k of cells) {
@@ -278,7 +353,7 @@ function boundaryLoops(cells: Set<string>, overhangOf: (c: number, r: number, di
 }
 
 // One mansard roof following the outline of several touching wings (L, U, T footprints).
-function buildMansardPart(plan: Plan, cluster: Rect[], profileOf: Rect, selected: boolean): THREE.Object3D {
+function buildMansardPart(plan: Plan, cluster: Rect[], profileOf: Rect, selected: boolean, hipped = false): THREE.Object3D {
   const lead = cluster[0]!;
   const { ins, h1 } = mansardProfileFor(plan, profileOf);
   const slope = h1 / ins;
@@ -325,16 +400,34 @@ function buildMansardPart(plan: Plan, cluster: Rect[], profileOf: Rect, selected
       const next = loop[(i + 1) % loop.length]!;
       const start = corner(prev, edge);
       const end = corner(edge, next);
+      const startArc = roundsCorner(prev, edge) ? cornerArc(start.curEave, prev, edge) : undefined;
+      const endArc = roundsCorner(edge, next) ? cornerArc(end.prevEave, edge, next) : undefined;
       if (prev.dir === edge.dir && inset(prev) !== inset(edge)) contour.push(new THREE.Vector2(start.prevBrk[0]!, start.prevBrk[2]!));
       contour.push(new THREE.Vector2(start.curBrk[0]!, start.curBrk[2]!));
-      triangles.push(start.curEave, end.prevEave, end.prevBrk, start.curEave, end.prevBrk, start.curBrk);
+      const eaveStart = startArc ? startArc.at(-1)! : start.curEave;
+      const eaveEnd = endArc ? endArc[0]! : end.prevEave;
+      triangles.push(eaveStart, eaveEnd, end.prevBrk, eaveStart, end.prevBrk, start.curBrk);
+      if (startArc) for (let k = 0; k < startArc.length - 1; k++) triangles.push(start.curBrk, startArc[k]!, startArc[k + 1]!);
       if (prev.dir === edge.dir && prev.overhang !== edge.overhang) triangles.push(start.prevEave, start.prevBrk, start.curEave, start.prevBrk, start.curBrk, start.curEave);
     });
     outline.push({ area: Math.abs(THREE.ShapeUtils.area(contour)), contour });
   }
   outline.sort((a, b) => b.area - a.area);
   const [outer, ...holes] = outline;
-  if (outer) {
+  if (outer && hipped) {
+    // A lone wing keeps the shallow hipped top of the mansard.
+    const [xs, zs] = [outer.contour.map((p) => p.x), outer.contour.map((p) => p.y)];
+    const [bx0, bx1, bz0, bz1] = [Math.min(...xs), Math.max(...xs), Math.min(...zs), Math.max(...zs)];
+    const rise = 0.45 * (PITCH_FACTOR[roofStyle(plan, profileOf).pitch] / PITCH_FACTOR.normal);
+    const top = lowestPlaneGeometry(bx0, bx1, bz0, bz1, [
+      (x) => h1 + rise * (x - bx0),
+      (x) => h1 + rise * (bx1 - x),
+      (_, z) => h1 + rise * (z - bz0),
+      (_, z) => h1 + rise * (bz1 - z),
+    ]);
+    const positions = top.getAttribute('position').array;
+    for (let i = 0; i < positions.length; i += 3) triangles.push([positions[i]!, positions[i + 1]!, positions[i + 2]!]);
+  } else if (outer) {
     const flat = [...outer.contour, ...holes.flatMap((hole) => hole.contour)];
     const indices = THREE.ShapeUtils.triangulateShape(outer.contour, holes.map((hole) => hole.contour));
     for (const [a, b, c] of indices) triangles.push(...[a, b, c].map((i) => [flat[i!]!.x, h1, flat[i!]!.y]));
@@ -397,7 +490,7 @@ function partOutline(plan: Plan, part: Rect[]): { cells: Set<string>; edges: Eav
 
 // One pyramid over the whole outline: height grows with the distance to the walls, so hips and valleys
 // follow the footprint. Sampled every half cell with both diagonals, which is exact for grid footprints.
-function buildPyramidPart(plan: Plan, part: Rect[], profileOf: Rect, selected: boolean): THREE.Object3D {
+function buildPyramidPart(plan: Plan, part: Rect[], profileOf: Rect, selected: boolean, _hipped = false): THREE.Object3D {
   const { cells, edges, loops } = partOutline(plan, part);
   const { height, eaveSlope: k } = contourProfile(roofStyle(plan, profileOf), edges, cells);
   const half = GRID / 2;
@@ -431,10 +524,16 @@ function buildPyramidPart(plan: Plan, part: Rect[], profileOf: Rect, selected: b
       const next = loop[(i + 1) % loop.length]!;
       const sameStart = prev.dir === edge.dir;
       const sameEnd = next.dir === edge.dir;
-      const eaveStart = eave(edge.sx, edge.sz, edge, sameStart ? null : prev);
-      const eaveEnd = eave(edge.ex, edge.ez, edge, sameEnd ? null : next);
+      let eaveStart = eave(edge.sx, edge.sz, edge, sameStart ? null : prev);
+      let eaveEnd = eave(edge.ex, edge.ez, edge, sameEnd ? null : next);
       const s = [edge.sx - half, 0, edge.sz - half];
       const e = [edge.ex - half, 0, edge.ez - half];
+      if (roundsCorner(prev, edge)) {
+        const arc = cornerArc(eaveStart, prev, edge);
+        for (let k = 0; k < arc.length - 1; k++) positions.push(...s, ...arc[k]!, ...arc[k + 1]!);
+        eaveStart = arc.at(-1)!;
+      }
+      if (roundsCorner(edge, next)) eaveEnd = cornerArc(eaveEnd, edge, next)[0]!;
       positions.push(...s, ...e, ...eaveEnd, ...s, ...eaveEnd, ...eaveStart);
       if (sameStart && prev.overhang !== edge.overhang) positions.push(...s, ...eave(edge.sx, edge.sz, prev, null), ...eaveStart);
     });
@@ -463,7 +562,7 @@ function buildMansardCluster(plan: Plan, cluster: Rect[], selected: boolean): TH
   const group = new THREE.Group();
   const floors = [...new Set(cluster.map((r) => r.floor))];
   const build = isContourRoof(roofStyle(plan, cluster[0]!).type) ? buildPyramidPart : buildMansardPart;
-  for (const floor of floors) group.add(build(plan, cluster.filter((r) => r.floor === floor), cluster[0]!, selected));
+  for (const floor of floors) group.add(build(plan, cluster.filter((r) => r.floor === floor), cluster[0]!, selected, cluster.length === 1));
   return group;
 }
 
@@ -525,7 +624,7 @@ function buildRoof(plan: Plan, rect: Rect, selected: boolean): THREE.Object3D {
 
   let mesh: THREE.Mesh;
   if (style.type === 'flat') {
-    mesh = new THREE.Mesh(new THREE.BoxGeometry(w + oW + oE, 0.12, d + oN + oS), material);
+    mesh = new THREE.Mesh(new RoundedBoxGeometry(w + oW + oE, 0.12, d + oN + oS, ROOF_FILLET_STEPS, 0.04), material);
     mesh.position.set((oE - oW) / 2, 0.06, (oS - oN) / 2);
   } else if (style.type === 'pyramid') {
     const height = pyramidHeight(w, d, style);
@@ -540,46 +639,9 @@ function buildRoof(plan: Plan, rect: Rect, selected: boolean): THREE.Object3D {
       (x) => sx * (w / 2 - x),
       (_, z) => sz * (z + d / 2),
       (_, z) => sz * (d / 2 - z),
-    ]);
+    ], [oN > 0 && oW > 0, oN > 0 && oE > 0, oS > 0 && oE > 0, oS > 0 && oW > 0]);
     material.side = THREE.DoubleSide;
     mesh = new THREE.Mesh(geometry, material);
-  } else if (style.type === 'mansard') {
-    // Steep lower slope up to a break line, then a shallow hipped top.
-    const { ins, h1, h2 } = mansardProfile(rect, style);
-    const lowerSlope = h1 / ins;
-    const y = () => -lowerSlope * OVERHANG; // one horizontal base, whatever the overhangs
-    const xl = -span / 2 - spanLeft;
-    const xr = span / 2 + spanRight;
-    const z0 = -(length / 2 + lenStart);
-    const z1 = length / 2 + lenEnd;
-    const A0 = [xl, y(), z0];
-    const B0 = [xr, y(), z0];
-    const C0 = [xr, y(), z1];
-    const D0 = [xl, y(), z1];
-    const kl = -span / 2 + ins;
-    const kr = span / 2 - ins;
-    const kz0 = -length / 2 + ins;
-    const kz1 = length / 2 - ins;
-    const A1 = [kl, h1, kz0];
-    const B1 = [kr, h1, kz0];
-    const C1 = [kr, h1, kz1];
-    const D1 = [kl, h1, kz1];
-    const rz = Math.max(0, (length - span) / 2);
-    const R1 = [0, h2, -rz];
-    const R2 = [0, h2, rz];
-    const triangles = [
-      A0, B0, B1, A0, B1, A1,
-      B0, C0, C1, B0, C1, B1,
-      C0, D0, D1, C0, D1, C1,
-      D0, A0, A1, D0, A1, D1,
-      A1, B1, R1, A1, R1, R2, A1, R2, D1, B1, C1, R2, B1, R2, R1, C1, D1, R2,
-    ];
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(triangles.flat(), 3));
-    geometry.computeVertexNormals();
-    material.side = THREE.DoubleSide;
-    mesh = new THREE.Mesh(geometry, material);
-    if (alongX) mesh.rotation.y = Math.PI / 2;
   } else if (style.type === 'hip') {
     const height = span * PITCH_FACTOR[style.pitch];
     const slope = height / (span / 2);
@@ -588,7 +650,7 @@ function buildRoof(plan: Plan, rect: Rect, selected: boolean): THREE.Object3D {
       (x) => slope * (span / 2 - x),
       (_, z) => slope * (z + length / 2),
       (_, z) => slope * (length / 2 - z),
-    ]);
+    ], [spanLeft > 0 && lenStart > 0, spanRight > 0 && lenStart > 0, spanRight > 0 && lenEnd > 0, spanLeft > 0 && lenEnd > 0]);
     material.side = THREE.DoubleSide;
     mesh = new THREE.Mesh(geometry, material);
     if (alongX) mesh.rotation.y = Math.PI / 2;
@@ -623,8 +685,16 @@ function buildRoof(plan: Plan, rect: Rect, selected: boolean): THREE.Object3D {
       shape.lineTo(xl, highRight ? base : height + slope * spanLeft);
     }
     shape.closePath();
-    const geometry = new THREE.ExtrudeGeometry(shape, { depth: length + lenStart + lenEnd, bevelEnabled: false });
-    geometry.translate(0, 0, -(length / 2 + lenStart));
+    const soften = 0.025; // the edges of the roof are slightly rounded, the outline keeps its size
+    const geometry = new THREE.ExtrudeGeometry(shape, {
+      depth: length + lenStart + lenEnd - 2 * soften,
+      bevelEnabled: true,
+      bevelSize: soften,
+      bevelOffset: -soften,
+      bevelThickness: soften,
+      bevelSegments: 2,
+    });
+    geometry.translate(0, 0, -(length / 2 + lenStart) + soften);
     mesh = new THREE.Mesh(geometry, material);
     if (alongX) mesh.rotation.y = Math.PI / 2;
   }
@@ -632,6 +702,13 @@ function buildRoof(plan: Plan, rect: Rect, selected: boolean): THREE.Object3D {
   mesh.userData.roof = true;
   group.add(mesh);
   return group;
+}
+
+// Seen from outside, the right-hand neighbour of an edge is (dir + 3) % 4 and the left-hand one (dir + 1) % 4:
+// the wall ends in a convex corner when the cell has no neighbour on that side.
+function convexCorners(plan: Plan, edge: Edge): Corners {
+  const free = (side: number) => !isOccupied(plan, edge.floor, edge.c + DIR_DELTA[side]![0]!, edge.r + DIR_DELTA[side]![1]!);
+  return { left: free((edge.dir + 1) % 4), right: free((edge.dir + 3) % 4) };
 }
 
 export function buildHouse(plan: Plan, highlight?: SlotRef, selectedRoof?: string): THREE.Group {
@@ -650,7 +727,7 @@ export function buildHouse(plan: Plan, highlight?: SlotRef, selectedRoof?: strin
   });
 
   for (const edge of exteriorEdges(plan)) {
-    const slot = buildSlot(getBrick(plan, edge), wall);
+    const slot = buildSlot(getBrick(plan, edge), wall, convexCorners(plan, edge));
     const [dx, dz] = DIR_DELTA[edge.dir]!;
     slot.position.set(edge.c + 0.5 - half + dx! * 0.5, edge.floor, edge.r + 0.5 - half + dz! * 0.5);
     slot.rotation.y = SIDE_ROTATION[edge.dir]!;
@@ -680,7 +757,7 @@ export function buildHouse(plan: Plan, highlight?: SlotRef, selectedRoof?: strin
     if (handled.has(rect.key)) continue;
     const cluster = mansardCluster(plan, rect);
     cluster.forEach((r) => handled.add(r.key));
-    house.add(cluster.length > 1 || isContourRoof(roofStyle(plan, rect).type) ? buildMansardCluster(plan, cluster, cluster.some((r) => r.key === selectedRoof)) : buildRoof(plan, rect, rect.key === selectedRoof));
+    house.add(cluster.length > 1 || isContourRoof(roofStyle(plan, rect).type) || roofStyle(plan, rect).type === 'mansard' ? buildMansardCluster(plan, cluster, cluster.some((r) => r.key === selectedRoof)) : buildRoof(plan, rect, rect.key === selectedRoof));
   }
   return house;
 }

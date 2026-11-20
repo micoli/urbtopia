@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { emptyPlan, exteriorEdges, rectAt, roofRects, setBrick, toggleCell, toggleChimney, toggleDormer, type Brick, type Edge, type Plan } from './model.ts';
 import type { Mode } from './editorConstants.ts';
 import type { PickHit, SlotRef } from './render.ts';
@@ -26,7 +26,6 @@ export function App() {
   const [roofChoice, setRoofKey] = useState<string>();
   const [selectedChoice, setSelected] = useState<Edge>();
   const [hover, setHover] = useState<SlotRef>();
-  const [colorPreview, setColorPreview] = useState<Partial<Pick<Plan, ColorKey>>>({});
 
   useUndoShortcuts(undo, redo);
 
@@ -34,7 +33,6 @@ export function App() {
   const roofKey = roofRects(plan).some((rect) => rect.key === roofChoice) ? roofChoice : undefined;
   const selectedEdge = selectedChoice && exteriorEdges(plan).some((edge) => sameEdge(edge, selectedChoice)) ? selectedChoice : undefined;
   const ghost = hover ?? (mode === 'facade' && !roofLevel ? selectedEdge : undefined);
-  const viewerPlan = useMemo(() => ({ ...plan, ...colorPreview }), [plan, colorPreview]);
 
   const pickInView = useCallback(
     (hit: PickHit) => {
@@ -60,13 +58,7 @@ export function App() {
     replace(loaded);
   };
 
-  const commitColor = useCallback(
-    (key: ColorKey, value: string) => {
-      edit((draft) => { draft[key] = value; });
-      setColorPreview({});
-    },
-    [edit],
-  );
+  const pickColor = (key: ColorKey, value: string) => edit((draft) => { draft[key] = value; });
 
   return (
     <>
@@ -95,15 +87,10 @@ export function App() {
           onSelectRoof={setRoofKey}
           onHover={setHover}
         />
-        <ColorsPanel
-          wallColor={viewerPlan.wallColor}
-          roofColor={viewerPlan.roofColor}
-          onPreview={(key, value) => setColorPreview((current) => ({ ...current, [key]: value }))}
-          onCommit={commitColor}
-        />
+        <ColorsPanel wallColor={plan.wallColor} roofColor={plan.roofColor} onPick={pickColor} />
         <StatsPanel plan={plan} />
       </aside>
-      <PlanViewer plan={viewerPlan} ghost={ghost} selectedRoof={mode === 'roof' ? roofKey : undefined} onPick={pickInView} />
+      <PlanViewer plan={plan} ghost={ghost} selectedRoof={mode === 'roof' ? roofKey : undefined} onPick={pickInView} />
     </>
   );
 }

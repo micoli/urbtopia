@@ -46,3 +46,15 @@ h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: #
 .saved { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
 .saved span { flex: 1; }
 .slot.picked { outline: 3px solid #1d2430; outline-offset: 1px; z-index: 2; }
+.combo { grid-template-columns: 90px 1fr 24px; }
+.swatch-preview { width: 24px; height: 24px; flex: none; border: 1px solid #0003; border-radius: 6px; display: inline-block; }
+.combo-trigger { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 4px 8px; border: 1px solid #c9c4b5; border-radius: 6px; background: #fff; font: inherit; cursor: pointer; }
+.combo-trigger[data-state='open'] { border-color: #1d2430; }
+.combo-trigger > span:first-child { display: flex; align-items: center; gap: 8px; }
+.combo-trigger .swatch-preview { display: none; }
+.combo-content { z-index: 10; width: var(--radix-select-trigger-width); max-height: 320px; overflow: auto; border: 1px solid #c9c4b5; border-radius: 8px; background: #fff; box-shadow: 0 8px 24px #0003; }
+.combo-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; cursor: pointer; outline: none; font: inherit; }
+.combo-item .swatch-preview { width: 18px; height: 18px; }
+.combo-item[data-highlighted] { background: #f1eee4; }
+.combo-item[data-state='checked'] { font-weight: 600; }
+.combo-item[data-disabled] { opacity: .5; cursor: default; }

@@ -1,44 +1,20 @@
-import { useEffect, useRef } from 'react';
+import { ColorCombo } from './ColorCombo.tsx';
+import { ROOF_SWATCHES, WALL_SWATCHES } from './editorConstants.ts';
 
 type ColorKey = 'wallColor' | 'roofColor';
-
-interface ColorFieldProps {
-  label: string;
-  value: string;
-  onPreview: (value: string) => void;
-  onCommit: (value: string) => void;
-}
-
-// The change event fires when the picker closes; the input event streams the colours while dragging.
-function ColorField({ label, value, onPreview, onCommit }: ColorFieldProps) {
-  const input = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    const element = input.current!;
-    const commit = () => onCommit(element.value);
-    element.addEventListener('change', commit);
-    return () => element.removeEventListener('change', commit);
-  }, [onCommit]);
-  return (
-    <label className="row">
-      <span>{label}</span>
-      <input ref={input} type="color" value={value} onChange={(event) => onPreview(event.target.value)} />
-    </label>
-  );
-}
 
 interface ColorsPanelProps {
   wallColor: string;
   roofColor: string;
-  onPreview: (key: ColorKey, value: string) => void;
-  onCommit: (key: ColorKey, value: string) => void;
+  onPick: (key: ColorKey, value: string) => void;
 }
 
-export function ColorsPanel({ wallColor, roofColor, onPreview, onCommit }: ColorsPanelProps) {
+export function ColorsPanel({ wallColor, roofColor, onPick }: ColorsPanelProps) {
   return (
     <section>
       <h2>Couleurs</h2>
-      <ColorField label="Façade" value={wallColor} onPreview={(value) => onPreview('wallColor', value)} onCommit={(value) => onCommit('wallColor', value)} />
-      <ColorField label="Toit" value={roofColor} onPreview={(value) => onPreview('roofColor', value)} onCommit={(value) => onCommit('roofColor', value)} />
+      <ColorCombo label="Façade" swatches={WALL_SWATCHES} value={wallColor} onPick={(value) => onPick('wallColor', value)} />
+      <ColorCombo label="Toit" swatches={ROOF_SWATCHES} value={roofColor} onPick={(value) => onPick('roofColor', value)} />
     </section>
   );
 }
