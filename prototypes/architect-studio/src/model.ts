@@ -1,7 +1,7 @@
 // PROTOTYPE — house plan model. Each floor has its own footprint (cell mask on a fixed grid);
 // bricks sit on the exterior edges of the cells.
 
-export type Brick = 'wall' | 'window' | 'bay' | 'door' | 'balcony';
+export type Brick = 'wall' | 'window' | 'bay' | 'door' | 'balcony' | 'balconyDoor';
 export type Roof = 'flat' | 'gable' | 'saltbox' | 'hip' | 'mansard' | 'pyramid' | 'shed' | 'pyramid2' | 'hip2' | 'mansard2';
 export type Dir = 0 | 1 | 2 | 3; // N E S W
 
@@ -9,7 +9,7 @@ export const GRID = 6;
 export const MAX_FLOORS = 4;
 export const DIR_NAMES = ['Nord', 'Est', 'Sud', 'Ouest'] as const;
 export const DIR_DELTA: [number, number][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
-export const BRICKS: Brick[] = ['wall', 'window', 'bay', 'door', 'balcony'];
+export const BRICKS: Brick[] = ['wall', 'window', 'bay', 'door', 'balcony', 'balconyDoor'];
 export const ROOFS: Roof[] = ['flat', 'gable', 'saltbox', 'hip', 'mansard', 'pyramid', 'pyramid2', 'hip2', 'mansard2', 'shed'];
 
 export const BRICK_LABEL: Record<Brick, string> = {
@@ -18,12 +18,13 @@ export const BRICK_LABEL: Record<Brick, string> = {
   bay: 'Baie vitrée',
   door: 'Porte',
   balcony: 'Balcon',
+  balconyDoor: 'Balcon porte-fenêtre',
 };
 export const ROOF_LABEL: Record<Roof, string> = { flat: 'Toit plat', gable: '2 pans',
   saltbox: '1/3 + 2/3',
   hip: 'Croupe',
   mansard: 'Mansarde', pyramid: 'Pyramide', pyramid2: 'Pyramide join', hip2: 'Croupe join', mansard2: 'Mansarde join', shed: '1 pan' };
-export const BRICK_PRICE: Record<Brick, number> = { wall: 40, window: 90, bay: 160, door: 120, balcony: 200 };
+export const BRICK_PRICE: Record<Brick, number> = { wall: 40, window: 90, bay: 160, door: 120, balcony: 200, balconyDoor: 240 };
 export const ROOF_PRICE: Record<Roof, number> = { flat: 40, gable: 70, saltbox: 75, hip: 85, mansard: 110, pyramid: 80, pyramid2: 90, hip2: 95, mansard2: 115, shed: 50 };
 export const CELL_PRICE = 100;
 
@@ -233,7 +234,7 @@ export function stats(plan: Plan): Stats {
   const bricks = edges.map((e) => getBrick(plan, e));
   const cells = plan.floors.reduce((sum, _, f) => sum + cellCount(plan, f), 0);
     const cost = bricks.reduce((sum, b) => sum + BRICK_PRICE[b], 0) + cells * CELL_PRICE + roofCost(plan) + activeDormers(plan).length * DORMER_PRICE + activeChimneys(plan).length * CHIMNEY_PRICE;
-  const openings = bricks.filter((b) => b === 'window' || b === 'bay' || b === 'balcony').length;
+  const openings = bricks.filter((b) => b === 'window' || b === 'bay' || b === 'balcony' || b === 'balconyDoor').length;
   const issues: string[] = [];
   if (!bricks.includes('door')) issues.push('Il faut au moins une porte au rez-de-chaussée');
   if (openings < plan.floors.length) issues.push('Au moins une ouverture par étage');

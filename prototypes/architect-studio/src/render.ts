@@ -2,6 +2,8 @@
 // x = right (seen from outside), y = up, z = outward normal.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { ViewHelper } from 'three/addons/helpers/ViewHelper.js';
+import { loadSlotModels, slotModel } from './slotModels.ts';
 import {
   DIR_DELTA,
   activeChimneys,
@@ -58,6 +60,7 @@ function buildSlot(brick: Brick, wall: THREE.Material): THREE.Group {
   const w = (size: [number, number, number], pos: [number, number, number]) =>
     box(g, [size[0] + SEAM, size[1] + SEAM, size[2]], [pos[0], pos[1] - SEAM / 2 - 0.003, pos[2]], wall);
   const z = -T / 2;
+  const model = brick === 'wall' ? undefined : slotModel(brick);
   switch (brick) {
     case 'wall':
       w([1, 1, T], [0, 0.5, z]);
@@ -68,6 +71,10 @@ function buildSlot(brick: Brick, wall: THREE.Material): THREE.Group {
       w([1, 0.25, T], [0, 0.875, z]);
       w([0.2, 0.4, T], [-0.4, 0.55, z]);
       w([0.2, 0.4, T], [0.4, 0.55, z]);
+      if (model) {
+        g.add(model);
+        break;
+      }
       box(g, [0.6, 0.4, 0.02], [0, 0.55, z], glassMaterial);
       if (brick === 'balcony') {
         box(g, [1, 0.06, 0.5], [0, 0.03, 0.25], slabMaterial);
@@ -81,12 +88,29 @@ function buildSlot(brick: Brick, wall: THREE.Material): THREE.Group {
       w([1, 0.15, T], [0, 0.925, z]);
       w([0.1, 0.7, T], [-0.45, 0.5, z]);
       w([0.1, 0.7, T], [0.45, 0.5, z]);
-      box(g, [0.8, 0.7, 0.02], [0, 0.5, z], glassMaterial);
+      if (model) g.add(model);
+      else box(g, [0.8, 0.7, 0.02], [0, 0.5, z], glassMaterial);
+      break;
+    case 'balconyDoor':
+      w([1, 0.2, T], [0, 0.9, z]);
+      w([0.2, 0.8, T], [-0.4, 0.4, z]);
+      w([0.2, 0.8, T], [0.4, 0.4, z]);
+      if (model) {
+        g.add(model);
+        break;
+      }
+      box(g, [0.6, 0.8, 0.02], [0, 0.4, z], glassMaterial);
+      box(g, [1, 0.06, 0.5], [0, 0.03, 0.25], slabMaterial);
+      box(g, [1, 0.28, 0.03], [0, 0.2, 0.5], railMaterial);
       break;
     case 'door':
       w([1, 0.25, T], [0, 0.875, z]);
       w([0.2, 0.75, T], [-0.4, 0.375, z]);
       w([0.2, 0.75, T], [0.4, 0.375, z]);
+      if (model) {
+        g.add(model);
+        break;
+      }
       box(g, [0.6, 0.75, 0.05], [0, 0.375, z], doorMaterial);
       box(g, [0.8, 0.05, 0.25], [0, 0.025, 0.125], slabMaterial);
       break;
@@ -667,6 +691,9 @@ export class Viewer {
   private readonly camera: THREE.PerspectiveCamera;
   private house: THREE.Group | null = null;
   private frame = 0;
+  private last: [Plan, SlotRef | undefined, string | undefined] | null = null;
+  private alive = true;
+  private gizmo: ViewHelper | null = null;
   onPick: ((hit: PickHit) => void) | null = null;
 
   constructor(private readonly container: HTMLElement) {
@@ -683,6 +710,12 @@ export class Viewer {
     controls.target.set(0, 1.2, 0);
     controls.enableDamping = true;
     controls.maxPolarAngle = Math.PI / 2.05;
+
+    // Orientation gizmo: shows the camera axes, a click on X, Y or Z turns the view along it.
+    const gizmo = new ViewHelper(this.camera, this.renderer.domElement);
+    gizmo.center = controls.target;
+    this.gizmo = gizmo;
+    const clock = new THREE.Clock();
 
     this.scene.add(new THREE.HemisphereLight('#ffffff', '#9aa57a', 1.3));
     const sun = new THREE.DirectionalLight('#fff4dc', 2.2);
@@ -705,6 +738,7 @@ export class Viewer {
     canvas.addEventListener('pointerup', (e) => {
       const start = down;
       down = null;
+      if (this.gizmo?.handleClick(e)) return;
       if (!start || !this.onPick || !this.house || Math.hypot(e.clientX - start.x, e.clientY - start.y) > 4) return;
       const rect = canvas.getBoundingClientRect();
       const ndc = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
@@ -722,17 +756,27 @@ export class Viewer {
       if (node) this.onPick({ kind: 'edge', edge: node.userData.edge as Edge });
     });
 
+    void loadSlotModels().then(() => {
+      if (this.alive && this.last) this.setPlan(...this.last);
+    });
+
     new ResizeObserver(() => this.resize()).observe(container);
     this.resize();
     const loop = () => {
+      if (gizmo.animating) gizmo.update(clock.getDelta());
+      else clock.getDelta();
       controls.update();
+      this.renderer.autoClear = true;
       this.renderer.render(this.scene, this.camera);
+      this.renderer.autoClear = false;
+      gizmo.render(this.renderer);
       this.frame = requestAnimationFrame(loop);
     };
     loop();
   }
 
   setPlan(plan: Plan, highlight?: SlotRef, selectedRoof?: string): void {
+    this.last = [plan, highlight, selectedRoof];
     if (this.house) {
       this.scene.remove(this.house);
       this.house.traverse((o) => {
@@ -744,6 +788,8 @@ export class Viewer {
   }
 
   destroy(): void {
+    this.alive = false;
+    this.gizmo?.dispose();
     cancelAnimationFrame(this.frame);
     this.renderer.dispose();
     this.renderer.domElement.remove();
