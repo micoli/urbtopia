@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { FLAG_IDS, createFeatureFlagStore, flagOfCommand, offFlags, resolveFlags } from './featureFlags';
+import { newPlan } from '../core/architect/housePlan';
+import { FLAG_IDS, createFeatureFlagStore, flagOfCall, flagOfCommand, offFlags, resolveFlags } from './featureFlags';
 
 describe('feature flags', () => {
   it('ship off', () => {
@@ -26,7 +27,11 @@ describe('feature flags', () => {
   it('name the flag a command belongs to', () => {
     expect(flagOfCommand('SetLineup')).toBe('clubs');
     expect(flagOfCommand('PlayMatch')).toBe('clubs');
+    expect(flagOfCommand('SaveHousePlan')).toBe('architect');
+    expect(flagOfCommand('DeleteHousePlan')).toBe('architect');
     expect(flagOfCommand('Collect')).toBeUndefined();
+    expect(flagOfCall({ type: 'PlaceBuilding', buildingType: 'housePlan-1x1', x: 0, y: 0, design: { name: 'House', plan: newPlan('rect') } })).toBe('architect');
+    expect(flagOfCall({ type: 'PlaceBuilding', buildingType: 'home', x: 0, y: 0 })).toBeUndefined();
   });
 });
 

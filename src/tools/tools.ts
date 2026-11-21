@@ -1,4 +1,6 @@
 import {
+  designCostOf,
+  type HouseDesign,
   extendNetwork,
   BOATS,
   bridgeAt,
@@ -59,7 +61,7 @@ import {
 } from '../core';
 
 export type Tool =
-  | { kind: 'building'; buildingType: BuildingType; solar?: boolean; colorVariant?: ColorVariant; repeat?: boolean }
+  | { kind: 'building'; buildingType: BuildingType; solar?: boolean; colorVariant?: ColorVariant; repeat?: boolean; design?: HouseDesign }
   | { kind: 'move'; buildingId: number }
   | { kind: 'road'; mode?: NetworkMode; start: Coord | null; horizontalFirst: boolean }
   | { kind: 'pedestrianWay'; start: Coord | null; horizontalFirst: boolean }
@@ -208,7 +210,7 @@ export function selectionGhost(state: GameState, buildingId: number | null, show
 export function evaluateTool(tool: Tool, { state, tile, rotation }: ToolContext): Evaluation {
   switch (tool.kind) {
     case 'building':
-      return evaluateBuilding(state, tool.buildingType, tile, rotation, { type: 'PlaceBuilding', buildingType: tool.buildingType, solar: tool.solar, colorVariant: tool.colorVariant }, nextCopyCost(state, tool.buildingType) + (tool.solar ? solarInstallCostOf(tool.buildingType) : 0));
+      return evaluateBuilding(state, tool.buildingType, tile, rotation, { type: 'PlaceBuilding', buildingType: tool.buildingType, solar: tool.solar, colorVariant: tool.colorVariant, design: tool.design }, (tool.design ? designCostOf(tool.design) : nextCopyCost(state, tool.buildingType)) + (tool.solar ? solarInstallCostOf(tool.buildingType) : 0));
     case 'move': {
       const building = state.buildings.find((candidate) => candidate.id === tool.buildingId);
       if (!building) return evaluation([tile], null, state);
@@ -324,7 +326,7 @@ function evaluateBuilding(
   type: BuildingType,
   tile: Coord,
   requestedRotation: Rotation | null,
-  base: { type: 'PlaceBuilding'; buildingType: BuildingType; solar?: boolean; colorVariant?: ColorVariant } | { type: 'MoveBuilding'; id: number },
+  base: { type: 'PlaceBuilding'; buildingType: BuildingType; solar?: boolean; colorVariant?: ColorVariant; design?: HouseDesign } | { type: 'MoveBuilding'; id: number },
   cost: number,
   tier = 1,
 ): Evaluation {

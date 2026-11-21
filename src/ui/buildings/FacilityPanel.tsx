@@ -1,4 +1,4 @@
-import { FACILITIES, WASTE_FACILITIES, cityKnowledge, collectionDistanceOf, citizensOf, facilityCapacity, facilityRadius, reachLoad, serviceCoverage, wasteKindOf, type Building, type FacilityType, isHomeType } from '../../core';
+import { homeLevelOf, FACILITIES, WASTE_FACILITIES, cityKnowledge, collectionDistanceOf, citizensOf, facilityCapacity, facilityRadius, reachLoad, serviceCoverage, wasteKindOf, type Building, type FacilityType, isHomeType } from '../../core';
 import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { ReachToggle } from '../common/ReachToggle.tsx';
@@ -19,7 +19,7 @@ export function FacilityPanel({ building }: FacilityPanelProps) {
   const isWaste = FACILITIES[building.type].category === 'waste';
   const wasteKind = wasteKindOf(building.type);
   const hasNuisance = wasteKind !== null && (WASTE_FACILITIES[wasteKind].odor !== null || WASTE_FACILITIES[wasteKind].pollution !== null);
-  const served = state.buildings.reduce((total, home) => total + (isHomeType(home.type) && coverage.get(home.id)?.has(building.type) ? citizensOf(home.tier) : 0), 0);
+  const served = state.buildings.reduce((total, home) => total + (isHomeType(home.type) && coverage.get(home.id)?.has(building.type) ? citizensOf(homeLevelOf(home)) : 0), 0);
   const load = isWaste ? null : reachLoad(state, building);
   const knowledge = FACILITIES[building.type].category === 'education' ? cityKnowledge(state) : null;
   return <DrawerPanel>

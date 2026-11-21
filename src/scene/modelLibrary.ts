@@ -4,6 +4,7 @@ import { RAIL_CORNER_MODEL } from '../core/infrastructure/infrastructure';
 import { fitRailCorner } from './railModelFit';
 import './albedoSaturation';
 import * as THREE from 'three';
+import { isHouseModel, planOfHouseModel } from './houseModels';
 import { FIELD_SOIL_MODEL, WATER_TILE_MODEL, BRIDGE_DECK_MODEL, type TextureVariant } from './renderItems';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
@@ -121,6 +122,14 @@ export class ModelLibrary {
     }
     const inFlight = this.pending.get(key);
     if (inFlight) return inFlight;
+    if (isHouseModel(key)) {
+      const plan = planOfHouseModel(key);
+      // The studio draws the front of a house toward +Z; the game faces the road with a model turned half a turn.
+      const building = import('../architect/gameHouse').then(({ buildGameHouse }) => buildGameHouse(plan!)).then(house => { house.rotation.y = Math.PI; house.updateMatrixWorld(true); this.models.set(key, house); });
+      const tracked = this.track(building);
+      this.pending.set(key, tracked);
+      return tracked;
+    }
     const promise = this.track(this.loader.loadAsync(`${this.modelsUrl}${key}.glb`).then((gltf) => {
       applySurface(gltf.scene, this.shiny);
       fitNatureModel(gltf.scene, key);

@@ -1,3 +1,4 @@
+import { architectMessages } from './architect';
 import { facilityMessages } from './facilities';
 import { diagnosisMessages } from './diagnosis';
 import { advisorMessages } from './advisor';
@@ -67,4 +68,5 @@ export const FR: Record<MessageKey, string> = {
   ...congestionDiagnosisMessages('fr'),
   ...wasteDiagnosisMessages('fr'),
   ...jobsDiagnosisMessages('fr'),
+  ...architectMessages('fr'),
 };

@@ -4,7 +4,7 @@ import { CODEX_ENTRIES, codexImageKey, isHomeCodexId, solarBaseOf, solarCodexIdO
 import { ROAD_CONSTRUCTIONS } from './construction';
 import { WATER_CONSTRUCTIONS } from './waterConstructions';
 import { codexSnapshot } from './snapshot';
-import { tiersOf } from '../core/buildings/buildingDefinitions';
+import { isRetired, tiersOf } from '../core/buildings/buildingDefinitions';
 import { MESSAGES } from '../i18n/messages';
 import { FR } from '../i18n/fr';
 import { growthModelOf, produceModelOf } from '../scene/cropModels';
@@ -62,7 +62,8 @@ describe('codex coverage gate', () => {
 
   it('requires a complete page for every constructible, including locked objects', () => {
     expect(() => validateCodex()).not.toThrow();
-    const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...Object.keys(BUILDING_SPECS).filter(type => isHomeType(type) && type !== 'home').map(type => solarCodexIdOf(type as BuildingType)), ...ROAD_CONSTRUCTIONS.map(item => item.id), ...WATER_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
+    const constructible = Object.keys(BUILDING_SPECS).filter(type => !isRetired(type as BuildingType));
+    const expected = [...constructible, 'solarHome', ...constructible.filter(type => isHomeType(type) && type !== 'home').map(type => solarCodexIdOf(type as BuildingType)), ...ROAD_CONSTRUCTIONS.map(item => item.id), ...WATER_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
     expect(CODEX_ENTRIES.map(entry => entry.id).sort()).toEqual(expected.sort());
     for (const id of expected) {
       expect(() => validateCodex(CODEX_ENTRIES.filter(entry => entry.id !== id)), id).toThrow('Every constructible');

@@ -16,6 +16,7 @@ import { cityAttractiveness } from '../venues/hotel';
 import { BOATS } from '../water/boats';
 import { pirateShipsOfCove, pirateShowIssue, seatCapOf, seatsOfCove } from '../water/pirateCove';
 import { pirateShowTitleOf } from './pirateShows';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export const SHOW_TYPES = ['theater', 'concertHall', 'colosseum', 'pirateCove'] as const;
 
@@ -64,7 +65,7 @@ const citizensInReach = (state: GameState, building: Building): number => {
   return state.buildings.reduce((total, home) => {
     if (!isHomeType(home.type)) return total;
     const to = centerOf(home);
-    return total + (isWithinReach(to.x - from.x, to.y - from.y, radius) ? citizensOf(home.tier) : 0);
+    return total + (isWithinReach(to.x - from.x, to.y - from.y, radius) ? citizensOf(homeLevelOf(home)) : 0);
   }, 0);
 };
 

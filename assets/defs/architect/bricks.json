@@ -1,0 +1,82 @@
+{
+  "$schema": "../schemas/architect-bricks.schema.json",
+  "bricks": {
+    "wall": {
+      "kind": "wall",
+      "price": 4,
+      "tier": 1
+    },
+    "window": {
+      "kind": "window",
+      "price": 9,
+      "tier": 1,
+      "file": "window-classic"
+    },
+    "windowArched": {
+      "kind": "window",
+      "price": 11,
+      "tier": 2,
+      "file": "window-arched"
+    },
+    "windowShutters": {
+      "kind": "window",
+      "price": 12,
+      "tier": 2,
+      "file": "window-shutters"
+    },
+    "windowRound": {
+      "kind": "window",
+      "price": 10,
+      "tier": 3,
+      "file": "window-round"
+    },
+    "bay": {
+      "kind": "extension",
+      "price": 16,
+      "tier": 2,
+      "file": "bay-classic"
+    },
+    "door": {
+      "kind": "door",
+      "price": 12,
+      "tier": 1,
+      "file": "door-classic"
+    },
+    "doorArched": {
+      "kind": "door",
+      "price": 15,
+      "tier": 2,
+      "file": "door-arched"
+    },
+    "doorDouble": {
+      "kind": "door",
+      "price": 19,
+      "tier": 3,
+      "file": "door-double"
+    },
+    "doorGlazed": {
+      "kind": "door",
+      "price": 17,
+      "tier": 3,
+      "file": "door-glazed"
+    },
+    "doorGarage": {
+      "kind": "door",
+      "price": 22,
+      "tier": 4,
+      "file": "door-garage"
+    },
+    "balcony": {
+      "kind": "extension",
+      "price": 20,
+      "tier": 3,
+      "file": "balcony-classic"
+    },
+    "balconyDoor": {
+      "kind": "extension",
+      "price": 24,
+      "tier": 3,
+      "file": "balcony-door-classic"
+    }
+  }
+}

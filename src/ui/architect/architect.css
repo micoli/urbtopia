@@ -1,0 +1,14 @@
+.window-backdrop.architect-backdrop { padding: 3px; }
+.window-backdrop.architect-backdrop > .architect-window {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+}
+.architect-backdrop .architect-window > .eco-header { margin: 0; }
+.architect-screen { position: relative; flex: 1; min-height: 0; }
+[data-layout] .window-backdrop.architect-backdrop--full { left: 0; bottom: 0; }

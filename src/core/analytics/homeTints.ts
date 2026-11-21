@@ -12,6 +12,7 @@ import { isWasteCovered, wasteReport } from '../waste/waste';
 import type { Building, GameState } from '../engine/state';
 import type { AnalyticsLayerId } from './layers';
 import type { RampId } from './scales';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export interface HomeTint {
   x: number;
@@ -51,7 +52,7 @@ function coverageTints(state: GameState, category: ServiceCategory, homes: reado
 export function jobsTints(state: GameState): HomeTint[] {
   const stats = congestionStats(state);
   const homes = state.buildings.filter(building => isHomeType(building.type)).map(home => {
-    const citizens = citizensOf(home.tier);
+    const citizens = citizensOf(homeLevelOf(home));
     return tintOf(home, 'wellbeing', citizens === 0 ? 1 : 1 - (stats.homes.get(home.id)?.unemployed ?? 0) / citizens);
   });
   const workplaces = state.buildings.filter(building => workplaceTypes.includes(building.type) && jobsOf(building) > 0)

@@ -6,6 +6,8 @@ import { FlyoutItem } from '../layout/FlyoutItem';
 import { BuildSearch } from './BuildSearch';
 import { MoveModeItem } from './MoveModeItem';
 import { BuildTypeItem } from './BuildTypeItem';
+import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
+import { HousePlanItems } from './HousePlanItems';
 import { NextBuildingUnlock } from './NextBuildingUnlock';
 import { FirstUseHint } from '../common/FirstUseHint';
 import { Note } from '../common/Note';
@@ -48,10 +50,11 @@ export function BuildMenuContent() {
     const image = manifest?.images[codexImageKey(id, 1, variant)];
     return image ? `${import.meta.env.BASE_URL}codex/${image}` : undefined;
   };
+  const architectEnabled = useFeatureFlag('architect');
   const visibleSections = useMemo(() => BUILDING_SECTIONS.map(section => ({
     ...section,
-    types: section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0) && isBuildableAt(type, now)),
-  })).filter(section => section.types.length), [citizens, now]);
+    types: section.types.filter(type => citizens >= (ECOLOGY_UNLOCKS[type] ?? 0) && isBuildableAt(type, now) && (architectEnabled || type !== 'architectOffice')),
+  })).filter(section => section.types.length), [citizens, now, architectEnabled]);
   const results = useMemo(
     () => (query.trim() === '' ? [] : visibleSections.flatMap(section => section.types).filter(type => matchesSearch(t(`building.${type}`), query))),
     [visibleSections, query],
@@ -140,6 +143,7 @@ export function BuildMenuContent() {
                       <BuildTypeItem type={type} homeColor={homeColor} preview={previewOf(type)} />
                     </Fragment>
                 ))}
+                {section.title === 'build.housing' && <HousePlanItems />}
                 {section.title === 'build.production' && <FieldTools/>}
                 {section.title === 'build.transport' && undergroundOpen && <FlyoutItem
                     label={t('tool.pedestrianAccess')}

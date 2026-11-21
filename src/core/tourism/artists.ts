@@ -5,6 +5,7 @@ import type { Building, GameState } from '../engine/state';
 import { cityWellbeingRatio } from './cityWellbeing';
 import { hashSeed, nextRandom } from '../engine/random';
 import type { Artist } from './artistSchema';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export const ARTISTS: readonly Artist[] = artistData.artists as Artist[];
 
@@ -27,7 +28,7 @@ export const artistById = (id: string): Artist | undefined => ARTISTS.find(artis
 
 // The highest Fame the city draws: the larger and the happier it is, the bigger the names that come.
 export function fameCeiling(state: GameState): number {
-  const citizens = state.buildings.reduce((total, building) => total + (isHomeType(building.type) ? citizensOf(building.tier) : 0), 0);
+  const citizens = state.buildings.reduce((total, building) => total + (isHomeType(building.type) ? citizensOf(homeLevelOf(building)) : 0), 0);
   const score = 0.5 * cityWellbeingRatio(state) + 0.5 * clamp01(citizens / ARTIST_RULES.populationForMaxFame);
   return Math.min(MAX_FAME, 1 + Math.floor(score * MAX_FAME));
 }

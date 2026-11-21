@@ -236,6 +236,13 @@ describe('Facility unlock and placement', () => {
     expect(result.ok && result.events.filter(e => e.type === 'FacilityUnlocked')).toEqual([{ type: 'FacilityUnlocked', facility: 'school' }]);
   });
 
+  it('refuses a second Architect office', () => {
+    const owned = { ownedParcels: [{ x: 3, y: 3 }] };
+    const homes = Array.from({ length: 6 }, (_, index) => b(10 + index, 'home', 10 + index, 20, { tier: 6 }));
+    const second = dispatch(city([b(1, 'architectOffice', 0, 0), ...homes], owned), { type: 'PlaceBuilding', buildingType: 'architectOffice', x: 56, y: 50, rotation: 0 }, 0);
+    expect(!second.ok && second.error.key).toBe('error.architectOfficeExists');
+  });
+
   it('refuses a second Town hall and a locked facility', () => {
     const owned = { ownedParcels: [{ x: 3, y: 3 }] };
     const first = dispatch(city([], owned), { type: 'PlaceBuilding', buildingType: 'townHall', x: 50, y: 50, rotation: 0 }, 0);

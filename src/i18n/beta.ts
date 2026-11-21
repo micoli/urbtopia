@@ -4,6 +4,8 @@ const texts = {
   'beta.subscribe.description': ['Try features still in test before they ship. They may change, break or disappear, and are kept on this device only.', 'Essayez des fonctionnalités encore en test avant leur sortie. Elles peuvent changer, casser ou disparaître, et ne sont gardées que sur cet appareil.'],
   'beta.flag.clubs': ['Clubs', 'Clubs'],
   'beta.flag.clubs.description': ['Football, baseball and basketball clubs: squad, line-up, championship, matches.', 'Clubs de football, de baseball et de basket : effectif, composition, championnat, matchs.'],
+  'beta.flag.architect': ['Architect office', "Cabinet d'architecture"],
+  'beta.flag.architect.description': ['Draw house plans in an Architect office and build them as Homes.', "Dessinez des plans de maisons dans un cabinet d'architecture et construisez-les comme des logements."],
   'beta.flag.advisor': ['Advisor', 'Conseiller'],
   'beta.flag.advisor.description': ['A local assistant that explains your city. Then turn it on in the Game tab.', 'Un assistant local qui explique votre ville. Activez-le ensuite dans l\'onglet Partie.'],
 };

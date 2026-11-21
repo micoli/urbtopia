@@ -35,6 +35,7 @@
     "assets:editor": "vite --config tools/assets-editor/vite.config.ts --host",
     "glb-viewer": "vite --config tools/glb-viewer/vite.config.ts",
     "back-office": "vite --config tools/back-office/vite.config.ts",
+    "architect:proto": "vite --config prototypes/architect-studio/vite.config.ts",
     "casino:sim": "vite --config prototypes/casino-sim/vite.config.ts --host",
     "preview": "vite preview",
     "check:bundle": "node scripts/checkBundle.ts dist",

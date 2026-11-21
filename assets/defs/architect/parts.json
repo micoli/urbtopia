@@ -1,0 +1,10 @@
+{
+  "$schema": "../schemas/architect-parts.schema.json",
+  "cellPrice": 10,
+  "dormerPrice": 15,
+  "roundDormerPrice": 18,
+  "chimneyPrice": 12,
+  "dormerTier": 4,
+  "chimneyTier": 3,
+  "citizenPrice": 40
+}

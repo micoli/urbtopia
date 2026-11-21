@@ -529,7 +529,15 @@ _Avoid_: Standing (a Hotel Room's class), Reputation, Happiness
 
 **Planning office**:
 A building with Tiers that opens the District plan from its side panel and anchors its reward: the Homes within its radius receive the Well-being bonus of its best Rank. It is unlocked at 150 Citizens and has a Build limit with an Escalating price. Overlapping offices never add up: a Home takes the best bonus that reaches it. An office that was never played, or was demolished, changes nothing.
-_Avoid_: Town planning, Architect's office
+_Avoid_: Town planning (the Architect office is a different building)
+
+**Architect office**:
+A building with Tiers that opens the studio from its side panel, where the player draws House plans. Only one can be built. Its Tier unlocks the studio's assets and the number of House plans the city can save; the Citizens threshold only unlocks the building itself.
+_Avoid_: Planning office (opens the District plan), Architecture firm
+
+**House plan**:
+A house designed by the player in the studio of an Architect office: walls, doors, windows, floors, balconies and roofs, in its own wall and roof colors. A saved House plan is built as a Home that looks like the Homes of the game and keeps the colors set in the plan; it cannot be repainted. Its Citizens and Demand follow the number of its habitable cells, not a Tier.
+_Avoid_: Blueprint, Architecture style (a fixed Home definition), custom Home
 
 **District plan**:
 The hex placement game of a Planning office, played on its own screen outside the city: the player places Hexes from a Deck on a hexagonal board and is scored on how well their edges fit. The best score of the office decides its Rank. It has no effect on Parcels, roads or the simulation other than the Well-being bonus of the Planning office.

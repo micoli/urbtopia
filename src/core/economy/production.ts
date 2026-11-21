@@ -13,6 +13,7 @@ import { productionTierOf } from './tiers';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/interiorBonus';
 import { interiorDeclarationOf } from '../interiors/interiorStaff';
+import { homeLevelOf } from '../architect/homeLevel';
 
 // A Mill or a Bakery consumes as many recipes as its yield per cycle.
 export const recipeMultiplierOf = (building: Building): number => (scalesRecipeWithYield(building.type) ? productionTierOf(building).yield : 1);
@@ -179,14 +180,14 @@ function advanceShop(building: Building, now: number): Building {
 
 function advanceHome(building: Building, elapsedMs: number): Building {
   if (!isHomeType(building.type) || elapsedMs <= 0) return building;
-  const citizens = citizensOf(building.tier);
+  const citizens = citizensOf(homeLevelOf(building));
   const cap = citizens * TAX.capHours * TAX.hourMs;
   const taxCitizenMs = Math.min(cap, building.taxCitizenMs + citizens * elapsedMs);
   return taxCitizenMs === building.taxCitizenMs ? building : { ...building, taxCitizenMs };
 }
 
 export function taxFillRatio(building: Building): number {
-  const cap = citizensOf(building.tier) * TAX.capHours * TAX.hourMs;
+  const cap = citizensOf(homeLevelOf(building)) * TAX.capHours * TAX.hourMs;
   return cap > 0 ? building.taxCitizenMs / cap : 0;
 }
 

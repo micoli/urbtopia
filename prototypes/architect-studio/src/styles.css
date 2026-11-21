@@ -1,0 +1,12 @@
+/* The game's own layers and components, then the studio on top. */
+@layer theme, legacy, utilities;
+@import '../../../src/tokens.css' layer(legacy);
+@import '../../../src/ui/base.css' layer(legacy);
+@import '../../../src/ui/common/common.css' layer(legacy);
+@import '../../../src/ui/common/motion.css' layer(legacy);
+@import '../../../src/ui/common/glass.css' layer(legacy);
+@import '../../../src/ui/buildings/buildings.css' layer(legacy);
+@import '../../../src/ui/stats/stats.css' layer(legacy);
+@import '../../../src/architect/studio.css' layer(legacy);
+
+body { background: var(--color-surface-solid); color: var(--color-text); font-size: var(--font-size-md); }

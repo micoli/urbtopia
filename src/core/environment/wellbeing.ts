@@ -23,6 +23,7 @@ import { comfortBonusOf } from '../homes/homeInterior';
 import { districtBonusOf } from '../districtPlan/districtBonus';
 import { careWellbeingOf } from '../interiors/serviceInterior';
 import { servingFacilitiesOf } from '../services/services';
+import { homeLevelOf } from '../architect/homeLevel';
 
 const WELLBEING_LIMIT = 100;
 
@@ -44,7 +45,7 @@ export function unemploymentPenaltyOf(unemployedShare: number): number {
 }
 
 function unemployedShareOf(home: Building, congestion: CongestionStats): number {
-  const citizens = citizensOf(home.tier);
+  const citizens = citizensOf(homeLevelOf(home));
   return citizens > 0 ? (congestion.homes.get(home.id)?.unemployed ?? 0) / citizens : 0;
 }
 
@@ -120,7 +121,7 @@ export function cityBenefits(state: GameState, coalRates: ReadonlyMap<number, nu
   const total = { wellbeing: 0, pollutionPenalty: 0, servicePenalty: 0, congestionPenalty: 0, unemploymentPenalty: 0 };
   for (const home of state.buildings) {
     if (!isHomeType(home.type)) continue;
-    const weight = citizensOf(home.tier) / citizens;
+    const weight = citizensOf(homeLevelOf(home)) / citizens;
     const benefits = homeBenefits(state, home, coalRates, coverage, poweredCasinos, congestion);
     total.wellbeing += benefits.wellbeing * weight;
     total.pollutionPenalty += benefits.pollutionPenalty * weight;

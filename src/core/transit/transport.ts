@@ -13,6 +13,7 @@ import { gameHourOf, sameStepInputs } from '../engine/stateReuse';
 import { isTransitStopType } from './stopNames';
 import { WALKING } from '../traffic/walking';
 import { legBetween } from './lineLeg';
+import { homeLevelOf } from '../architect/homeLevel';
 export { routeForLine, routeFailure } from './transitService';
 
 type Service = ReturnType<typeof transitServices>[number];
@@ -152,7 +153,7 @@ function buildStructure(services: Service[], homes: Building[], workplaces: Buil
       }
     }
     options.sort((a, b) => a.minutes - b.minutes || a.lines.join(':').localeCompare(b.lines.join(':')));
-    const citizens = HOME_TIERS[home.tier - 1]?.citizens ?? 0;
+    const citizens = HOME_TIERS[homeLevelOf(home) - 1]?.citizens ?? 0;
     homeCitizens.set(home.id, citizens);
     if (options.length) { covered += citizens; homeOptions.set(home.id, options); }
   }

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "bricks": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "wall",
+              "window",
+              "door",
+              "extension"
+            ]
+          },
+          "price": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "tier": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "file": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "price",
+          "tier"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "bricks"
+  ],
+  "additionalProperties": false,
+  "title": "Architect bricks",
+  "description": "assets/defs/architect/bricks.json: the bricks of a house plan, in the order of the studio."
+}

@@ -11,6 +11,7 @@ import { citizensOf } from '../buildings/city';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { OFFICE, isOfficeType } from './offices';
 import { TAX } from './economy';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export const BUDGET_HOURS = 24;
 
@@ -34,7 +35,7 @@ export function cityBudget(state: GameState, { energy, congestion, transport }: 
   const context: NeedsContext = { energy, coverage, poweredCasinos, congestion };
   const taxPerHour = state.buildings
     .filter(building => isHomeType(building.type))
-    .reduce((sum, home) => sum + citizensOf(home.tier) * TAX.urbsPerCitizenPerHour * homeTaxMultiplier(state, home, context), 0);
+    .reduce((sum, home) => sum + citizensOf(homeLevelOf(home)) * TAX.urbsPerCitizenPerHour * homeTaxMultiplier(state, home, context), 0);
   const officeIds = new Set(state.buildings.filter(building => isOfficeType(building.type)).map(building => building.id));
   const filledJobs = [...congestion.filledJobs].reduce((sum, [id, count]) => sum + (officeIds.has(id) ? count : 0), 0);
   const officesPerHour = filledJobs * OFFICE.urbsPerJobPerHour * officeYieldMultiplierOf(state);

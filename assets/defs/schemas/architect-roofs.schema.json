@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "roofs": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "tier": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "contour": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "price",
+          "tier",
+          "contour"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "roofs"
+  ],
+  "additionalProperties": false,
+  "title": "Architect roofs",
+  "description": "assets/defs/architect/roofs.json: the roofs of a house plan, in the order of the studio."
+}

@@ -24,6 +24,11 @@ import { marketQuote } from '../economy/market';
 import { donationQuote } from '../economy/solidarity';
 import { harvestFields, layFields, plantFields, removeFields } from '../farming/fields';
 import { buySeeds, sellSeeds } from '../farming/seeds';
+import { architectTierOf, isPlanUnlockedAt } from '../architect/architectTiers';
+import { homeLevelOf } from '../architect/homeLevel';
+import { designCostOf, isDesignOfType, isHousePlanType, type HouseDesign } from '../architect/houseDesign';
+import { deleteHousePlan, saveHousePlan } from '../architect/housePlanCommands';
+import type { Plan as HousePlan } from '../architect/housePlan';
 import { giveUpDistrictGame, placeDistrictHex, startDistrictGame, undoDistrictHex } from '../districtPlan/districtCommands';
 import type { Cell } from '../districtPlan/hexGrid';
 import { layWater } from '../water/waterTiles';
@@ -107,7 +112,7 @@ export type Command =
   | { readonly type: 'PlaceRoundabout'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoad'; readonly x: number; readonly y: number }
   | { readonly type: 'DemolishRoadPath'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
-  | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation; readonly solar?: boolean; readonly colorVariant?: ColorVariant }
+  | { readonly type: 'PlaceBuilding'; readonly buildingType: BuildingType; readonly x: number; readonly y: number; readonly rotation?: Rotation; readonly solar?: boolean; readonly colorVariant?: ColorVariant; readonly design?: HouseDesign }
   | { readonly type: 'RepaintBuilding'; readonly buildingId: number; readonly colorVariant: ColorVariant }
   | { readonly type: 'EquipHome'; readonly buildingId: number; readonly equipment: 'insulation' }
   | { readonly type: 'EquipSolarPanels'; readonly buildingId: number }
@@ -165,6 +170,8 @@ export type Command =
   | { readonly type: 'RepairInteriorFixture'; readonly buildingId: number; readonly fixtureId: number }
   | { readonly type: 'RepairAllInteriorFixtures'; readonly buildingId: number }
   | { readonly type: 'SetInteriorParquet'; readonly buildingId: number; readonly parquet?: number }
+  | { readonly type: 'SaveHousePlan'; readonly name: string; readonly plan: HousePlan }
+  | { readonly type: 'DeleteHousePlan'; readonly id: number }
   | { readonly type: 'StartDistrictGame'; readonly buildingId: number }
   | { readonly type: 'PlaceDistrictHex'; readonly buildingId: number; readonly cell: Cell; readonly rotation: number }
   | { readonly type: 'GiveUpDistrictGame'; readonly buildingId: number }
@@ -300,6 +307,11 @@ export type ErrorKey =
   | 'error.noWaterForPirateShip'
   | 'error.unknownBoat'
   | 'error.waterInUse'
+  | 'error.invalidHousePlan'
+  | 'error.unknownHousePlan'
+  | 'error.housePlanFootprintInUse'
+  | 'error.housePlanLocked'
+  | 'error.housePlanLimit'
   | 'error.districtGameUnderWay'
   | 'error.noDistrictGame'
   | 'error.invalidDistrictPlacement'
@@ -308,6 +320,7 @@ export type ErrorKey =
   | 'error.nothingToPlant'
   | 'error.seedStockFull'
   | 'error.townHallExists'
+  | 'error.architectOfficeExists'
   | 'error.serviceRequired'
   | 'error.notEnoughUrbs'
   | 'error.lastAccessOfBuilding'
@@ -435,7 +448,7 @@ export function handleCommand(state: GameState, command: Command, now: number): 
     case 'DemolishRoadPath':
       return demolishRoad(state, roadPath(command.from, command.to, command.horizontalFirst ?? true));
     case 'PlaceBuilding':
-      return placeBuilding(state, command.buildingType, command.x, command.y, now, command.rotation, command.solar, command.colorVariant);
+      return placeBuilding(state, command.buildingType, command.x, command.y, now, command.rotation, command.solar, command.colorVariant, command.design);
     case 'RepaintBuilding':
       return repaintBuilding(state, command.buildingId, command.colorVariant);
     case 'EquipHome':
@@ -550,6 +563,10 @@ export function handleCommand(state: GameState, command: Command, now: number): 
       return repairAllInteriorFixtures(state, command.buildingId);
     case 'SetInteriorParquet':
       return setInteriorParquet(state, command.buildingId, command.parquet);
+    case 'SaveHousePlan':
+      return saveHousePlan(state, command.name, command.plan);
+    case 'DeleteHousePlan':
+      return deleteHousePlan(state, command.id);
     case 'StartDistrictGame':
       return startDistrictGame(state, command.buildingId);
     case 'PlaceDistrictHex':
@@ -866,22 +883,27 @@ function withScenerySettled(type: BuildingType, state: GameState): GameState {
   return isSeaSceneryType(type) ? withBoatsMovedOffScenery(state) : state;
 }
 
-function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, now: number, requestedRotation?: Rotation, solar = false, colorVariant?: ColorVariant): CommandOutcome {
-  if (isRetired(type) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < solarPanelsUnlockCitizens(type))) return fail('error.itemLocked');
+// A house plan is built as the Home type of its size; the plan prices it.
+function placeBuilding(state: GameState, type: BuildingType, x: number, y: number, now: number, requestedRotation?: Rotation, solar = false, colorVariant?: ColorVariant, design?: HouseDesign): CommandOutcome {
+  if (isHousePlanType(type) !== (design !== undefined) || (design && !isDesignOfType(type, design))) return fail('error.invalidHousePlan');
+  if (design && !isPlanUnlockedAt(design.plan, architectTierOf(state))) return fail('error.housePlanLocked');
+  if (design?.planId !== undefined && !state.housePlans?.some((saved) => saved.id === design.planId)) return fail('error.unknownHousePlan');
+  if ((isRetired(type) && !design) || citizenCount(state) < (ECOLOGY_UNLOCKS[type] ?? 0) || (solar && citizenCount(state) < solarPanelsUnlockCitizens(type))) return fail('error.itemLocked');
   if (!isBuildableAt(type, now)) return fail('error.annualEventClosed');
   if (solar && !isHomeType(type)) return fail('error.cannotProduce');
   const extraCost = solar ? solarInstallCostOf(type) : 0;
   const rotation = requestedRotation ?? autoRotation(state, type, x, y);
   const issue = placementIssue(state, type, x, y, rotation);
   if (issue) return fail(issue);
-  if (state.urbs < nextCopyCost(state, type) + extraCost) return fail('error.notEnoughUrbs');
-  const created = { ...createBuilding(state.nextId, type, x, y, rotation), ...(isStandsType(type) ? { coveId: coveForStands(state, type, x, y, rotation)!.id } : {}) };
+  const cost = design ? designCostOf(design) : nextCopyCost(state, type);
+  if (state.urbs < cost + extraCost) return fail('error.notEnoughUrbs');
+  const created = { ...createBuilding(state.nextId, type, x, y, rotation), ...(design ? { design: structuredClone(design) } : {}), ...(isStandsType(type) ? { coveId: coveForStands(state, type, x, y, rotation)!.id } : {}) };
   const orchardQueue = newOrchardQueue(type, state.lastSeen);
   const building = { ...created, ...(orchardQueue ? { queue: orchardQueue } : {}), ...(solar ? { solar: true } : {}), ...(isHomeType(type) && colorVariant ? { colorVariant } : {}), ...(type === 'battery' ? { storedEnergy: 0 } : {}) };
-  const utilityIssue = isHomeType(type) ? utilityIssueFor(state, tierDemand(1)) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
+  const utilityIssue = isHomeType(type) ? utilityIssueFor(state, tierDemand(homeLevelOf(building))) : isFacilityType(type) ? utilityIssueFor(state, { power: 0, water: FACILITIES[type].water }) : null;
   if (utilityIssue) return fail(utilityIssue);
   return {
-    state: withScenerySettled(type, { ...state, urbs: state.urbs - nextCopyCost(state, type) - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] }),
+    state: withScenerySettled(type, { ...state, urbs: state.urbs - cost - extraCost, nextId: state.nextId + 1, buildings: [...state.buildings, building] }),
     events: [{ type: 'BuildingPlaced', id: building.id }],
   };
 }
@@ -912,7 +934,7 @@ function sellBuilding(state: GameState, id: number): CommandOutcome {
   if (building.type === 'marina' && boatsOfMarina(state, building.id).length > 0) return fail('error.marinaInUse');
   if (isPirateCoveInUse(state, building)) return fail('error.pirateCoveInUse');
   if (isStandsType(building.type) && isCoveLocked(state, building.coveId ?? 0)) return fail('error.showLocksCove');
-  const refund = Math.floor(placementCost(building.type) * GAME_CONFIG.sellRefundRatio);
+  const refund = Math.floor((building.design ? designCostOf(building.design) : placementCost(building.type)) * GAME_CONFIG.sellRefundRatio);
   return {
     state: withoutBrokenLines({ ...state, urbs: state.urbs + refund, buildings: state.buildings.filter((candidate) => candidate !== building) }, id, true),
     events: [{ type: 'BuildingSold', id }],

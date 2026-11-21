@@ -8,6 +8,11 @@ export const FLAGS = {
     description: 'Clubs de football, de baseball et de basket : effectif, composition, championnat, matchs.',
     commands: ['FoundClub', 'SignPlayer', 'ReleasePlayer', 'SetLineup', 'PlayMatch'] as readonly Command['type'][],
   },
+  architect: {
+    label: "Cabinet d'architecture",
+    description: 'Dessiner des plans de maisons dans un cabinet d\'architecture et les construire comme des logements.',
+    commands: ['SaveHousePlan', 'DeleteHousePlan'] as readonly Command['type'][],
+  },
   advisor: {
     label: 'Conseiller',
     description: 'Assistant local (WebLLM) qui explique les Causes de la ville ; téléchargement du modèle sur demande.',
@@ -39,6 +44,9 @@ export function resolveFlags(raw: string | null, overridable: boolean): FlagValu
 }
 
 export const flagOfCommand = (type: Command['type']): FlagId | undefined => FLAG_IDS.find(id => FLAGS[id].commands.includes(type));
+
+// A house built from a plan belongs to the architect flag, though PlaceBuilding itself does not.
+export const flagOfCall = (command: Command): FlagId | undefined => (command.type === 'PlaceBuilding' && command.design !== undefined ? 'architect' : flagOfCommand(command.type));
 
 const readStored = (): string | null => {
   try {

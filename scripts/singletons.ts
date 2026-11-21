@@ -5,6 +5,7 @@ import { bridgeInfrastructureSchema, railsInfrastructureSchema, hedgesInfrastruc
 import { natureDescriptionsSchema, NATURE_DESCRIPTION_VALUES } from '../src/core/descriptions/descriptionSchemas.ts';
 import { templateProblems } from '../src/core/descriptions/descriptionProblems.ts';
 import { packFormatsSchema } from '../src/core/economy/itemSchemas.ts';
+import { architectBricksSchema, architectDecorsSchema, architectPartsSchema, architectRoofsSchema, architectShapesSchema } from '../src/core/architect/architectSchemas.ts';
 import { artistsSchema } from '../src/core/tourism/artistSchema.ts';
 
 // Game data held in one file rather than one file per id. Pure: shared by the scripts, the build and the editor.
@@ -42,6 +43,11 @@ export const SINGLETONS = {
   waste: { file: 'assets/defs/balance/waste.json', title: 'Waste balance', schemaName: 'balance-waste', schema: wasteBalanceSchema },
   knowledge: { file: 'assets/defs/balance/knowledge.json', title: 'Knowledge balance', schemaName: 'balance-knowledge', schema: knowledgeBalanceSchema },
   transitReach: { file: 'assets/defs/balance/transitReach.json', title: 'Transit reach balance', schemaName: 'balance-transit-reach', schema: transitReachBalanceSchema },
+  architectBricks: { file: 'assets/defs/architect/bricks.json', title: 'Architect bricks', schemaName: 'architect-bricks', schema: architectBricksSchema },
+  architectDecors: { file: 'assets/defs/architect/decors.json', title: 'Architect decors', schemaName: 'architect-decors', schema: architectDecorsSchema },
+  architectRoofs: { file: 'assets/defs/architect/roofs.json', title: 'Architect roofs', schemaName: 'architect-roofs', schema: architectRoofsSchema },
+  architectShapes: { file: 'assets/defs/architect/shapes.json', title: 'Architect shapes', schemaName: 'architect-shapes', schema: architectShapesSchema },
+  architectParts: { file: 'assets/defs/architect/parts.json', title: 'Architect parts', schemaName: 'architect-parts', schema: architectPartsSchema },
   roads: {
     file: 'assets/defs/infrastructure/roads.json',
     title: 'Roads',

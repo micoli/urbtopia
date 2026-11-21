@@ -704,6 +704,8 @@
 
 .progress-bar { width: 100%; accent-color: var(--color-positive); }
 .text-field { box-sizing: border-box; width: 100%; min-height: var(--tap); padding: var(--space-8) var(--space-12); border: 1px solid var(--white-a20); border-radius: var(--radius-md); background: var(--white-a08); color: inherit; font: inherit; }
+.text-field-with-editor { display: flex; align-items: center; gap: var(--space-8); }
+.text-field-with-editor .text-field { flex: 1; min-width: 0; }
 .action-button .count-badge { margin-left: var(--space-6); }
 
 /* A navigation window leaves the dock, or the bottom bar, out of its click area so a click there goes straight to its button; the veil is a separate layer that still dims the whole screen. */

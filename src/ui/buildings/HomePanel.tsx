@@ -1,4 +1,4 @@
-import { energySavingOf, homeKnowledge, ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, congestionStats, homePower, homeBenefits, missingServicesOf, serviceCoverage, transitReachLinks, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, difficultyOf, homeSanction, needsContext, isWasteMissing, isWastePowerReduced, wasteReport, type Building, type FacilityType } from '../../core';
+import { homeLevelOf, energySavingOf, homeKnowledge, ECOLOGY, FACILITY_TYPES, casinosReaching, sportVenuesReaching, isSportVenueType, poweredCasinoIds, congestionStats, homePower, homeBenefits, missingServicesOf, serviceCoverage, transitReachLinks, uncoveredReason, totalCitizens, HOME_TIERS, citizensOf, taxDue, difficultyOf, homeSanction, needsContext, isWasteMissing, isWastePowerReduced, wasteReport, type Building, type FacilityType } from '../../core';
 import { t } from '../../i18n/t';
 import type { MessageKey } from '../../i18n/messages';
 import { gameStore } from '../../store/gameStore';
@@ -34,7 +34,7 @@ export function HomePanel({ building }: HomePanelProps) {
     return link ? `${t(`building.${type}`)} (${t('home.viaStation').replace('{station}', stationOf(link.homeStopId))})` : t(`building.${type}`);
   };
   const missing = missingServicesOf(state, building, building.tier, coverage);
-  const spec = HOME_TIERS[building.tier - 1];
+  const spec = HOME_TIERS[homeLevelOf(building) - 1];
   const commute = congestionStats(state).homes.get(building.id);
   const working = !commute || commute.disconnected ? 0 : commute.commuters + commute.walkers + commute.cyclists + commute.riders;
   const due = taxDue(building);
@@ -42,7 +42,7 @@ export function HomePanel({ building }: HomePanelProps) {
   const sanction = difficultyOf(state) === 'cozy' ? null : homeSanction(state, building, needsContext(state));
   const sanctioned = sanction?.factor ? sanction : null;
   return <DrawerPanel>
-      <DrawerPanel.LabelValue label={t('home.citizens')} value={<>{citizensOf(building.tier)} · {t('home.working')} {Math.round(working)}</>}/>
+      <DrawerPanel.LabelValue label={t('home.citizens')} value={<>{citizensOf(homeLevelOf(building))} · {t('home.working')} {Math.round(working)}</>}/>
 
       <DrawerPanel.LabelValue label={t('home.demand')} value={<><Icon name="power" /> {homePower(building, energySavingOf(state)).toFixed(1)} · <Icon name="water" /> {spec?.water ?? 0}</>}/>
       <DrawerPanel.LabelValue label={t('home.tax')} value={<>{due}</>}/>

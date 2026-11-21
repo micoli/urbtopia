@@ -3,6 +3,7 @@ import type { Command } from '../engine/commands';
 import { SHOP, TAX } from '../economy/economy';
 import type { Building, BuildingType, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export const TUTORIAL_STEPS = [
   'road',
@@ -111,7 +112,7 @@ function nextSaleMs(state: GameState, now: number): number | null {
 function nextTaxMs(state: GameState): number | null {
   const home = homeOf(state);
   if (!home) return null;
-  const citizens = citizensOf(home.tier);
+  const citizens = citizensOf(homeLevelOf(home));
   const missing = TAX.hourMs - home.taxCitizenMs;
   return citizens === 0 || missing <= 0 ? null : Math.ceil(missing / citizens);
 }

@@ -1,6 +1,8 @@
 import { hasProductionInteriorType, interiorProfileOf, isMaterial, interiorRolesOf, isProducerRole } from '../core';
 import { FIXTURES, isRestockable, FIXTURE_IDS, PARQUETS, PIRATE_SHOW_TITLES, isCoveBoatFamily, footprintTiles, isSeaSceneryType, isStandsType, hasClub, isClubSport, FLEET_VEHICLES, TRANSIT, STAFF_ROLES, isVenueType, TICKETS, sellsTicketsType, MAX_CASINO_TIER, BOAT_FAMILIES, BUILDING_SPECS, CROP_IDS, GAME_CONFIG, GOODS, MATERIALS, MAX_ROAD_TIER, TRADE_EFFECTS, TRADE_LIMITS, TUTORIAL_STEPS, VENUE_TUTORIAL_TYPES, isVenueTutorialStep, STOP_NAME_MAX_LENGTH, bridgeFootprint, bridgeRamps, isInfrastructureBridge, isTransitStopType, isTradeLine, type GameState, type TradeEffect, type TutorialStep, isHomeType, canHaveSolarPanels, isDifficulty, FACTION_IDS, JOURNAL_TYPES, PETITION_CAUSES, SUPPORT_CAUSES, OBJECTIVE_ENTRIES, ORDINANCE_ENTRIES, POLITICS, isRepaintableType, mayCarryLegacyColor, colorVariantsOfType, maxTierOf, type BuildingType } from '../core';
 import { isDistrictOffice } from './validateDistrict';
+import { isDesignOf, isHousePlanList } from './validateHousePlans';
+import { isHousePlanType } from '../core/architect/houseDesign';
 
 type Json = Record<string, unknown>;
 
@@ -239,6 +241,7 @@ function isBuilding(value: unknown): boolean {
     (value.colorVariant === undefined || isColorAccepted(value.type, value.colorVariant)) &&
     (value.venue === undefined || (typeof value.type === 'string' && isVenueType(value.type) && isVenueData(value.venue))) &&
     (value.interior === undefined || (typeof value.type === 'string' && interiorProfileOf(value.type as BuildingType) !== undefined && isInteriorData(value.interior, interiorProfileOf(value.type as BuildingType)!.family === 'home' ? 'home' : value.type, value.type as BuildingType))) &&
+    (isHousePlanType(String(value.type)) === (value.design !== undefined) && (value.design === undefined || isDesignOf(String(value.type), value.design))) &&
     (value.district === undefined || (value.type === 'planningOffice' && isDistrictOffice(value.district))) &&
     (value.club === undefined || (typeof value.type === 'string' && hasClub(value.type) && isClubData(value.club))) &&
     (value.attraction === undefined || (typeof value.type === 'string' && sellsTicketsType(value.type) && isAttractionData(value.attraction))) &&
@@ -467,6 +470,7 @@ function structureFailure(value: Json): string | null {
     entries('roundabouts', () => value.roundabouts, (center) => isCoord(center)),
     field('tutorial', () => value.tutorial === null || TUTORIAL_STEPS.includes(value.tutorial as TutorialStep)),
     entries('tradeLedger', () => value.tradeLedger, isTradeLedgerEntry),
+    field('housePlans', () => value.housePlans === undefined || isHousePlanList(value.housePlans)),
     field('venueTutorials', () => value.venueTutorials === undefined || isVenueTutorials(value.venueTutorials)),
     field('solidarityMs', () => value.solidarityMs === undefined || (isNonNegative(value.solidarityMs) && value.solidarityMs <= SOLIDARITY_MAX_MS)),
     entries('donations', () => value.donations, isDonation, true),

@@ -1,4 +1,4 @@
-import {
+import { homeLevelOf,
     ECOLOGY, HOME_TIERS, cityBenefits, economicPower, energySavingOf, energyStats, homePower, transportStats, type GameState, isHomeType } from '../../../core';
 import {t} from '../../../i18n/t';
 import type {MessageKey} from '../../../i18n/messages';
@@ -36,7 +36,7 @@ function casinoRows(state: GameState, green: ReturnType<typeof cityBenefits>): E
 }
 
 export function EnergySection({state, energy, green, transport}: EnergySectionProps) {
-    const saved = state.buildings.filter(b => isHomeType(b.type)).reduce((sum, b) => sum + (HOME_TIERS[b.tier - 1]?.power ?? 0) - homePower(b, energySavingOf(state)), 0);
+    const saved = state.buildings.filter(b => isHomeType(b.type)).reduce((sum, b) => sum + (HOME_TIERS[homeLevelOf(b) - 1]?.power ?? 0) - homePower(b, energySavingOf(state)), 0);
     const buildingsById = new Map(state.buildings.map(b => [b.id, b]));
     const renewables = energy.solar + energy.wind + energy.hydro + energy.geothermal;
     const groups: EnergyGroup[] = [

@@ -7,6 +7,7 @@ import { wasteReport, type WasteCause, type WasteReport } from './waste';
 import { wasteKindOf } from './wasteBalance';
 import { incineratorPenaltyOf, odorPenaltyOf } from './wasteNuisance';
 import { wasteSituation, type WasteSituation } from './wasteSituation';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export const WASTE_DIAGNOSIS = {
   minSurchargeShare: 0.2,
@@ -21,8 +22,8 @@ interface Facts {
 }
 
 const tileOf = (building: Building) => ({ x: building.x, y: building.y });
-const largestFirst = (a: Building, b: Building) => citizensOf(b.tier) - citizensOf(a.tier) || a.id - b.id;
-const citizensIn = (homes: readonly Building[]) => homes.reduce((sum, home) => sum + citizensOf(home.tier), 0);
+const largestFirst = (a: Building, b: Building) => citizensOf(homeLevelOf(b)) - citizensOf(homeLevelOf(a)) || a.id - b.id;
+const citizensIn = (homes: readonly Building[]) => homes.reduce((sum, home) => sum + citizensOf(homeLevelOf(home)), 0);
 
 function homesWith(facts: Facts, ...causes: WasteCause[]): Building[] {
   return facts.homes.filter(home => {

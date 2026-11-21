@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { isHouseModel } from './houseModels';
 import { WINDOW_SCHEDULE, type NightClock } from './windowSchedule';
 
 const GLASS_HEX = 0x9fcdea;
@@ -64,6 +65,9 @@ const EMISSION = `
 #ifdef USE_MAP
   float windowGlass = 1.0 - step(${GLASS_TOLERANCE.toFixed(3)}, distance(sampledDiffuseColor.rgb, uGlassColor));
   if (windowGlass > 0.5 && uWindowGlow > 0.0) totalEmissiveRadiance += uGlowColor * uWindowGlow * windowLit();
+#else
+  float windowGlass = 1.0 - step(${GLASS_TOLERANCE.toFixed(3)}, distance(diffuseColor.rgb, uGlassColor));
+  if (windowGlass > 0.5 && uWindowGlow > 0.0) totalEmissiveRadiance += uGlowColor * uWindowGlow * windowLit();
 #endif
 `;
 
@@ -97,7 +101,7 @@ export function windowGlowLevel(): number {
 }
 
 function lightable(material: THREE.Material): material is THREE.MeshStandardMaterial {
-  return (material as THREE.MeshStandardMaterial).isMeshStandardMaterial === true && (material as THREE.MeshStandardMaterial).map !== null;
+  return (material as THREE.MeshStandardMaterial).isMeshStandardMaterial === true && ((material as THREE.MeshStandardMaterial).map !== null || material.userData.windowGlass === true);
 }
 
 // Returns copies, never the shared model materials: other layers draw the same models without glowing windows.
@@ -117,5 +121,5 @@ export function withWindowGlow(source: THREE.Material | THREE.Material[]): THREE
 }
 
 export function isGlowingModel(model: string): boolean {
-  return model.startsWith('buildings');
+  return model.startsWith('buildings') || isHouseModel(model);
 }

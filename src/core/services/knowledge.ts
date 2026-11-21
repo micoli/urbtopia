@@ -7,6 +7,7 @@ import type { FacilityType } from './facilities';
 import { serviceQualityOf } from '../interiors/serviceInterior';
 import type { InteriorPart } from '../interiors/interiorStaff';
 import { servingFacilitiesOf, servingTiersOf, serviceCoverage, type ServiceCoverage, type ServingTiers } from './services';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export const KNOWLEDGE = knowledge;
 
@@ -39,7 +40,7 @@ export function cityKnowledge(state: GameState): number | null {
   let citizens = 0;
   for (const home of state.buildings) {
     if (!isHomeType(home.type)) continue;
-    const weight = citizensOf(home.tier);
+    const weight = citizensOf(homeLevelOf(home));
     weighted += weight * homeKnowledge(state, home, coverage, tiers);
     citizens += weight;
   }
