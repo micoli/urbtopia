@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import type { PlanLibrary } from './planLibrary.ts';
 import { ActionButton } from '../ui/common/ActionButton.tsx';
 import { Dialog } from '../ui/common/Dialog.tsx';
@@ -6,14 +6,13 @@ import { Icon } from '../ui/common/Icon.tsx';
 import { IconButton } from '../ui/common/IconButton.tsx';
 import { Note } from '../ui/common/Note.tsx';
 import { SectionHeading } from '../ui/common/SectionHeading.tsx';
-import { TextFieldWithEditor } from '../ui/common/TextFieldWithEditor.tsx';
 import { exportPlanGlb } from './exportGlb.ts';
 import { t } from '../i18n/t';
 import type { ArchitectMessageKey } from '../i18n/architect';
 import { uniquePlanName } from './planNames.ts';
-import { parsePlan, stats, type Plan, type Shape } from '../core/architect/housePlan.ts';
-import { UrbsSymbol } from '../ui/common/UrbsSymbol.tsx';
-import { PlanThumbnail } from './PlanThumbnail.tsx';
+import { parsePlan, type Plan, type Shape } from '../core/architect/housePlan.ts';
+import { OpenPlanCard, type OpenPlanStatus } from './OpenPlanCard.tsx';
+import { SavedPlanCard } from './SavedPlanCard.tsx';
 import { TemplatePicker } from './TemplatePicker.tsx';
 
 interface PlansPageProps {
@@ -66,15 +65,27 @@ export function PlansPage({ plan, library, name, onName, onCreate, onOpen, onBac
   };
 
   const names = [...library.names].sort();
+  const openName = name.trim();
+  const savedOpen = plan ? library.load(openName) : undefined;
+  const statusOfOpenPlan: OpenPlanStatus = !savedOpen ? 'new' : JSON.stringify(savedOpen) === JSON.stringify(plan) ? 'saved' : 'edited';
+  const openCard = plan && (
+    <OpenPlanCard name={name} plan={plan} status={statusOfOpenPlan} houses={library.houseCount?.(openName)} onName={onName} onContinue={onBack!} onSave={save} onClosePlan={onDiscard}>
+      {standalone && (
+        <div className="studio-saved__actions">
+          <ActionButton size="sm" onClick={() => download(new Blob([JSON.stringify({ version: 1, name: openName || 'plan', plan }, null, 2)], { type: 'application/json' }), 'json')}>
+            {t('architect.exportJson')}
+          </ActionButton>
+          <ActionButton size="sm" onClick={() => void exportPlanGlb(plan).then((blob) => download(blob, 'glb'))}>
+            {t('architect.exportGlb')}
+          </ActionButton>
+        </div>
+      )}
+    </OpenPlanCard>
+  );
   return (
     <main className="studio-page">
       <header className="studio-page__header">
         <SectionHeading>{t('architect.plans')}</SectionHeading>
-        {onBack && (
-          <ActionButton size="sm" onClick={onBack}>
-            <Icon name="arrowLeft" /> {t('architect.plans.back')}
-          </ActionButton>
-        )}
         {onClose && (
           <IconButton label={t('architect.close')} onClick={onClose}>
             <Icon name="close" />
@@ -114,60 +125,15 @@ export function PlansPage({ plan, library, name, onName, onCreate, onOpen, onBac
           </div>
           {message && <Note tone="danger">{message}</Note>}
 
-          <SectionHeading>{t('architect.plans.current')}</SectionHeading>
-          {plan ? (
-            <>
-              <div className="studio-row">
-                <TextFieldWithEditor label={t('architect.plan.name')} placeholder={t('architect.plan.name')} value={name} onChange={onName} onSubmit={save} />
-                <ActionButton size="sm" onClick={save}>
-                  {t('architect.save')}
-                </ActionButton>
-                <ActionButton size="sm" onClick={onDiscard}>
-                  {t('architect.plans.cancel')}
-                </ActionButton>
-              </div>
-              {standalone && (
-              <div className="studio-row">
-                <ActionButton size="sm" onClick={() => download(new Blob([JSON.stringify({ version: 1, name: name.trim() || 'plan', plan }, null, 2)], { type: 'application/json' }), 'json')}>
-                  {t('architect.exportJson')}
-                </ActionButton>
-                <ActionButton size="sm" onClick={() => void exportPlanGlb(plan).then((blob) => download(blob, 'glb'))}>
-                  {t('architect.exportGlb')}
-                </ActionButton>
-              </div>
-              )}
-            </>
-          ) : (
-            <p className="studio-hint">{t('architect.plans.noCurrent')}</p>
-          )}
-
-          <SectionHeading>{t('architect.plans.saved')}</SectionHeading>
-          {names.length === 0 && <p className="studio-hint">{t('architect.none')}</p>}
-          {names.map((key) => {
-            const saved = library.load(key)!;
-            const houses = library.houseCount?.(key);
-            return (
-            <div key={key} className="studio-saved">
-              <PlanThumbnail plan={saved} />
-              <div className="studio-saved__info">
-                <span>{key}</span>
-                <span className="studio-saved__meta">
-                  <strong>{stats(saved).cost}</strong> <UrbsSymbol />
-                  {houses !== undefined && <> · {t(houses > 1 ? 'architect.plan.houses' : 'architect.plan.house').replace('{count}', String(houses))}</>}
-                </span>
-              </div>
-              <ActionButton size="sm" onClick={() => onOpen(structuredClone(library.load(key)!), key)}>
-                {t('architect.load')}
-              </ActionButton>
-              <IconButton label={t('architect.delete')} onClick={() => setDeleting(key)}>
-                <Icon name="close" />
-              </IconButton>
-            </div>
-            );
-          })}
           <ActionButton variant="primary" size="sm" onClick={() => setCreating(true)}>
             <Icon name="build" /> {t('architect.new')}
           </ActionButton>
+
+          {!plan && names.length === 0 && <p className="studio-hint">{t('architect.none')}</p>}
+          <ul className="studio-plan-list">
+            {plan && !savedOpen && openCard}
+            {names.map((key) => (plan && key === openName ? <Fragment key={key}>{openCard}</Fragment> : <SavedPlanCard key={key} name={key} plan={library.load(key)!} houses={library.houseCount?.(key)} disabled={plan !== undefined} onOpen={() => onOpen(structuredClone(library.load(key)!), key)} onDelete={() => setDeleting(key)} />))}
+          </ul>
         </>
       )}
       {deleting !== undefined && (
