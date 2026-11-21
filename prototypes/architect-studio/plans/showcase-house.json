@@ -1,0 +1,223 @@
+{
+  "version": 1,
+  "name": "Maison des styles",
+  "plan": {
+    "floors": [
+      [
+        [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        [
+          false,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        [
+          false,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        [
+          false,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ],
+      [
+        [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        [
+          false,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        [
+          false,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        [
+          false,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ],
+      [
+        [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        [
+          false,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        [
+          false,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        [
+          false,
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      ]
+    ],
+    "roofSplit": "rows",
+    "roofStyles": {
+      "2:1:1": {
+        "type": "mansard",
+        "axis": "auto",
+        "pitch": "normal",
+        "high": 0
+      }
+    },
+    "wallColor": "#e8d9b5",
+    "roofColor": "#b5533c",
+    "plinth": true,
+    "bricks": {
+      "0:1:3:2": "doorArched",
+      "0:1:1:0": "windowShutters",
+      "0:2:1:0": "windowArched",
+      "0:3:1:0": "windowRound",
+      "0:4:1:0": "windowShutters",
+      "0:4:1:1": "windowRound",
+      "0:4:2:1": "windowArched",
+      "0:4:3:1": "windowShutters",
+      "0:2:3:2": "doorDouble",
+      "0:3:3:2": "doorGlazed",
+      "0:4:3:2": "doorGarage",
+      "0:1:1:3": "windowShutters",
+      "0:1:2:3": "windowArched",
+      "0:1:3:3": "windowRound",
+      "1:1:1:0": "windowRound",
+      "1:2:1:0": "windowShutters",
+      "1:3:1:0": "windowShutters",
+      "1:4:1:0": "windowRound",
+      "1:4:1:1": "windowArched",
+      "1:4:2:1": "windowShutters",
+      "1:4:3:1": "windowArched",
+      "1:1:3:2": "windowArched",
+      "1:2:3:2": "windowRound",
+      "1:3:3:2": "windowRound",
+      "1:4:3:2": "windowArched",
+      "1:1:1:3": "windowArched",
+      "1:1:2:3": "windowShutters",
+      "1:1:3:3": "windowArched"
+    },
+    "dormers": {
+      "2:1:3:2": true,
+      "2:2:3:2": "round",
+      "2:3:3:2": true,
+      "2:4:3:2": "round",
+      "2:1:1:0": "round",
+      "2:3:1:0": "round"
+    },
+    "chimneys": {},
+    "decors": {
+      "0:1:3:2": "doorHood",
+      "0:2:3:2": "doorHood",
+      "0:3:3:2": "doorHood",
+      "0:4:3:2": "stripedAwning",
+      "0:2:1:0": "awning",
+      "0:3:1:0": "awning",
+      "0:1:1:0": "stripedAwning",
+      "0:4:2:1": "awning",
+      "1:1:3:2": "awning",
+      "1:2:3:2": "stripedAwning",
+      "1:4:3:2": "awning",
+      "1:4:2:1": "stripedAwning"
+    }
+  }
+}

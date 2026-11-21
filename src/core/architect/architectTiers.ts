@@ -1,17 +1,25 @@
 import { buildingsOfType } from '../buildings/buildingIndex';
 import type { GameState } from '../engine/state';
 import { valueByTier } from '../interiors/valueByTier';
-import { GRID, MAX_FLOORS, type Brick, type Plan, type Roof } from './housePlan';
+import { GRID, MAX_FLOORS, activeChimneys, activeDecors, activeDormers, exteriorEdges, getBrick, roofRects, roofStyle, type Brick, type Decor, type Plan, type Roof } from './housePlan';
 
 export const ARCHITECT_TIER_COUNT = 5;
 
 // What each Tier of the Architect office unlocks in the studio, from Tier 1 to Tier 5. A later Tier keeps everything an earlier one had.
 export const ARCHITECT_BRICKS_BY_TIER: readonly (readonly Brick[])[] = [
   ['wall', 'window', 'door'],
-  ['bay'],
-  ['balcony', 'balconyDoor'],
+  ['bay', 'windowArched', 'windowShutters', 'doorArched'],
+  ['balcony', 'balconyDoor', 'windowRound', 'doorDouble', 'doorGlazed'],
+  ['doorGarage'],
   [],
+];
+
+export const ARCHITECT_DECORS_BY_TIER: readonly (readonly Decor[])[] = [
   [],
+  ['doorHood', 'awning'],
+  ['stripedAwning', 'pilasters', 'stoneAccents'],
+  ['portico', 'pergola'],
+  ['colonnade', 'cypresses'],
 ];
 
 export const ARCHITECT_ROOFS_BY_TIER: readonly (readonly Roof[])[] = [
@@ -76,9 +84,13 @@ const unlockedUpTo = <T>(byTier: readonly (readonly T[])[], tier: number): reado
 
 export const unlockedBricks = (tier: number): readonly Brick[] => unlockedUpTo(ARCHITECT_BRICKS_BY_TIER, tier);
 
+export const unlockedDecors = (tier: number): readonly Decor[] => unlockedUpTo(ARCHITECT_DECORS_BY_TIER, tier);
+
 export const unlockedRoofs = (tier: number): readonly Roof[] => unlockedUpTo(ARCHITECT_ROOFS_BY_TIER, tier);
 
 export const tierOfBrick = (brick: Brick): number => ARCHITECT_BRICKS_BY_TIER.findIndex((bricks) => bricks.includes(brick)) + 1;
+
+export const tierOfDecor = (decor: Decor): number => ARCHITECT_DECORS_BY_TIER.findIndex((decors) => decors.includes(decor)) + 1;
 
 export const tierOfRoof = (roof: Roof): number => ARCHITECT_ROOFS_BY_TIER.findIndex((roofs) => roofs.includes(roof)) + 1;
 
@@ -128,10 +140,11 @@ export function tierRequiredBy(plan: Plan): number {
   tiers.push(firstTierWhere((tier) => gridSideOf(tier) >= side));
   tiers.push(firstTierWhere((tier) => maxFloorsOf(tier) >= plan.floors.length));
   tiers.push(tierOfColor(ARCHITECT_WALL_COLORS, ARCHITECT_WALL_SWATCHES, plan.wallColor), tierOfColor(ARCHITECT_ROOF_COLORS, ARCHITECT_ROOF_SWATCHES, plan.roofColor));
-  Object.values(plan.bricks).forEach((brick) => tiers.push(tierOfBrick(brick)));
-  Object.values(plan.roofStyles).forEach((style) => tiers.push(tierOfRoof(style.type)));
-  if (Object.keys(plan.dormers).length > 0) tiers.push(ARCHITECT_DORMER_TIER);
-  if (Object.keys(plan.chimneys).length > 0) tiers.push(ARCHITECT_CHIMNEY_TIER);
+  exteriorEdges(plan).forEach((edge) => tiers.push(tierOfBrick(getBrick(plan, edge))));
+  roofRects(plan).forEach((rect) => tiers.push(tierOfRoof(roofStyle(plan, rect).type)));
+  activeDecors(plan).forEach(({ decor }) => tiers.push(tierOfDecor(decor)));
+  if (activeDormers(plan).length > 0) tiers.push(ARCHITECT_DORMER_TIER);
+  if (activeChimneys(plan).length > 0) tiers.push(ARCHITECT_CHIMNEY_TIER);
   return Math.max(...tiers.filter((tier) => tier > 0));
 }
 

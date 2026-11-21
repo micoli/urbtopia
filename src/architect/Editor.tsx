@@ -1,7 +1,9 @@
-import type { Edge, Plan } from '../core/architect/housePlan.ts';
+import { hasPlinth, type Edge, type Plan } from '../core/architect/housePlan.ts';
 import type { Mode, RoofTool } from './editorConstants.ts';
 import type { SlotRef } from './render.ts';
-import { availableTools, type FacadeTool } from './facadeTools.ts';
+import { availableTools, isDecorTool, type FacadeTool } from './facadeTools.ts';
+import { SwitchField } from '../ui/common/SwitchField.tsx';
+import { t } from '../i18n/t';
 import { ToolPalette } from './ToolPalette.tsx';
 import { FloorPlan } from './FloorPlan.tsx';
 import { ColorsPanel } from './ColorsPanel.tsx';
@@ -25,9 +27,12 @@ interface EditorProps {
   edit: (mutate: (plan: Plan) => void) => void;
   onModeChange: (mode: Mode) => void;
   onToolChange: (tool: FacadeTool) => void;
+  onDecorMode: (on: boolean) => void;
   onToggleCell: (c: number, r: number) => void;
   onPickSlot: (edge: Edge) => void;
+  onSelectSlot: (edge: Edge) => void;
   onPickColor: (key: 'wallColor' | 'roofColor', value: string) => void;
+  onPlinth: (on: boolean) => void;
   onToggleChimney: (c: number, r: number) => void;
   onToggleDormer: (edge: Edge) => void;
   onSelectRoof: (key: string | undefined) => void;
@@ -41,8 +46,9 @@ export function Editor(props: EditorProps) {
     <section>
       <ModeTabs mode={mode} onPick={props.onModeChange} />
       <div role="tabpanel" id="studio-editor" aria-labelledby={`studio-mode-${mode}`}>
-      {mode === 'facade' && <ToolPalette tool={tool} available={availableTools(plan, floor, onRoofLevel)} onPick={props.onToolChange} />}
-      {mode === 'colors' && <ColorsPanel wallColor={plan.wallColor} roofColor={plan.roofColor} onPick={props.onPickColor} />}
+      {mode === 'facade' && <ToolPalette tool={tool} available={availableTools(plan, floor, onRoofLevel, isDecorTool(tool))} onPick={props.onToolChange} />}
+      {mode === 'facade' && !onRoofLevel && <SwitchField label={t('architect.decorMode')} checked={isDecorTool(tool)} onChange={props.onDecorMode} />}
+      {mode === 'colors' && <ColorsPanel wallColor={plan.wallColor} roofColor={plan.roofColor} plinth={hasPlinth(plan)} onPick={props.onPickColor} onPlinth={props.onPlinth} />}
       {mode === 'roof' && <RoofMap plan={plan} roofKey={roofKey} onSelect={props.onSelectRoof} />}
       {mode === 'footprint' && <FloorCountPanel plan={plan} edit={edit} />}
       {(mode === 'footprint' || mode === 'facade') && onRoofLevel && (
@@ -60,8 +66,10 @@ export function Editor(props: EditorProps) {
           floor={floor}
           mode={mode}
           selected={selectedEdge}
+          decorTool={isDecorTool(tool) ? tool : undefined}
           onToggleCell={props.onToggleCell}
           onPickSlot={props.onPickSlot}
+          onSelectSlot={props.onSelectSlot}
           onHover={props.onHover}
         />
       )}

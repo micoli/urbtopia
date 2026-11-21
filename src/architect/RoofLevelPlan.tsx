@@ -30,7 +30,7 @@ export function RoofLevelPlan({ plan, tool, onToggleChimney, onToggleDormer, onH
     }
   }
   const slots = exteriorEdges(plan)
-    .filter((edge) => tool === 'dormer' && dormerAllowed(plan, edge))
+    .filter((edge) => (tool === 'dormer' || tool === 'roundDormer') && dormerAllowed(plan, edge))
     .map((edge) => {
       const on = hasDormer(plan, edge);
       return (

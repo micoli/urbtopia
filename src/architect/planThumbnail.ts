@@ -8,6 +8,7 @@ const HEIGHT = 144;
 const FIELD_OF_VIEW = 30;
 const VIEW_DIRECTION = new THREE.Vector3(1, 0.75, 1).normalize();
 
+const CACHE_LIMIT = 60;
 const cache = new Map<string, string>();
 let renderer: THREE.WebGLRenderer | undefined;
 let queue: Promise<unknown> = Promise.resolve();
@@ -18,6 +19,16 @@ function sharedRenderer(): THREE.WebGLRenderer {
   renderer.setPixelRatio(1);
   renderer.setSize(WIDTH, HEIGHT, false);
   return renderer;
+}
+
+function disposeMaterial(material: THREE.Material): void {
+  for (const value of Object.values(material)) if (value instanceof THREE.Texture) value.dispose();
+  material.dispose();
+}
+
+function remember(key: string, url: string): void {
+  cache.set(key, url);
+  if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value!);
 }
 
 async function render(plan: Plan, key: string): Promise<string> {
@@ -40,9 +51,11 @@ async function render(plan: Plan, key: string): Promise<string> {
   context.render(scene, camera);
   const url = context.domElement.toDataURL('image/png');
   house.traverse((object) => {
-    if (object instanceof THREE.Mesh) object.geometry.dispose();
+    if (!(object instanceof THREE.Mesh)) return;
+    object.geometry.dispose();
+    for (const material of Array.isArray(object.material) ? object.material : [object.material]) disposeMaterial(material);
   });
-  cache.set(key, url);
+  remember(key, url);
   return url;
 }
 

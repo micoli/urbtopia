@@ -41,6 +41,16 @@
 .studio-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr)); gap: var(--space-8); }
 .studio-kpis > div { padding: var(--space-8); border-radius: var(--radius-md); background: var(--white-a08); font-weight: var(--font-weight-semibold); }
 .studio-colour { display: grid; grid-template-columns: 5.5rem 1fr; gap: var(--space-8); align-items: center; margin: var(--space-6) 0; }
+.studio-tree.dropdown-list { max-height: min(26rem, 60dvh); }
+.studio-tree .studio-accordion { margin-top: 0; }
+.studio-tree h4 { margin: 0; line-height: 1.2; }
+.studio-tree .studio-accordion__toggle { min-height: 2.25rem; padding: 0 var(--space-8); line-height: 1.2; }
+.studio-tree .studio-accordion__content { padding: 0 0 var(--space-4) var(--space-8); }
+.studio-tree .studio-tool { min-height: 2.25rem; padding: var(--space-4) var(--space-8); line-height: 1.2; }
+.studio-tool { display: flex; align-items: center; width: 100%; min-height: var(--tap); padding: 0 var(--space-8); border: 0; border-radius: var(--radius-sm); background: none; color: var(--color-text); font-size: var(--font-size-md); text-align: left; cursor: pointer; }
+.studio-tool[aria-selected='true'] { background: var(--white-a12); font-weight: var(--font-weight-semibold); }
+.studio-tool:disabled { opacity: 0.45; cursor: default; }
+.studio-tool__name { flex: 1; }
 .studio-swatch { display: inline-block; width: 1.125rem; height: 1.125rem; margin-right: var(--space-8); border: 1px solid var(--white-a35); border-radius: var(--radius-sm); vertical-align: -0.2em; }
 @media (max-height: 500px), (max-width: 900px) and (orientation: portrait) {
   .studio-panel h1 { display: none; }
@@ -71,6 +81,16 @@
 .studio-slot:hover { outline: 2px solid var(--color-focus); }
 .studio-slot.picked { outline: 3px solid var(--color-accent); outline-offset: 1px; z-index: 2; }
 .studio-slot.has-dormer { border-color: var(--color-ink); }
+.studio-slot:disabled { cursor: default; }
+.studio-slot.dimmed { opacity: 0.55; }
+/* Decors: a second ring of slots outside the one of the bricks, with room around the plan for the outermost one. */
+.studio-plan.with-decors { box-sizing: border-box; padding: var(--g); }
+.studio-slot.outside { border-style: dashed; border-color: var(--white-a50); z-index: 1; }
+.studio-slot.outside:disabled { opacity: 0.2; }
+.studio-slot.outside[data-dir='0'] { transform: translateY(calc(var(--g) * -1)); }
+.studio-slot.outside[data-dir='1'] { transform: translateX(var(--g)); }
+.studio-slot.outside[data-dir='2'] { transform: translateY(var(--g)); }
+.studio-slot.outside[data-dir='3'] { transform: translateX(calc(var(--g) * -1)); }
 
 /* Over the 3D view: burger menu and level bar. */
 .studio-levels { position: absolute; right: var(--space-12); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: var(--space-8); }

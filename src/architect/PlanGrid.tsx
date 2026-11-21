@@ -9,9 +9,9 @@ export function edgePlacement(edge: Edge): CSSProperties {
   return { gridColumn: column, gridRow: row };
 }
 
-export function PlanGrid({ children }: { children: ReactNode }) {
+export function PlanGrid({ children, decors = false }: { children: ReactNode; decors?: boolean }) {
   return (
-    <div className="studio-plan">
+    <div className={decors ? 'studio-plan with-decors' : 'studio-plan'}>
       {children}
     </div>
   );

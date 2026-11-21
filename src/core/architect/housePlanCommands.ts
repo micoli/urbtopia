@@ -41,8 +41,7 @@ export function deleteHousePlan(state: GameState, id: number): CommandOutcome {
   if (!plans.some((saved) => saved.id === id)) return { key: 'error.unknownHousePlan' };
   const buildings = state.buildings.map((building) => {
     if (building.design?.planId !== id) return building;
-    const { planId: _detached, ...design } = building.design;
-    return { ...building, design };
+    return { ...building, design: { name: building.design.name, plan: building.design.plan } };
   });
   return { state: { ...state, housePlans: plans.filter((saved) => saved.id !== id), buildings }, events: [] };
 }

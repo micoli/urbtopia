@@ -1,11 +1,38 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-export type SlotKind = 'window' | 'door' | 'bay' | 'balcony' | 'balconyDoor';
+import type { Brick, Decor } from '../core/architect/housePlan.ts';
 
-export const DEFAULT_VARIANT = 'classic';
+export type SlotBrick = Exclude<Brick, 'wall'>;
 
-const FILE_NAME: Record<SlotKind, string> = { window: 'window', door: 'door', bay: 'bay', balcony: 'balcony', balconyDoor: 'balcony-door' };
+// The file of each brick: `<type>-<variant>`, the name of its folder and of its GLB in assets/managed-models/architect.
+const FILE_NAME: Record<SlotBrick, string> = {
+  window: 'window-classic',
+  windowArched: 'window-arched',
+  windowShutters: 'window-shutters',
+  windowRound: 'window-round',
+  door: 'door-classic',
+  doorArched: 'door-arched',
+  doorDouble: 'door-double',
+  doorGlazed: 'door-glazed',
+  doorGarage: 'door-garage',
+  bay: 'bay-classic',
+  balcony: 'balcony-classic',
+  balconyDoor: 'balcony-door-classic',
+};
+
+// The decors have the file of their name, in the same frame as the bricks: the outer plane of the wall is the origin.
+const DECOR_FILE_NAME: Record<Decor, string> = {
+  doorHood: 'door-hood',
+  awning: 'awning',
+  stripedAwning: 'awning-striped',
+  pilasters: 'pilasters',
+  stoneAccents: 'stone-accents',
+  portico: 'portico',
+  colonnade: 'colonnade',
+  pergola: 'pergola',
+  cypresses: 'cypresses',
+};
 
 // Every `<type>-<variant>.glb` of assets/managed-models/architect is picked up: a new variant is a new file.
 const URLS = import.meta.glob<string>('../../assets/managed-models/architect/*/*.glb', { query: '?url', import: 'default', eager: true });
@@ -32,6 +59,11 @@ export function loadSlotModels(): Promise<void> {
   return loading;
 }
 
-export function slotModel(kind: SlotKind, variant = DEFAULT_VARIANT): THREE.Object3D | undefined {
-  return templates.get(`${FILE_NAME[kind]}-${variant}`)?.clone(true);
+export function decorModel(decor: Decor): THREE.Object3D | undefined {
+  return templates.get(DECOR_FILE_NAME[decor])?.clone(true);
+}
+
+// Undefined until the model has been made or loaded: the slot then falls back to plain boxes.
+export function slotModel(brick: SlotBrick): THREE.Object3D | undefined {
+  return templates.get(FILE_NAME[brick])?.clone(true);
 }

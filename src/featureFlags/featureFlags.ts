@@ -45,6 +45,9 @@ export function resolveFlags(raw: string | null, overridable: boolean): FlagValu
 
 export const flagOfCommand = (type: Command['type']): FlagId | undefined => FLAG_IDS.find(id => FLAGS[id].commands.includes(type));
 
+// A house built from a plan belongs to the architect flag, though PlaceBuilding itself does not.
+export const flagOfCall = (command: Command): FlagId | undefined => (command.type === 'PlaceBuilding' && command.design !== undefined ? 'architect' : flagOfCommand(command.type));
+
 const readStored = (): string | null => {
   try {
     return localStorage.getItem(FLAGS_KEY);
