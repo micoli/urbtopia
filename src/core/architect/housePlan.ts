@@ -1,46 +1,69 @@
 // House plan model. Each floor has its own footprint (cell mask on a fixed grid);
 // bricks sit on the exterior edges of the cells.
 
-// A window or a door of another style is a brick of its own: each opening of a plan keeps its style, and prices and Tiers follow the brick.
-export type WindowBrick = 'window' | 'windowArched' | 'windowShutters' | 'windowRound';
-export type DoorBrick = 'door' | 'doorArched' | 'doorDouble' | 'doorGlazed' | 'doorGarage';
-export type Brick = 'wall' | WindowBrick | DoorBrick | 'bay' | 'balcony' | 'balconyDoor';
-export type Roof = 'flat' | 'gable' | 'saltbox' | 'hip' | 'mansard' | 'pyramid' | 'shed' | 'pyramid2' | 'hip2' | 'mansard2';
+import bricksFile from '../../../assets/defs/architect/bricks.json' with { type: 'json' };
+import decorsFile from '../../../assets/defs/architect/decors.json' with { type: 'json' };
+import partsFile from '../../../assets/defs/architect/parts.json' with { type: 'json' };
+import roofsFile from '../../../assets/defs/architect/roofs.json' with { type: 'json' };
+import shapesFile from '../../../assets/defs/architect/shapes.json' with { type: 'json' };
+
+import { citizensOfCells } from './housingCapacity';
+
+// The bricks, decors, roofs and shapes are defined in assets/defs/architect: a window or a door of another style is a brick of its own,
+// and prices and Tiers follow the brick.
+export type Brick = keyof typeof bricksFile.bricks;
+export type Roof = keyof typeof roofsFile.roofs;
+export type Decor = keyof typeof decorsFile.decors;
+export type Shape = keyof typeof shapesFile.shapes;
 export type Dir = 0 | 1 | 2 | 3; // N E S W
 
 export const GRID = 6;
 export const MAX_FLOORS = 4;
 export const DIR_DELTA: [number, number][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
-export const WINDOW_BRICKS: WindowBrick[] = ['window', 'windowArched', 'windowShutters', 'windowRound'];
-export const DOOR_BRICKS: DoorBrick[] = ['door', 'doorArched', 'doorDouble', 'doorGlazed', 'doorGarage'];
-export const BRICKS: Brick[] = ['wall', ...WINDOW_BRICKS, 'bay', ...DOOR_BRICKS, 'balcony', 'balconyDoor'];
 
-export const isWindowBrick = (brick: Brick): brick is WindowBrick => (WINDOW_BRICKS as Brick[]).includes(brick);
-export const isDoorBrick = (brick: Brick): brick is DoorBrick => (DOOR_BRICKS as Brick[]).includes(brick);
-export const ROOFS: Roof[] = ['flat', 'shed', 'gable', 'saltbox', 'hip', 'mansard', 'pyramid', 'pyramid2', 'hip2', 'mansard2'];
+export interface BrickDefinition {
+  kind: 'wall' | 'window' | 'door' | 'extension';
+  price: number;
+  tier: number;
+  file?: string;
+}
+
+export interface DecorDefinition {
+  price: number;
+  tier: number;
+  file: string;
+  placement: 'door' | 'shelter' | 'any';
+  ground: boolean;
+}
+
+export interface RoofDefinition {
+  price: number;
+  tier: number;
+  contour: boolean;
+}
+
+export const BRICK_DEFINITIONS: Record<Brick, BrickDefinition> = bricksFile.bricks as Record<Brick, BrickDefinition>;
+export const DECOR_DEFINITIONS: Record<Decor, DecorDefinition> = decorsFile.decors as Record<Decor, DecorDefinition>;
+export const ROOF_DEFINITIONS: Record<Roof, RoofDefinition> = roofsFile.roofs as Record<Roof, RoofDefinition>;
+
+export const BRICKS = Object.keys(BRICK_DEFINITIONS) as Brick[];
+export const WINDOW_BRICKS = BRICKS.filter((brick) => BRICK_DEFINITIONS[brick].kind === 'window');
+export const DOOR_BRICKS = BRICKS.filter((brick) => BRICK_DEFINITIONS[brick].kind === 'door');
+export const ROOFS = Object.keys(ROOF_DEFINITIONS) as Roof[];
+export const DECORS = Object.keys(DECOR_DEFINITIONS) as Decor[];
+export const SHAPES = Object.keys(shapesFile.shapes) as Shape[];
+
+export const isWindowBrick = (brick: Brick): boolean => BRICK_DEFINITIONS[brick].kind === 'window';
+export const isDoorBrick = (brick: Brick): boolean => BRICK_DEFINITIONS[brick].kind === 'door';
+const isOpeningBrick = (brick: Brick): boolean => ['window', 'extension'].includes(BRICK_DEFINITIONS[brick].kind);
+
+export const DECOR_PRICE: Record<Decor, number> = Object.fromEntries(DECORS.map((decor) => [decor, DECOR_DEFINITIONS[decor].price])) as Record<Decor, number>;
+export const BRICK_PRICE: Record<Brick, number> = Object.fromEntries(BRICKS.map((brick) => [brick, BRICK_DEFINITIONS[brick].price])) as Record<Brick, number>;
+export const ROOF_PRICE: Record<Roof, number> = Object.fromEntries(ROOFS.map((roof) => [roof, ROOF_DEFINITIONS[roof].price])) as Record<Roof, number>;
+export const CELL_PRICE = partsFile.cellPrice;
+export const CITIZEN_PRICE = partsFile.citizenPrice;
 
 // A decor stands on an edge over its brick: an awning over a window, pilasters on a wall, a pergola in front of the facade.
-export type Decor = 'doorHood' | 'awning' | 'stripedAwning' | 'pilasters' | 'stoneAccents' | 'portico' | 'colonnade' | 'pergola' | 'cypresses';
-export const DECORS: Decor[] = ['doorHood', 'awning', 'stripedAwning', 'pilasters', 'stoneAccents', 'portico', 'colonnade', 'pergola', 'cypresses'];
-export const DECOR_PRICE: Record<Decor, number> = { doorHood: 60, awning: 70, stripedAwning: 80, pilasters: 90, stoneAccents: 70, portico: 180, colonnade: 220, pergola: 160, cypresses: 90 };
-
-export const BRICK_PRICE: Record<Brick, number> = {
-  wall: 40,
-  window: 90,
-  windowArched: 110,
-  windowShutters: 120,
-  windowRound: 100,
-  bay: 160,
-  door: 120,
-  doorArched: 150,
-  doorDouble: 190,
-  doorGlazed: 170,
-  doorGarage: 220,
-  balcony: 200,
-  balconyDoor: 240,
-};
-export const ROOF_PRICE: Record<Roof, number> = { flat: 40, gable: 70, saltbox: 75, hip: 85, mansard: 110, pyramid: 80, pyramid2: 90, hip2: 95, mansard2: 115, shed: 50 };
-export const CELL_PRICE = 100;
 
 export const hasPlinth = (plan: Plan): boolean => plan.plinth !== false;
 
@@ -84,18 +107,9 @@ function emptyFloor(): boolean[][] {
   return Array.from({ length: GRID }, () => Array.from({ length: GRID }, () => false));
 }
 
-export type Shape = 'rect' | 'L' | 'U' | 'T';
-export const SHAPES: Shape[] = ['rect', 'L', 'U', 'T'];
-
-const SHAPE_ROWS: Record<Shape, string[]> = {
-  rect: ['......', '.####.', '.####.', '.####.', '......', '......'],
-  L: ['......', '.###..', '.###..', '.#####', '.#####', '......'],
-  U: ['......', '.#..#.', '.#..#.', '.####.', '.####.', '......'],
-  T: ['......', '.####.', '.####.', '..##..', '..##..', '......'],
-};
 
 export function shapeMask(shape: Shape): boolean[][] {
-  return SHAPE_ROWS[shape].map((row) => [...row].map((ch) => ch === '#'));
+  return shapesFile.shapes[shape].rows.map((row) => [...row].map((ch) => ch === '#'));
 }
 
 export function applyShape(plan: Plan, shape: Shape): void {
@@ -174,8 +188,8 @@ export function getBrick(plan: Plan, e: Edge): Brick {
   return plan.bricks[key(e.floor, e.c, e.r, e.dir)] ?? 'wall';
 }
 
-export const DORMER_PRICE = 150;
-export const ROUND_DORMER_PRICE = 180;
+export const DORMER_PRICE = partsFile.dormerPrice;
+export const ROUND_DORMER_PRICE = partsFile.roundDormerPrice;
 
 export function dormerAllowed(plan: Plan, e: Edge): boolean {
   const rect = rectAt(plan, e.c, e.r);
@@ -205,7 +219,7 @@ export function activeDormers(plan: Plan): Edge[] {
   return exteriorEdges(plan).filter((e) => hasDormer(plan, e) && dormerAllowed(plan, e));
 }
 
-export const CHIMNEY_PRICE = 120;
+export const CHIMNEY_PRICE = partsFile.chimneyPrice;
 
 export function hasChimney(plan: Plan, c: number, r: number): boolean {
   return !!plan.chimneys?.[`${c}:${r}`];
@@ -229,14 +243,15 @@ export function getDecor(plan: Plan, e: Edge): Decor | undefined {
   return plan.decors?.[key(e.floor, e.c, e.r, e.dir)];
 }
 
-export const GROUND_DECORS: Decor[] = ['doorHood', 'portico', 'colonnade', 'pergola', 'cypresses'];
+export const GROUND_DECORS = DECORS.filter((decor) => DECOR_DEFINITIONS[decor].ground);
 
 // Hoods and porticos need a door, awnings an opening to shelter; what stands in front of the facade stays on the ground.
 export function decorAllowed(plan: Plan, e: Edge, decor: Decor): boolean {
   const brick = getBrick(plan, e);
-  if (GROUND_DECORS.includes(decor) && e.floor > 0) return false;
-  if (decor === 'doorHood' || decor === 'portico') return isDoorBrick(brick);
-  if (decor === 'awning' || decor === 'stripedAwning') return isDoorBrick(brick) || isWindowBrick(brick) || brick === 'bay';
+  const { placement, ground } = DECOR_DEFINITIONS[decor];
+  if (ground && e.floor > 0) return false;
+  if (placement === 'door') return isDoorBrick(brick);
+  if (placement === 'shelter') return isDoorBrick(brick) || isWindowBrick(brick) || brick === 'bay';
   return true;
 }
 
@@ -291,19 +306,18 @@ export interface Stats {
   issues: IssueCode[];
 }
 
-const OPENINGS: Brick[] = [...WINDOW_BRICKS, 'bay', 'balcony', 'balconyDoor'];
-
 export function stats(plan: Plan): Stats {
   const edges = exteriorEdges(plan);
   const bricks = edges.map((e) => getBrick(plan, e));
   const cells = plan.floors.reduce((sum, _, f) => sum + cellCount(plan, f), 0);
-    const cost = bricks.reduce((sum, b) => sum + BRICK_PRICE[b], 0) + cells * CELL_PRICE + roofCost(plan) + dormerCost(plan) + activeChimneys(plan).length * CHIMNEY_PRICE + activeDecors(plan).reduce((sum, { decor }) => sum + DECOR_PRICE[decor], 0);
-  const openings = bricks.filter((b) => OPENINGS.includes(b)).length;
+  const citizens = citizensOfCells(cells);
+  const cost = citizens * CITIZEN_PRICE + bricks.reduce((sum, b) => sum + BRICK_PRICE[b], 0) + cells * CELL_PRICE + roofCost(plan) + dormerCost(plan) + activeChimneys(plan).length * CHIMNEY_PRICE + activeDecors(plan).reduce((sum, { decor }) => sum + DECOR_PRICE[decor], 0);
+  const openings = bricks.filter(isOpeningBrick).length;
   const issues: IssueCode[] = [];
   if (!bricks.some(isDoorBrick)) issues.push('door');
-  if (plan.floors.some((_, f) => !edges.some((e, i) => e.floor === f && OPENINGS.includes(bricks[i]!)))) issues.push('opening');
+  if (plan.floors.some((_, f) => !edges.some((e, i) => e.floor === f && isOpeningBrick(bricks[i]!)))) issues.push('opening');
   if (plan.floors.some((_, f) => !isConnected(plan, f))) issues.push('connected');
-  return { cost, citizens: Math.max(1, Math.round(cells / 3)), openings, cells, issues };
+  return { cost, citizens, openings, cells, issues };
 }
 
 export interface Rect {
@@ -376,7 +390,7 @@ const rectsTouch = (a: Rect, b: Rect) =>
   ((a.c1 + 1 === b.c0 || b.c1 + 1 === a.c0) && a.r0 <= b.r1 && b.r0 <= a.r1) ||
   ((a.r1 + 1 === b.r0 || b.r1 + 1 === a.r0) && a.c0 <= b.c1 && b.c0 <= a.c1);
 
-export const isContourRoof = (type: Roof) => type === 'pyramid2' || type === 'hip2' || type === 'mansard2';
+export const isContourRoof = (type: Roof) => ROOF_DEFINITIONS[type].contour;
 
 // Touching mansard (or contour) wings share one roof that follows the whole footprint, stepped where their floors differ.
 export function mansardCluster(plan: Plan, rect: Rect): Rect[] {

@@ -1,0 +1,55 @@
+{
+  "$schema": "../schemas/architect-roofs.schema.json",
+  "roofs": {
+    "flat": {
+      "price": 4,
+      "tier": 1,
+      "contour": false
+    },
+    "shed": {
+      "price": 5,
+      "tier": 2,
+      "contour": false
+    },
+    "gable": {
+      "price": 7,
+      "tier": 1,
+      "contour": false
+    },
+    "saltbox": {
+      "price": 8,
+      "tier": 2,
+      "contour": false
+    },
+    "hip": {
+      "price": 9,
+      "tier": 3,
+      "contour": false
+    },
+    "mansard": {
+      "price": 11,
+      "tier": 4,
+      "contour": false
+    },
+    "pyramid": {
+      "price": 8,
+      "tier": 3,
+      "contour": false
+    },
+    "pyramid2": {
+      "price": 9,
+      "tier": 5,
+      "contour": true
+    },
+    "hip2": {
+      "price": 10,
+      "tier": 4,
+      "contour": true
+    },
+    "mansard2": {
+      "price": 12,
+      "tier": 5,
+      "contour": true
+    }
+  }
+}

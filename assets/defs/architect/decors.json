@@ -1,0 +1,68 @@
+{
+  "$schema": "../schemas/architect-decors.schema.json",
+  "decors": {
+    "doorHood": {
+      "price": 6,
+      "tier": 2,
+      "file": "door-hood",
+      "placement": "door",
+      "ground": true
+    },
+    "awning": {
+      "price": 7,
+      "tier": 2,
+      "file": "awning",
+      "placement": "shelter",
+      "ground": false
+    },
+    "stripedAwning": {
+      "price": 8,
+      "tier": 3,
+      "file": "awning-striped",
+      "placement": "shelter",
+      "ground": false
+    },
+    "pilasters": {
+      "price": 9,
+      "tier": 3,
+      "file": "pilasters",
+      "placement": "any",
+      "ground": false
+    },
+    "stoneAccents": {
+      "price": 7,
+      "tier": 3,
+      "file": "stone-accents",
+      "placement": "any",
+      "ground": false
+    },
+    "portico": {
+      "price": 18,
+      "tier": 4,
+      "file": "portico",
+      "placement": "door",
+      "ground": true
+    },
+    "colonnade": {
+      "price": 22,
+      "tier": 5,
+      "file": "colonnade",
+      "placement": "any",
+      "ground": true
+    },
+    "pergola": {
+      "price": 16,
+      "tier": 4,
+      "file": "pergola",
+      "placement": "any",
+      "ground": true
+    },
+    "cypresses": {
+      "price": 9,
+      "tier": 5,
+      "file": "cypresses",
+      "placement": "any",
+      "ground": true
+    }
+  }
+}

@@ -1,39 +1,25 @@
 import { buildingsOfType } from '../buildings/buildingIndex';
 import type { GameState } from '../engine/state';
 import { valueByTier } from '../interiors/valueByTier';
-import { GRID, MAX_FLOORS, activeChimneys, activeDecors, activeDormers, exteriorEdges, getBrick, roofRects, roofStyle, type Brick, type Decor, type Plan, type Roof } from './housePlan';
+import partsFile from '../../../assets/defs/architect/parts.json' with { type: 'json' };
+import { BRICKS, BRICK_DEFINITIONS, DECORS, DECOR_DEFINITIONS, GRID, MAX_FLOORS, ROOFS, ROOF_DEFINITIONS, activeChimneys, activeDecors, activeDormers, exteriorEdges, getBrick, roofRects, roofStyle, type Brick, type Decor, type Plan, type Roof } from './housePlan';
 
 export const ARCHITECT_TIER_COUNT = 5;
 
-// What each Tier of the Architect office unlocks in the studio, from Tier 1 to Tier 5. A later Tier keeps everything an earlier one had.
-export const ARCHITECT_BRICKS_BY_TIER: readonly (readonly Brick[])[] = [
-  ['wall', 'window', 'door'],
-  ['bay', 'windowArched', 'windowShutters', 'doorArched'],
-  ['balcony', 'balconyDoor', 'windowRound', 'doorDouble', 'doorGlazed'],
-  ['doorGarage'],
-  [],
-];
+// What each Tier of the Architect office unlocks in the studio, from Tier 1 to Tier 5, as the definitions of assets/defs/architect give it. A later Tier keeps everything an earlier one had.
+const byTierOf = <T extends string>(ids: readonly T[], tierOf: (id: T) => number): readonly (readonly T[])[] =>
+  Array.from({ length: ARCHITECT_TIER_COUNT }, (_, index) => ids.filter((id) => tierOf(id) === index + 1));
 
-export const ARCHITECT_DECORS_BY_TIER: readonly (readonly Decor[])[] = [
-  [],
-  ['doorHood', 'awning'],
-  ['stripedAwning', 'pilasters', 'stoneAccents'],
-  ['portico', 'pergola'],
-  ['colonnade', 'cypresses'],
-];
+export const ARCHITECT_BRICKS_BY_TIER: readonly (readonly Brick[])[] = byTierOf(BRICKS, (brick) => BRICK_DEFINITIONS[brick].tier);
 
-export const ARCHITECT_ROOFS_BY_TIER: readonly (readonly Roof[])[] = [
-  ['flat', 'gable'],
-  ['shed', 'saltbox'],
-  ['hip', 'pyramid'],
-  ['mansard', 'hip2'],
-  ['pyramid2', 'mansard2'],
-];
+export const ARCHITECT_DECORS_BY_TIER: readonly (readonly Decor[])[] = byTierOf(DECORS, (decor) => DECOR_DEFINITIONS[decor].tier);
+
+export const ARCHITECT_ROOFS_BY_TIER: readonly (readonly Roof[])[] = byTierOf(ROOFS, (roof) => ROOF_DEFINITIONS[roof].tier);
 
 export const ARCHITECT_FLOORS = [2, 3, 3, 4, 4];
 export const ARCHITECT_GRID_SIDE = [5, 5, 6, 6, 6];
-export const ARCHITECT_DORMER_TIER = 4;
-export const ARCHITECT_CHIMNEY_TIER = 3;
+export const ARCHITECT_DORMER_TIER = partsFile.dormerTier;
+export const ARCHITECT_CHIMNEY_TIER = partsFile.chimneyTier;
 export const ARCHITECT_PLAN_LIMITS = [3, 6, 9, 12, 15];
 
 export interface ArchitectColor {

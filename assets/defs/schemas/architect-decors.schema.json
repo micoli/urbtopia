@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "decors": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "tier": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "file": {
+            "type": "string"
+          },
+          "placement": {
+            "type": "string",
+            "enum": [
+              "door",
+              "shelter",
+              "any"
+            ]
+          },
+          "ground": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "price",
+          "tier",
+          "file",
+          "placement",
+          "ground"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "decors"
+  ],
+  "additionalProperties": false,
+  "title": "Architect decors",
+  "description": "assets/defs/architect/decors.json: the decors that stand on a facade, in the order of the studio."
+}
