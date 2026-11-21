@@ -1,4 +1,4 @@
-import { hasProductionInterior, hasServiceInterior, isHomeInteriorUnlocked, isHomeType, isInteriorUnlocked, isPlanningOffice, isVenue, type Building, type GameState } from '../core';
+import { hasProductionInterior, hasServiceInterior, isHomeInteriorUnlocked, isHomeType, isArchitectOffice, isInteriorUnlocked, isPlanningOffice, isVenue, type Building, type GameState } from '../core';
 import { districtStore } from './districtStore';
 import { gameStore } from './gameStore';
 import { openInterior } from './openInterior';
@@ -36,7 +36,7 @@ export function writeBuildingTarget(search: string, target: BuildingTarget): str
 
 // Whether the player could open the interior of this building from its panel: a Planning office, which opens the District plan, a Venue, a Home once furnishing is unlocked, a Production or Service interior once its Citizens threshold is reached.
 export function canOpenInterior(state: GameState, building: Building): boolean {
-  if (isPlanningOffice(building) || isVenue(building)) return true;
+  if (isPlanningOffice(building) || isArchitectOffice(building) || isVenue(building)) return true;
   if (isHomeType(building.type)) return isHomeInteriorUnlocked(state);
   return (hasProductionInterior(building) || hasServiceInterior(building)) && isInteriorUnlocked(state, building.type);
 }

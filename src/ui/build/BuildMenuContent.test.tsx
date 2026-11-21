@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { isRetired } from '../../core/buildings/buildingDefinitions';
 import { BUILDING_SPECS, annualEventOf, createBuilding, newGame, type GameState } from '../../core';
 import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
@@ -7,6 +8,10 @@ import { BuildMenuContent } from './BuildMenuContent';
 import { BUILD_SECTION_KEY, readBuildSection, writeBuildSection } from './buildMenuSections';
 
 const context = vi.hoisted(() => ({ state: null as GameState | null, flyout: 'build', level: 0 }));
+// A static render reads the initial state of the flag store, so the flag is stubbed.
+const flags = vi.hoisted(() => ({ architect: false }));
+vi.mock('../../featureFlags/useFeatureFlag', () => ({ useFeatureFlag: (id: 'architect') => flags[id] ?? false }));
+
 vi.mock('../common/hooks', () => ({
   useGame: (selector: (store: { state: GameState }) => unknown) => selector({ state: context.state! }),
   useUi: (selector: (store: { flyout: string; level: number; chooseTool: () => void; moveMode: boolean; toggleMoveMode: () => void }) => unknown) => selector({ flyout: context.flyout, level: context.level, chooseTool: () => {}, moveMode: false, toggleMoveMode: () => {} }),
@@ -17,6 +22,7 @@ const AUGUST_FIRST = new Date(2026, 7, 1, 12).getTime();
 const HALLOWEEN = new Date(2026, 9, 31, 12).getTime();
 
 beforeEach(() => {
+  flags.architect = true;
   vi.useFakeTimers({ toFake: ['Date'] });
   vi.setSystemTime(AUGUST_FIRST);
   const storage = new Map<string, string>();
@@ -26,7 +32,7 @@ beforeEach(() => {
   });
 });
 
-afterEach(() => { prefsStore.getState().setLanguage('en'); context.flyout = 'build'; context.level = 0; vi.unstubAllGlobals(); vi.useRealTimers(); });
+afterEach(() => { flags.architect = false; prefsStore.getState().setLanguage('en'); context.flyout = 'build'; context.level = 0; vi.unstubAllGlobals(); vi.useRealTimers(); });
 
 describe('underground items by Level', () => {
   const rich = () => {
@@ -152,11 +158,20 @@ describe('build menu sections', () => {
     expect(sections[8]).not.toContain(cultureHeading);
     expect(sections[9]!.split(cultureHeading)).toHaveLength(2);
     for (const type of ['theater', 'concertHall', 'communityHall', 'orsayMuseum'] as const) expect(sections[9]).toContain(t(`building.${type}`));
-    for (const type of (Object.keys(BUILDING_SPECS) as (keyof typeof BUILDING_SPECS)[]).filter(type => !annualEventOf(type))) {
+    for (const type of (Object.keys(BUILDING_SPECS) as (keyof typeof BUILDING_SPECS)[]).filter(type => !annualEventOf(type) && !isRetired(type))) {
       expect(html.split(`<span>${t(`building.${type}`)}</span>`)).toHaveLength(2);
       expect(html).toContain(`data-codex-id="${type}"`);
     }
     expect(html).toContain('data-codex-id="solarHome"');
+  });
+
+  it('hides the Architect office while its feature flag is off', () => {
+    const home = createBuilding(1, 'home', 55, 57, 0);
+    context.state = { ...newGame({ seed: 'build-menu', now: 0 }), buildings: Array.from({ length: 600 }, (_, id) => ({ ...home, id })) };
+    const label = `<span>${t('building.architectOffice')}</span>`;
+    expect(renderToStaticMarkup(<BuildMenuContent />)).toContain(label);
+    flags.architect = false;
+    expect(renderToStaticMarkup(<BuildMenuContent />)).not.toContain(label);
   });
 
   it.each(['en', 'fr'] as const)('adds the Annual events section between Agriculture and Decoration while a window is open in %s', language => {

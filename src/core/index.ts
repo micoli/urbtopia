@@ -315,6 +315,11 @@ export { EMPTY_DISTRICT_OFFICE, boardOf as districtBoardOf, handOf as districtHa
 export type { DistrictGame, DistrictOffice, Placement as DistrictPlacement } from './districtPlan/districtGame';
 export { districtBonusOf, districtCapOf, districtRadiusOf, officeBonusOf } from './districtPlan/districtBonus';
 export { isPlanningOffice } from './districtPlan/districtCommands';
+export { HOUSE_PLAN_TYPE_PREFIX, designCostOf, housePlanSize, housePlanTypeOf, isDesignOfType, isHousePlanType, type HouseDesign } from './architect/houseDesign';
+export * from './architect/architectTiers';
+export { isArchitectOffice } from './architect/architectOffice';
+export { HOUSE_PLAN_NAME_MAX_LENGTH, housePlansOf, type SavedHousePlan } from './architect/housePlanCommands';
+export * as housePlan from './architect/housePlan';
 export { deckSizeOf as districtDeckSizeOf } from './districtPlan/districtDeck';
 export { isPlacementValid as isDistrictPlacementValid } from './districtPlan/districtPlacement';
 export { DISTRICT_PLAN } from './districtPlan/districtPlanBalance';
@@ -330,3 +335,4 @@ export { CENTRE as DISTRICT_CENTRE, EDGE_COUNT as HEX_EDGE_COUNT, cellKey, cells
 export type { Cell } from './districtPlan/hexGrid';
 export { matchingSeams as districtMatchingSeams, seamsAround as districtSeamsAround } from './districtPlan/districtSeams';
 export type { Seam as DistrictSeam } from './districtPlan/districtSeams';
+export { homeLevelOf } from './architect/homeLevel';

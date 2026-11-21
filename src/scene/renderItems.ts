@@ -10,6 +10,7 @@ import { VEHICLE_MODELS } from './vehicleModels';
 import { BUS_MODEL } from './busModel';
 import { SERVICE_VEHICLE_MODELS } from './serviceTrip';
 import { HEDGE_MODELS, hedgePiece } from './hedgePieces';
+import { houseModelKeyOf } from './houseModels';
 import { VENUE_CUSTOMER_MODELS, VENUE_STAFF_MODELS } from './venueCrowdModels';
 
 export const TEXTURE_VARIANTS = ['roads-a', 'roads-pedestrian'] as const;
@@ -409,7 +410,7 @@ function buildingItems(state: GameState): RenderItem[] {
     const x = building.x + width / 2;
     const z = building.y + depth / 2;
     const rotation = building.rotation;
-    const model = modelOfBuilding(building);
+    const model = building.design ? houseModelKeyOf(building.design.plan) : modelOfBuilding(building);
     const scale = tiersOf(building.type)[building.tier - 1]?.scale;
     const textureVariant = textureVariantOf(model, building.colorVariant);
     const items: RenderItem[] = [{ model, x, z, rotation, ...(scale ? { scale } : {}), ...(textureVariant ? { textureVariant } : {}) }];

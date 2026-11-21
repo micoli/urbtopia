@@ -1,4 +1,4 @@
-import { BUILDING_ENTRIES } from '../core/buildings/buildingDefinitions';
+import { BUILDING_ENTRIES, isRetired } from '../core/buildings/buildingDefinitions';
 import { BUILDING_SPECS, CROPS, CROP_IDS, ECOLOGY, ECOLOGY_UNLOCKS, isCrop, isHomeType, maxTierOf, type BuildingType, type CropId } from '../core';
 import { MESSAGES, type MessageKey } from '../i18n/messages';
 import { FR } from '../i18n/fr';
@@ -106,7 +106,8 @@ export function codexImageKey(id: CodexId, level: number, colorVariant?: ColorVa
 }
 
 export function validateCodex(entries: readonly CodexEntry[] = CODEX_ENTRIES): void {
-  const expected = [...Object.keys(BUILDING_SPECS), 'solarHome', ...Object.keys(BUILDING_SPECS).filter(type => isHomeType(type) && type !== 'home').map(type => solarCodexIdOf(type as BuildingType)), ...ROAD_CONSTRUCTIONS.map(item => item.id), ...WATER_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
+  const constructible = Object.keys(BUILDING_SPECS).filter(type => !isRetired(type as BuildingType));
+  const expected = [...constructible, 'solarHome', ...constructible.filter(type => isHomeType(type) && type !== 'home').map(type => solarCodexIdOf(type as BuildingType)), ...ROAD_CONSTRUCTIONS.map(item => item.id), ...WATER_CONSTRUCTIONS.map(item => item.id), ...CROP_IDS];
   const counts = new Map<string, number>();
   for (const entry of entries) counts.set(entry.id, (counts.get(entry.id) ?? 0) + 1);
   if (entries.length !== expected.length || expected.some(id => counts.get(id) !== 1)) {

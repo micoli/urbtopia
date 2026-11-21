@@ -29,6 +29,7 @@ export type ModelId =
   | 'buildings-arcade-2x2-t1-tone-a'
   | 'buildings-arcade-3x2-t2-tone-a'
   | 'buildings-arcade-3x2-t3-tone-a'
+  | 'buildings-architect-office-3x3'
   | 'buildings-backup-2x2-t1'
   | 'buildings-backup-2x2-t2'
   | 'buildings-backup-2x2-t3'

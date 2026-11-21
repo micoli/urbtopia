@@ -27,9 +27,6 @@ export function TextFieldWithEditor({ label, value, onChange, onSubmit, placehol
   return (
     <div className="text-field-with-editor">
       <TextField readOnly label={label} value={value} onChange={onChange} onSubmit={onSubmit} onClick={edit} placeholder={placeholder} maxLength={maxLength} className={className} />
-      <IconButton label={t('field.edit')} onClick={edit}>
-        <Icon name="edit" />
-      </IconButton>
       {draft !== undefined && (
         <Dialog onClose={close}>
           <Dialog.Title>{label}</Dialog.Title>

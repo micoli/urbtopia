@@ -7,6 +7,7 @@ import { tileKey } from '../map/geometry';
 import { type CongestionStats, type SectionLoad } from './congestion';
 import { jobsOf, workplaceTypes } from './jobs';
 import { movingGathering } from '../tourism/gatheringWindow';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export const CONGESTION_DIAGNOSIS = {
   minSaturatedSections: 3,
@@ -35,12 +36,12 @@ const manhattan = (a: Coord, b: Coord) => Math.abs(a.x - b.x) + Math.abs(a.y - b
 
 function factsOf(state: GameState, congestion: CongestionStats, hasTransitLines: boolean): Facts {
   const homes = state.buildings.filter(building => isHomeType(building.type));
-  const citizens = homes.reduce((sum, home) => sum + citizensOf(home.tier), 0);
+  const citizens = homes.reduce((sum, home) => sum + citizensOf(homeLevelOf(home)), 0);
   const congested = homes.filter(home => {
     const entry = congestion.homes.get(home.id);
     return entry !== undefined && !entry.disconnected && entry.ratio > 1;
   });
-  const congestedCitizens = congested.reduce((sum, home) => sum + citizensOf(home.tier), 0);
+  const congestedCitizens = congested.reduce((sum, home) => sum + citizensOf(homeLevelOf(home)), 0);
   return {
     state,
     congestion,
@@ -149,7 +150,7 @@ function homesFarFromJobs(facts: Facts): Cause | null {
   const buildings = [...facts.state.buildings].sort((a, b) => a.id - b.id);
   const homes = buildings.filter(building => isHomeType(building.type));
   const workplaces = buildings.filter(building => workplaceTypes.includes(building.type));
-  const homeCentre = barycentre(homes, home => citizensOf(home.tier));
+  const homeCentre = barycentre(homes, home => citizensOf(homeLevelOf(home)));
   const jobCentre = barycentre(workplaces, jobsOf);
   if (!homeCentre || !jobCentre) return null;
   const xs = [...homes, ...workplaces].map(building => building.x);
@@ -184,7 +185,7 @@ function carHeavy(facts: Facts): Cause | null {
 function disconnected(facts: Facts): Cause | null {
   const homes = facts.state.buildings.filter(building => facts.congestion.homes.get(building.id)?.disconnected);
   if (homes.length === 0 || facts.citizens === 0) return null;
-  const cutOff = homes.reduce((sum, home) => sum + citizensOf(home.tier), 0);
+  const cutOff = homes.reduce((sum, home) => sum + citizensOf(homeLevelOf(home)), 0);
   const section = facts.congestion.disconnectedSections[0]?.[0];
   return { key: 'diagnosis.congestion.disconnected', weight: cutOff / facts.citizens, params: { homes: homes.length }, focus: section ? [section] : [] };
 }

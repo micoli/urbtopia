@@ -11,6 +11,7 @@ import { isVenueType, venuePower } from '../venues/profiles';
 import { interiorBonusOfBuilding, interiorPowerOfBuilding } from '../factory/interiorBonus';
 import type { Building, BuildingType, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
+import { homeLevelOf } from '../architect/homeLevel';
 
 const battery = definitionOf('battery'), backup = definitionOf('backup');
 
@@ -30,7 +31,7 @@ export const ECOLOGY_UNLOCKS: Partial<Record<BuildingType, number>> = Object.fro
 export function citizenCount(state: GameState): number {
   // The Homes lifted by a Replan still count: it must not close the Levels and the items the City has unlocked.
   const buildings = state.replan ? [...state.buildings, ...state.replan.stash.buildings] : state.buildings;
-  return buildings.reduce((sum, b) => sum + (isHomeType(b.type) ? HOME_TIERS[b.tier - 1]?.citizens ?? 0 : 0), 0);
+  return buildings.reduce((sum, b) => sum + (isHomeType(b.type) ? HOME_TIERS[homeLevelOf(b) - 1]?.citizens ?? 0 : 0), 0);
 }
 
 const centers = new WeakMap<Building, { readonly x: number; readonly y: number }>();
@@ -51,7 +52,7 @@ export function distance(a: Building, b: Building): number {
 
 // `saving` is the share of its Demand a building saves, from an Ordinance.
 export function homePower(b: Building, saving = 0): number {
-  return (HOME_TIERS[b.tier - 1]?.power ?? 0) * (b.insulated ? 0.7 : 1) * (1 - saving);
+  return (HOME_TIERS[homeLevelOf(b) - 1]?.power ?? 0) * (b.insulated ? 0.7 : 1) * (1 - saving);
 }
 
 export function economicPower(b: Building, saving = 0): number {
@@ -90,7 +91,7 @@ export function greenSpaceCoverage(state: GameState, space: Building): number {
   if (habitat && !state.buildings.some(b => isVegetation(b.type) && distance(space, b) <= 2)) return 0;
   return state.buildings.reduce((count, b) => {
     if (!isHomeType(b.type) || distance(space, b) > profile.radius) return count;
-    return count + (HOME_TIERS[b.tier - 1]?.citizens ?? 0);
+    return count + (HOME_TIERS[homeLevelOf(b) - 1]?.citizens ?? 0);
   }, 0);
 }
 
@@ -157,7 +158,7 @@ export function cityGreenBenefits(state: GameState) {
   const result = { cooling: 0, biodiversity: 0, wellbeing: 0, covered: 0 };
   if (!total) return result;
   for (const home of state.buildings.filter(b => isHomeType(b.type))) {
-    const citizens = HOME_TIERS[home.tier - 1]?.citizens ?? 0, benefit = greenBenefits(state, home);
+    const citizens = HOME_TIERS[homeLevelOf(home) - 1]?.citizens ?? 0, benefit = greenBenefits(state, home);
     result.cooling += benefit.cooling * citizens / total;
     result.biodiversity += benefit.biodiversity * citizens / total;
     result.wellbeing += benefit.wellbeing * citizens / total;

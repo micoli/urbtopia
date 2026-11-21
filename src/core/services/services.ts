@@ -8,6 +8,7 @@ import { isWasteCovered, isWasteMissing, wasteCauseOf, wasteReport, type WasteCa
 import { WASTE_REQUIRED_TIER } from '../waste/wasteBalance';
 import { transitReachOf, type TransitLink, type TransitReach } from '../transit/transitReach';
 import { buildingsOfType, layoutOf } from '../buildings/buildingIndex';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export type ServiceCoverage = ReadonlyMap<number, ReadonlySet<FacilityType>>;
 
@@ -42,7 +43,7 @@ function serve(covered: Set<number>, homes: Building[], capacity: number, distan
     if (remaining <= 0) return remaining;
     covered.add(home.id);
     served(home);
-    remaining -= citizensOf(home.tier);
+    remaining -= citizensOf(homeLevelOf(home));
   }
   return remaining;
 }
@@ -164,8 +165,8 @@ export function reachLoad(state: GameState, facility: Building): ReachLoad | nul
   const inReach = state.buildings.filter(home => isHomeType(home.type) && isHomeInReach(facility, home, radius));
   const unserved = inReach.filter(home => !isServiceCovered(coverage, home.id, facility.type as FacilityType));
   return {
-    citizensInReach: inReach.reduce((total, home) => total + citizensOf(home.tier), 0),
-    unservedCitizens: unserved.reduce((total, home) => total + citizensOf(home.tier), 0),
+    citizensInReach: inReach.reduce((total, home) => total + citizensOf(homeLevelOf(home)), 0),
+    unservedCitizens: unserved.reduce((total, home) => total + citizensOf(homeLevelOf(home)), 0),
     unservedHomes: unserved.length,
   };
 }
@@ -211,7 +212,7 @@ export function categoryCoverageRatio(state: GameState, category: ServiceCategor
   let served = 0;
   for (const home of state.buildings) {
     if (!isHomeType(home.type)) continue;
-    const citizens = citizensOf(home.tier);
+    const citizens = citizensOf(homeLevelOf(home));
     total += citizens;
     if (waste ? isWasteCovered(waste, home.id) : coveredCategories(coverage, home.id).includes(category)) served += citizens;
   }

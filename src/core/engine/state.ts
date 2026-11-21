@@ -15,6 +15,8 @@ import type { VenueTutorialStep, VenueTutorialType } from '../progression/venueT
 import type { Difficulty } from './difficulty';
 import type { PoliticsState } from '../politics/politics';
 import type { DonationRecord } from '../economy/solidarity';
+import type { HouseDesign } from '../architect/houseDesign';
+import type { SavedHousePlan } from '../architect/housePlanCommands';
 import type { DistrictOffice } from '../districtPlan/districtGame';
 
 export type BuildingType = BuildingId;
@@ -179,6 +181,8 @@ export interface Building extends Coord {
   insulated?: boolean;
   solar?: boolean;
   colorVariant?: ColorVariant;
+  // A Home built from a house plan of an Architect office.
+  design?: HouseDesign;
   storedEnergy?: number;
   coalEnabled?: boolean;
   // Production interiors and Venues: the breaker is off, so the building draws no power and runs nothing.
@@ -363,4 +367,6 @@ export interface GameState {
   // Absent: not started. null: finished or skipped.
   venueTutorials?: Partial<Record<VenueTutorialType, VenueTutorialStep | null>>;
   tradeLedger: TradeLedgerEntry[];
+  // The plans drawn in an Architect office.
+  housePlans?: readonly SavedHousePlan[];
 }

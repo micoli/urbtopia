@@ -1,0 +1,107 @@
+/* Layout and grids of the architect studio. Colours, radii and sizes come from the game tokens. */
+.studio-root { height: 100%; background: var(--color-surface-solid); color: var(--color-text); font-size: var(--font-size-md); display: grid; grid-template-columns: 1fr min(22.5rem, 45vw); }
+.studio-panel {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 var(--space-16) calc(var(--space-24) + env(safe-area-inset-bottom));
+  background: var(--color-surface-solid);
+  border-left: 1px solid var(--white-a12);
+  touch-action: pan-y;
+  order: 1;
+}
+.studio-view { position: relative; min-width: 0; min-height: 0; order: 0; background: var(--color-venue); }
+.studio-canvas { position: absolute; inset: 0; touch-action: none; }
+.studio-canvas canvas { display: block; }
+.studio-floating .icon-button { background: var(--color-surface); backdrop-filter: blur(var(--surface-blur, 8px)); }
+.studio-floating .icon-button:disabled { opacity: 0.45; }
+
+/* Phone held upright: the 3D view on top, the editor below. */
+@media (max-width: 900px) and (orientation: portrait) {
+  .studio-panel h1 { display: none; }
+  .studio-root { grid-template-columns: 1fr; grid-template-rows: minmax(14rem, 42dvh) minmax(0, 1fr); }
+  .studio-panel { border-left: 0; border-top: 1px solid var(--white-a12); }
+}
+
+.studio-panel h1 { margin: 0 0 var(--space-8); font-size: var(--font-size-xl); }
+.studio-panel h3 { margin: var(--space-12) 0 var(--space-6); font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); }
+.studio-panel section + section { margin-top: var(--space-8); }
+.studio-accordion { margin-top: var(--space-8); border-top: 1px solid var(--white-a12); }
+.studio-accordion h3 { margin: 0; }
+.studio-accordion__toggle { display: flex; align-items: center; gap: var(--space-8); width: 100%; min-height: var(--tap); padding: 0; border: 0; background: none; color: var(--color-text); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); text-transform: none; letter-spacing: 0; text-align: left; }
+.studio-accordion__toggle > span { flex: 1; }
+.studio-accordion__content { padding-bottom: var(--space-8); }
+.studio-row { display: flex; gap: var(--space-6); align-items: center; margin: var(--space-6) 0; flex-wrap: wrap; }
+.studio-row > .text-field { flex: 1; min-width: 0; }
+.studio-saved { display: flex; align-items: center; gap: var(--space-6); margin: var(--space-4) 0; }
+.studio-saved__info { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.studio-saved__info > span { overflow: hidden; text-overflow: ellipsis; }
+.studio-saved__meta { color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.studio-thumb { flex: none; width: 6rem; height: 4.5rem; border-radius: var(--radius-md); background: var(--white-a08); object-fit: contain; }
+.studio-hint { margin: var(--space-6) 0; color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.studio-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr)); gap: var(--space-8); }
+.studio-kpis > div { padding: var(--space-8); border-radius: var(--radius-md); background: var(--white-a08); font-weight: var(--font-weight-semibold); }
+.studio-colour { display: grid; grid-template-columns: 5.5rem 1fr; gap: var(--space-8); align-items: center; margin: var(--space-6) 0; }
+.studio-swatch { display: inline-block; width: 1.125rem; height: 1.125rem; margin-right: var(--space-8); border: 1px solid var(--white-a35); border-radius: var(--radius-sm); vertical-align: -0.2em; }
+@media (max-height: 500px), (max-width: 900px) and (orientation: portrait) {
+  .studio-panel h1 { display: none; }
+}
+
+/* Plan grids */
+.studio-plan {
+  --g: 0.9rem;
+  display: grid;
+  grid-template-columns: repeat(6, var(--g) minmax(0, 1fr)) var(--g);
+  grid-template-rows: repeat(6, var(--g) auto) var(--g);
+  width: 100%;
+  max-width: 26rem;
+  margin: var(--space-10) auto;
+}
+@media (pointer: coarse) { .studio-plan { --g: 1.1rem; max-width: 22rem; } }
+.studio-cell { position: relative; width: 100%; aspect-ratio: 1; align-self: start; padding: 0; border: 1px solid var(--white-a20); border-radius: var(--radius-sm); background: var(--white-a08); cursor: pointer; color: var(--color-text-on-light); font-weight: var(--font-weight-bold); }
+.studio-cell.on { background: var(--white-a85); border-color: var(--white-a50); }
+.studio-cell.free { border-style: dashed; background: var(--white-a05); }
+.studio-cell.off { opacity: 0.25; cursor: not-allowed; }
+.studio-cell.picked { outline: 3px solid var(--color-accent); z-index: 1; }
+.studio-cell:not(:disabled):hover { outline: 2px solid var(--color-focus); }
+.studio-cell.has-chimney::after { content: ''; position: absolute; inset: 30%; background: var(--color-ink); border-radius: var(--radius-xs); }
+.studio-slot { position: relative; padding: 0; border: 1px solid var(--black-a45); border-radius: var(--radius-sm); cursor: pointer; }
+.studio-slot.h { height: calc(var(--g) * 0.7); align-self: center; }
+.studio-slot.v { width: calc(var(--g) * 0.7); justify-self: center; align-self: stretch; }
+.studio-slot::before { content: ''; position: absolute; inset: -0.35rem; }
+.studio-slot:hover { outline: 2px solid var(--color-focus); }
+.studio-slot.picked { outline: 3px solid var(--color-accent); outline-offset: 1px; z-index: 2; }
+.studio-slot.has-dormer { border-color: var(--color-ink); }
+
+/* Over the 3D view: burger menu and level bar. */
+.studio-levels { position: absolute; right: var(--space-12); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: var(--space-8); }
+.studio-levels button { min-width: 3.5rem; min-height: var(--tap); padding: 0 var(--space-8); border: 2px solid transparent; border-radius: var(--radius-lg); background: var(--color-surface); backdrop-filter: blur(var(--surface-blur, 8px)); color: var(--color-text); font-weight: var(--font-weight-semibold); }
+.studio-levels button[aria-checked='true'] { border-color: var(--color-accent); background: var(--color-accent-a28); }
+
+/* Plans page */
+.studio-page { box-sizing: border-box; grid-column: 1 / -1; grid-row: 1 / -1; min-height: 0; overflow-y: auto; padding: var(--space-16) var(--space-16) calc(var(--space-24) + env(safe-area-inset-bottom)); max-width: 40rem; width: 100%; margin: 0 auto; background: none; touch-action: pan-y; }
+.studio-page__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-8); margin-bottom: var(--space-8); }
+.studio-page__header h3 { margin: 0; font-size: var(--font-size-lg); text-transform: none; letter-spacing: 0; color: var(--color-text); }
+.studio-templates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-10); margin: var(--space-12) 0; }
+.studio-template { display: flex; flex-direction: column; align-items: center; gap: var(--space-8); padding: var(--space-12); border: 2px solid transparent; border-radius: var(--radius-lg); background: var(--white-a10); color: inherit; font-weight: var(--font-weight-semibold); }
+.studio-template { min-width: 0; }
+@media (min-width: 600px) { .studio-templates { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.studio-template:hover { border-color: var(--color-accent); }
+.studio-shape-preview { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; width: 5rem; }
+.studio-shape-preview i { aspect-ratio: 1; border-radius: var(--radius-xs); background: var(--white-a10); }
+.studio-shape-preview i.on { background: var(--color-accent); }
+
+/* The main tabs stay on top while the panel scrolls. */
+.studio-tabs-sticky { position: sticky; top: 0; z-index: 3; margin: 0 calc(-1 * var(--space-16)) var(--space-8); padding: 0 var(--space-16); background: var(--color-surface-solid); }
+.studio-tabs-sticky .tabs { margin: 0; }
+
+/* The stats pill of the main screen, between the undo buttons and the burger. */
+/* Top left of the 3D view, from the top: burger, undo and redo, stats. */
+.studio-corner { position: absolute; z-index: 5; top: calc(var(--space-12) + env(safe-area-inset-top)); left: var(--space-12); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-8); }
+.studio-plans-button { position: absolute; z-index: 5; left: var(--space-12); bottom: calc(var(--space-12) + env(safe-area-inset-bottom)); }
+.studio-issues { position: absolute; z-index: 4; left: calc(var(--tap) + var(--space-24)); right: 7rem; bottom: calc(var(--space-12) + env(safe-area-inset-bottom)); margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-4); pointer-events: none; color: var(--color-warning); font-weight: var(--font-weight-semibold); text-shadow: 0 1px 3px var(--black-a50), 0 0 6px var(--black-a50); }
+.studio-floating { display: flex; gap: var(--space-8); }
+.studio-view .studio-cartouche { position: static; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-4); padding: var(--space-8) var(--space-12); border-radius: var(--radius-lg); font-size: var(--font-size-sm); white-space: nowrap; }
+.studio-cartouche__warning { color: var(--color-warning); }
+
+/* The hint of the tab, at the top of the 3D view, right of the corner stack. */
+.studio-view-hint { position: absolute; z-index: 4; top: calc(var(--space-12) + env(safe-area-inset-top)); left: 11rem; right: var(--space-12); max-width: 24rem; margin: 0; background: var(--color-surface); backdrop-filter: var(--surface-blur); }

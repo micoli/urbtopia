@@ -10,6 +10,8 @@
 @import './ui/club/club.css' layer(legacy);
 @import './ui/tourism/tourism.css' layer(legacy);
 @import './ui/buildings/buildings.css' layer(legacy);
+@import './architect/studio.css' layer(legacy);
+@import './ui/architect/architect.css' layer(legacy);
 @import './ui/system/system.css' layer(legacy);
 @import './ui/replan/replan.css' layer(legacy);
 @import './ui/collect/collect.css' layer(legacy);

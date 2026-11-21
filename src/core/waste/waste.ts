@@ -11,6 +11,7 @@ import { wasteReductionOf } from '../politics/ordinanceEffects';
 import { layoutOf } from '../buildings/buildingIndex';
 import { recyclingGainsOf } from '../factory/recyclingGains';
 import { WASTE, WASTE_FACILITIES, WASTE_KINDS, WASTE_REQUIRED_FROM_CITIZENS, homeWasteProduction, wasteCapacity, wasteKindOf, type WasteKind } from './wasteBalance';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export type WasteCause = 'noFacility' | 'capacityFull' | 'beyondMaxDistance' | 'noRoadLink' | 'beyondCarryingDistance' | 'facilityStopped';
 
@@ -158,7 +159,7 @@ function causeOf(reaching: readonly ReachingFacility[]): WasteCause {
 }
 
 function withoutFacilities(homes: readonly Building[], required: boolean, reduction: number): WasteReport {
-  const results = new Map<number, HomeWaste>(homes.map(home => [home.id, { produced: homeWasteProduction(home.tier, reduction), facilityId: null, cost: 0, carried: false, distance: null, cause: 'noFacility', powerReduced: false }]));
+  const results = new Map<number, HomeWaste>(homes.map(home => [home.id, { produced: homeWasteProduction(homeLevelOf(home), reduction), facilityId: null, cost: 0, carried: false, distance: null, cause: 'noFacility', powerReduced: false }]));
   return { required, homes: results, facilities: new Map(), produced: [...results.values()].reduce((sum, home) => sum + home.produced, 0), processed: 0, costPerDay: 0, costPerHour: 0 };
 }
 
@@ -175,7 +176,7 @@ function computeReport(state: GameState, paying: boolean, powerRatios: ReadonlyM
     const tiles = tilesOfBuilding(home);
     const roadKeys = outsideNeighbours(tiles).map(tileKey).filter(key => roadTiles.has(key));
     const roads = new Set(roadKeys.flatMap(key => components.get(key) ?? []));
-    return { home, produced: homeWasteProduction(home.tier, reduction), routes: { roads, roadKeys, walk: roads.size === 0 ? pedestrianTileDistances(state, tiles, Infinity, roadTiles) : null } satisfies HomeRoutes };
+    return { home, produced: homeWasteProduction(homeLevelOf(home), reduction), routes: { roads, roadKeys, walk: roads.size === 0 ? pedestrianTileDistances(state, tiles, Infinity, roadTiles) : null } satisfies HomeRoutes };
   });
   const results = new Map<number, HomeWaste>();
   const facilityResults = new Map<number, FacilityWaste>(facilities.map(({ building, kind, roadComponents: reachable }) => {
@@ -290,6 +291,6 @@ export function wasteCitizensServedBy(state: GameState, facilityId: number): num
   const report = wasteReport(state);
   return state.buildings.reduce((total, building) => {
     if (!isHomeType(building.type)) return total;
-    return report.homes.get(building.id)?.facilityId === facilityId ? total + citizensOf(building.tier) : total;
+    return report.homes.get(building.id)?.facilityId === facilityId ? total + citizensOf(homeLevelOf(building)) : total;
   }, 0);
 }

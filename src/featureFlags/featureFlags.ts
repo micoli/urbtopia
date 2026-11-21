@@ -8,6 +8,11 @@ export const FLAGS = {
     description: 'Clubs de football, de baseball et de basket : effectif, composition, championnat, matchs.',
     commands: ['FoundClub', 'SignPlayer', 'ReleasePlayer', 'SetLineup', 'PlayMatch'] as readonly Command['type'][],
   },
+  architect: {
+    label: "Cabinet d'architecture",
+    description: 'Dessiner des plans de maisons dans un cabinet d\'architecture et les construire comme des logements.',
+    commands: ['SaveHousePlan', 'DeleteHousePlan'] as readonly Command['type'][],
+  },
   advisor: {
     label: 'Conseiller',
     description: 'Assistant local (WebLLM) qui explique les Causes de la ville ; téléchargement du modèle sur demande.',

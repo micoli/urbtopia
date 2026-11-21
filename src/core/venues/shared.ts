@@ -6,6 +6,7 @@ import type { Building, GameState, VenueType } from '../engine/state';
 import { venueTierOf } from './profiles';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { layoutOf } from '../buildings/buildingIndex';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export const VENUE = { hourMs: 3_600_000, ...venues.venue };
 
@@ -30,7 +31,7 @@ function neighbourhoodCitizens(state: GameState, venue: Building): number {
   const citizens = state.buildings.reduce((total, home) => {
     if (!isHomeType(home.type)) return total;
     const from = centerOf(home);
-    return isWithinReach(from.x - to.x, from.y - to.y, VENUE.reachRadius) ? total + citizensOf(home.tier) : total;
+    return isWithinReach(from.x - to.x, from.y - to.y, VENUE.reachRadius) ? total + citizensOf(homeLevelOf(home)) : total;
   }, 0);
   known.set(venue.id, citizens);
   return citizens;

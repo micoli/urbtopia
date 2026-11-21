@@ -1,0 +1,42 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "architect",
+  "section": "build.leisure",
+  "cost": 400,
+  "unlockCitizens": 100,
+  "requiresRoad": true,
+  "name": {
+    "en": "Architect office",
+    "fr": "Cabinet d'architecture"
+  },
+  "description": {
+    "en": "Draw house plans in the studio: walls, doors, windows, floors, balconies and roofs. Unlocks at {unlockCitizens} Citizens, costs {cost} Urbs; upgrades give {tierCount} Tiers.",
+    "fr": "Dessinez des plans de maisons dans l'atelier : murs, portes, fenêtres, étages, balcons et toits. Se débloque à {unlockCitizens} citoyens, coûte {cost} Urbs ; {tierCount} niveaux."
+  },
+  "tiers": [
+    {
+      "model": "buildings-architect-office-3x3",
+      "footprint": [3, 3]
+    },
+    {
+      "upgradeCost": {
+        "urbs": 300
+      }
+    },
+    {
+      "upgradeCost": {
+        "urbs": 700
+      }
+    },
+    {
+      "upgradeCost": {
+        "urbs": 1500
+      }
+    },
+    {
+      "upgradeCost": {
+        "urbs": 3500
+      }
+    }
+  ]
+}

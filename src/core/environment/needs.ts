@@ -18,6 +18,7 @@ import { solidarityBonus } from '../economy/solidarity';
 import { isWasteCovered, wasteReport } from '../waste/waste';
 import { esteemBonusOf } from '../politics/ordinanceEffects';
 import { KNOWLEDGE, homeKnowledge } from '../services/knowledge';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export const NEED_LEVELS = ['vital', 'safety', 'belonging', 'esteem', 'fulfilment'] as const;
 export type NeedLevelId = (typeof NEED_LEVELS)[number];
@@ -134,7 +135,7 @@ function satisfactions(state: GameState): Map<NeedFactorId, number> {
   const sums = new Map<NeedFactorId, number>();
   for (const home of state.buildings) {
     if (!isHomeType(home.type)) continue;
-    const weight = citizensOf(home.tier);
+    const weight = citizensOf(homeLevelOf(home));
     for (const [id, value] of homeNeedSatisfactions(state, home, context)) sums.set(id, (sums.get(id) ?? 0) + value * weight);
   }
   for (const [id, sum] of sums) result.set(id, Math.max(0, Math.min(100, sum / citizens)));

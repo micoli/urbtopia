@@ -7,12 +7,13 @@ import { congestionStats } from '../traffic/congestion';
 import { isWasteCovered, wasteReport } from '../waste/waste';
 import { OBJECTIVE_METRICS_AT_MOST, type ObjectiveMetric } from './objectiveSchema';
 import { objectiveById, type ObjectiveId } from './objectives';
+import { homeLevelOf } from '../architect/homeLevel';
 
 const wasteCoverage = (state: GameState): number | null => {
   const citizens = totalCitizens(state);
   if (citizens === 0) return null;
   const report = wasteReport(state);
-  const covered = state.buildings.reduce((sum, home) => sum + (isHomeType(home.type) && isWasteCovered(report, home.id) ? citizensOf(home.tier) : 0), 0);
+  const covered = state.buildings.reduce((sum, home) => sum + (isHomeType(home.type) && isWasteCovered(report, home.id) ? citizensOf(homeLevelOf(home)) : 0), 0);
   return covered / citizens;
 };
 

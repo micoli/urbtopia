@@ -7,6 +7,7 @@ import { HOME_TIERS, UTILITY_CAPACITY } from '../economy/economy';
 import type { GameState } from '../engine/state';
 import { isHomeType } from './buildingDefinitions';
 import { energySavingOf } from '../politics/ordinanceEffects';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export interface UtilityTotals {
   power: number;
@@ -18,7 +19,7 @@ export function citizensOf(tier: number): number {
 }
 
 export function totalCitizens(state: GameState): number {
-  return state.buildings.reduce((total, building) => total + (isHomeType(building.type) ? citizensOf(building.tier) : 0), 0);
+  return state.buildings.reduce((total, building) => total + (isHomeType(building.type) ? citizensOf(homeLevelOf(building)) : 0), 0);
 }
 
 const capacityCache = new WeakMap<GameState, UtilityTotals>();
@@ -56,7 +57,7 @@ export interface WaterDemandSplit {
 // Citizens: Homes and the public facilities that serve them. Agriculture: growing Crops and Orchards.
 export function waterDemandSplit(state: GameState): WaterDemandSplit {
   const citizens = state.buildings.reduce((total, building) => {
-    if (isHomeType(building.type)) return total + (HOME_TIERS[building.tier - 1]?.water ?? 0);
+    if (isHomeType(building.type)) return total + (HOME_TIERS[homeLevelOf(building) - 1]?.water ?? 0);
     return total + (isFacilityType(building.type) ? FACILITIES[building.type].water : 0);
   }, 0);
   const orchards = state.buildings.reduce((total, building) => total + orchardWaterDemandOf(building.type), 0);
@@ -68,7 +69,7 @@ function computeUtilityDemand(state: GameState): UtilityTotals {
   const buildings = state.buildings.reduce<UtilityTotals>(
     (total, building) => {
       if (!isHomeType(building.type)) return { power: total.power + economicPower(building, saving), water: total.water + (isFacilityType(building.type) ? FACILITIES[building.type].water : 0) };
-      const tier = HOME_TIERS[building.tier - 1];
+      const tier = HOME_TIERS[homeLevelOf(building) - 1];
       return { power: total.power + homePower(building, saving), water: total.water + (tier?.water ?? 0) };
     },
     { power: 0, water: 0 },

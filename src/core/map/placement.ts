@@ -10,10 +10,11 @@ import { seaSceneryIssue } from '../water/seaScenery';
 import { isSeaSceneryType, navigableWaterKeys } from '../water/waterTiles';
 import type { BuildingType, GameState, Rotation } from '../engine/state';
 
-export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsAccess' | 'error.needsWater' | 'error.needsPirateCoveWater' | 'error.needsWaterTiles' | 'error.waterInUse' | 'error.buildingLimitReached' | 'error.noFarm' | 'error.townHallExists' | 'error.notEnoughUrbs';
+export type PlacementIssue = 'error.outsideOwnedParcels' | 'error.tilesOccupied' | 'error.needsRoad' | 'error.needsRoadOrBrt' | 'error.needsAccess' | 'error.needsWater' | 'error.needsPirateCoveWater' | 'error.needsWaterTiles' | 'error.waterInUse' | 'error.buildingLimitReached' | 'error.noFarm' | 'error.townHallExists' | 'error.architectOfficeExists' | 'error.notEnoughUrbs';
 
 const UNIQUE_BUILDING_ERRORS: Partial<Record<BuildingType, PlacementIssue>> = {
   townHall: 'error.townHallExists',
+  architectOffice: 'error.architectOfficeExists',
 };
 
 const ROTATIONS: readonly Rotation[] = [0, 1, 2, 3];

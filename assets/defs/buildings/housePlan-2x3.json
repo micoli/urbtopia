@@ -1,0 +1,27 @@
+{
+  "$schema": "../schemas/building.schema.json",
+  "kind": "home",
+  "retired": true,
+  "section": "build.housing",
+  "cost": 150,
+  "unlockCitizens": 0,
+  "requiresRoad": true,
+  "accessModes": ["road", "brt", "pedestrianWay"],
+  "name": {
+    "en": "Designed house 2×3",
+    "fr": "Maison dessinée 2×3"
+  },
+  "description": {
+    "en": "A house drawn in an Architect office. Houses Citizens who generate Tax.",
+    "fr": "Une maison dessinée dans un cabinet d'architecture. Accueille des habitants qui génèrent des impôts."
+  },
+  "tiers": [
+    {
+      "model": "buildings-house-1x1-1f-tone-a",
+      "footprint": [2, 3],
+      "citizens": 6,
+      "power": 1,
+      "water": 1
+    }
+  ]
+}

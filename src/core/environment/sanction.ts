@@ -11,6 +11,7 @@ import { citizensOf } from '../buildings/city';
 import { TAX } from '../economy/economy';
 import { energySavingOf, taxMultiplierOf } from '../politics/ordinanceEffects';
 import { knowledgeEffect } from '../services/knowledge';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export interface HomeSanction {
   factor: SanctionableFactorId | null;
@@ -86,5 +87,5 @@ export function sanctionAlertKey(state: GameState): string {
 }
 
 export function taxLostPerHour({ home, sanction }: SanctionedHome): number {
-  return citizensOf(home.tier) * TAX.urbsPerCitizenPerHour * (1 - sanction.multiplier);
+  return citizensOf(homeLevelOf(home)) * TAX.urbsPerCitizenPerHour * (1 - sanction.multiplier);
 }

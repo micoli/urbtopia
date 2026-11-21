@@ -5,6 +5,7 @@ import type { Coord } from '../map/coord';
 import { wasteReport, type FacilityWaste, type HomeWaste, type WasteCause } from './waste';
 import { WASTE, WASTE_FACILITIES, WASTE_KINDS, wasteKindOf, type WasteKind } from './wasteBalance';
 import { incineratorPenaltyOf, odorPenaltyOf, wasteEmissions } from './wasteNuisance';
+import { homeLevelOf } from '../architect/homeLevel';
 
 export const WASTE_CAUSES: readonly WasteCause[] = ['noFacility', 'capacityFull', 'beyondMaxDistance', 'noRoadLink', 'beyondCarryingDistance', 'facilityStopped'];
 
@@ -66,7 +67,7 @@ function bottleneckOf(state: GameState, causes: readonly WasteCauseSituation[]):
   if (report.required && causes.some(({ homes }) => homes > 0)) {
     const worst = state.buildings
       .filter(building => isHomeType(building.type) && report.homes.get(building.id)?.cause)
-      .sort((a, b) => citizensOf(b.tier) - citizensOf(a.tier) || a.id - b.id)[0];
+      .sort((a, b) => citizensOf(homeLevelOf(b)) - citizensOf(homeLevelOf(a)) || a.id - b.id)[0];
     if (worst) return { x: worst.x, y: worst.y };
   }
   return stoppedFacilities(state)[0]?.tile ?? null;
@@ -110,7 +111,7 @@ export function wasteSituation(state: GameState): WasteSituation {
   });
   const causes = WASTE_CAUSES.map((cause): WasteCauseSituation => {
     const concerned = homes.filter(building => report.homes.get(building.id)?.cause === cause);
-    return { cause, homes: concerned.length, citizens: concerned.reduce((sum, building) => sum + citizensOf(building.tier), 0) };
+    return { cause, homes: concerned.length, citizens: concerned.reduce((sum, building) => sum + citizensOf(homeLevelOf(building)), 0) };
   });
   const carried = [...report.homes.values()].filter(home => home.carried);
   const distanceSurcharge = [...report.homes.values()].reduce((sum, home) => sum + distanceSurchargeOf(home, report.facilities), 0);
