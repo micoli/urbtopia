@@ -47,6 +47,13 @@ ready_http = "http://localhost:5182/"
 boot_start = false
 retry = false
 
+[daemons.architect-studio]
+run = "npm run architect:proto -- --host --port 5303 --strictPort"
+dir = "."
+ready_http = "http://localhost:5303/"
+boot_start = false
+retry = false
+
 [daemons.storybook]
 run = "npm run storybook -- --host 0.0.0.0 --port 5183 --ci"
 dir = "."
