@@ -51,7 +51,7 @@ describe('the Tiers of the Architect office', () => {
     addFloor(plan);
     setAllRoofs(plan, 'mansard');
     expect(ROUND_DORMER_PRICE).toBeGreaterThan(DORMER_PRICE);
-    const edge = exteriorEdges(plan).find((candidate) => candidate.floor === 1)!;
+    const edge = exteriorEdges(plan).find((candidate) => candidate.floor === plan.floors.length - 1)!;
     const bare = stats(plan).cost;
     toggleDormer(plan, edge);
     expect(stats(plan).cost - bare).toBe(DORMER_PRICE);
