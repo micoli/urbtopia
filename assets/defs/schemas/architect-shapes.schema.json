@@ -21,10 +21,87 @@
               "type": "string",
               "pattern": "^[#.]+$"
             }
+          },
+          "floors": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4
+          },
+          "wallColor": {
+            "type": "string",
+            "pattern": "^#[0-9a-f]{6}$"
+          },
+          "roofColor": {
+            "type": "string",
+            "pattern": "^#[0-9a-f]{6}$"
+          },
+          "roof": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9]*$"
+              },
+              "pitch": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "normal",
+                  "steep"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "pitch"
+            ],
+            "additionalProperties": false
+          },
+          "facade": {
+            "type": "string",
+            "enum": [
+              "sparse",
+              "dense"
+            ]
+          },
+          "decors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "decor": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9]*$"
+                },
+                "on": {
+                  "type": "string",
+                  "enum": [
+                    "door",
+                    "windows",
+                    "walls"
+                  ]
+                }
+              },
+              "required": [
+                "decor",
+                "on"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "chimney": {
+            "type": "boolean"
           }
         },
         "required": [
-          "rows"
+          "rows",
+          "floors",
+          "wallColor",
+          "roofColor",
+          "roof",
+          "facade",
+          "decors",
+          "chimney"
         ],
         "additionalProperties": false
       }
@@ -35,5 +112,5 @@
   ],
   "additionalProperties": false,
   "title": "Architect shapes",
-  "description": "assets/defs/architect/shapes.json: the starting shapes of a house plan."
+  "description": "assets/defs/architect/shapes.json: the starting models of a house plan."
 }

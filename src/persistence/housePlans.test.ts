@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { newGame } from '../core';
+import { createBuilding, newGame } from '../core';
 import { handleCommand } from '../core/engine/commands';
 import { newPlan } from '../core/architect/housePlan';
 import { CURRENT_VERSION, parseEnvelope, serializeEnvelope } from './envelope';
 
-const state = () => newGame({ seed: 'house-plans', now: 0 });
+// A city with an Architect office of the last Tier, which every starting model can be saved in.
+const state = () => {
+  const game = newGame({ seed: 'house-plans', now: 0 });
+  return { ...game, buildings: [...game.buildings, { ...createBuilding(game.nextId, 'architectOffice', 60, 60, 0), tier: 5 }], nextId: game.nextId + 1 };
+};
 
 describe('house plans in the save', () => {
   it('round-trips the plans of the city', () => {

@@ -2,16 +2,83 @@
   "$schema": "../schemas/architect-shapes.schema.json",
   "shapes": {
     "rect": {
-      "rows": ["......", ".####.", ".####.", ".####.", "......", "......"]
+      "rows": ["......", ".####.", ".####.", ".####.", "......", "......"],
+      "floors": 2,
+      "wallColor": "#fff1d6",
+      "roofColor": "#b5533c",
+      "roof": {
+        "type": "gable",
+        "pitch": "steep"
+      },
+      "facade": "dense",
+      "decors": [],
+      "chimney": false
     },
     "L": {
-      "rows": ["......", ".###..", ".###..", ".#####", ".#####", "......"]
+      "rows": ["......", ".###..", ".###..", ".#####", ".#####", "......"],
+      "floors": 2,
+      "wallColor": "#d8b45c",
+      "roofColor": "#a85a3c",
+      "roof": {
+        "type": "saltbox",
+        "pitch": "normal"
+      },
+      "facade": "sparse",
+      "decors": [
+        {
+          "decor": "doorHood",
+          "on": "door"
+        },
+        {
+          "decor": "awning",
+          "on": "windows"
+        }
+      ],
+      "chimney": false
     },
     "U": {
-      "rows": ["......", ".#..#.", ".#..#.", ".####.", ".####.", "......"]
+      "rows": ["......", ".#..#.", ".#..#.", ".####.", ".####.", "......"],
+      "floors": 2,
+      "wallColor": "#d9b878",
+      "roofColor": "#c2432e",
+      "roof": {
+        "type": "hip",
+        "pitch": "normal"
+      },
+      "facade": "dense",
+      "decors": [
+        {
+          "decor": "stripedAwning",
+          "on": "windows"
+        },
+        {
+          "decor": "pilasters",
+          "on": "walls"
+        }
+      ],
+      "chimney": true
     },
     "T": {
-      "rows": ["......", ".####.", ".####.", "..##..", "..##..", "......"]
+      "rows": ["......", ".####.", ".####.", "..##..", "..##..", "......"],
+      "floors": 2,
+      "wallColor": "#f1f1f6",
+      "roofColor": "#6d7390",
+      "roof": {
+        "type": "mansard",
+        "pitch": "normal"
+      },
+      "facade": "sparse",
+      "decors": [
+        {
+          "decor": "portico",
+          "on": "door"
+        },
+        {
+          "decor": "awning",
+          "on": "windows"
+        }
+      ],
+      "chimney": true
     }
   }
 }

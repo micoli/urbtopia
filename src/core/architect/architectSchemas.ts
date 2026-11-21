@@ -62,6 +62,13 @@ export const architectRoofsSchema = z
   })
   .meta({ title: 'Architect roofs', description: 'assets/defs/architect/roofs.json: the roofs of a house plan, in the order of the studio.' });
 
+const hexColor = z.string().regex(/^#[0-9a-f]{6}$/);
+
+export const FACADE_RHYTHMS = ['sparse', 'dense'] as const;
+export const MODEL_DECOR_TARGETS = ['door', 'windows', 'walls'] as const;
+export const ROOF_PITCHES = ['low', 'normal', 'steep'] as const;
+
+// The starting models of a house plan: a footprint, dressed with floors, colours, a roof and windows, so a new plan looks like a house. The Tier of the office that builds a model follows what it uses.
 export const architectShapesSchema = z
   .strictObject({
     ...schemaField,
@@ -70,11 +77,22 @@ export const architectShapesSchema = z
       z.strictObject({
         // The ground floor on the grid, one string per row: `#` is a cell, `.` is empty.
         rows: z.array(z.string().regex(/^[#.]+$/)).min(1),
+        floors: z.int().min(1).max(4),
+        wallColor: hexColor,
+        roofColor: hexColor,
+        // The roof of every wing: an id of roofs.json and its pitch.
+        roof: z.strictObject({ type: id, pitch: z.enum(ROOF_PITCHES) }),
+        // The windows: one wall out of two, or every wall but the door.
+        facade: z.enum(FACADE_RHYTHMS),
+        // The decors of the ground floor, each on its target: the door, the windows or the bare walls. A decor that cannot stand there is left out.
+        decors: z.array(z.strictObject({ decor: id, on: z.enum(MODEL_DECOR_TARGETS) })),
+        // A chimney on the first roof wing.
+        chimney: z.boolean(),
       }),
     ),
   })
   .refine(({ shapes }) => Object.values(shapes).every(({ rows }) => rows.every(row => row.length === rows.length)), 'a shape is a square grid')
-  .meta({ title: 'Architect shapes', description: 'assets/defs/architect/shapes.json: the starting shapes of a house plan.' });
+  .meta({ title: 'Architect shapes', description: 'assets/defs/architect/shapes.json: the starting models of a house plan.' });
 
 export const architectPartsSchema = z
   .strictObject({

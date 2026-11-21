@@ -8,7 +8,7 @@ const T0 = 1_700_000_000_000;
 
 const result = (state: GameState, command: Command) => dispatch(state, command, T0);
 
-const plan = newPlan('L');
+const plan = newPlan('rect');
 const design = { name: 'Villa', plan };
 const type = housePlanTypeOf(plan);
 const base = { ...newGame({ seed: 'amber-fox-4821', now: T0 }), urbs: 100_000 };

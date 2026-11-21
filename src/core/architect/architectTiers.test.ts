@@ -15,8 +15,11 @@ describe('the Tiers of the Architect office', () => {
     }
   });
 
-  it('lets every starting shape be drawn at Tier 1', () => {
-    for (const shape of ['rect', 'L', 'U', 'T'] as const) expect(isPlanUnlockedAt(newPlan(shape), 1)).toBe(true);
+  it('lets the first starting model be drawn at Tier 1 and asks the others for a Tier that grows', () => {
+    const tiers = (['rect', 'L', 'U', 'T'] as const).map((shape) => tierRequiredBy(newPlan(shape)));
+    expect(tiers[0]).toBe(1);
+    expect(tiers).toEqual([...tiers].sort());
+    expect(tiers.every((tier) => tier <= ARCHITECT_TIER_COUNT)).toBe(true);
   });
 
   it('unlocks every decor once and prices it', () => {
@@ -27,7 +30,8 @@ describe('the Tiers of the Architect office', () => {
   it('puts a decor on the edges that suit it, replaces it by another and drops it with its brick', () => {
     const plan = newPlan('rect');
     const door = exteriorEdges(plan).find((edge) => edge.floor === 0 && getBrick(plan, edge) === 'door')!;
-    const wall = exteriorEdges(plan).find((edge) => edge.floor === 0 && getBrick(plan, edge) === 'wall')!;
+    const wall = exteriorEdges(plan).find((edge) => edge.floor === 0 && edge.dir === 0)!;
+    setBrick(plan, wall, 'wall');
     toggleDecor(plan, wall, 'doorHood');
     expect(getDecor(plan, wall)).toBeUndefined();
     toggleDecor(plan, door, 'doorHood');
@@ -83,8 +87,9 @@ describe('the Tiers of the Architect office', () => {
     for (const edge of ground) setBrick(plan, edge, 'doorGarage');
     expect(stats(plan).issues).not.toContain('door');
     const upper = exteriorEdges(plan).find((candidate) => candidate.floor === 1)!;
+    const before = getBrick(plan, upper);
     setBrick(plan, upper, 'doorArched');
-    expect(getBrick(plan, upper)).toBe('wall');
+    expect(getBrick(plan, upper)).toBe(before);
     expect(tierRequiredBy(plan)).toBe(4);
   });
 

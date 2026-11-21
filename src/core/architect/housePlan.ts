@@ -21,6 +21,17 @@ export const GRID = 6;
 export const MAX_FLOORS = 4;
 export const DIR_DELTA: [number, number][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
+export interface ShapeDefinition {
+  rows: string[];
+  floors: number;
+  wallColor: string;
+  roofColor: string;
+  roof: { type: string; pitch: Pitch };
+  facade: 'sparse' | 'dense';
+  decors: { decor: Decor; on: 'door' | 'windows' | 'walls' }[];
+  chimney: boolean;
+}
+
 export interface BrickDefinition {
   kind: 'wall' | 'window' | 'door' | 'extension';
   price: number;
@@ -121,13 +132,29 @@ export function applyShape(plan: Plan, shape: Shape): void {
   trimEmptyFloors(plan);
 }
 
-// A new plan starts from one of the shapes, with a door on the south side; the shape is not changed afterwards.
+const SHAPE_DEFINITIONS = shapesFile.shapes as Record<Shape, ShapeDefinition>;
+
+// A new plan is one of the starting models: its footprint, floors, colours and roof, a door in the middle of the south side, windows on the other walls, decors and a chimney.
 export function newPlan(shape: Shape): Plan {
-  const plan: Plan = { floors: [emptyFloor()], roofSplit: 'rows', roofStyles: {}, dormers: {}, chimneys: {}, wallColor: '#e8d9b5', roofColor: '#b5533c', plinth: true, bricks: {} };
+  const model = SHAPE_DEFINITIONS[shape];
+  const plan: Plan = { floors: [emptyFloor()], roofSplit: 'rows', roofStyles: {}, dormers: {}, chimneys: {}, wallColor: model.wallColor, roofColor: model.roofColor, plinth: true, bricks: {} };
   applyShape(plan, shape);
-  addFloor(plan);
-  const door = exteriorEdges(plan).find((e) => e.floor === 0 && e.dir === 2);
+  while (plan.floors.length < model.floors) addFloor(plan);
+  for (const rect of roofRects(plan)) plan.roofStyles[rect.key] = { ...DEFAULT_ROOF, type: model.roof.type as Roof, pitch: model.roof.pitch };
+  const southDoors = exteriorEdges(plan).filter((e) => e.floor === 0 && e.dir === 2);
+  const door = southDoors[Math.floor((southDoors.length - 1) / 2)];
   if (door) setBrick(plan, door, 'door');
+  exteriorEdges(plan).forEach((edge) => {
+    if (getBrick(plan, edge) === 'door' || (model.facade === 'sparse' && (edge.c + edge.r + edge.dir) % 2 !== 0)) return;
+    setBrick(plan, edge, 'window');
+  });
+  const ground = exteriorEdges(plan).filter((edge) => edge.floor === 0);
+  for (const { decor, on } of model.decors) {
+    const targets = ground.filter((edge) => (on === 'door' ? isDoorBrick(getBrick(plan, edge)) : on === 'windows' ? isWindowBrick(getBrick(plan, edge)) : getBrick(plan, edge) === 'wall'));
+    targets.forEach((edge) => toggleDecor(plan, edge, decor));
+  }
+  const wing = roofRects(plan)[0];
+  if (model.chimney && wing) toggleChimney(plan, wing.c0 + Math.floor((wing.c1 - wing.c0) / 2), wing.r0 + Math.floor((wing.r1 - wing.r0) / 2));
   return plan;
 }
 
