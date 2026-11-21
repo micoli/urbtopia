@@ -252,7 +252,13 @@ export function roofHeightAt(plan: Plan, rect: Rect, dx: number, dz: number): nu
   const pitch = PITCH_FACTOR[style.pitch];
   const highRight = high === 0 || high === 1;
   if (style.type === 'mansard') {
-    if (mansardCluster(plan, rect).length > 1) return mansardProfileFor(plan, rect).h1;
+    if (mansardCluster(plan, rect).length > 1) {
+      const { ins, h1 } = mansardProfileFor(plan, rect);
+      const part = mansardCluster(plan, rect).filter((r) => r.floor === rect.floor);
+      const { edges } = partOutline(plan, part);
+      const distance = contourDistance(edges, (rect.c0 + rect.c1 + 1) / 2 + dx, (rect.r0 + rect.r1 + 1) / 2 + dz);
+      return distance < ins ? (h1 * distance) / ins : h1;
+    }
     const { ins, h1, h2 } = mansardProfile(rect, style);
     const dist = Math.min(span / 2 - Math.abs(u), length / 2 - Math.abs(v));
     return dist < ins ? Math.max(0, (h1 * dist) / ins) : h1 + (h2 - h1) * 0.5;

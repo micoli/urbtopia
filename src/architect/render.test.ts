@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
-import { ROOFS, SHAPES, addFloor, getDecor, newPlan, setAllRoofs, toggleDecor, toggleDormer, exteriorEdges, type Edge, type Plan } from '../core/architect/housePlan.ts';
-import { buildHouse } from './render.ts';
+import { ROOFS, SHAPES, addFloor, getDecor, newPlan, setAllRoofs, toggleDecor, toggleDormer, exteriorEdges, roofRects, type Edge, type Plan } from '../core/architect/housePlan.ts';
+import { buildHouse, roofHeightAt } from './render.ts';
 
 const meshes = (root: THREE.Object3D): THREE.Mesh[] => {
   const found: THREE.Mesh[] = [];
@@ -92,5 +92,16 @@ describe('the 3D house of a plan', () => {
     expect(getDecor(plan, ground)).toBe('pilasters');
     const after = meshes(buildHouse(plan)).length;
     expect(after).toBeGreaterThan(before);
+  });
+
+  it('keeps the walls of a mansard over several wings under the slope, not up to its break line', () => {
+    const plan = newPlan('T');
+    setAllRoofs(plan, 'mansard');
+    const [rect] = roofRects(plan);
+    const halfWidth = (rect!.c1 - rect!.c0 + 1) / 2;
+    const atWall = roofHeightAt(plan, rect!, halfWidth, 0);
+    const inside = roofHeightAt(plan, rect!, 0, 0);
+    expect(atWall).toBeLessThan(inside);
+    expect(atWall).toBeLessThan(0.1);
   });
 });
