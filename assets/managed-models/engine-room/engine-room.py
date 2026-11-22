@@ -359,10 +359,10 @@ def water_turbine(rng):
     parts += [disc("coupling", 0.09, 0.04, (0.0, 0.0, 0.54), P["steel_dark"], 8), disc("generator", 0.15, 0.24, (0.0, 0.0, 0.58), P["teal"], 12), disc("generator_cap", 0.12, 0.06, (0.0, 0.0, 0.82), P["teal_dark"], 12)]
     parts += [disc(f"fin{k}", 0.165, 0.025, (0.0, 0.0, 0.61 + 0.06 * k), P["teal_dark"], 12) for k in range(4)]
     parts += [block("terminal_box", -0.07, 0.07, -0.22, -0.13, 0.6, 0.74, P["brass"]), block("terminal_lid", -0.08, 0.08, -0.23, -0.12, 0.72, 0.76, P["steel_dark"])]
-    turning = [disc("rotor", 0.1, 0.02, (0.0, 0.0, 0.84), P["brass"], 12), disc("rotor_hub", 0.035, 0.04, (0.0, 0.0, 0.84), P["steel_dark"], 8)] + [block(f"rotor_blade{k}", -0.02, 0.02, 0.0, 0.09, 0.86, 0.875, P["yellow"]) for k in range(4)]
-    for k, blade in enumerate(turning[2:]):
+    turning = [disc("rotor_hub", 0.05, 0.07, (0.0, 0.0, 0.88), P["brass"], 8)] + [block(f"rotor_blade{k}", -0.03, 0.03, 0.0, 0.14, 0.91, 0.94, P["yellow"]) for k in range(4)]
+    for k, blade in enumerate(turning[1:]):
         lpm.rotate(blade, 90 * k, axis="Z")
-    return parts + generator_cable(0.0, -0.13, 0.67), {"spin-up": (turning, (0, 0, 0.84))}
+    return parts + generator_cable(0.0, -0.13, 0.67), {"spin-up": (turning, (0, 0, 0.88))}
 
 
 def steam_turbine(rng):
@@ -379,8 +379,8 @@ def steam_turbine(rng):
               sideways(disc("generator_cap_a", 0.1, 0.04, (0, 0, 0), P["teal_dark"], 12), x=-0.26, z=0.68), sideways(disc("generator_cap_b", 0.1, 0.04, (0, 0, 0), P["teal_dark"], 12), x=0.22, z=0.68)]
     parts += [sideways(disc(f"fin{k}", 0.135, 0.025, (0, 0, 0), P["teal_dark"], 12), x=-0.16 + 0.08 * k, z=0.68) for k in range(5)]
     parts += [block("terminal_box", -0.07, 0.07, -0.2, -0.1, 0.62, 0.76, P["brass"]), block("terminal_lid", -0.08, 0.08, -0.21, -0.09, 0.74, 0.78, P["steel_dark"])]
-    turning = [sideways(disc("rotor", 0.095, 0.02, (0, 0, 0), P["brass"], 12), x=0.27, z=0.68), sideways(disc("rotor_hub", 0.04, 0.05, (0, 0, 0), P["steel_dark"], 8), x=0.27, z=0.68),
-               block("rotor_spoke_v", 0.27, 0.29, -0.012, 0.012, 0.68 - 0.09, 0.68 + 0.09, P["steel_dark"]), block("rotor_spoke_h", 0.27, 0.29, -0.09, 0.09, 0.68 - 0.012, 0.68 + 0.012, P["steel_dark"])]
+    turning = [sideways(disc("rotor_hub", 0.045, 0.1, (0, 0, 0), P["brass"], 8), x=0.26, z=0.68),
+               block("rotor_blade_v", 0.3, 0.33, -0.03, 0.03, 0.68 - 0.14, 0.68 + 0.14, P["yellow"]), block("rotor_blade_h", 0.3, 0.33, -0.14, 0.14, 0.68 - 0.03, 0.68 + 0.03, P["yellow"])]
     return parts + generator_cable(0.0, -0.1, 0.69), {"spin-x": (turning, (0, 0, 0.68))}
 
 
