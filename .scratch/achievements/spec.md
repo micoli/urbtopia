@@ -20,7 +20,7 @@ Vocabulary (Achievement, Achievement category, Medal) in `CONTEXT.md`. Architect
 
 ## Trigger types (closed set)
 
-`placed` (a building or element type is placed), `created` (a line, a plan, a Stash…), `command` (a named player action), `sim` (a simulation result), `threshold` (a metric reaches a value).
+`placed` (a building or element type is placed), `created` (a line, a plan, a Stash…; judged by a collection of the state growing), `command` (a named player action), `sim` (a simulation result), `threshold` (a metric reaches a value).
 
 ## Catalogue (draft)
 
@@ -53,7 +53,7 @@ Vocabulary (Achievement, Achievement category, Medal) in `CONTEXT.md`. Architect
 | All aboard the Train / En voiture, le Train | created: Railway line | yes |
 | Under the city / Sous la ville | created: Metro line | yes |
 | Bridge builder / Bâtisseur de ponts | placed: Bridge | yes |
-| Foot and wheel / À pied et à vélo | placed: Pedestrian way or Cycling lane | yes |
+| On foot / À pied | created: Pedestrian way | yes |
 
 ### 4. Interiors
 | Achievement | Trigger | Retro |

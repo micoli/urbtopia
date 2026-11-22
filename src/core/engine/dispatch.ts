@@ -4,6 +4,7 @@ import type { GameEvent } from './events';
 import type { GameState } from './state';
 import { progressTutorial } from '../progression/tutorial';
 import { progressVenueTutorials } from '../progression/venueTutorial';
+import { latchAchievements } from '../achievements/latch';
 import { facilitiesUnlockedBetween } from '../progression/unlocks';
 
 export type DispatchResult =
@@ -14,7 +15,11 @@ export function dispatch(state: GameState, command: Command, now: number): Dispa
   const advanced = advance(state, now);
   const outcome = handleCommand(advanced.state, command, advanced.state.lastSeen);
   if (isError(outcome)) return { ok: false, error: outcome, state };
-  const next = progressVenueTutorials(progressTutorial(outcome.state));
-  const unlocked = facilitiesUnlockedBetween(advanced.state, next).map((facility): GameEvent => ({ type: 'FacilityUnlocked', facility }));
-  return { ok: true, state: next, events: [...advanced.events, ...outcome.events, ...unlocked] };
+  const progressed = progressVenueTutorials(progressTutorial(outcome.state));
+  const unlocked = facilitiesUnlockedBetween(advanced.state, progressed).map((facility): GameEvent => ({ type: 'FacilityUnlocked', facility }));
+  const events = [...advanced.events, ...outcome.events, ...unlocked];
+  // Skipping the Tutorial hands over the starting City: the player built none of it.
+  const latched = command.type === 'SkipTutorial' ? { state: progressed, unlocked: [] } : latchAchievements(state, progressed, events);
+  const earned = latched.unlocked.map((id): GameEvent => ({ type: 'AchievementUnlocked', id }));
+  return { ok: true, state: latched.state, events: [...events, ...earned] };
 }

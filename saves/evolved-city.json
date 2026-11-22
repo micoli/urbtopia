@@ -1344,6 +1344,9 @@
       }
     ],
     "tutorial": null,
-    "tradeLedger": []
+    "tradeLedger": [],
+    "achievements": [
+      "transport.firstRoad"
+    ]
   }
 }

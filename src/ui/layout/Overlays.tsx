@@ -44,6 +44,7 @@ import { PickDotMarker } from '../system/PickDotMarker';
 
 const DemonstrationDialog = lazy(() => import('../demonstrations/DemonstrationDialog').then(module => ({ default: module.DemonstrationDialog })));
 const CityManagement = lazy(() => import('../stats/CityManagement').then((module) => ({ default: module.CityManagement })));
+const AchievementsWindow = lazy(() => import('../achievements/AchievementsWindow').then((module) => ({ default: module.AchievementsWindow })));
 const SocialWindow = lazy(() => import('../social/SocialWindow').then((module) => ({ default: module.SocialWindow })));
 const CodexDialog = lazy(() => import('../codex/CodexDialog').then((module) => ({ default: module.CodexDialog })));
 const ArchitectDialog = lazy(() => import('../architect/ArchitectDialog').then((module) => ({ default: module.ArchitectDialog })));
@@ -64,6 +65,7 @@ export function Overlays() {
   const underground = useUi((store) => store.level !== 0);
   const statsOpen = useUi((store) => store.statsOpen);
   const socialOpen = useUi((store) => store.socialOpen);
+  const achievementsOpen = useUi((store) => store.achievementsOpen);
   const codexOpen = useUi((store) => store.codexOpen);
   const marketOpen = useUi((store) => store.marketOpen);
   const politicsOpen = useUi((store) => store.politicsOpen);
@@ -84,6 +86,7 @@ export function Overlays() {
       <BuildingSearchPanel />
       <OnDemand when={politicsOpen}><PoliticsWindow /></OnDemand>
       <OnDemand when={socialOpen}><SocialWindow /></OnDemand>
+      <OnDemand when={achievementsOpen}><AchievementsWindow /></OnDemand>
       <OnDemand when={codexOpen}><CodexDialog /></OnDemand>
       <OnDemand when={casinoOpen}><CasinoDialog /></OnDemand>
       <OnDemand when={districtOpen}><DistrictDialog /></OnDemand>

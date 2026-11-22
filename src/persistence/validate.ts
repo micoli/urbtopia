@@ -487,6 +487,7 @@ function structureFailure(value: Json): string | null {
     field('politics', () => value.politics === undefined || (isRecord(value.politics) && isNumber(value.politics.rngState) && isNumber(value.politics.approval) && value.politics.approval >= 0 && value.politics.approval <= 100 && isNumber(value.politics.shock) && isInt(value.politics.day, 0) && isPoliticsCouncil(value.politics) && isPoliticsObjectives(value.politics) && isPoliticsPetitions(value.politics) && isPoliticsTerm(value.politics) && isPoliticsJournal(value.politics))),
     field('challenge', () => value.challenge === undefined || isChallengeProgress(value.challenge)),
     entries('challengeClaims', () => value.challengeClaims, isChallengeClaim, true),
+    field('achievements', () => value.achievements === undefined || (Array.isArray(value.achievements) && value.achievements.every((id) => typeof id === 'string') && !hasDuplicates(value.achievements as string[]))),
     field('ecologyDismissed', () => value.ecologyDismissed === undefined || typeof value.ecologyDismissed === 'boolean'),
     entries('busLines', () => value.busLines, isBusLine, true),
     ...(['brtRoads', 'rails'] as const).flatMap((key) => [

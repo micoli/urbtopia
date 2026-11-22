@@ -51,6 +51,9 @@ export interface UiStore {
   editTransitLine: (lineId: number) => void;
   clearLineToEdit: () => void;
   politicsOpen: boolean;
+  achievementsOpen: boolean;
+  toggleAchievements: () => void;
+  closeAchievements: () => void;
   openPolitics: () => void;
   closePolitics: () => void;
   serviceCoverageOpen: boolean;
@@ -159,7 +162,7 @@ export interface ManagementView {
 
 const INITIAL_MANAGEMENT_VIEW: ManagementView = { tab: 'dashboard', group: 'overview', scroll: 0 };
 
-const NO_WINDOW_OPEN = { statsOpen: false, politicsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false } as const;
+const NO_WINDOW_OPEN = { statsOpen: false, politicsOpen: false, achievementsOpen: false, socialOpen: false, marketOpen: false, settingsOpen: false } as const;
 // The settings window is modal, so opening it also closes the panels around the map.
 const WINDOWS_CLOSED = { ...NO_WINDOW_OPEN, serviceCoverageOpen: false, buildingSearchOpen: false, flyout: null, selectedBuildingId: null, selectedAccess: null } as const;
 
@@ -236,6 +239,13 @@ export const uiStore = createStore<UiStore>((set, get) => {
       set({ ...NO_WINDOW_OPEN, politicsOpen: true, flyout: null });
     },
     closePolitics: () => set({ politicsOpen: false }),
+    achievementsOpen: false,
+    toggleAchievements: () => {
+      const opening = !get().achievementsOpen;
+      if (opening) get().cancelTool();
+      set(opening ? { ...NO_WINDOW_OPEN, achievementsOpen: true, flyout: null } : { achievementsOpen: false, flyout: null });
+    },
+    closeAchievements: () => set({ achievementsOpen: false }),
     serviceCoverageOpen: false,
     openServiceCoverage: () => set({ serviceCoverageOpen: true, statsOpen: false, flyout: null }),
     closeServiceCoverage: () => set({ serviceCoverageOpen: false }),
@@ -518,7 +528,7 @@ const leavesAnalytics = (store: UiStore, previous: UiStore) =>
   store.analyticsLayer !== null && previous.analyticsLayer === store.analyticsLayer &&
   ((store.flyout && !previous.flyout) || (store.tool && !previous.tool) || (store.statsOpen && !previous.statsOpen) || (store.socialOpen && !previous.socialOpen) ||
     (store.marketOpen && !previous.marketOpen) || (store.settingsOpen && !previous.settingsOpen) || (store.codexOpen && !previous.codexOpen) ||
-    (store.politicsOpen && !previous.politicsOpen) || (store.streetViewPicking && !previous.streetViewPicking));
+    (store.politicsOpen && !previous.politicsOpen) || (store.achievementsOpen && !previous.achievementsOpen) || (store.streetViewPicking && !previous.streetViewPicking));
 
 uiStore.subscribe((store, previous) => {
   if (leavesAnalytics(store, previous)) store.exitAnalytics();

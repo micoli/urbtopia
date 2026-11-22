@@ -1,0 +1,10 @@
+.achievements-window .progress-bar { height: 8px; margin: var(--space-8) 0; }
+.achievement-progress { margin: 0; font-size: var(--font-size-md); color: var(--color-text-muted); }
+.achievement-list { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-8); }
+.achievement-row { display: flex; align-items: center; gap: var(--space-12); padding: var(--space-12); border-radius: var(--radius-lg); background: var(--white-a06); }
+.achievement-row[data-done='true'] { border-left: 3px solid var(--color-positive); }
+.achievement-row[data-impossible='true'] { opacity: 0.5; }
+.achievement-row-text { flex: 1; min-width: 0; display: grid; gap: var(--space-2); }
+.achievement-row-text small { color: var(--color-text-muted); }
+.achievement-row-text .achievement-row-needs { color: var(--color-caution); }
+.achievement-row-status { font-size: var(--font-size-md); color: var(--color-text-muted); }
