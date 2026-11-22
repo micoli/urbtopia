@@ -1,13 +1,8 @@
-import { DIFFICULTIES, difficultyOf } from '../engine/difficulty';
 import type { GameState } from '../engine/state';
 import { ACHIEVEMENTS, achievementsOf } from './achievements';
-import { ACHIEVEMENT_CATEGORIES, type AchievementCategoryId, type AchievementDef } from './achievementTypes';
+import { ACHIEVEMENT_CATEGORIES, type AchievementCategoryId } from './achievementTypes';
+import { isPossible } from './availability';
 import { isAcquired } from './latch';
-
-export function isPossible(state: GameState, achievement: AchievementDef): boolean {
-  if (!achievement.fromDifficulty) return true;
-  return DIFFICULTIES.indexOf(difficultyOf(state)) >= DIFFICULTIES.indexOf(achievement.fromDifficulty);
-}
 
 export interface CategoryProgress {
   readonly category: AchievementCategoryId;
@@ -16,7 +11,6 @@ export interface CategoryProgress {
   readonly complete: boolean;
 }
 
-// An Achievement the City's Difficulty rules out is left out of the count.
 export function categoryProgress(state: GameState, category: AchievementCategoryId): CategoryProgress {
   const possible = achievementsOf(category).filter((achievement) => isPossible(state, achievement));
   const acquired = possible.filter((achievement) => isAcquired(state, achievement.id)).length;

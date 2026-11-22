@@ -21,6 +21,10 @@ const NAMED = {
   homeFixtures: (state) => sum(state.buildings.filter((building) => isHomeType(building.type)), fixturesOf),
   engineRoomFixtures: (state) => sum(state.buildings.filter((building) => POWER_PLANTS.includes(building.type)), fixturesOf),
   attractions: (state) => state.buildings.filter((building) => Boolean(definitionOf(building.type).attraction)).length,
+  objectivesCompleted: (state) => state.politics?.completed.length ?? 0,
+  electionsHeld: (state) => (state.politics ? state.politics.term.number - 1 : 0),
+  housePlans: (state) => state.housePlans?.length ?? 0,
+  designedHomes: (state) => state.buildings.filter((building) => building.design !== undefined).length,
   citizens: totalCitizens,
 } as const satisfies Record<string, (state: GameState) => number>;
 

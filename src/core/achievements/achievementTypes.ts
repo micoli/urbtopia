@@ -4,7 +4,7 @@ import type { Command } from '../engine/commands';
 import type { GameState } from '../engine/state';
 import type { CounterId } from './counters';
 
-export const ACHIEVEMENT_CATEGORIES = ['production', 'housing', 'transport', 'interiors', 'energy', 'leisure', 'environment'] as const;
+export const ACHIEVEMENT_CATEGORIES = ['production', 'housing', 'transport', 'interiors', 'energy', 'politics', 'architect', 'leisure', 'environment'] as const;
 export type AchievementCategoryId = (typeof ACHIEVEMENT_CATEGORIES)[number];
 
 // What the player does outside the game state, which the interface reports with a Signal Command.

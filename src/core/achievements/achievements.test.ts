@@ -63,7 +63,7 @@ describe('category progress', () => {
   });
 
   it('shows the categories that have Achievements', () => {
-    expect(visibleCategories(city()).map(({ category }) => category)).toEqual(['production', 'housing', 'transport', 'interiors', 'energy', 'leisure', 'environment']);
+    expect(visibleCategories(city()).map(({ category }) => category)).toEqual(['production', 'housing', 'transport', 'interiors', 'energy', 'architect', 'leisure', 'environment']);
   });
 });
 
@@ -71,9 +71,30 @@ describe('Difficulty', () => {
   const politics = { ...ACHIEVEMENTS[0]!, fromDifficulty: 'easy' as const };
 
   it('rules out an Achievement the Difficulty does not have', async () => {
-    const { isPossible } = await import('./progress');
+    const { isPossible } = await import('./availability');
     expect(isPossible({ ...city(), difficulty: 'cozy' }, politics)).toBe(false);
     expect(isPossible({ ...city(), difficulty: 'easy' }, politics)).toBe(true);
     expect(isPossible({ ...city(), difficulty: 'hard' }, politics)).toBe(true);
+  });
+});
+
+describe('Politics category', () => {
+  it('is hidden under Cozy and cannot be completed there, and shown from Easy', () => {
+    const cozy = { ...city(), difficulty: 'cozy' as const, achievements: ACHIEVEMENTS.filter(({ category }) => category === 'politics').map(({ id }) => id) };
+    expect(visibleCategories(cozy).map(({ category }) => category)).not.toContain('politics');
+    expect(categoryProgress(cozy, 'politics').complete).toBe(false);
+    expect(visibleCategories({ ...cozy, difficulty: 'easy' }).map(({ category }) => category)).toContain('politics');
+    expect(categoryProgress({ ...cozy, difficulty: 'easy' }, 'politics').complete).toBe(true);
+  });
+
+  it('latches an adopted Ordinance and the Grants claimed, from Easy', () => {
+    const easy = { ...city(), difficulty: 'easy' as const };
+    const adopted = latchAchievements(easy, easy, [{ type: 'OrdinanceAdopted', id: 'greenBelt' }]);
+    expect(adopted.unlocked).toEqual(['politics.ordinance']);
+    expect(latchAchievements(easy, easy, [], { type: 'ClaimGrants' }).unlocked).toEqual(['politics.grant']);
+  });
+
+  it('earns no Politics Achievement under Cozy', () => {
+    expect(latchAchievements(city(), city(), [{ type: 'OrdinanceAdopted', id: 'greenBelt' }]).unlocked).toEqual([]);
   });
 });

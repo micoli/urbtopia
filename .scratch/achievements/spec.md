@@ -81,12 +81,13 @@ Vocabulary (Achievement, Achievement category, Medal) in `CONTEXT.md`. Architect
 | Ordinance passed / Ordinance adoptée | command: enact an Ordinance | no |
 | Objective met / Objective atteint | sim: an Objective held | no |
 | Grant claimed / Grant réclamé | command: claim a Grant | no |
-| Re-elected / Réélu | sim: an Election won | no |
+| Facing the voters / Face aux électeurs | created: an Election gone through | yes |
 
 ### 7. Architect
 | Achievement | Trigger | Retro |
 |---|---|---|
-| Planning office / Bureau de planification | placed: Planning office | yes |
+| Architect office / Architect office | created: Architect office | yes |
+| Planning office / Bureau de planification | created: Planning office | yes |
 | House plan / Plan de maison | created: House plan | no |
 | District plan / Plan de quartier | created: District plan | no |
 | A home of the city / Un home de la cité | sim: a plan becomes a Home | no |

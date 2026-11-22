@@ -344,5 +344,6 @@ export { ACHIEVEMENTS, CATEGORY_NAMES, achievementsOf, medalNamesOf } from './ac
 export { ACHIEVEMENT_CATEGORIES, ACHIEVEMENT_SIGNALS } from './achievements/achievementTypes';
 export type { AchievementCategoryId, AchievementDef, AchievementSignal } from './achievements/achievementTypes';
 export { isAcquired, provenAchievements, withAchievements } from './achievements/latch';
-export { categoryProgress, completedCategories, isPossible, visibleCategories } from './achievements/progress';
+export { isPossible } from './achievements/availability';
+export { categoryProgress, completedCategories, visibleCategories } from './achievements/progress';
 export type { CategoryProgress } from './achievements/progress';

@@ -76,4 +76,21 @@ test.describe('achievements', () => {
     });
     await expect(page.getByRole('status')).toContainText('Succès : Valeur du terrain');
   });
+
+  test('the Politics category shows from Easy and is hidden under Cozy', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+
+    await page.getByRole('button', { name: 'Succès' }).first().click();
+    const window = page.getByRole('dialog', { name: 'Succès' });
+    await expect(window).toContainText('Architect');
+    await expect(window.getByRole('heading', { name: 'Politique' })).toHaveCount(0);
+
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      gameStore.getState().replaceState({ ...gameStore.getState().state, difficulty: 'easy' });
+    });
+    await expect(window.getByRole('heading', { name: 'Politique' })).toHaveCount(1);
+  });
 });

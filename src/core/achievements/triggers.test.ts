@@ -100,7 +100,8 @@ describe('the catalogue', () => {
 
   it.each(ACHIEVEMENT_CATEGORIES)('completes the %s category when each of its Achievements is acquired', (category) => {
     const ids = ACHIEVEMENTS.filter((achievement) => achievement.category === category).map(({ id }) => id);
-    expect(categoryProgress({ ...city(), achievements: ids }, category).complete).toBe(true);
-    expect(categoryProgress({ ...city(), achievements: ids.slice(1) }, category).complete).toBe(false);
+    const easy = { ...city(), difficulty: 'easy' as const };
+    expect(categoryProgress({ ...easy, achievements: ids }, category).complete).toBe(true);
+    expect(categoryProgress({ ...easy, achievements: ids.slice(1) }, category).complete).toBe(false);
   });
 });
