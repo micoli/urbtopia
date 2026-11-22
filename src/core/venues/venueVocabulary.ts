@@ -27,7 +27,7 @@ export const PACKHOUSE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power'
 export const LINE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'plumbing', 'machines', 'line', 'walls'];
 
 // The Production interiors that share the engine of the Factory interior, by the kind of their Fixtures.
-export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse', 'workshop', 'recyclingPlant', 'textileMill', 'knitwearFactory', 'livestockFarm', 'farm', 'coalPlant'] as const;
+export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse', 'workshop', 'recyclingPlant', 'textileMill', 'knitwearFactory', 'livestockFarm', 'farm', 'coalPlant', 'geothermalPlant'] as const;
 
 // The sections of the build menu of an Engine room, in order: the Machines and the wall ports, then the links (Conveyors, pipes and Cables).
 export const ENGINE_ROOM_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['machines', 'line', 'walls'];

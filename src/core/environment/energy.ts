@@ -4,6 +4,7 @@ import { transitServices } from '../transit/transitService';
 import { ECOLOGY, distance, economicPower, homePower } from './ecology';
 import { UTILITY_CAPACITY } from '../economy/economy';
 import { coalCapacityOf } from './coalCapacity';
+import { interiorBonusOfBuilding } from '../factory/interiorBonus';
 import type { Building, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { flowFactor } from '../water/flow';
@@ -31,7 +32,7 @@ export function factorsAt(state: Pick<GameState, 'timeOffset' | 'dayCycleOffset'
 }
 
 export function generatorCapacity(b: Building): number {
-  if (isGeneratingPlant(b.type)) return UTILITY_CAPACITY[b.type][b.tier - 1] ?? 0;
+  if (isGeneratingPlant(b.type)) return (UTILITY_CAPACITY[b.type][b.tier - 1] ?? 0) * (1 + (interiorBonusOfBuilding(b).generation ?? 0));
   return b.type === 'solar' ? ECOLOGY.solarOutput : solarPanelsCapacity(b);
 }
 

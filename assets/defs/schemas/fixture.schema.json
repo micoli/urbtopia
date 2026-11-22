@@ -1042,7 +1042,8 @@
             "knitwearFactory",
             "livestockFarm",
             "farm",
-            "coalPlant"
+            "coalPlant",
+            "geothermalPlant"
           ]
         },
         "$schema": {

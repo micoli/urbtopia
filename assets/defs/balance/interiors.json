@@ -119,6 +119,93 @@
       "roles": {},
       "unlockCitizens": 400
     },
+    "geothermalPlant": {
+      "family": "production",
+      "bonusModel": "engineRoom",
+      "layout": {
+        "gridSizes": [6, 8, 10, 12, 14, 14],
+        "speedCaps": [0.01],
+        "yieldCaps": [0.01],
+        "technicianPosts": [1, 1, 2, 2, 3, 4],
+        "engineRoom": {
+          "circuitShare": 0.5,
+          "generationCaps": [0.05, 0.08, 0.11, 0.15, 0.2, 0.25],
+          "circuits": [
+            {
+              "anchor": "steamTurbine",
+              "links": [
+                {
+                  "from": "undergroundWaterInlet",
+                  "to": "steamTurbine",
+                  "medium": "steam"
+                },
+                {
+                  "from": "steamTurbine",
+                  "to": "condenser",
+                  "medium": "steam"
+                },
+                {
+                  "from": "condenser",
+                  "to": "injectionWell",
+                  "medium": "steam"
+                },
+                {
+                  "from": "steamTurbine",
+                  "to": "powerOutlet",
+                  "medium": "electricity"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "roles": {},
+      "unlockCitizens": 600
+    },
+    "largeGeothermalPlant": {
+      "family": "production",
+      "bonusModel": "engineRoom",
+      "fixtureKind": "geothermalPlant",
+      "layout": {
+        "gridSizes": [14],
+        "speedCaps": [0.01],
+        "yieldCaps": [0.01],
+        "technicianPosts": [4],
+        "engineRoom": {
+          "circuitShare": 0.5,
+          "generationCaps": [0.25],
+          "circuits": [
+            {
+              "anchor": "steamTurbine",
+              "links": [
+                {
+                  "from": "undergroundWaterInlet",
+                  "to": "steamTurbine",
+                  "medium": "steam"
+                },
+                {
+                  "from": "steamTurbine",
+                  "to": "condenser",
+                  "medium": "steam"
+                },
+                {
+                  "from": "condenser",
+                  "to": "injectionWell",
+                  "medium": "steam"
+                },
+                {
+                  "from": "steamTurbine",
+                  "to": "powerOutlet",
+                  "medium": "electricity"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "roles": {},
+      "unlockCitizens": 1500
+    },
     "bakery": {
       "family": "production",
       "bonusModel": "assigned",

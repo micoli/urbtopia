@@ -28,6 +28,8 @@ const EFFECTS_BY_TYPE: Partial<Record<BuildingType, readonly EffectId[]>> = {
   materialDepot: ['capacity'],
   recyclingPlant: ['wasteCapacity', 'reach'],
   coalPlant: ['generation', 'cleaner'],
+  geothermalPlant: ['generation'],
+  largeGeothermalPlant: ['generation'],
 };
 
 const PRESENTATION: Record<EffectId, { icon: IconName; label: MessageKey }> = {

@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "geothermalPlant",
+  "category": "walls",
+  "name": {
+    "en": "Full-height wall",
+    "fr": "Mur pleine hauteur"
+  },
+  "model": "workshop-interior-partition-full",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "partition": true,
+  "joins": {
+    "elbow": "workshop-interior-partition-full-elbow",
+    "tee": "workshop-interior-partition-full-tee",
+    "cross": "workshop-interior-partition-full-cross"
+  }
+}

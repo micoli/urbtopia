@@ -483,5 +483,22 @@
   "coalPlantSteamPipeTee",
   "coalPlantSteamPipeCross",
   "coalPlantCableTee",
-  "coalPlantCableCross"
+  "coalPlantCableCross",
+  "geothermalPlantUndergroundWaterInlet",
+  "geothermalPlantSteamTurbine",
+  "geothermalPlantCondenser",
+  "geothermalPlantInjectionWell",
+  "geothermalPlantPowerOutlet",
+  "geothermalPlantSteamPipe",
+  "geothermalPlantSteamPipeElbow",
+  "geothermalPlantSteamPipeTee",
+  "geothermalPlantSteamPipeCross",
+  "geothermalPlantCable",
+  "geothermalPlantCableElbow",
+  "geothermalPlantCableTee",
+  "geothermalPlantCableCross",
+  "geothermalPlantWall",
+  "geothermalPlantWallFull",
+  "geothermalPlantWindow",
+  "geothermalPlantDoorway"
 ]
