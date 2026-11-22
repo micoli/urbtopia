@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "coalPlant",
+  "category": "machines",
+  "name": {
+    "en": "Filter",
+    "fr": "Filtre"
+  },
+  "model": "engine-room-filter",
+  "footprint": [1, 1],
+  "price": 900,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "circuit",
+  "smoke": [0, 1.5, 0],
+  "family": "filter",
+  "ports": [
+    {
+      "side": "back",
+      "medium": "smoke",
+      "direction": "in"
+    }
+  ]
+}

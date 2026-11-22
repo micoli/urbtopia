@@ -11,6 +11,8 @@ export const ITEM_SCALE = 0.9;
 
 const BODY = new THREE.BoxGeometry(0.22, PACKET_HEIGHT, 0.2);
 const TAPE = new THREE.BoxGeometry(0.03, 0.004, 0.2);
+const LUMP = new THREE.BoxGeometry(0.16, 0.12, 0.16);
+const LUMP_MATERIAL = new THREE.MeshStandardMaterial({ color: 0x2b2b33, roughness: 0.8 });
 const BODY_MATERIAL = new THREE.MeshStandardMaterial({ color: 0xc9a26b, roughness: 0.9 });
 const TAPE_MATERIAL = new THREE.MeshStandardMaterial({ color: 0xe9dfc9, roughness: 0.6 });
 
@@ -72,9 +74,9 @@ export class InteriorLineLayer {
       const bakedAt = path.baked ? lengthOf(points.slice(0, path.baked.from + 1)) : length;
       const packets = Array.from({ length: count }, (): Packet => {
         const holder = new THREE.Group();
-        const crate = new THREE.Mesh(BODY, BODY_MATERIAL);
+        const crate: THREE.Object3D = path.coal ? new THREE.Mesh(LUMP, LUMP_MATERIAL) : new THREE.Mesh(BODY, BODY_MATERIAL);
         crate.position.y = PACKET_HEIGHT / 2;
-        crate.add(new THREE.Mesh(TAPE, TAPE_MATERIAL).translateY(PACKET_HEIGHT / 2));
+        if (!path.coal) crate.add(new THREE.Mesh(TAPE, TAPE_MATERIAL).translateY(PACKET_HEIGHT / 2));
         holder.add(crate);
         const item = path.baked ? this.itemOf(path.baked.good) : null;
         if (item) {

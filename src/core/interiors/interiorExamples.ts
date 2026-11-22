@@ -17,6 +17,13 @@ export interface InteriorExample {
   readonly fixtures: readonly ExampleFixture[];
 }
 
+// The steam goes down column 2 to the Steam turbine and the Condenser, turns at the front and climbs column 3 to the Injection well; the Cable leaves the turbine to the left and climbs column 1 to the Power outlet.
+const GEOTHERMAL_EXAMPLE: InteriorExample = { tier: 1, fixtures: [
+  at('geothermalPlantUndergroundWaterInlet', 2, 0), at('geothermalPlantSteamPipe', 2, 1), at('geothermalPlantSteamPipe', 2, 2), at('geothermalPlantSteamTurbine', 2, 3, 1), at('geothermalPlantCondenser', 2, 4, 1),
+  at('geothermalPlantSteamPipeElbow', 2, 5, 3), at('geothermalPlantSteamPipeElbow', 3, 5, 2), at('geothermalPlantSteamPipe', 3, 4), at('geothermalPlantSteamPipe', 3, 3), at('geothermalPlantSteamPipe', 3, 2), at('geothermalPlantSteamPipe', 3, 1),
+  at('geothermalPlantInjectionWell', 3, 0), at('geothermalPlantCableElbow', 1, 3, 3), at('geothermalPlantCable', 1, 2), at('geothermalPlantCable', 1, 1), at('geothermalPlantPowerOutlet', 1, 0),
+] };
+
 const STOREHOUSE_EXAMPLE: InteriorExample = { tier: 1, fixtures: [at('storehouseDock', 0, 0), at('storehouseMotor', 1, 0, 1), at('storehouseRack', 0, 1, 2)] };
 
 export const INTERIOR_EXAMPLES: Partial<Record<BuildingType, InteriorExample>> = {
@@ -57,6 +64,15 @@ export const INTERIOR_EXAMPLES: Partial<Record<BuildingType, InteriorExample>> =
     at('farmGrader', 0, 3), at('farmMotor', 1, 3, 1), at('farmHarvestBin', 0, 4, 2),
     at('farmSprinkler', 2, 3), at('farmPump', 3, 3, 1), at('farmTank', 4, 3, 1), at('farmMotor', 3, 4, 2),
   ] },
+  coalPlant: { tier: 1, fixtures: [
+    at('coalPlantCoalQuay', 2, 0), at('coalPlantConveyor', 2, 1), at('coalPlantSteamBoiler', 2, 2), at('coalPlantWaterInlet', 1, 0), at('coalPlantWaterPipe', 1, 1), at('coalPlantWaterPipeElbow', 1, 2, 3),
+    at('coalPlantSteamPipe', 3, 2, 1), at('coalPlantAlternator', 4, 2), at('coalPlantCableElbow', 5, 2, 2), at('coalPlantCable', 5, 1), at('coalPlantPowerOutlet', 5, 0),
+  ] },
+  hydroPlant: { tier: 1, fixtures: [
+    at('hydroPlantWaterInlet', 2, 0), at('hydroPlantWaterPipe', 2, 1), at('hydroPlantWaterPipe', 2, 2), at('hydroPlantWaterTurbine', 2, 3, 1), at('hydroPlantWaterPipeElbow', 2, 4, 3), at('hydroPlantWaterPipeElbow', 3, 4, 2),
+    at('hydroPlantWaterPipe', 3, 3), at('hydroPlantWaterPipe', 3, 2), at('hydroPlantWaterPipe', 3, 1), at('hydroPlantWaterOutlet', 3, 0), at('hydroPlantCableElbow', 1, 3, 3), at('hydroPlantCable', 1, 2), at('hydroPlantCable', 1, 1), at('hydroPlantPowerOutlet', 1, 0),
+  ] },
+  geothermalPlant: GEOTHERMAL_EXAMPLE,
   storehouse: STOREHOUSE_EXAMPLE,
   vault: STOREHOUSE_EXAMPLE,
   materialDepot: STOREHOUSE_EXAMPLE,

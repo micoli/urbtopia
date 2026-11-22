@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "hydroPlant",
+  "category": "machines",
+  "name": {
+    "en": "Water inlet",
+    "fr": "Arrivée d'eau"
+  },
+  "model": "engine-room-water-inlet",
+  "footprint": [1, 1],
+  "price": 400,
+  "minTier": 1,
+  "wear": 0.05,
+  "role": "circuit",
+  "family": "waterInlet",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "water",
+      "direction": "out"
+    }
+  ],
+  "wallPort": true
+}

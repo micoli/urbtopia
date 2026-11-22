@@ -70,5 +70,13 @@
       "model": "buildings-geothermal-1x1-t6-tone-a"
     }
   ],
-  "extraCopyCitizens": [300, 600, 1000, 1500, 2200, 3000, 4000, 5000, 6500]
+  "extraCopyCitizens": [300, 600, 1000, 1500, 2200, 3000, 4000, 5000, 6500],
+  "floorShell": {
+    "floor": "workshop-interior-floor",
+    "wall": "workshop-interior-wall",
+    "corner": "workshop-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  }
 }

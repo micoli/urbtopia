@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
-import { FIXTURES, interiorFixturesOf, interiorLinksOf, interiorPowerOfBuilding, type Building } from '../../core';
+import { FIXTURES, engineRoomGainsOf, hasEngineRoom, interiorFixturesOf, interiorLinksOf, interiorPowerOfBuilding, type Building } from '../../core';
 import { interiorEffectsOf, type InteriorEffect } from './interiorEffectsOf';
 
 export interface InteriorIndicators {
   machines: number;
   linked: number;
   power: number;
+  // An Engine room counts its complete Circuits, not its Machines, and draws no power.
+  circuits?: number;
   effects: InteriorEffect[];
 }
 
@@ -18,6 +20,7 @@ export function useInteriorIndicators(factory: Building): InteriorIndicators {
       machines: fixtures.filter(fixture => FIXTURES[fixture.type].role === 'machine').length,
       linked: interiorLinksOf(fixtures).linked.size,
       power: interiorPowerOfBuilding(floor),
+      ...(hasEngineRoom(factory) ? { circuits: engineRoomGainsOf(floor).circuits } : {}),
       effects: interiorEffectsOf(floor),
     };
   }, [fixtures, factory.type, factory.tier, factory.interior, factory.breakerOff]);

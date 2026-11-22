@@ -39,6 +39,9 @@ export const hasProductionInterior = (building: Building): boolean => interiorPr
 // A Packhouse, a Bakery, a Dairy or a Storehouse: the interiors where a Line of crates runs from a Machine against the wall to an Exit.
 export const hasLineInterior = (building: Building): boolean => interiorProfileOf(building.type)?.line === true;
 
+// A Power plant with an Engine room: its wall ports stand against the back wall, facing the room.
+export const hasEngineRoom = (building: Building): boolean => interiorProfileOf(building.type)?.bonusModel === 'engineRoom';
+
 // A School, a Library or a Hospital: the interiors that raise the quality of a service.
 export const hasServiceInterior = (building: Building): boolean => interiorProfileOf(building.type)?.family === 'service';
 
@@ -64,7 +67,7 @@ const startsALine = (type: FixtureId): boolean => FIXTURES[type].role === 'machi
 // only, an Exit against any of the four edges. None for a Fixture that stands anywhere, and none for a cell where it cannot stand.
 // An Exit of the Packhouse or of the Recycling plant stands against a wall; the Exit of the other Line interiors, a Counter, stands anywhere.
 export const fixtureWallOf = (type: FixtureId): 'back' | 'exterior' | 'wall' | undefined => {
-  if (startsALine(type)) return 'back';
+  if (startsALine(type) || FIXTURES[type].wallPort === true) return 'back';
   if (FIXTURES[type].role === 'exit' && (FIXTURES[type].venue === 'packhouse' || FIXTURES[type].venue === 'recyclingPlant')) return 'exterior';
   return hangsOnWall(type) ? 'wall' : undefined;
 };
@@ -86,7 +89,7 @@ export const wallFacingOf = (type: FixtureId, cell: { x: number; y: number }, si
 
 export function canStandOnInterior(host: Building, fixture: Pick<VenueFixture, 'type' | 'x' | 'y' | 'rotation'>, ignoreId?: number): boolean {
   const size = interiorSizeOf(host);
-  if (hasLineInterior(host) && needsAWall(fixture.type) && !wallTurnsOf(fixture.type, fixture, size).includes(fixture.rotation)) return false;
+  if ((hasLineInterior(host) || hasEngineRoom(host)) && needsAWall(fixture.type) && !wallTurnsOf(fixture.type, fixture, size).includes(fixture.rotation)) return false;
   const entrance = entranceCell(host.tier);
   if (hangsOnWall(fixture.type)) return host.type !== 'factory' && canHangOnWall(interiorFixturesOf(host), fixture, size, entrance.x, ignoreId);
   const occupied = new Set(interiorFixturesOf(host).filter(other => other.id !== ignoreId && !hangsOnWall(other.type)).flatMap(fixtureTiles).map(tile => `${tile.x}:${tile.y}`));

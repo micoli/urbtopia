@@ -8,12 +8,12 @@ interface ProductionIndicatorsProps {
 }
 
 export function ProductionIndicators({ factory }: ProductionIndicatorsProps) {
-  const { machines, linked, power, effects } = useInteriorIndicators(factory);
+  const { machines, linked, power, circuits, effects } = useInteriorIndicators(factory);
   return (
     <LabeledList>
-      <LabeledList.Row label={t('factory.interior.linked')}>{linked} / {machines}</LabeledList.Row>
+      {circuits === undefined ? <LabeledList.Row label={t('factory.interior.linked')}>{linked} / {machines}</LabeledList.Row> : <LabeledList.Row label={t('factory.interior.circuits')}>{circuits}</LabeledList.Row>}
       {effects.map(effect => <LabeledList.Row key={effect.id} label={t(effect.label)}>{effect.value}</LabeledList.Row>)}
-      <LabeledList.Row label={t('factory.interior.power')}>{power.toFixed(1)}</LabeledList.Row>
+      {circuits === undefined ? <LabeledList.Row label={t('factory.interior.power')}>{power.toFixed(1)}</LabeledList.Row> : null}
     </LabeledList>
   );
 }

@@ -11,6 +11,7 @@ import { interiorDeclarationOf, interiorLayoutOf, interiorPartPresence, isPlainR
 import { memoizedByLayout } from './memoizedByLayout';
 import { circuitOf, interiorReportOf, isMachine, motorDrawOf, motorStrengthOf, roleOf } from './interiorLinks';
 import { suppliedGoodsOf } from './interiorLine';
+import { engineRoomGainsOf } from './engineRoomCircuits';
 
 export interface InteriorCaps {
   speed: number;
@@ -25,6 +26,9 @@ export interface InteriorBonus {
   capacity?: number;
   // What the Motors of the floor ask of the city's power.
   power: number;
+  // Engine room: the share of the plant's Capacity that its complete Circuits add, and the share of its pollution they take away.
+  generation?: number;
+  cleaner?: number;
 }
 
 // The highest speed and yield bonus a floor can approach at a Tier.
@@ -279,6 +283,10 @@ const exitYieldPartOf = (type: BuildingType): InteriorPart => (Object.values(int
 export function interiorBonusOfBuilding(building: Pick<Building, 'type' | 'tier' | 'interior' | 'breakerOff'>, item?: ItemId): InteriorBonus {
   if (!building.interior || building.breakerOff) return NO_BONUS;
   const bonusModel = interiorDeclarationOf(building.type)?.bonusModel;
+  if (bonusModel === 'engineRoom') {
+    const { generation, cleaner } = engineRoomGainsOf(building);
+    return { ...NO_BONUS, generation, cleaner };
+  }
   if (bonusModel === 'packhouse') return packhouseBonusOf(building.interior.fixtures, building.tier, item === undefined ? undefined : packSizeOf(item));
   if (bonusModel === 'factory') return interiorBonusOf(building.interior.fixtures, building.tier, building.type);
   if (bonusModel === 'assigned') return assignedBonusOf(building, item);

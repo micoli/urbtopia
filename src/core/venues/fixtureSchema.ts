@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { pairSchema } from '../buildings/tierSchema.ts';
 import { count, filled, localizedText } from '../economy/itemSchemas.ts';
-import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_SIDES, HOME_FIXTURE_ROLES, PACK_SIZES, PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS } from './venueVocabulary.ts';
+import { FACTORY_FIXTURE_ROLES, FIXTURE_CATEGORIES_ALL, FIXTURE_MEDIA, FIXTURE_SIDES, PORT_DIRECTIONS, HOME_FIXTURE_ROLES, PACK_SIZES, PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS } from './venueVocabulary.ts';
 
 const common = {
   $schema: z.string().optional(),
@@ -127,6 +127,10 @@ export const fixtureSchema = z
       packSize: z.enum(PACK_SIZES).optional(),
       // An Exit: the Model of the truck that waits outside it while its Line is linked.
       truck: filled.optional(),
+      // Engine room: the ports of the Fixture, each on one side, of one Medium, taking it in, giving it out or both. Two Fixtures are linked through ports of the same Medium on the two sides of their edge.
+      ports: z.array(z.strictObject({ side: z.enum(FIXTURE_SIDES), medium: z.enum(FIXTURE_MEDIA), direction: z.enum(PORT_DIRECTIONS) })).min(1).optional(),
+      // Engine room: a wall port, which only stands against the back wall of the room, facing it.
+      wallPort: z.literal(true).optional(),
     }),
   ])
   .meta({ title: 'Fixture', description: 'An item placed inside a Venue, one file per Fixture id in assets/defs/fixtures.' });

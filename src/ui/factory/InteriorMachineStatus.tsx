@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { FIXTURES, hasLineInterior, interiorFixturesOf, interiorLinksOf, interiorMotorLoadOf, type Building, type VenueFixture } from '../../core';
+import { FIXTURES, engineRoomReportOf, hasLineInterior, interiorFixturesOf, interiorLinksOf, interiorMotorLoadOf, type Building, type VenueFixture } from '../../core';
 import { t } from '../../i18n/t';
 import { InteriorBenefits } from './InteriorBenefits';
 import { FarmFixtureStatus } from './FarmFixtureStatus';
@@ -15,10 +15,12 @@ export function InteriorMachineStatus({ factory, fixture }: InteriorMachineStatu
   const fixtures = interiorFixturesOf(factory);
   const role = FIXTURES[fixture.type].role;
   const status = useMemo(() => {
+    if (role === 'circuit') return { circuit: engineRoomReportOf(factory).used.has(fixture.id) };
     if (role === 'motor') return { motor: interiorMotorLoadOf(fixtures, fixture) };
     if (role === 'machine' || role === 'conveyor' || role === 'scanner' || role === 'exit') return { links: interiorLinksOf(fixtures) };
     return {};
-  }, [fixtures, fixture, role]);
+  }, [fixtures, factory, fixture, role]);
+  if (status.circuit !== undefined) return <p className={status.circuit ? 'note' : 'note note--warn'}>{t(status.circuit ? 'factory.interior.onCircuit' : 'factory.interior.offCircuit')}</p>;
   if (status.motor) {
     const { driven, capacity, overloaded } = status.motor;
     return (

@@ -1041,7 +1041,10 @@
             "textileMill",
             "knitwearFactory",
             "livestockFarm",
-            "farm"
+            "farm",
+            "coalPlant",
+            "geothermalPlant",
+            "hydroPlant"
           ]
         },
         "$schema": {
@@ -1189,7 +1192,8 @@
             "machine",
             "conveyor",
             "scanner",
-            "exit"
+            "exit",
+            "circuit"
           ]
         },
         "drive": {
@@ -1365,6 +1369,52 @@
         "truck": {
           "type": "string",
           "pattern": "\\S"
+        },
+        "ports": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "side": {
+                "type": "string",
+                "enum": [
+                  "front",
+                  "right",
+                  "back",
+                  "left"
+                ]
+              },
+              "medium": {
+                "type": "string",
+                "enum": [
+                  "coal",
+                  "water",
+                  "steam",
+                  "electricity",
+                  "smoke"
+                ]
+              },
+              "direction": {
+                "type": "string",
+                "enum": [
+                  "in",
+                  "out",
+                  "both"
+                ]
+              }
+            },
+            "required": [
+              "side",
+              "medium",
+              "direction"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "wallPort": {
+          "type": "boolean",
+          "const": true
         }
       },
       "required": [

@@ -6,7 +6,10 @@ import {
 import { valueByTier } from '../core/interiors/valueByTier';
 import type { MessageKey } from '../i18n/messages';
 
-export const PRODUCTION_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'workshop', 'bakery', 'dairy', 'storehouse', 'vault', 'materialDepot', 'recyclingPlant', 'textileMill', 'knitwearFactory', 'livestockFarm', 'farm'];
+export const PRODUCTION_INTERIOR_TYPES: readonly BuildingType[] = ['factory', 'packhouse', 'mill', 'workshop', 'bakery', 'dairy', 'storehouse', 'vault', 'materialDepot', 'recyclingPlant', 'textileMill', 'knitwearFactory', 'livestockFarm', 'farm', 'coalPlant', 'hydroPlant', 'geothermalPlant', 'largeGeothermalPlant'];
+
+// The Engine rooms of the Power plants: they raise the Capacity of the plant, and the Coal one lowers its pollution.
+const ENGINE_ROOM_TYPES: readonly BuildingType[] = ['coalPlant', 'hydroPlant', 'geothermalPlant', 'largeGeothermalPlant'];
 
 // The interiors with no bonus to speed, yield, sales or room: their gain is the queue that runs by itself.
 const QUEUE_ONLY_TYPES: readonly BuildingType[] = ['workshop'];
@@ -76,6 +79,13 @@ const byTier = (type: BuildingType, value: (tier: number) => number): number[] =
 const productionColumns = (type: BuildingType): BenefitColumn[] => {
   const caps = (tier: number) => interiorCapsOfType(type, tier);
   const columns: BenefitColumn[] = [];
+  if (ENGINE_ROOM_TYPES.includes(type)) {
+    const balance = interiorLayoutOf(type)?.engineRoom;
+    return [
+      { label: 'factory.interior.generation', format: 'percent', values: byTier(type, tier => valueByTier(balance?.generationCaps ?? [], tier)) },
+      ...(balance?.pollutionCaps ? [{ label: 'factory.interior.cleaner' as const, format: 'percent' as const, values: byTier(type, tier => valueByTier(balance.pollutionCaps ?? [], tier)) }] : []),
+    ];
+  }
   if (type === 'recyclingPlant') return [
     { label: 'codex.interiors.collectionExits', format: 'count', values: byTier(type, tier => recyclingLimitsOf(tier).exits) },
     { label: 'codex.interiors.sorters', format: 'count', values: byTier(type, tier => recyclingLimitsOf(tier).sorters) },
@@ -138,6 +148,12 @@ const liveBenefitsOf = (state: GameState, building: Building): LiveBenefit[] => 
     ];
   }
   const bonus = interiorBonusOfBuilding(building);
+  if (ENGINE_ROOM_TYPES.includes(building.type)) {
+    return [
+      { label: 'factory.interior.generation', format: 'percent', value: bonus.generation ?? 0 },
+      ...(building.type === 'coalPlant' ? [{ label: 'factory.interior.cleaner' as const, format: 'percent' as const, value: bonus.cleaner ?? 0 }] : []),
+    ];
+  }
   return PRODUCTION_BENEFITS.filter(({ format }) => !QUEUE_ONLY_TYPES.includes(building.type) || format === 'power').flatMap(({ label, format, read }) => {
     const value = read(bonus);
     return value === undefined ? [] : [{ label: label === 'codex.interiors.capacity' && building.type === 'farm' ? 'codex.interiors.fieldCap' : label, format, value }];

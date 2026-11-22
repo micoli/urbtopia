@@ -15,7 +15,7 @@ const city = (): GameState => ({
   ...newGame({ seed: 'breaker', now: 0 }),
   nextId: 100,
   tutorial: null,
-  buildings: [{ ...createBuilding(1, 'factory', 55, 50, 0), tier: 5, interior: running }, createBuilding(2, 'coalPlant', 60, 50, 0), { ...createBuilding(3, 'arcade', 64, 50, 0), tier: 1 }],
+  buildings: [{ ...createBuilding(1, 'factory', 55, 50, 0), tier: 5, interior: running }, createBuilding(2, 'powerPlant', 60, 50, 0), { ...createBuilding(3, 'arcade', 64, 50, 0), tier: 1 }],
 });
 const send = (state: GameState, command: Command): GameState => {
   const result = dispatch(state, command, 0);

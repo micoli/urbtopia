@@ -128,6 +128,8 @@ const utilityBuilding = z.strictObject({
   ...sited,
   ...panelled,
   ...repeatable,
+  // The Engine room of a Power plant: the models of its floor, its walls and its corner post.
+  floorShell: interiorShell.optional(),
   tiers: tiersOf({ ...homeLook, capacity: count }, ['model', 'footprint', 'capacity']),
 });
 

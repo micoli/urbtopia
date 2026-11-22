@@ -1,0 +1,39 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "hydroPlant",
+  "category": "line",
+  "name": {
+    "en": "Water pipe cross",
+    "fr": "Tuyau d'eau en croix"
+  },
+  "model": "engine-room-water-pipe-cross",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "circuit",
+  "family": "link",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "water",
+      "direction": "both"
+    },
+    {
+      "side": "right",
+      "medium": "water",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "water",
+      "direction": "both"
+    },
+    {
+      "side": "left",
+      "medium": "water",
+      "direction": "both"
+    }
+  ]
+}

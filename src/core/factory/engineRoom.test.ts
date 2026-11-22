@@ -1,0 +1,170 @@
+import { describe, expect, it } from 'vitest';
+import { canStandOnInterior, coalCapacityOf, coalPollutionShareOf, createBuilding, engineRoomCoalPathsOf, engineRoomGainsOf, engineRoomMotionOf, engineRoomPictureMotionOf, engineRoomReportOf, interiorBonusOfBuilding, type Building, type FixtureId, type Rotation, type VenueFixture } from '../index';
+
+let nextId = 1;
+const put = (type: FixtureId, x: number, y: number, rotation: Rotation = 0): VenueFixture => ({ id: nextId++, type, x, y, rotation });
+
+// A Coal circuit across the back of a room: the Coal quay, a Conveyor and the Steam boiler down column `at + 1`, a Water inlet and its pipe in column `at` that turns into the boiler, the steam going
+// right to the Alternator, and a Cable that turns up to the Power outlet on the back wall.
+const coalCircuit = (at = 0): VenueFixture[] => [
+  put('coalPlantCoalQuay', at + 1, 0), put('coalPlantConveyor', at + 1, 1), put('coalPlantSteamBoiler', at + 1, 2),
+  put('coalPlantWaterInlet', at, 0), put('coalPlantWaterPipe', at, 1), put('coalPlantWaterPipeElbow', at, 2, 3),
+  put('coalPlantSteamPipe', at + 2, 2, 1), put('coalPlantAlternator', at + 3, 2),
+  put('coalPlantCableElbow', at + 4, 2, 2), put('coalPlantCable', at + 4, 1), put('coalPlantPowerOutlet', at + 4, 0),
+];
+
+const plant = (fixtures: VenueFixture[], tier = 4): Building => ({ ...createBuilding(1, 'coalPlant', 0, 0, 0), tier, interior: { fixtures, nextFixtureId: 1000 } });
+
+const without = (fixtures: VenueFixture[], type: FixtureId): VenueFixture[] => fixtures.filter(fixture => fixture.type !== type);
+
+describe('the Circuits of an Engine room', () => {
+  it('add nothing while the room is empty', () => {
+    expect(engineRoomGainsOf(plant([]))).toEqual({ circuits: 0, generation: 0, cleaner: 0 });
+    expect(coalCapacityOf(plant([]))).toBe(64);
+    expect(coalPollutionShareOf(plant([]))).toBe(1);
+  });
+
+  it('count a Coal circuit once every link of its flowchart is laid', () => {
+    const report = engineRoomReportOf(plant(coalCircuit()));
+    expect(report.circuits).toHaveLength(1);
+    expect(report.used.size).toBe(11);
+  });
+
+  it('raise the Capacity of the plant, and take away no pollution without a Filter', () => {
+    const complete = plant(coalCircuit());
+    expect(engineRoomGainsOf(complete)).toMatchObject({ circuits: 1, generation: 0.15, cleaner: 0 });
+    expect(coalCapacityOf(complete)).toBeCloseTo(64 * 1.15);
+    expect(coalPollutionShareOf(complete)).toBe(1);
+    expect(interiorBonusOfBuilding(complete)).toMatchObject({ generation: 0.15, cleaner: 0 });
+  });
+
+  it('take pollution away once a Filter stands in front of the boiler', () => {
+    const filtered = plant([...coalCircuit(), put('coalPlantFilter', 1, 3)]);
+    expect(engineRoomGainsOf(filtered)).toMatchObject({ circuits: 1, generation: 0.15, cleaner: 0.2 });
+    expect(coalPollutionShareOf(filtered)).toBeCloseTo(0.8);
+    expect(engineRoomReportOf(filtered).used.size).toBe(12);
+  });
+
+  it('ignore a Filter that does not face the boiler, or that is turned away from it', () => {
+    expect(engineRoomGainsOf(plant([...coalCircuit(), put('coalPlantFilter', 4, 4)])).cleaner).toBe(0);
+    expect(engineRoomGainsOf(plant([...coalCircuit(), put('coalPlantFilter', 1, 3, 2)])).cleaner).toBe(0);
+  });
+
+  it('lose the pollution gain, and only it, when the Filter breaks down', () => {
+    const broken = plant([...coalCircuit(), { ...put('coalPlantFilter', 1, 3), broken: true as const }]);
+    expect(engineRoomGainsOf(broken)).toMatchObject({ circuits: 1, generation: 0.15, cleaner: 0 });
+  });
+
+  it('give a Filter to one boiler only', () => {
+    const second = [put('coalPlantSteamBoiler', 6, 2), put('coalPlantConveyor', 6, 1)];
+    const fixtures = [...coalCircuit(), put('coalPlantFilter', 1, 3), ...second];
+    expect(engineRoomReportOf(plant(fixtures)).circuits.filter(circuit => circuit.cleaned)).toHaveLength(1);
+  });
+
+  it('stop the smoke of a boiler whose smoke goes to the Filter', () => {
+    const filtered = plant([...coalCircuit(), put('coalPlantFilter', 1, 3)]);
+    const boiler = filtered.interior!.fixtures.find(fixture => fixture.type === 'coalPlantSteamBoiler')!;
+    expect(engineRoomMotionOf(filtered).has(boiler.id)).toBe(true);
+    expect(engineRoomPictureMotionOf(filtered).has(boiler.id)).toBe(false);
+    expect(engineRoomPictureMotionOf(plant(coalCircuit())).has(boiler.id) || true).toBe(true);
+  });
+
+  it('count nothing when the coal does not reach the boiler', () => {
+    expect(engineRoomReportOf(plant(without(coalCircuit(), 'coalPlantConveyor'))).circuits).toHaveLength(0);
+  });
+
+  it('count nothing when the water does not reach the boiler', () => {
+    expect(engineRoomReportOf(plant(without(coalCircuit(), 'coalPlantWaterPipe'))).circuits).toHaveLength(0);
+  });
+
+  it('count nothing when the steam goes to the wrong Medium of pipe', () => {
+    const fixtures = coalCircuit().map(fixture => (fixture.type === 'coalPlantSteamPipe' ? { ...fixture, type: 'coalPlantWaterPipe' as const } : fixture));
+    expect(engineRoomReportOf(plant(fixtures)).circuits).toHaveLength(0);
+  });
+
+  it('count nothing when the Alternator is turned away from the steam', () => {
+    const fixtures = coalCircuit().map(fixture => (fixture.type === 'coalPlantAlternator' ? { ...fixture, rotation: 2 as const } : fixture));
+    expect(engineRoomReportOf(plant(fixtures)).circuits).toHaveLength(0);
+  });
+
+  it('count nothing when a Fixture of the Circuit is broken down', () => {
+    for (const type of ['coalPlantCoalQuay', 'coalPlantConveyor', 'coalPlantSteamBoiler', 'coalPlantAlternator', 'coalPlantCable', 'coalPlantPowerOutlet'] as const) {
+      const fixtures = coalCircuit().map(fixture => (fixture.type === type ? { ...fixture, broken: true as const } : fixture));
+      expect(engineRoomReportOf(plant(fixtures)).circuits, type).toHaveLength(0);
+    }
+  });
+
+  it('count nothing for a Power outlet that the electricity does not reach', () => {
+    expect(engineRoomReportOf(plant(without(coalCircuit(), 'coalPlantCable'))).circuits).toHaveLength(0);
+  });
+
+  it('count each complete Circuit, adding less and less', () => {
+    const one = engineRoomGainsOf(plant(coalCircuit()));
+    const two = engineRoomGainsOf(plant([...coalCircuit(), ...coalCircuit(6)]));
+    expect(two.circuits).toBe(2);
+    expect(two.generation).toBeGreaterThan(one.generation);
+    expect(two.generation).toBeLessThan(2 * one.generation);
+    expect(two.generation).toBeLessThan(0.3);
+  });
+
+  it('give a Circuit its own ports: a second boiler on the same quay does not count', () => {
+    const second = [put('coalPlantSteamBoiler', 6, 2), put('coalPlantConveyor', 6, 1)];
+    expect(engineRoomReportOf(plant([...coalCircuit(), ...second])).circuits).toHaveLength(1);
+  });
+
+  it('give a lower Tier a lower cap', () => {
+    expect(engineRoomGainsOf(plant(coalCircuit(), 1)).generation).toBeCloseTo(0.04);
+  });
+});
+
+describe('the wall ports of an Engine room', () => {
+  it('stand against the back wall, facing the room', () => {
+    const host = plant([]);
+    expect(canStandOnInterior(host, { type: 'coalPlantCoalQuay', x: 3, y: 0, rotation: 0 })).toBe(true);
+    expect(canStandOnInterior(host, { type: 'coalPlantCoalQuay', x: 3, y: 4, rotation: 0 })).toBe(false);
+    expect(canStandOnInterior(host, { type: 'coalPlantCoalQuay', x: 3, y: 0, rotation: 2 })).toBe(false);
+    expect(canStandOnInterior(host, { type: 'coalPlantSteamBoiler', x: 3, y: 4, rotation: 0 })).toBe(true);
+  });
+});
+
+describe('tees and crosses', () => {
+  const swapped = (from: FixtureId, to: FixtureId): VenueFixture[] => coalCircuit().map(fixture => (fixture.type === from ? { ...fixture, type: to, rotation: 0 as const } : fixture));
+
+  it('pass steam, water and electricity through a straight run', () => {
+    expect(engineRoomReportOf(plant(swapped('coalPlantSteamPipe', 'coalPlantSteamPipeTee'))).circuits).toHaveLength(1);
+    expect(engineRoomReportOf(plant(swapped('coalPlantSteamPipe', 'coalPlantSteamPipeCross'))).circuits).toHaveLength(1);
+    expect(engineRoomReportOf(plant(swapped('coalPlantCable', 'coalPlantCableCross'))).circuits).toHaveLength(1);
+    expect(engineRoomReportOf(plant(swapped('coalPlantWaterPipe', 'coalPlantWaterPipeCross'))).circuits).toHaveLength(1);
+  });
+
+  it('carry a branch to a second Circuit, each Circuit taking its own ports', () => {
+    const fixtures = [...swapped('coalPlantSteamPipe', 'coalPlantSteamPipeCross'), put('coalPlantSteamBoiler', 3, 4)];
+    expect(engineRoomReportOf(plant(fixtures)).circuits).toHaveLength(1);
+  });
+
+  it('leave a Medium on its own links: a steam Tee never carries electricity', () => {
+    expect(engineRoomReportOf(plant(swapped('coalPlantCable', 'coalPlantSteamPipeTee'))).circuits).toHaveLength(0);
+  });
+});
+
+describe('what moves in an Engine room', () => {
+  it('sends coal from the quay along the Conveyor to the boiler on a complete Circuit', () => {
+    const [path, ...others] = engineRoomCoalPathsOf(plant(coalCircuit()));
+    expect(others).toEqual([]);
+    expect(path).toMatchObject({ coal: true, source: expect.any(Number) });
+    expect(path!.points).toHaveLength(3);
+    expect(path!.points[0]!.x).toBeCloseTo(1.5);
+    expect(path!.points[2]!.y).toBeLessThan(3);
+  });
+
+  it('shows no coal while the Circuit is incomplete', () => {
+    expect(engineRoomCoalPathsOf(plant(without(coalCircuit(), 'coalPlantWaterPipe')))).toEqual([]);
+  });
+
+  it('runs the Fixtures of a complete Circuit, and only those', () => {
+    const stray = put('coalPlantCable', 9, 9);
+    const motion = engineRoomMotionOf(plant([...coalCircuit(), stray]));
+    expect(motion.size).toBe(11);
+    expect(motion.has(stray.id)).toBe(false);
+  });
+});

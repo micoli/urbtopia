@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "coalPlant",
+  "category": "machines",
+  "name": {
+    "en": "Coal quay",
+    "fr": "Quai à charbon"
+  },
+  "model": "engine-room-coal-quay",
+  "footprint": [1, 1],
+  "price": 600,
+  "minTier": 1,
+  "wear": 0.05,
+  "role": "circuit",
+  "family": "coalQuay",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "coal",
+      "direction": "out"
+    }
+  ],
+  "wallPort": true
+}

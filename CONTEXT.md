@@ -770,7 +770,7 @@ An optional voice the Mayor can question about the city ("why do my roads jam?")
 _Avoid_: Assistant, chatbot, AI, Diagnosis (the Diagnosis stays computed by plain rules)
 
 **Power plant**:
-A building that supplies power to the city, using wind, water, the heat of the ground or coal. The code name `powerPlant` is the wind one; the others have their own names. Backup generation is a separate service role.
+A building that supplies power to the city, using wind, water, the heat of the ground or coal. The code name `powerPlant` is the wind one; the others have their own names. The Coal, Hydro and Geothermal plants have an Engine room. Backup generation is a separate service role.
 _Avoid_: Generator, energy station
 
 **Coal Power plant**:
@@ -788,6 +788,39 @@ _Avoid_: Water level, Demand (that is the city's need for water)
 **Geothermal power plant**:
 A clean Power plant that supplies the same Capacity around the clock whatever the weather or the hour. It is the only constant renewable source, paid for by a late unlock, a high price and a Build limit. It costs nothing to run and pollutes nothing.
 _Avoid_: Heat pump, boiler, Coal Power plant
+
+**Engine room**:
+The Production interior of a Power plant (Coal, Hydro, Geothermal and Large geothermal; never the wind or solar plant), opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the plant's Tier, where the player places Fixtures. It is not a Venue. An empty Engine room leaves the plant exactly as it was; the floor only adds a bonus to the plant's Capacity (and, for a Coal Power plant with a Filter on its boiler, lowers its pollution), counted only for a complete Circuit, capped by the plant's Tier and never reached. Its Fixtures wear and a Technician repairs them; it draws nothing from the city's electricity Demand, spends no coal and no water, and has no power switch.
+_Avoid_: Power interior, machine hall, Factory interior
+
+**Circuit**:
+The chain of Fixtures of an Engine room that goes from its wall ports to its Power outlet, by typed links, and counts only when every link of its flowchart is laid and no Fixture on it has broken down. Coal: Coal quay and Water inlet feed a Steam boiler, whose steam drives an Alternator that feeds a Power outlet. Hydro: a Water inlet feeds a Water turbine that returns the water to a Water outlet and feeds a Power outlet. Geothermal: an Underground water inlet feeds a Steam turbine whose steam goes through a Condenser to an Injection well, and the turbine feeds a Power outlet. A complete Circuit uses its own ports, never one that another Circuit uses; several can stand in a large room, each adding less than the one before.
+_Avoid_: Line (the Packet network of a Packhouse), Flow (the liquid network of a Factory interior)
+
+**Medium**:
+What a link of a Circuit carries: coal, water, steam, electricity or smoke (the boiler's smoke to its Filter). A Fixture declares ports, each on one side, of one Medium and in, out or both; two Fixtures are linked only through ports of the same Medium on the two sides of their edge, an out port facing an in port. Two Media never share a link.
+_Avoid_: Fluid, resource
+
+**Wall port**:
+A Fixture of an Engine room that stands against the back wall, on the tile along it and facing the room: the Coal quay, the Water inlet, the Water outlet, the Underground water inlet, the Injection well and the Power outlet. A Circuit needs one of each of its ports.
+_Avoid_: Intake, Exit (those of the Packhouse and the Recycling interior)
+
+**Steam boiler**:
+The central Fixture of a Coal Circuit: it takes coal from a Conveyor, water from a Water pipe, and gives steam to a Steam pipe. Not the Boiler of the Factory interior, which only heats a circuit of Flow.
+_Avoid_: Boiler
+
+**Filter**:
+The Fixture of a Coal Engine room that stands in front of the Steam boiler, its back against it, and takes the smoke of its chimney. The Circuit counts, and raises the Capacity, without it; only a Circuit whose boiler has a Filter takes pollution away. A boiler with a Filter no longer smokes by its own chimney. A Filter serves one boiler.
+_Avoid_: Scrubber, chimney
+
+**Alternator**:
+The Fixture of a Coal Circuit that turns steam into electricity for a Cable that leads to a Power outlet.
+
+**Water turbine**, **Steam turbine**, **Condenser**:
+The central Fixtures of a Hydro Circuit (a Water turbine: water in, water out, electricity out), of a Geothermal Circuit (a Steam turbine: steam in, steam out, electricity out) and the Fixture that follows the Steam turbine (a Condenser: steam in, steam out, which the Injection well takes).
+
+**Water pipe**, **Steam pipe**, **Cable**:
+The links that the player lays tile by tile in an Engine room, each in a straight and an elbow version, that carry water, steam or electricity. The coal travels on a Conveyor.
 
 **Water tower**:
 A building that supplies water capacity to the city.

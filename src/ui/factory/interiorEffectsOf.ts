@@ -10,7 +10,7 @@ export interface InteriorEffect {
   value: string;
 }
 
-type EffectId = 'speed' | 'yield' | 'sales' | 'capacity' | 'fieldCap' | 'wasteCapacity' | 'reach';
+type EffectId = 'speed' | 'yield' | 'sales' | 'capacity' | 'fieldCap' | 'wasteCapacity' | 'reach' | 'generation' | 'cleaner';
 
 const DEFAULT_EFFECTS: readonly EffectId[] = ['speed', 'yield'];
 
@@ -27,6 +27,10 @@ const EFFECTS_BY_TYPE: Partial<Record<BuildingType, readonly EffectId[]>> = {
   vault: ['capacity'],
   materialDepot: ['capacity'],
   recyclingPlant: ['wasteCapacity', 'reach'],
+  coalPlant: ['generation', 'cleaner'],
+  geothermalPlant: ['generation'],
+  hydroPlant: ['generation'],
+  largeGeothermalPlant: ['generation'],
 };
 
 const PRESENTATION: Record<EffectId, { icon: IconName; label: MessageKey }> = {
@@ -37,6 +41,8 @@ const PRESENTATION: Record<EffectId, { icon: IconName; label: MessageKey }> = {
   fieldCap: { icon: 'map', label: 'factory.interior.fieldCap' },
   wasteCapacity: { icon: 'trash', label: 'factory.interior.wasteCapacity' },
   reach: { icon: 'map', label: 'factory.interior.reach' },
+  generation: { icon: 'power', label: 'factory.interior.generation' },
+  cleaner: { icon: 'cloud', label: 'factory.interior.cleaner' },
 };
 
 // What a Production interior delivers now, limited to the levers its building has.
@@ -51,6 +57,8 @@ export function interiorEffectsOf(building: Pick<Building, 'type' | 'tier' | 'in
     fieldCap: formatPercent(bonus.capacity ?? 0),
     wasteCapacity: `+${Math.round(recycling.capacity)}`,
     reach: `+${recycling.collectionDistance}`,
+    generation: formatPercent(bonus.generation ?? 0),
+    cleaner: `−${formatPercent(bonus.cleaner ?? 0).replace('+', '')}`,
   };
   return (EFFECTS_BY_TYPE[building.type] ?? DEFAULT_EFFECTS).map(id => ({ id, ...PRESENTATION[id], value: values[id] }));
 }

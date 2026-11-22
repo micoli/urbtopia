@@ -75,6 +75,182 @@
       "roles": {},
       "unlockCitizens": 0
     },
+    "coalPlant": {
+      "family": "production",
+      "bonusModel": "engineRoom",
+      "layout": {
+        "gridSizes": [6, 8, 10, 12],
+        "speedCaps": [0.01],
+        "yieldCaps": [0.01],
+        "technicianPosts": [1, 2, 3, 4],
+        "engineRoom": {
+          "circuitShare": 0.5,
+          "generationCaps": [0.08, 0.15, 0.22, 0.3],
+          "pollutionCaps": [0.1, 0.2, 0.3, 0.4],
+          "circuits": [
+            {
+              "anchor": "steamBoiler",
+              "links": [
+                {
+                  "from": "coalQuay",
+                  "to": "steamBoiler",
+                  "medium": "coal"
+                },
+                {
+                  "from": "waterInlet",
+                  "to": "steamBoiler",
+                  "medium": "water"
+                },
+                {
+                  "from": "steamBoiler",
+                  "to": "alternator",
+                  "medium": "steam"
+                },
+                {
+                  "from": "alternator",
+                  "to": "powerOutlet",
+                  "medium": "electricity"
+                }
+              ],
+              "cleaning": [
+                {
+                  "from": "steamBoiler",
+                  "to": "filter",
+                  "medium": "smoke"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "roles": {},
+      "unlockCitizens": 400
+    },
+    "geothermalPlant": {
+      "family": "production",
+      "bonusModel": "engineRoom",
+      "layout": {
+        "gridSizes": [6, 8, 10, 12, 14, 14],
+        "speedCaps": [0.01],
+        "yieldCaps": [0.01],
+        "technicianPosts": [1, 1, 2, 2, 3, 4],
+        "engineRoom": {
+          "circuitShare": 0.5,
+          "generationCaps": [0.05, 0.08, 0.11, 0.15, 0.2, 0.25],
+          "circuits": [
+            {
+              "anchor": "steamTurbine",
+              "links": [
+                {
+                  "from": "undergroundWaterInlet",
+                  "to": "steamTurbine",
+                  "medium": "steam"
+                },
+                {
+                  "from": "steamTurbine",
+                  "to": "condenser",
+                  "medium": "steam"
+                },
+                {
+                  "from": "condenser",
+                  "to": "injectionWell",
+                  "medium": "steam"
+                },
+                {
+                  "from": "steamTurbine",
+                  "to": "powerOutlet",
+                  "medium": "electricity"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "roles": {},
+      "unlockCitizens": 600
+    },
+    "largeGeothermalPlant": {
+      "family": "production",
+      "bonusModel": "engineRoom",
+      "fixtureKind": "geothermalPlant",
+      "layout": {
+        "gridSizes": [14],
+        "speedCaps": [0.01],
+        "yieldCaps": [0.01],
+        "technicianPosts": [4],
+        "engineRoom": {
+          "circuitShare": 0.5,
+          "generationCaps": [0.25],
+          "circuits": [
+            {
+              "anchor": "steamTurbine",
+              "links": [
+                {
+                  "from": "undergroundWaterInlet",
+                  "to": "steamTurbine",
+                  "medium": "steam"
+                },
+                {
+                  "from": "steamTurbine",
+                  "to": "condenser",
+                  "medium": "steam"
+                },
+                {
+                  "from": "condenser",
+                  "to": "injectionWell",
+                  "medium": "steam"
+                },
+                {
+                  "from": "steamTurbine",
+                  "to": "powerOutlet",
+                  "medium": "electricity"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "roles": {},
+      "unlockCitizens": 1500
+    },
+    "hydroPlant": {
+      "family": "production",
+      "bonusModel": "engineRoom",
+      "layout": {
+        "gridSizes": [6, 8, 10],
+        "speedCaps": [0.01],
+        "yieldCaps": [0.01],
+        "technicianPosts": [1, 2, 3],
+        "engineRoom": {
+          "circuitShare": 0.5,
+          "generationCaps": [0.06, 0.13, 0.2],
+          "circuits": [
+            {
+              "anchor": "waterTurbine",
+              "links": [
+                {
+                  "from": "waterInlet",
+                  "to": "waterTurbine",
+                  "medium": "water"
+                },
+                {
+                  "from": "waterTurbine",
+                  "to": "waterOutlet",
+                  "medium": "water"
+                },
+                {
+                  "from": "waterTurbine",
+                  "to": "powerOutlet",
+                  "medium": "electricity"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "roles": {},
+      "unlockCitizens": 500
+    },
     "bakery": {
       "family": "production",
       "bonusModel": "assigned",

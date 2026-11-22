@@ -1,4 +1,4 @@
-import { COAL_CAPACITY } from '../economy/economy';
+import { coalCapacityOf } from './coalCapacity';
 import type { Building, GameState } from '../engine/state';
 import { energyStats, factorsAt, generatorCapacity } from './energy';
 import { ENERGY_SOURCES, PLANT_TYPES, generatedSourceOf, type EnergySourceId } from './generators';
@@ -20,7 +20,7 @@ function copiesAndCapacity(state: GameState, id: EnergySourceId): { copies: numb
     return { copies: generators.length, capacity: generators.reduce((sum, b) => sum + generatorCapacity(b), 0) };
   }
   const plants = state.buildings.filter(b => b.type === PLANT_TYPES[id]);
-  if (id === 'coal') return { copies: plants.length, capacity: plants.reduce((sum, b) => sum + (b.coalEnabled !== false ? COAL_CAPACITY[b.tier - 1] ?? 0 : 0), 0) };
+  if (id === 'coal') return { copies: plants.length, capacity: plants.reduce((sum, b) => sum + (b.coalEnabled !== false ? coalCapacityOf(b) : 0), 0) };
   return { copies: plants.length, capacity: plants.reduce((sum, b) => sum + generatorCapacity(b), 0) };
 }
 
