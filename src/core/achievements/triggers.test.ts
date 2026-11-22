@@ -19,6 +19,8 @@ describe('counters', () => {
     expect(counterValue(state, 'building:hydroPlant,geothermalPlant')).toBe(1);
     expect(counterValue(state, 'building:library')).toBe(1);
     expect(counterValue(city(), 'kind:home')).toBe(0);
+    expect(counterValue(withBuilding(city(), 'marina'), 'attractions')).toBe(1);
+    expect(counterValue(withBuilding(city(), 'recyclingPlant'), 'category:waste')).toBe(1);
   });
 
   it('counts the Fixtures held by Homes apart from those of every interior', () => {
@@ -68,6 +70,11 @@ describe('triggers', () => {
     expect(isProvenBy({ type: 'created', counter: 'kind:home' }, city())).toBe(false);
     expect(isProvenBy({ type: 'sim', event: 'CropsHarvested' }, city())).toBe(false);
     expect(isProvenBy({ type: 'signal', signal: 'interiorOpened' }, city())).toBe(false);
+  });
+
+  it('latches Land value from its Signal and a Casino Round from its Command', () => {
+    expect(latchAchievements(city(), city(), [], { type: 'Signal', signal: 'landValueOpened' }).unlocked).toEqual(['environment.landValue']);
+    expect(latchAchievements(city(), city(), [], { type: 'PlaySlotMachine', buildingId: 1, stake: 1 }).unlocked).toEqual(['leisure.casino']);
   });
 
   it('latches the Achievement of a Signal', () => {

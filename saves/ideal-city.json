@@ -3092,7 +3092,10 @@
       "housing.library",
       "housing.thousandCitizens",
       "housing.school",
+      "environment.waste",
+      "environment.recycling",
       "production.shop",
+      "environment.greenSpace",
       "energy.cleanPower",
       "energy.solar"
     ],

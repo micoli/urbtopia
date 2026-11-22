@@ -1,11 +1,13 @@
 import type { AchievementCategoryId, AchievementDef } from './achievementTypes';
 import { ENERGY } from './categories/energy';
 import { HOUSING } from './categories/housing';
+import { ENVIRONMENT } from './categories/environment';
 import { INTERIORS } from './categories/interiors';
+import { LEISURE } from './categories/leisure';
 import { PRODUCTION } from './categories/production';
 import { TRANSPORT } from './categories/transport';
 
-export const ACHIEVEMENTS: readonly AchievementDef[] = [...PRODUCTION, ...HOUSING, ...TRANSPORT, ...INTERIORS, ...ENERGY];
+export const ACHIEVEMENTS: readonly AchievementDef[] = [...PRODUCTION, ...HOUSING, ...TRANSPORT, ...INTERIORS, ...ENERGY, ...LEISURE, ...ENVIRONMENT];
 
 export const CATEGORY_NAMES: Record<AchievementCategoryId, { readonly en: string; readonly fr: string }> = {
   production: { en: 'Production and economy', fr: 'Production et économie' },
@@ -13,6 +15,8 @@ export const CATEGORY_NAMES: Record<AchievementCategoryId, { readonly en: string
   transport: { en: 'Transport', fr: 'Transports' },
   interiors: { en: 'Interiors', fr: 'Intérieurs' },
   energy: { en: 'Energy and water', fr: 'Énergie et eau' },
+  leisure: { en: 'Leisure and tourism', fr: 'Loisirs et tourisme' },
+  environment: { en: 'Environment', fr: 'Environnement' },
 };
 
 export function achievementsOf(category: AchievementCategoryId): readonly AchievementDef[] {

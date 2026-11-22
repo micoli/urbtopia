@@ -20,6 +20,7 @@ const NAMED = {
   interiorFixtures: (state) => sum(state.buildings, fixturesOf),
   homeFixtures: (state) => sum(state.buildings.filter((building) => isHomeType(building.type)), fixturesOf),
   engineRoomFixtures: (state) => sum(state.buildings.filter((building) => POWER_PLANTS.includes(building.type)), fixturesOf),
+  attractions: (state) => state.buildings.filter((building) => Boolean(definitionOf(building.type).attraction)).length,
   citizens: totalCitizens,
 } as const satisfies Record<string, (state: GameState) => number>;
 

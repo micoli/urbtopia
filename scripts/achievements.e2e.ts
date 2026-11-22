@@ -64,4 +64,16 @@ test.describe('achievements', () => {
     });
     expect(acquired).toContain('interiors.open');
   });
+
+  test('opening the Land value Layer earns an Achievement of the Environment category', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+
+    await page.evaluate(async () => {
+      const { uiStore } = await import('../src/store/uiStore.ts');
+      uiStore.getState().enterAnalytics('data.landValue');
+    });
+    await expect(page.getByRole('status')).toContainText('Succès : Valeur du terrain');
+  });
 });

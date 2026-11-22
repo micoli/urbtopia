@@ -63,7 +63,7 @@ describe('category progress', () => {
   });
 
   it('shows the categories that have Achievements', () => {
-    expect(visibleCategories(city()).map(({ category }) => category)).toEqual(['production', 'housing', 'transport', 'interiors', 'energy']);
+    expect(visibleCategories(city()).map(({ category }) => category)).toEqual(['production', 'housing', 'transport', 'interiors', 'energy', 'leisure', 'environment']);
   });
 });
 

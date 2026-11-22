@@ -307,6 +307,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     analyticsBuildingId: null,
     enterAnalytics: (layer, category = get().analyticsCategory) => {
       get().cancelTool();
+      if (layer === 'data.landValue') gameStore.getState().send({ type: 'Signal', signal: 'landValueOpened' });
       get().setLevel(levelOfLayer(layer));
       writeAnalyticsLayer(layer);
       writeAnalyticsCategory(category);
