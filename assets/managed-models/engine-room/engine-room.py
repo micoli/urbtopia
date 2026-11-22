@@ -35,6 +35,7 @@ def horizontal(ob, x=0.0, y=0.0, z=0.0):
 PIPE_Z = 0.34
 BELT_Z = 0.42
 CABLE_Z = 0.09
+FLUE_Z = 1.27
 
 
 def pipe_run_y(name, y0, y1, color):
@@ -147,8 +148,8 @@ def steam_boiler(rng):
               block("gauge_stem", -0.012, 0.012, 0.3, 0.324, 0.94, 1.0, P["brass"]),
               horizontal(disc("gauge", 0.06, 0.03, (0, 0, 0), P["white"], 10), x=0.0, y=0.285, z=1.04),
               horizontal(disc("gauge_rim", 0.07, 0.02, (0, 0, 0), P["brass"], 10), x=0.0, y=0.275, z=1.04)]
-    parts += [horizontal(disc("flue", 0.05, 0.2, (0, 0, 0), P["iron"], 8), x=0.0, y=-0.5, z=1.12), horizontal(disc("flue_flange", 0.075, 0.03, (0, 0, 0), P["steel_dark"], 8), x=0.0, y=-0.5, z=1.12),
-              block("flue_elbow", -0.06, 0.06, -0.36, -0.24, 1.06, 1.18, P["iron"])]
+    parts += [horizontal(disc("flue", 0.07, 0.23, (0, 0, 0), P["iron"], 8), x=0.0, y=-0.5, z=FLUE_Z), horizontal(disc("flue_flange", 0.1, 0.03, (0, 0, 0), P["steel_dark"], 8), x=0.0, y=-0.5, z=FLUE_Z),
+              horizontal(disc("flue_band", 0.08, 0.03, (0, 0, 0), P["brass"], 8), x=0.0, y=-0.4, z=FLUE_Z)]
     parts += [block("hopper_neck", -0.12, 0.12, 0.4, 0.5, 0.18, 0.4, P["iron"]), block("hopper_coal", -0.1, 0.1, 0.42, 0.5, 0.38, 0.41, P["coal"]),
               block("hopper_rim", -0.14, 0.14, 0.4, 0.5, 0.34, 0.4, P["steel_dark"])]
     parts += [sideways(disc("water_pipe", 0.04, 0.235, (0, 0, 0), P["blue"], 8), x=-0.455, z=0.68),
@@ -432,7 +433,8 @@ def filter_unit(rng):
     parts = [block("base", -0.42, 0.42, -0.34, 0.42, 0.0, 0.08, P["iron"]), block("hopper", -0.2, 0.2, -0.2, 0.2, 0.08, 0.3, P["steel_dark"]),
              disc("drum", 0.3, 0.8, (0.0, 0.0, 0.3), P["green"], 12), disc("drum_band_a", 0.315, 0.04, (0.0, 0.0, 0.5), P["steel_dark"], 12), disc("drum_band_b", 0.315, 0.04, (0.0, 0.0, 0.9), P["steel_dark"], 12),
              disc("cap", 0.26, 0.1, (0.0, 0.0, 1.1), P["steel_dark"], 12), disc("stack", 0.07, 0.3, (0.0, 0.0, 1.2), P["white"], 8), disc("stack_rim", 0.09, 0.03, (0.0, 0.0, 1.47), P["steel_dark"], 8)]
-    parts += [horizontal(disc("inlet", 0.05, 0.3, (0, 0, 0), P["iron"], 8), x=0.0, y=0.2, z=1.12), horizontal(disc("inlet_flange", 0.075, 0.03, (0, 0, 0), P["steel_dark"], 8), x=0.0, y=0.47, z=1.12),
+    parts += [horizontal(disc("arm", 0.07, 0.3, (0, 0, 0), P["iron"], 8), x=0.0, y=0.2, z=FLUE_Z), horizontal(disc("arm_flange", 0.1, 0.03, (0, 0, 0), P["steel_dark"], 8), x=0.0, y=0.47, z=FLUE_Z),
+              horizontal(disc("arm_band", 0.08, 0.03, (0, 0, 0), P["brass"], 8), x=0.0, y=0.36, z=FLUE_Z), disc("arm_riser", 0.07, 0.1, (0.0, 0.2, 1.2), P["iron"], 8), disc("arm_joint", 0.09, 0.07, (0.0, 0.2, 1.23), P["steel_dark"], 8),
               horizontal(disc("gauge", 0.05, 0.03, (0, 0, 0), P["white"], 10), x=0.0, y=-0.3, z=0.8), horizontal(disc("gauge_rim", 0.06, 0.02, (0, 0, 0), P["brass"], 10), x=0.0, y=-0.32, z=0.8)]
     parts += [block(f"fin{k}", -0.03, 0.03, -0.31, -0.28, 0.4 + 0.1 * k, 0.45 + 0.1 * k, P["steel"]) for k in range(1)]
     return parts
