@@ -376,7 +376,9 @@ def steam_turbine(rng):
               sideways(disc("generator_cap_a", 0.1, 0.04, (0, 0, 0), P["teal_dark"], 12), x=-0.26, z=0.68), sideways(disc("generator_cap_b", 0.1, 0.04, (0, 0, 0), P["teal_dark"], 12), x=0.22, z=0.68)]
     parts += [sideways(disc(f"fin{k}", 0.135, 0.025, (0, 0, 0), P["teal_dark"], 12), x=-0.16 + 0.08 * k, z=0.68) for k in range(5)]
     parts += [block("terminal_box", -0.07, 0.07, -0.2, -0.1, 0.62, 0.76, P["brass"]), block("terminal_lid", -0.08, 0.08, -0.21, -0.09, 0.74, 0.78, P["steel_dark"])]
-    return parts + generator_cable(0.0, -0.1, 0.69)
+    turning = [sideways(disc("rotor", 0.095, 0.02, (0, 0, 0), P["brass"], 12), x=0.27, z=0.68), sideways(disc("rotor_hub", 0.04, 0.05, (0, 0, 0), P["steel_dark"], 8), x=0.27, z=0.68),
+               block("rotor_spoke_v", 0.27, 0.29, -0.012, 0.012, 0.68 - 0.09, 0.68 + 0.09, P["steel_dark"]), block("rotor_spoke_h", 0.27, 0.29, -0.09, 0.09, 0.68 - 0.012, 0.68 + 0.012, P["steel_dark"])]
+    return parts + generator_cable(0.0, -0.1, 0.69), {"spin-x": (turning, (0, 0, 0.68))}
 
 
 def condenser(rng):
@@ -390,14 +392,14 @@ def condenser(rng):
     parts += [block("fan_box_front", -0.2, 0.2, -0.2, -0.17, 0.5, 0.74, P["steel_dark"]), block("fan_box_back", -0.2, 0.2, 0.17, 0.2, 0.5, 0.74, P["steel_dark"]),
               block("fan_box_left", -0.2, -0.17, -0.2, 0.2, 0.5, 0.74, P["steel_dark"]), block("fan_box_right", 0.17, 0.2, -0.2, 0.2, 0.5, 0.74, P["steel_dark"]),
               block("fan_floor", -0.17, 0.17, -0.17, 0.17, 0.5, 0.53, P["iron"])]
-    parts += [block(f"grille{k}", -0.17, 0.17, -0.17 + 0.085 * k - 0.008, -0.17 + 0.085 * k + 0.008, 0.72, 0.745, P["black"]) for k in range(5)]
+    parts += [block(f"grille{k}", -0.17, 0.17, -0.17 + 0.085 * k - 0.008, -0.17 + 0.085 * k + 0.008, 0.72, 0.745, P["black"]) for k in (0, 4)]
     parts += [block("grille_cross", -0.008, 0.008, -0.17, 0.17, 0.72, 0.745, P["black"])]
-    turning = [disc("fan_hub", 0.04, 0.05, (0.0, 0.0, 0.55), P["brass"], 8)] + [block(f"blade{k}", -0.015, 0.015, 0.0, 0.14, 0.58, 0.6, P["steel"]) for k in range(4)]
+    turning = [disc("fan_hub", 0.05, 0.12, (0.0, 0.0, 0.58), P["brass"], 8)] + [block(f"blade{k}", -0.035, 0.035, 0.0, 0.15, 0.68, 0.7, P["yellow"]) for k in range(4)]
     for k, blade in enumerate(turning[1:]):
         lpm.rotate(blade, 90 * k, axis="Z")
     parts += [sideways(disc("coolant_in", 0.035, 0.13, (0, 0, 0), P["blue"], 8), x=-0.46, y=-0.2, z=0.3), sideways(disc("coolant_out", 0.035, 0.13, (0, 0, 0), P["blue"], 8), x=0.33, y=0.2, z=0.3),
               disc("coolant_riser_a", 0.035, 0.22, (-0.34, -0.2, 0.08), P["blue"], 8), disc("coolant_riser_b", 0.035, 0.22, (0.34, 0.2, 0.08), P["blue"], 8)]
-    return parts, {"spin-z": (turning, (0, 0, 0.55))}
+    return parts, {"spin-up": (turning, (0, 0, 0.55))}
 
 
 def circuit(inlet, turbine, outlet):
