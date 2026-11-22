@@ -4,11 +4,14 @@ import { collectionDir, idOfFile, jsonFilesIn, orderFileOf, readOrder } from './
 import { COLLECTION_NAMES } from './collections.ts';
 import { describeProblem, orderProblems } from './definitionProblems.ts';
 import { orderJson } from './collectionFiles.ts';
+import { listedFixtureIds } from './fixtureOrder.ts';
+import { readCollection } from './collectionRead.ts';
 
 describe('order files of the definitions', () => {
   it.each(COLLECTION_NAMES)('%s: lists every definition once and nothing else', name => {
     const dir = collectionDir(name);
-    const problems = orderProblems(readOrder(dir), jsonFilesIn(dir).map(idOfFile)).map(describeProblem);
+    const ids = name === 'fixtures' ? listedFixtureIds(readCollection('fixtures'), readCollection('fixtureTemplates')) : jsonFilesIn(dir).map(idOfFile);
+    const problems = orderProblems(readOrder(dir), ids).map(describeProblem);
     expect(problems).toEqual([]);
   });
 

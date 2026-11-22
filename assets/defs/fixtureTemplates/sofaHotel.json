@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["hotel"],
+  "category": "comfort",
+  "ids": {
+    "hotel": "sofa"
+  },
+  "name": {
+    "en": "Sofa",
+    "fr": "Canapé"
+  },
+  "model": "furniture-loungesofa",
+  "footprint": [1, 1],
+  "price": 140,
+  "minTier": 1,
+  "bonuses": [
+    {
+      "effect": "comfort",
+      "value": 1
+    }
+  ]
+}

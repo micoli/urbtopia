@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["livestockFarm"],
+  "category": "walls",
+  "ids": {
+    "livestockFarm": "livestockWall"
+  },
+  "name": {
+    "en": "Wall",
+    "fr": "Mur"
+  },
+  "model": "livestock-interior-partition",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "placement": {
+    "partition": true,
+    "joins": {
+      "elbow": "livestock-interior-partition-elbow",
+      "tee": "livestock-interior-partition-tee",
+      "cross": "livestock-interior-partition-cross"
+    }
+  }
+}

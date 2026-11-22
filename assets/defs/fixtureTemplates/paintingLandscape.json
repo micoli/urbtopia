@@ -1,0 +1,24 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["home"],
+  "category": "decor",
+  "name": {
+    "en": "Landscape painting",
+    "fr": "Tableau paysage"
+  },
+  "model": "furniture-paintinglandscape",
+  "footprint": [1, 1],
+  "price": 50,
+  "minTier": 1,
+  "role": "decor",
+  "bonuses": [
+    {
+      "effect": "comfort",
+      "value": 0.5
+    }
+  ],
+  "placement": {
+    "onWall": "any"
+  }
+}

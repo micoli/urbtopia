@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["textileMill"],
+  "category": "walls",
+  "ids": {
+    "textileMill": "textileWallFull"
+  },
+  "name": {
+    "en": "Full-height wall",
+    "fr": "Mur pleine hauteur"
+  },
+  "model": "textile-interior-partition-full",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "placement": {
+    "partition": true,
+    "joins": {
+      "elbow": "textile-interior-partition-full-elbow",
+      "tee": "textile-interior-partition-full-tee",
+      "cross": "textile-interior-partition-full-cross"
+    }
+  }
+}

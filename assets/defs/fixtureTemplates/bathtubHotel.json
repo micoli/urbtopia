@@ -1,0 +1,27 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["hotel"],
+  "category": "bathroom",
+  "ids": {
+    "hotel": "bathtub"
+  },
+  "name": {
+    "en": "Bathtub",
+    "fr": "Baignoire"
+  },
+  "model": "furniture-bathtub",
+  "footprint": [2, 1],
+  "price": 300,
+  "minTier": 2,
+  "wear": 0.05,
+  "bonuses": [
+    {
+      "effect": "bath",
+      "value": 2
+    }
+  ],
+  "placement": {
+    "minRank": 2
+  }
+}

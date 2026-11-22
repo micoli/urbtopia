@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["home"],
+  "category": "kitchen",
+  "name": {
+    "en": "Stove",
+    "fr": "Cuisinière"
+  },
+  "model": "restaurant-cooktop",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "role": "stove"
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["arcade", "hotel", "restaurant", "bakery", "dairy", "factory", "home", "hospital", "farm", "library", "mill", "packhouse", "recyclingPlant", "school", "storehouse", "workshop", "coalPlant", "geothermalPlant", "hydroPlant"],
+  "category": "walls",
+  "overrides": {
+    "arcade": {
+      "model": "mini-arcade-wall-window",
+      "bonuses": [
+        {
+          "effect": "playsPerHour",
+          "value": 0
+        }
+      ]
+    },
+    "hotel": {
+      "model": "furniture-partitionwindow"
+    },
+    "restaurant": {
+      "model": "restaurant-wall-window"
+    },
+    "bakery": {
+      "model": "bakery-interior-wall-window"
+    },
+    "dairy": {
+      "model": "dairy-interior-wall-window"
+    },
+    "factory": {
+      "model": "factory-floor-wall-window"
+    },
+    "home": {
+      "model": "furniture-partitionwindow",
+      "role": "decor"
+    },
+    "hospital": {
+      "model": "hospital-interior-wall-window"
+    },
+    "farm": {
+      "model": "farm-interior-wall-window"
+    },
+    "library": {
+      "model": "library-interior-wall-window"
+    },
+    "mill": {
+      "model": "mill-interior-wall-window"
+    },
+    "packhouse": {
+      "model": "factory-floor-wall-window"
+    },
+    "school": {
+      "model": "school-interior-wall-window"
+    },
+    "storehouse": {
+      "model": "storehouse-interior-wall-window"
+    }
+  },
+  "name": {
+    "en": "Wall with a window",
+    "fr": "Mur à fenêtre"
+  },
+  "model": "workshop-interior-wall-window",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "placement": {
+    "partition": true
+  }
+}

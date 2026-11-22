@@ -1,0 +1,26 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["hotel"],
+  "category": "comfort",
+  "ids": {
+    "hotel": "coffeeCorner"
+  },
+  "name": {
+    "en": "Coffee corner",
+    "fr": "Coin café"
+  },
+  "model": "furniture-kitchencoffeemachine",
+  "footprint": [1, 1],
+  "price": 180,
+  "minTier": 2,
+  "bonuses": [
+    {
+      "effect": "comfort",
+      "value": 1.5
+    }
+  ],
+  "placement": {
+    "minRank": 2
+  }
+}

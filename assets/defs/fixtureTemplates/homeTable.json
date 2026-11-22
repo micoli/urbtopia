@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["home"],
+  "category": "dining",
+  "ids": {
+    "home": "homeTable"
+  },
+  "name": {
+    "en": "Table",
+    "fr": "Table"
+  },
+  "model": "furniture-table",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "role": "table"
+}

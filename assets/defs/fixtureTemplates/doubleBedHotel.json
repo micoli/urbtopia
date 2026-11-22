@@ -1,0 +1,24 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["hotel"],
+  "category": "beds",
+  "ids": {
+    "hotel": "doubleBed"
+  },
+  "name": {
+    "en": "Double bed",
+    "fr": "Lit double"
+  },
+  "model": "furniture-beddouble",
+  "footprint": [2, 2],
+  "price": 380,
+  "minTier": 1,
+  "wear": 0.05,
+  "bonuses": [
+    {
+      "effect": "sleeps",
+      "value": 2
+    }
+  ]
+}

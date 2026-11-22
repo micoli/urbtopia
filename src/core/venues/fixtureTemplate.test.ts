@@ -3,9 +3,21 @@ import { expandFixtureTemplate, fixtureIdOf, type FixtureTemplate } from './fixt
 import { fixtureSchema } from './fixtureSchema';
 import { fixtureTemplateSchema } from './fixtureTemplate';
 
-const legacyFiles = import.meta.glob<Record<string, unknown>>('../../../assets/defs/fixtures/*.json', { eager: true, import: 'default' });
-
-const legacy = (id: string): Record<string, unknown> => Object.fromEntries(Object.entries(legacyFiles[`../../../assets/defs/fixtures/${id}.json`]!).filter(([key]) => key !== '$schema'));
+const pipeElbowFields = {
+  name: { en: 'Water pipe elbow', fr: "Tuyau d'eau coudé" },
+  category: 'line',
+  model: 'engine-room-water-pipe-elbow',
+  footprint: [1, 1],
+  price: 25,
+  minTier: 1,
+  wear: 0.03,
+  role: 'circuit',
+  family: 'link',
+  ports: [
+    { side: 'front', medium: 'water', direction: 'both' },
+    { side: 'right', medium: 'water', direction: 'both' },
+  ],
+};
 
 const pipeElbow = {
   name: { en: 'Water pipe elbow', fr: "Tuyau d'eau coudé" },
@@ -35,7 +47,7 @@ describe('expanding a template', () => {
   it('gives every venue the Fixture that its own file used to hold', () => {
     const expanded = expandFixtureTemplate('waterPipeElbow', shared());
     expect(expanded.map(({ id }) => id)).toEqual(['coalPlantWaterPipeElbow', 'hydroPlantWaterPipeElbow']);
-    for (const { id, definition } of expanded) expect(definition).toEqual(legacy(id));
+    for (const { id, definition } of expanded) expect(definition).toEqual({ kind: 'fixture', venue: id.replace('WaterPipeElbow', ''), ...pipeElbowFields });
   });
 
   it('writes the bonuses and the traits as the flat fields the venues read', () => {
@@ -51,7 +63,10 @@ describe('expanding a template', () => {
       bonuses: [{ effect: 'playsPerHour', value: 4 }],
       traits: [{ trait: 'loud' }],
     });
-    expect(airHockey).toEqual({ id: 'airHockey', definition: legacy('airHockey') });
+    expect(airHockey).toEqual({
+      id: 'airHockey',
+      definition: { kind: 'fixture', venue: 'arcade', category: 'games', name: { en: 'Air hockey table', fr: 'Table d’air hockey' }, model: 'mini-arcade-air-hockey', footprint: [1, 1], price: 220, minTier: 1, loud: true, playsPerHour: 4 },
+    });
   });
 
   it('writes the placement, the visual and the ports of an engine room machine', () => {
@@ -72,7 +87,26 @@ describe('expanding a template', () => {
         { side: 'front', medium: 'smoke', direction: 'out' },
       ],
     });
-    expect(boiler!.definition).toEqual(legacy('coalPlantSteamBoiler'));
+    expect(boiler!.definition).toEqual({
+      kind: 'fixture',
+      venue: 'coalPlant',
+      category: 'machines',
+      name: { en: 'Steam boiler', fr: 'Chaudière à vapeur' },
+      model: 'engine-room-steam-boiler',
+      footprint: [1, 1],
+      price: 1500,
+      minTier: 1,
+      wear: 0.1,
+      role: 'circuit',
+      family: 'steamBoiler',
+      smoke: [0, 1.3, 0.3],
+      ports: [
+        { side: 'back', medium: 'coal', direction: 'in' },
+        { side: 'left', medium: 'water', direction: 'in' },
+        { side: 'right', medium: 'steam', direction: 'out' },
+        { side: 'front', medium: 'smoke', direction: 'out' },
+      ],
+    });
   });
 
   it('turns onWall into the wall rules: any hangs on a wall, back stands against the back wall', () => {

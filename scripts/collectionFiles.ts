@@ -1,11 +1,12 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { z } from 'zod';
-import { DEFS_ROOT, collectionDir, singletonFileIn, idOfFile, jsonFilesIn, orderFileOf, readCollections } from './collectionRead.ts';
+import { DEFS_ROOT, collectionDir, singletonFileIn, idOfFile, jsonFilesIn, orderFileOf, readCollection, readCollections, readOrder } from './collectionRead.ts';
 import { singletonSpecOf, type SingletonName } from './singletons.ts';
 import { fieldOrderOf, specOf, type CollectionName, type Definition } from './collections.ts';
 import { collectionProblems, describeProblem, singletonProblems, type ReferenceContext } from './definitionProblems.ts';
 import { shippedModelCatalog } from './modelReferences.ts';
+import { listedFixtureIds, mergedOrder } from './fixtureOrder.ts';
 
 export const SCHEMAS_DIR = `${DEFS_ROOT}/schemas`;
 
@@ -57,6 +58,15 @@ export const orderJson = (ids: readonly string[]): string => `${JSON.stringify(i
 
 const realContext = (name: CollectionName, definitions: Record<string, Definition>): ReferenceContext => ({ collections: { ...readCollections(), [name]: definitions }, catalog: shippedModelCatalog() });
 
+// The order file of the Fixtures also lists those that templates unfold into, which have no file of their own.
+const writeFixtureOrder = (fixtures: Record<string, Definition>, templates: Record<string, Definition>) => {
+  const file = orderFileOf(collectionDir('fixtures'));
+  writeIfChanged(file, orderJson(mergedOrder(readOrder(collectionDir('fixtures')), listedFixtureIds(fixtures, templates))));
+};
+
+const orderedIds = (name: CollectionName, definitions: Record<string, Definition>, real: boolean): string[] =>
+  name === 'fixtures' && real ? mergedOrder(readOrder(collectionDir('fixtures')), listedFixtureIds(definitions, readCollection('fixtureTemplates'))) : Object.keys(definitions);
+
 // The order of the entries is the menu order, stored as a list of ids in the order file of the directory. Writing the real directory also regenerates its id unions and JSON Schema.
 export function writeCollection(name: CollectionName, definitions: Record<string, Definition>, dir = collectionDir(name)): void {
   const real = dir === collectionDir(name);
@@ -65,8 +75,9 @@ export function writeCollection(name: CollectionName, definitions: Record<string
   mkdirSync(dir, { recursive: true });
   for (const [id, definition] of Object.entries(definitions)) writeIfChanged(join(dir, `${id}.json`), stableDefinitionJson(name, definition));
   for (const file of jsonFilesIn(dir)) if (!(idOfFile(file) in definitions)) rmSync(join(dir, file));
-  writeIfChanged(orderFileOf(dir), orderJson(Object.keys(definitions)));
+  writeIfChanged(orderFileOf(dir), orderJson(orderedIds(name, definitions, real)));
   if (!real) return;
+  if (name === 'fixtureTemplates') writeFixtureOrder(readCollection('fixtures'), definitions);
   writeIfChanged(specOf(name).idTypes.file, idTypesSource(name, definitions));
   writeIfChanged(schemaFileOf(name), jsonSchemaOf(name));
 }

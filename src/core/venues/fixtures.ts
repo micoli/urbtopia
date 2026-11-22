@@ -137,7 +137,12 @@ const templateEntries = entriesOf<FixtureTemplate>(templateFiles, templateOrder)
   expandFixtureTemplate(templateId, template).map(fixture => ({ ...fixture.definition, id: fixture.id }) as unknown as FixtureDefinition & { id: FixtureId }),
 );
 
-export const FIXTURE_ENTRIES = [...entriesOf<FixtureDefinition, FixtureId>(files, fixtureOrder), ...templateEntries];
+// The order file lists the Fixtures of both kinds.
+const positions = new Map(fixtureOrder.map((id, index) => [id, index]));
+
+const position = (id: string): number => positions.get(id) ?? fixtureOrder.length;
+
+export const FIXTURE_ENTRIES = [...entriesOf<FixtureDefinition, FixtureId>(files, fixtureOrder), ...templateEntries].sort((a, b) => position(a.id) - position(b.id) || a.id.localeCompare(b.id));
 
 export const FIXTURES = Object.fromEntries(FIXTURE_ENTRIES.map(entry => [entry.id, specOf(entry)])) as Record<FixtureId, FixtureSpec>;
 

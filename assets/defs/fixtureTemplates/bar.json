@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["restaurant"],
+  "category": "bar",
+  "name": {
+    "en": "Bar",
+    "fr": "Bar"
+  },
+  "model": "restaurant-bar",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "wear": 0.08,
+  "bonuses": [
+    {
+      "effect": "drinks",
+      "value": 16
+    },
+    {
+      "effect": "stools",
+      "value": 3
+    }
+  ]
+}

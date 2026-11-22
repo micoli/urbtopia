@@ -1,0 +1,28 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["arcade"],
+  "category": "games",
+  "ids": {
+    "arcade": "barrelClimber"
+  },
+  "name": {
+    "en": "Barrel climber",
+    "fr": "Grimpeur de tonneaux"
+  },
+  "model": "mini-arcade-arcade-machine",
+  "footprint": [1, 1],
+  "price": 150,
+  "minTier": 1,
+  "bonuses": [
+    {
+      "effect": "playsPerHour",
+      "value": 6
+    }
+  ],
+  "traits": [
+    {
+      "trait": "loud"
+    }
+  ]
+}

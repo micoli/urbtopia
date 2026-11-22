@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["home"],
+  "category": "bathroom",
+  "name": {
+    "en": "Shower",
+    "fr": "Douche"
+  },
+  "model": "furniture-shower",
+  "footprint": [1, 1],
+  "price": 220,
+  "minTier": 1,
+  "role": "washer"
+}

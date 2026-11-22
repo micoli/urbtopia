@@ -1,0 +1,185 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["arcade", "hotel", "restaurant", "factory", "home", "packhouse", "mill", "bakery", "dairy", "workshop", "recyclingPlant", "storehouse", "school", "library", "hospital", "farm", "coalPlant", "geothermalPlant", "hydroPlant"],
+  "category": "walls",
+  "overrides": {
+    "arcade": {
+      "model": "mini-arcade-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "mini-arcade-partition-elbow",
+          "tee": "mini-arcade-partition-tee",
+          "cross": "mini-arcade-partition-cross"
+        }
+      },
+      "bonuses": [
+        {
+          "effect": "playsPerHour",
+          "value": 0
+        }
+      ]
+    },
+    "hotel": {
+      "model": "furniture-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "furniture-partitionelbow",
+          "tee": "furniture-partitiontee",
+          "cross": "furniture-partitioncross"
+        }
+      }
+    },
+    "restaurant": {
+      "model": "restaurant-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "restaurant-partition-elbow",
+          "tee": "restaurant-partition-tee",
+          "cross": "restaurant-partition-cross"
+        }
+      }
+    },
+    "factory": {
+      "model": "factory-floor-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "factory-floor-partition-elbow",
+          "tee": "factory-floor-partition-tee",
+          "cross": "factory-floor-partition-cross"
+        }
+      }
+    },
+    "home": {
+      "model": "furniture-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "furniture-partitionelbow",
+          "tee": "furniture-partitiontee",
+          "cross": "furniture-partitioncross"
+        }
+      },
+      "role": "decor"
+    },
+    "packhouse": {
+      "model": "factory-floor-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "factory-floor-partition-elbow",
+          "tee": "factory-floor-partition-tee",
+          "cross": "factory-floor-partition-cross"
+        }
+      }
+    },
+    "mill": {
+      "model": "mill-interior-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "mill-interior-partition-elbow",
+          "tee": "mill-interior-partition-tee",
+          "cross": "mill-interior-partition-cross"
+        }
+      }
+    },
+    "bakery": {
+      "model": "bakery-interior-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "bakery-interior-partition-elbow",
+          "tee": "bakery-interior-partition-tee",
+          "cross": "bakery-interior-partition-cross"
+        }
+      }
+    },
+    "dairy": {
+      "model": "dairy-interior-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "dairy-interior-partition-elbow",
+          "tee": "dairy-interior-partition-tee",
+          "cross": "dairy-interior-partition-cross"
+        }
+      }
+    },
+    "storehouse": {
+      "model": "storehouse-interior-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "storehouse-interior-partition-elbow",
+          "tee": "storehouse-interior-partition-tee",
+          "cross": "storehouse-interior-partition-cross"
+        }
+      }
+    },
+    "school": {
+      "model": "school-interior-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "school-interior-partition-elbow",
+          "tee": "school-interior-partition-tee",
+          "cross": "school-interior-partition-cross"
+        }
+      }
+    },
+    "library": {
+      "model": "library-interior-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "library-interior-partition-elbow",
+          "tee": "library-interior-partition-tee",
+          "cross": "library-interior-partition-cross"
+        }
+      }
+    },
+    "hospital": {
+      "model": "hospital-interior-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "hospital-interior-partition-elbow",
+          "tee": "hospital-interior-partition-tee",
+          "cross": "hospital-interior-partition-cross"
+        }
+      }
+    },
+    "farm": {
+      "model": "farm-interior-partition",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "farm-interior-partition-elbow",
+          "tee": "farm-interior-partition-tee",
+          "cross": "farm-interior-partition-cross"
+        }
+      }
+    }
+  },
+  "name": {
+    "en": "Wall",
+    "fr": "Mur"
+  },
+  "model": "workshop-interior-partition",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "placement": {
+    "partition": true,
+    "joins": {
+      "elbow": "workshop-interior-partition-elbow",
+      "tee": "workshop-interior-partition-tee",
+      "cross": "workshop-interior-partition-cross"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["supermarket"],
+  "category": "walls",
+  "ids": {
+    "supermarket": "marketWindow"
+  },
+  "name": {
+    "en": "Wall with a window",
+    "fr": "Mur à fenêtre"
+  },
+  "model": "mini-market-wall-window",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "placement": {
+    "partition": true
+  }
+}

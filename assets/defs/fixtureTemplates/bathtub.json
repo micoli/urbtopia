@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["home"],
+  "category": "bathroom",
+  "name": {
+    "en": "Bathtub",
+    "fr": "Baignoire"
+  },
+  "model": "furniture-bathtub",
+  "footprint": [2, 1],
+  "price": 300,
+  "minTier": 2,
+  "role": "washer"
+}

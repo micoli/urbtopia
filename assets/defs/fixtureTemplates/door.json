@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["hotel"],
+  "category": "walls",
+  "name": {
+    "en": "Wall with a door",
+    "fr": "Mur à porte"
+  },
+  "model": "furniture-partitiondoor",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "placement": {
+    "partition": true,
+    "passable": true
+  }
+}

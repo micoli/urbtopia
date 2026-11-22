@@ -1,0 +1,24 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["supermarket"],
+  "category": "checkouts",
+  "ids": {
+    "supermarket": "checkout"
+  },
+  "name": {
+    "en": "Checkout",
+    "fr": "Caisse"
+  },
+  "model": "mini-market-cash-register",
+  "footprint": [1, 1],
+  "price": 100,
+  "minTier": 1,
+  "wear": 0.1,
+  "bonuses": [
+    {
+      "effect": "checkout",
+      "value": 20
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["supermarket"],
+  "category": "decor",
+  "ids": {
+    "supermarket": "shoppingCart"
+  },
+  "name": {
+    "en": "Shopping cart",
+    "fr": "Chariot"
+  },
+  "model": "mini-market-shopping-cart",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "bonuses": [
+    {
+      "effect": "attract",
+      "value": 0.03
+    }
+  ]
+}

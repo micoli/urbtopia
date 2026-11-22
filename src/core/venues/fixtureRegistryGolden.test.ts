@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { MESSAGES } from '../../i18n/messages';
 import { FIXTURE_CATEGORIES, FIXTURE_IDS, FIXTURES, fixtureIdsInCategory, type FixtureVenue } from './fixtures';
 
-const lines = (rows: readonly unknown[]): string => `${rows.map(row => JSON.stringify(row)).join('\n')}\n`;
+const sorted = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(sorted);
+  if (value === null || typeof value !== 'object') return value;
+  return Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, sorted(item)]));
+};
+
+const lines = (rows: readonly unknown[]): string => `${rows.map(row => JSON.stringify(sorted(row))).join('\n')}\n`;
 
 describe('the resolved registry of the Fixtures', () => {
   it('resolves every Fixture to the same spec, in the same order', async () => {

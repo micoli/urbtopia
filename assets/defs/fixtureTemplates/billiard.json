@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["arcade"],
+  "category": "games",
+  "ids": {
+    "arcade": "billiard"
+  },
+  "name": {
+    "en": "Billiard table",
+    "fr": "Table de billard"
+  },
+  "model": "mini-arcade-pool-table",
+  "footprint": [2, 1],
+  "price": 350,
+  "minTier": 2,
+  "bonuses": [
+    {
+      "effect": "playsPerHour",
+      "value": 3
+    }
+  ]
+}

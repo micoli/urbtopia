@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["livestockFarm"],
+  "category": "walls",
+  "ids": {
+    "livestockFarm": "livestockWallFull"
+  },
+  "name": {
+    "en": "Full-height wall",
+    "fr": "Mur pleine hauteur"
+  },
+  "model": "livestock-interior-partition-full",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "placement": {
+    "partition": true,
+    "joins": {
+      "elbow": "livestock-interior-partition-full-elbow",
+      "tee": "livestock-interior-partition-full-tee",
+      "cross": "livestock-interior-partition-full-cross"
+    }
+  }
+}

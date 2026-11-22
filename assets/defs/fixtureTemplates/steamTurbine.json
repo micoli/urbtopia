@@ -1,0 +1,34 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["geothermalPlant"],
+  "category": "machines",
+  "name": {
+    "en": "Steam turbine",
+    "fr": "Turbine à vapeur"
+  },
+  "model": "engine-room-steam-turbine",
+  "footprint": [1, 1],
+  "price": 3000,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "circuit",
+  "family": "steamTurbine",
+  "ports": [
+    {
+      "side": "left",
+      "medium": "steam",
+      "direction": "in"
+    },
+    {
+      "side": "right",
+      "medium": "steam",
+      "direction": "out"
+    },
+    {
+      "side": "front",
+      "medium": "electricity",
+      "direction": "out"
+    }
+  ]
+}

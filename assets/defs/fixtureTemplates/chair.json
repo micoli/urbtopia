@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["restaurant"],
+  "category": "dining",
+  "name": {
+    "en": "Chair",
+    "fr": "Chaise"
+  },
+  "model": "restaurant-chair",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "wear": 0.03,
+  "traits": [
+    {
+      "trait": "seat",
+      "value": "table"
+    }
+  ]
+}

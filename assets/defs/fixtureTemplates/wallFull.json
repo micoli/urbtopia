@@ -1,0 +1,134 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["bakery", "dairy", "factory", "hospital", "farm", "library", "mill", "packhouse", "recyclingPlant", "school", "storehouse", "workshop", "coalPlant", "geothermalPlant", "hydroPlant"],
+  "category": "walls",
+  "overrides": {
+    "bakery": {
+      "model": "bakery-interior-partition-full",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "bakery-interior-partition-full-elbow",
+          "tee": "bakery-interior-partition-full-tee",
+          "cross": "bakery-interior-partition-full-cross"
+        }
+      }
+    },
+    "dairy": {
+      "model": "dairy-interior-partition-full",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "dairy-interior-partition-full-elbow",
+          "tee": "dairy-interior-partition-full-tee",
+          "cross": "dairy-interior-partition-full-cross"
+        }
+      }
+    },
+    "factory": {
+      "model": "factory-floor-partition-full",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "factory-floor-partition-full-elbow",
+          "tee": "factory-floor-partition-full-tee",
+          "cross": "factory-floor-partition-full-cross"
+        }
+      }
+    },
+    "hospital": {
+      "model": "hospital-interior-partition-full",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "hospital-interior-partition-full-elbow",
+          "tee": "hospital-interior-partition-full-tee",
+          "cross": "hospital-interior-partition-full-cross"
+        }
+      }
+    },
+    "farm": {
+      "model": "farm-interior-partition-full",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "farm-interior-partition-full-elbow",
+          "tee": "farm-interior-partition-full-tee",
+          "cross": "farm-interior-partition-full-cross"
+        }
+      }
+    },
+    "library": {
+      "model": "library-interior-partition-full",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "library-interior-partition-full-elbow",
+          "tee": "library-interior-partition-full-tee",
+          "cross": "library-interior-partition-full-cross"
+        }
+      }
+    },
+    "mill": {
+      "model": "mill-interior-partition-full",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "mill-interior-partition-full-elbow",
+          "tee": "mill-interior-partition-full-tee",
+          "cross": "mill-interior-partition-full-cross"
+        }
+      }
+    },
+    "packhouse": {
+      "model": "factory-floor-partition-full",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "factory-floor-partition-full-elbow",
+          "tee": "factory-floor-partition-full-tee",
+          "cross": "factory-floor-partition-full-cross"
+        }
+      }
+    },
+    "school": {
+      "model": "school-interior-partition-full",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "school-interior-partition-full-elbow",
+          "tee": "school-interior-partition-full-tee",
+          "cross": "school-interior-partition-full-cross"
+        }
+      }
+    },
+    "storehouse": {
+      "model": "storehouse-interior-partition-full",
+      "placement": {
+        "partition": true,
+        "joins": {
+          "elbow": "storehouse-interior-partition-full-elbow",
+          "tee": "storehouse-interior-partition-full-tee",
+          "cross": "storehouse-interior-partition-full-cross"
+        }
+      }
+    }
+  },
+  "name": {
+    "en": "Full-height wall",
+    "fr": "Mur pleine hauteur"
+  },
+  "model": "workshop-interior-partition-full",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "placement": {
+    "partition": true,
+    "joins": {
+      "elbow": "workshop-interior-partition-full-elbow",
+      "tee": "workshop-interior-partition-full-tee",
+      "cross": "workshop-interior-partition-full-cross"
+    }
+  }
+}
