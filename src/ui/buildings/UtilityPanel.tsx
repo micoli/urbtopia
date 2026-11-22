@@ -3,6 +3,7 @@ import { t } from '../../i18n/t';
 import { useGame } from '../common/hooks';
 import { DrawerPanel } from '../common/DrawerPanel';
 import { Icon } from '../common/Icon';
+import { InteriorButton } from '../factory/InteriorButton';
 
 interface UtilityPanelProps {
   building: Building;
@@ -17,6 +18,7 @@ export function UtilityPanel({ building, type }: UtilityPanelProps) {
       <p>
         {isWater ? <><Icon name="water" /> {t('stat.water')}</> : <><Icon name="power" /> {t('stat.power')}</>}: {value}
       </p>
+      <InteriorButton building={building} />
       {type === 'hydroPlant' && <p>{t('panel.flow').replace('{count}', String(connectedWaterKeys(state, building).size)).replace('{full}', String(ECOLOGY.hydroFullFlowTiles))}</p>}
   </DrawerPanel>
 }
