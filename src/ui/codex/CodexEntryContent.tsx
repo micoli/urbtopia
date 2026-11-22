@@ -8,6 +8,7 @@ import { readHomeColor } from '../buildings/homeColor';
 import { AnnualEventFacts } from './AnnualEventFacts';
 import { BuildLimitFacts } from './BuildLimitFacts';
 import { CropFacts } from './CropFacts';
+import { EntryAchievements } from './EntryAchievements';
 import { LevelFacts } from './LevelFacts';
 import { VenueRankFacts } from './VenueRankFacts';
 
@@ -34,6 +35,7 @@ export function CodexEntryContent({ entry, manifest }: CodexEntryContentProps) {
       <BuildLimitFacts id={entry.id} />
       <AnnualEventFacts id={entry.id} />
       <VenueRankFacts id={entry.id} />
+      <EntryAchievements id={entry.id} />
       <h4>{t('codex.gallery')}</h4>
       {manifest && <div className="codex-gallery">
         {entry.levels.map(level => (

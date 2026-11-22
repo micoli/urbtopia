@@ -31,6 +31,17 @@ export function achievementsOf(category: AchievementCategoryId): readonly Achiev
   return ACHIEVEMENTS.filter((achievement) => achievement.category === category);
 }
 
+// The buildings whose page of the Codex an Achievement is about: the types its counter names.
+export function featureTypesOf(achievement: AchievementDef): string[] {
+  const { trigger } = achievement;
+  if (!('counter' in trigger) || !trigger.counter.startsWith('building:')) return [];
+  return trigger.counter.slice('building:'.length).split(',');
+}
+
+export function achievementsAbout(type: string): readonly AchievementDef[] {
+  return ACHIEVEMENTS.filter((achievement) => featureTypesOf(achievement).includes(type));
+}
+
 // The name a category's Medal carries in each language, kept by the server for every client to show.
 export function medalNamesOf(category: AchievementCategoryId): { readonly fr: string; readonly en: string } {
   return { fr: `Succès : ${CATEGORY_NAMES[category].fr}`, en: `Achievements: ${CATEGORY_NAMES[category].en}` };

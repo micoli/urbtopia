@@ -1,6 +1,6 @@
 # Guide article
 
-Status: ready-for-agent
+Status: done - implemented
 Spec: ../spec.md
 Blocked by: 05, 06, 07, 08
 
@@ -12,3 +12,7 @@ A Guide and Codex page that lists the categories and Achievements from the game 
 
 - [ ] FR and EN pages generated from the data.
 - [ ] Each Achievement links to the Codex page of its feature, and each of those pages links back.
+
+## Notes
+
+The Mechanics article `achievements` (EN and FR) embeds `AchievementCatalogue`, generated from the definitions. An Achievement whose counter names buildings links to their Codex entries, and those Codex entries (in the game and in the Guide) show the Achievements about them. The Achievements about a feature with no Codex entry (a Signal, a Command) link nowhere.

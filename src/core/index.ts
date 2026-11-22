@@ -340,7 +340,7 @@ export type { Cell } from './districtPlan/hexGrid';
 export { matchingSeams as districtMatchingSeams, seamsAround as districtSeamsAround } from './districtPlan/districtSeams';
 export type { Seam as DistrictSeam } from './districtPlan/districtSeams';
 export { homeLevelOf } from './architect/homeLevel';
-export { ACHIEVEMENTS, CATEGORY_NAMES, achievementsOf, medalNamesOf } from './achievements/achievements';
+export { ACHIEVEMENTS, CATEGORY_NAMES, achievementsAbout, achievementsOf, featureTypesOf, medalNamesOf } from './achievements/achievements';
 export { ACHIEVEMENT_CATEGORIES, ACHIEVEMENT_SIGNALS } from './achievements/achievementTypes';
 export type { AchievementCategoryId, AchievementDef, AchievementFlag, AchievementSignal } from './achievements/achievementTypes';
 export { isAcquired, provenAchievements, withAchievements } from './achievements/latch';

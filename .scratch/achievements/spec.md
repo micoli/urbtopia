@@ -1,6 +1,6 @@
 # Achievements
 
-Status: ready-for-agent
+Status: done - implemented
 
 ## Problem
 

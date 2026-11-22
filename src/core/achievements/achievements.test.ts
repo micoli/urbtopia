@@ -135,3 +135,13 @@ describe('the Cloud', () => {
     expect(offline.total).toBe(1);
   });
 });
+
+describe('the Codex links', () => {
+  it('names the building types an Achievement is about, and finds the Achievements about a building', async () => {
+    const { featureTypesOf, achievementsAbout } = await import('./achievements');
+    const hydro = ACHIEVEMENTS.find(({ id }) => id === 'energy.cleanPower')!;
+    expect(featureTypesOf(hydro)).toEqual(['hydroPlant', 'geothermalPlant', 'largeGeothermalPlant']);
+    expect(achievementsAbout('library').map(({ id }) => id)).toEqual(['housing.library']);
+    expect(achievementsAbout('home')).toEqual([]);
+  });
+});

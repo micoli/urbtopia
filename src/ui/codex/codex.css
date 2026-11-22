@@ -135,3 +135,5 @@
 .codex-article .guide-live-rules { margin: var(--space-24) 0; padding: var(--space-12) var(--space-16); border: 1px solid var(--white-a15); border-radius: var(--radius-xl); }
 .codex-article .guide-live-rules > .codex-entry-name:first-child,
 .codex-article .guide-live-rules > .codex-entry-name:first-child + p { display: none; }
+.codex-achievements { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8); }
+.codex-achievements span { padding: var(--space-2) var(--space-8); border-radius: var(--radius-lg); background: var(--white-a06); }
