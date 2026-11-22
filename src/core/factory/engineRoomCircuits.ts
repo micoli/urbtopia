@@ -176,3 +176,15 @@ export function engineRoomGainsOf(building: Pick<Building, 'type' | 'tier' | 'in
   };
   return { circuits, generation: gainOf(balance.generationCaps), cleaner: balance.pollutionCaps ? gainOf(balance.pollutionCaps) : 0 };
 }
+
+const motions = new WeakMap<ReadonlySet<number>, ReadonlyMap<number, 'cw'>>();
+
+// The Fixtures of an Engine room that run, which turn their parts and smoke, and that wear: those of its complete Circuits. The same map comes back for the same state of the floor.
+export function engineRoomMotionOf(building: Pick<Building, 'type' | 'interior'>): ReadonlyMap<number, 'cw'> {
+  const { used } = engineRoomReportOf(building);
+  const known = motions.get(used);
+  if (known) return known;
+  const motion = new Map([...used].map((id): [number, 'cw'] => [id, 'cw']));
+  motions.set(used, motion);
+  return motion;
+}

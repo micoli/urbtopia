@@ -13,6 +13,7 @@
   "minTier": 1,
   "wear": 0.1,
   "role": "circuit",
+  "smoke": [0, 1.3, 0.3],
   "family": "steamBoiler",
   "ports": [
     {

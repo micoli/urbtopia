@@ -8,6 +8,7 @@ import { isVenuePowered } from '../venues/venues';
 import type { Building, BuildingType, InteriorData, GameState } from '../engine/state';
 import { hasProductionInteriorType, interiorProfileOf } from '../interiors/interiorProfile';
 import { maxTierOf } from '../economy/tiers';
+import { engineRoomMotionOf } from './engineRoomCircuits';
 import { interiorUsageOf, interiorUsageWeightsOf } from './interiorLinks';
 import { valueByTier } from '../interiors/valueByTier';
 
@@ -45,7 +46,8 @@ export function advanceInteriors(state: GameState, from: number, to: number, sup
     const wage = Math.min(urbs, due);
     urbs -= wage;
     if (building.breakerOff || interior.fixtures.length === 0 || !isVenuePowered(state, building, supplied)) return building;
-    const usage = new Map([...interiorUsageWeightsOf(interior.fixtures)].map(([id, weight]) => [id, interiorBalance.usagePerHour * weight]));
+    const running = [...interiorUsageWeightsOf(interior.fixtures), ...[...engineRoomMotionOf(building).keys()].map((id): [number, number] => [id, 1])];
+    const usage = new Map(running.map(([id, weight]) => [id, interiorBalance.usagePerHour * weight]));
     const technicians = hired > 0 && wage >= due ? hired : 0;
     let fixtures = wearFixtures(interior.fixtures, usage, hours, technicians);
     let rng = interior.rng;
