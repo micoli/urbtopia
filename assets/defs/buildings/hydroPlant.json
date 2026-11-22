@@ -42,5 +42,13 @@
       "footprint": [1, 2]
     }
   ],
-  "extraCopyCitizens": [120, 240]
+  "extraCopyCitizens": [120, 240],
+  "floorShell": {
+    "floor": "workshop-interior-floor",
+    "wall": "workshop-interior-wall",
+    "corner": "workshop-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  }
 }

@@ -359,7 +359,10 @@ def water_turbine(rng):
     parts += [disc("coupling", 0.09, 0.04, (0.0, 0.0, 0.54), P["steel_dark"], 8), disc("generator", 0.15, 0.24, (0.0, 0.0, 0.58), P["teal"], 12), disc("generator_cap", 0.12, 0.06, (0.0, 0.0, 0.82), P["teal_dark"], 12)]
     parts += [disc(f"fin{k}", 0.165, 0.025, (0.0, 0.0, 0.61 + 0.06 * k), P["teal_dark"], 12) for k in range(4)]
     parts += [block("terminal_box", -0.07, 0.07, -0.22, -0.13, 0.6, 0.74, P["brass"]), block("terminal_lid", -0.08, 0.08, -0.23, -0.12, 0.72, 0.76, P["steel_dark"])]
-    return parts + generator_cable(0.0, -0.13, 0.67)
+    turning = [disc("rotor", 0.1, 0.02, (0.0, 0.0, 0.84), P["brass"], 12), disc("rotor_hub", 0.035, 0.04, (0.0, 0.0, 0.84), P["steel_dark"], 8)] + [block(f"rotor_blade{k}", -0.02, 0.02, 0.0, 0.09, 0.86, 0.875, P["yellow"]) for k in range(4)]
+    for k, blade in enumerate(turning[2:]):
+        lpm.rotate(blade, 90 * k, axis="Z")
+    return parts + generator_cable(0.0, -0.13, 0.67), {"spin-up": (turning, (0, 0, 0.84))}
 
 
 def steam_turbine(rng):

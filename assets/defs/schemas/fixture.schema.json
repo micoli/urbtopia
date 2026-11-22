@@ -1043,7 +1043,8 @@
             "livestockFarm",
             "farm",
             "coalPlant",
-            "geothermalPlant"
+            "geothermalPlant",
+            "hydroPlant"
           ]
         },
         "$schema": {

@@ -91,7 +91,7 @@ const RAIL_MODELS = [RAIL_STRAIGHT_MODEL, RAIL_CORNER_MODEL];
 const shellOf = (type: VenueType) => definitionOf(type).shell!;
 
 // The interior of a Factory has the same pieces as the interior of a Venue.
-type ProductionShellType = 'factory' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'recyclingPlant' | 'coalPlant' | 'geothermalPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'farm' | 'school' | 'library' | 'hospital';
+type ProductionShellType = 'factory' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'recyclingPlant' | 'coalPlant' | 'geothermalPlant' | 'hydroPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'farm' | 'school' | 'library' | 'hospital';
 
 const floorShellOf = (type: ProductionShellType = 'factory') => definitionOf(type).floorShell!;
 
@@ -115,6 +115,7 @@ export const VENUE_CORNER_PLACEMENT = {
   recyclingPlant: interiorCornerOf('recyclingPlant'),
   coalPlant: interiorCornerOf('coalPlant'),
   geothermalPlant: interiorCornerOf('geothermalPlant'),
+  hydroPlant: interiorCornerOf('hydroPlant'),
   textileMill: interiorCornerOf('textileMill'),
   knitwearFactory: interiorCornerOf('knitwearFactory'),
   livestockFarm: interiorCornerOf('livestockFarm'),
@@ -139,6 +140,7 @@ export const VENUE_SHELL_MODELS = {
   recyclingPlant: { floor: modelFileOf(floorShellOf('recyclingPlant').floor), wall: modelFileOf(floorShellOf('recyclingPlant').wall), corner: modelFileOf(floorShellOf('recyclingPlant').corner) },
   coalPlant: { floor: modelFileOf(floorShellOf('coalPlant').floor), wall: modelFileOf(floorShellOf('coalPlant').wall), corner: modelFileOf(floorShellOf('coalPlant').corner) },
   geothermalPlant: { floor: modelFileOf(floorShellOf('geothermalPlant').floor), wall: modelFileOf(floorShellOf('geothermalPlant').wall), corner: modelFileOf(floorShellOf('geothermalPlant').corner) },
+  hydroPlant: { floor: modelFileOf(floorShellOf('hydroPlant').floor), wall: modelFileOf(floorShellOf('hydroPlant').wall), corner: modelFileOf(floorShellOf('hydroPlant').corner) },
   textileMill: { floor: modelFileOf(floorShellOf('textileMill').floor), wall: modelFileOf(floorShellOf('textileMill').wall), corner: modelFileOf(floorShellOf('textileMill').corner) },
   knitwearFactory: { floor: modelFileOf(floorShellOf('knitwearFactory').floor), wall: modelFileOf(floorShellOf('knitwearFactory').wall), corner: modelFileOf(floorShellOf('knitwearFactory').corner) },
   livestockFarm: { floor: modelFileOf(floorShellOf('livestockFarm').floor), wall: modelFileOf(floorShellOf('livestockFarm').wall), corner: modelFileOf(floorShellOf('livestockFarm').corner) },

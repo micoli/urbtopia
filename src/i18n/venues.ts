@@ -163,7 +163,7 @@ type VenueMessageKey =
   | 'home.interior.comfort'
   | 'home.interior.wellbeing'
   | 'home.interior.wellbeingShort'
-  | `interior.open.${'arcade' | 'supermarket' | 'hotel' | 'restaurant' | 'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'vault' | 'materialDepot' | 'recyclingPlant' | 'coalPlant' | 'geothermalPlant' | 'largeGeothermalPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'farm' | 'school' | 'library' | 'hospital'}`
+  | `interior.open.${'arcade' | 'supermarket' | 'hotel' | 'restaurant' | 'factory' | 'packhouse' | 'mill' | 'workshop' | 'bakery' | 'dairy' | 'storehouse' | 'vault' | 'materialDepot' | 'recyclingPlant' | 'coalPlant' | 'hydroPlant' | 'geothermalPlant' | 'largeGeothermalPlant' | 'textileMill' | 'knitwearFactory' | 'livestockFarm' | 'farm' | 'school' | 'library' | 'hospital'}`
   | 'factory.interior.linked'
   | 'factory.interior.speed'
   | 'factory.interior.yield'
@@ -605,6 +605,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'interior.open.storehouse': ['Open the Storehouse interior', "Ouvrir l'intérieur de l'entrepôt"],
   'interior.open.recyclingPlant': ['Open the Recycling plant interior', "Ouvrir l'intérieur de l'usine de recyclage"],
   'interior.open.coalPlant': ['Open the Engine room of the Coal power plant', "Ouvrir la salle des machines de la centrale à charbon"],
+  'interior.open.hydroPlant': ['Open the Engine room of the Hydro power plant', "Ouvrir la salle des machines de la centrale hydraulique"],
   'interior.open.geothermalPlant': ['Open the Engine room of the Geothermal power plant', "Ouvrir la salle des machines de la centrale géothermique"],
   'interior.open.largeGeothermalPlant': ['Open the Engine room of the Large geothermal power plant', "Ouvrir la salle des machines de la grande centrale géothermique"],
   'interior.open.textileMill': ['Open the Textile mill interior', "Ouvrir l'intérieur de la filature"],

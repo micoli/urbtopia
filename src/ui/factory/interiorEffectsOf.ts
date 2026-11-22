@@ -29,6 +29,7 @@ const EFFECTS_BY_TYPE: Partial<Record<BuildingType, readonly EffectId[]>> = {
   recyclingPlant: ['wasteCapacity', 'reach'],
   coalPlant: ['generation', 'cleaner'],
   geothermalPlant: ['generation'],
+  hydroPlant: ['generation'],
   largeGeothermalPlant: ['generation'],
 };
 

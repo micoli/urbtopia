@@ -500,5 +500,21 @@
   "geothermalPlantWall",
   "geothermalPlantWallFull",
   "geothermalPlantWindow",
-  "geothermalPlantDoorway"
+  "geothermalPlantDoorway",
+  "hydroPlantWaterInlet",
+  "hydroPlantWaterTurbine",
+  "hydroPlantWaterOutlet",
+  "hydroPlantPowerOutlet",
+  "hydroPlantWaterPipe",
+  "hydroPlantWaterPipeElbow",
+  "hydroPlantWaterPipeTee",
+  "hydroPlantWaterPipeCross",
+  "hydroPlantCable",
+  "hydroPlantCableElbow",
+  "hydroPlantCableTee",
+  "hydroPlantCableCross",
+  "hydroPlantWall",
+  "hydroPlantWallFull",
+  "hydroPlantWindow",
+  "hydroPlantDoorway"
 ]
