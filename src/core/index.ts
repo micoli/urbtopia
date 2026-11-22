@@ -341,8 +341,8 @@ export { matchingSeams as districtMatchingSeams, seamsAround as districtSeamsAro
 export type { Seam as DistrictSeam } from './districtPlan/districtSeams';
 export { homeLevelOf } from './architect/homeLevel';
 export { ACHIEVEMENTS, CATEGORY_NAMES, achievementsOf, medalNamesOf } from './achievements/achievements';
-export { ACHIEVEMENT_CATEGORIES } from './achievements/achievementTypes';
-export type { AchievementCategoryId, AchievementDef } from './achievements/achievementTypes';
+export { ACHIEVEMENT_CATEGORIES, ACHIEVEMENT_SIGNALS } from './achievements/achievementTypes';
+export type { AchievementCategoryId, AchievementDef, AchievementSignal } from './achievements/achievementTypes';
 export { isAcquired, provenAchievements, withAchievements } from './achievements/latch';
 export { categoryProgress, completedCategories, isPossible, visibleCategories } from './achievements/progress';
 export type { CategoryProgress } from './achievements/progress';

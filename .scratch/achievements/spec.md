@@ -20,7 +20,7 @@ Vocabulary (Achievement, Achievement category, Medal) in `CONTEXT.md`. Architect
 
 ## Trigger types (closed set)
 
-`placed` (a building or element type is placed), `created` (a line, a plan, a Stash…; judged by a collection of the state growing), `command` (a named player action), `sim` (a simulation result), `threshold` (a metric reaches a value).
+`created` (a counter of what the City holds grows: a collection, the buildings of a kind, of listed types or of a service category), `threshold` (a counter reaches a value), `command` (one of the listed Commands is applied), `sim` (an event of the simulation or of a Command), `signal` (the interface reports an action outside the game state, through a `Signal` Command).
 
 ## Catalogue (draft)
 
@@ -39,7 +39,7 @@ Vocabulary (Achievement, Achievement category, Medal) in `CONTEXT.md`. Architect
 | Achievement | Trigger | Retro |
 |---|---|---|
 | First Home / Premier Home | placed: Home | yes |
-| Home upgraded / Home amélioré | command: Tier upgrade | no |
+| Building upgraded / Bâtiment amélioré | sim: BuildingUpgraded | no |
 | A school for the Citizens / Une école pour les Citizens | placed: Schooling building | yes |
 | Culture at hand / La culture à portée | placed: Library | yes |
 | A thousand Citizens / Mille Citizens | threshold: Citizens 1000 | yes |
@@ -61,7 +61,7 @@ Vocabulary (Achievement, Achievement category, Medal) in `CONTEXT.md`. Architect
 | Behind the door / Derrière la porte | command: open an interior | no |
 | Staffed / Du personnel | command: assign Staff | no |
 | First Machine / Première Machine | placed: Fixture of role Machine | partly |
-| Driven by Drive / Entraîné par la Drive | sim: a Machine runs on Drive | no |
+| Keep it running / Toujours en marche | command: repair a Fixture or hire a technician | no |
 | Guided demonstration / Démonstration guidée | command: finish a Guided demonstration | no |
 | Furnished Home / Home meublé | placed: Fixture in a Home interior | yes |
 

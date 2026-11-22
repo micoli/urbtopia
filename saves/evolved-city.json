@@ -1346,7 +1346,15 @@
     "tutorial": null,
     "tradeLedger": [],
     "achievements": [
-      "transport.firstRoad"
+      "transport.firstRoad",
+      "energy.powerPlant",
+      "housing.upgrade",
+      "energy.waterTower",
+      "production.storage",
+      "production.shop",
+      "housing.firstHome",
+      "housing.thousandCitizens",
+      "housing.school"
     ]
   }
 }

@@ -35,12 +35,33 @@ test.describe('achievements', () => {
       localStorage.setItem('urbtopia-save', JSON.stringify(envelope));
     }, oldSave);
     await page.goto('/?e2e');
-    await expect(page.getByRole('status')).toContainText('1 succès reconnus dans votre City', { timeout: 30_000 });
+    await expect(page.getByRole('status')).toContainText('3 succès reconnus dans votre City', { timeout: 30_000 });
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
 
     await page.getByRole('button', { name: 'Succès' }).first().click();
     const window = page.getByRole('dialog', { name: 'Succès' });
     await expect(window).toContainText('1 sur 7');
-    await expect(window.locator('[data-done="true"]')).toContainText('Première route');
+    await expect(window.locator('[data-done="true"]')).toHaveCount(3);
+    await expect(window).toContainText('Première route');
+  });
+
+  test('opening an interior earns an Achievement of the Interiors category', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      const { openInterior } = await import('../src/store/openInterior.ts');
+      const factory = gameStore.getState().state.buildings.find((building) => building.type === 'factory')!;
+      openInterior(factory);
+    });
+    await expect(page.getByRole('status')).toContainText('Succès : Derrière la porte');
+
+    const acquired = await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      return gameStore.getState().state.achievements;
+    });
+    expect(acquired).toContain('interiors.open');
   });
 });

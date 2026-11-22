@@ -11,7 +11,7 @@ describe('Achievements of a save made before they existed', () => {
   it('seeds the ones the state proves and leaves the others to do', () => {
     const loaded = parseEnvelope(JSON.stringify(saveV21));
     if (!loaded.ok) throw new Error(loaded.reason);
-    expect(loaded.state.achievements).toEqual(['transport.firstRoad']);
+    expect(loaded.state.achievements).toEqual(['housing.firstHome', 'housing.school', 'transport.firstRoad']);
   });
 
   it('seeds an Achievement of a mode only from a line of that mode', () => {
@@ -29,7 +29,7 @@ describe('Achievements of a save made before they existed', () => {
   it('tells the session how many were seeded, only for an older save', () => {
     const store = new MemorySaveStore();
     store.put(SAVE_KEY, JSON.stringify(saveV21));
-    expect(new SaveSession(store).load()).toMatchObject({ kind: 'loaded', seededAchievements: 1 });
+    expect(new SaveSession(store).load()).toMatchObject({ kind: 'loaded', seededAchievements: 3 });
     store.put(SAVE_KEY, serializeEnvelope({ ...newGame({ seed: 'new', now: 0 }), achievements: [] }, 0));
     expect(new SaveSession(store).load()).toMatchObject({ kind: 'loaded', seededAchievements: 0 });
   });

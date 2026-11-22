@@ -18,7 +18,7 @@ const { installAchievementMedals } = await import('./installAchievementMedals');
 const { FakeAchievementMedalWorld } = await import('./fakeMedalClient');
 const { readMedalsDone } = await import('./medalOutbox');
 
-const completeCity = (): GameState => ({ ...newGame({ seed: 'medal', now: 0 }), achievements: ACHIEVEMENTS.map(({ id }) => id) });
+const completeCity = (): GameState => ({ ...newGame({ seed: 'medal', now: 0 }), achievements: ACHIEVEMENTS.filter(({ category }) => category === 'transport').map(({ id }) => id) });
 const signIn = () => {
   cloudStore.setState({ account: { userId: 'player', email: 'player@example.com' } as CloudAccount });
   socialStore.setState({ profile: { handle: 'Builder' } as SocialState });

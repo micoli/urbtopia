@@ -20,5 +20,5 @@ export function dispatch(state: GameState, command: Command, now: number): Dispa
   const events = [...advanced.events, ...outcome.events, ...unlocked];
   const result = { state: progressed, events };
   // Skipping the Tutorial hands over the starting City: the player built none of it.
-  return { ok: true, ...(command.type === 'SkipTutorial' ? result : withAchievements(state, result)) };
+  return { ok: true, ...(command.type === 'SkipTutorial' ? result : withAchievements(state, result, command)) };
 }

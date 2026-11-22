@@ -34,7 +34,7 @@ describe('save migration contract', () => {
     const v17 = JSON.parse(fixtureText(17));
     const loaded = parseEnvelope(JSON.stringify(v17));
     if (!loaded.ok) throw new Error(loaded.reason);
-    expect(loaded.state).toEqual({ ...v17.state, achievements: ['transport.firstRoad'], adaptationUntil: v17.state.lastSeen + 24 * 3_600_000 });
+    expect(loaded.state).toEqual({ ...v17.state, achievements: ['housing.firstHome', 'housing.school', 'transport.firstRoad'], adaptationUntil: v17.state.lastSeen + 24 * 3_600_000 });
   });
 
   it('turns the Silo of a version-12 city into a Material depot', () => {

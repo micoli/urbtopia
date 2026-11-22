@@ -3084,7 +3084,17 @@
     "tutorial": null,
     "tradeLedger": [],
     "achievements": [
-      "transport.firstRoad"
+      "transport.firstRoad",
+      "energy.waterTower",
+      "housing.upgrade",
+      "energy.powerPlant",
+      "housing.firstHome",
+      "housing.library",
+      "housing.thousandCitizens",
+      "housing.school",
+      "production.shop",
+      "energy.cleanPower",
+      "energy.solar"
     ],
     "venueTutorials": {
       "supermarket": "checkout"

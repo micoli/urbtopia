@@ -23,7 +23,7 @@ describe('the games of a Planning office in the save', () => {
     const loaded = parseEnvelope(JSON.stringify(saveV19));
     if (!loaded.ok) throw new Error(loaded.reason);
     expect(loaded.state.buildings.some(building => building.district !== undefined)).toBe(false);
-    expect(loaded.state).toEqual({ ...saveV19.state, achievements: ['transport.firstRoad'], adaptationUntil: loaded.state.adaptationUntil });
+    expect(loaded.state).toEqual({ ...saveV19.state, achievements: ['housing.firstHome', 'housing.school', 'transport.firstRoad'], adaptationUntil: loaded.state.adaptationUntil });
   });
 
   it('round-trips a game under way with its best finished game', () => {
