@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canStandOnInterior, coalCapacityOf, coalPollutionShareOf, createBuilding, engineRoomGainsOf, engineRoomReportOf, interiorBonusOfBuilding, type Building, type FixtureId, type Rotation, type VenueFixture } from '../index';
+import { canStandOnInterior, coalCapacityOf, coalPollutionShareOf, createBuilding, engineRoomCoalPathsOf, engineRoomGainsOf, engineRoomMotionOf, engineRoomReportOf, interiorBonusOfBuilding, type Building, type FixtureId, type Rotation, type VenueFixture } from '../index';
 
 let nextId = 1;
 const put = (type: FixtureId, x: number, y: number, rotation: Rotation = 0): VenueFixture => ({ id: nextId++, type, x, y, rotation });
@@ -93,5 +93,27 @@ describe('the wall ports of an Engine room', () => {
     expect(canStandOnInterior(host, { type: 'coalPlantCoalQuay', x: 3, y: 4, rotation: 0 })).toBe(false);
     expect(canStandOnInterior(host, { type: 'coalPlantCoalQuay', x: 3, y: 0, rotation: 2 })).toBe(false);
     expect(canStandOnInterior(host, { type: 'coalPlantSteamBoiler', x: 3, y: 4, rotation: 0 })).toBe(true);
+  });
+});
+
+describe('what moves in an Engine room', () => {
+  it('sends coal from the quay along the Conveyor to the boiler on a complete Circuit', () => {
+    const [path, ...others] = engineRoomCoalPathsOf(plant(coalCircuit()));
+    expect(others).toEqual([]);
+    expect(path).toMatchObject({ coal: true, source: expect.any(Number) });
+    expect(path!.points).toHaveLength(3);
+    expect(path!.points[0]!.x).toBeCloseTo(1.5);
+    expect(path!.points[2]!.y).toBeLessThan(3);
+  });
+
+  it('shows no coal while the Circuit is incomplete', () => {
+    expect(engineRoomCoalPathsOf(plant(without(coalCircuit(), 'coalPlantWaterPipe')))).toEqual([]);
+  });
+
+  it('runs the Fixtures of a complete Circuit, and only those', () => {
+    const stray = put('coalPlantCable', 9, 9);
+    const motion = engineRoomMotionOf(plant([...coalCircuit(), stray]));
+    expect(motion.size).toBe(11);
+    expect(motion.has(stray.id)).toBe(false);
   });
 });

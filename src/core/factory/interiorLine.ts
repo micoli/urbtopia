@@ -12,6 +12,8 @@ export interface LinePath {
   points: readonly { x: number; y: number }[];
   // Bakery, Knitwear factory: the Good that the Packets have become once they have gone through an Oven or a Knitter, which is the point of the way where they turn into it, and the Good that arrives at the Exit: the Recipe of what they went through, not the Good the Exit sells.
   baked?: { from: number; good: string };
+  // Engine room: lumps of coal ride the way, not crates.
+  coal?: true;
 }
 
 const MOUTH = 0.15;

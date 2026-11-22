@@ -5,7 +5,8 @@ import type { FixtureMedium, FixturePort } from '../venues/venueVocabulary';
 import type { Building, BuildingType, VenueFixture } from '../engine/state';
 import { engineRoomBalanceOf, type EngineRoomCircuit, type EngineRoomLink } from '../interiors/interiorStaff';
 import { valueByTier } from '../interiors/valueByTier';
-import { cellBeyond, keyOf, placedOn } from './interiorLinks';
+import { SIDE_OFFSETS, cellBeyond, keyOf, placedOn, turned } from './interiorLinks';
+import type { LinePath } from './interiorLine';
 import { memoizedByLayout } from './memoizedByLayout';
 
 // A Circuit of an Engine room that is complete: the Fixtures it uses, by the family of each (the anchor, the wall ports, the Machines), and the links that join them.
@@ -13,6 +14,8 @@ export interface CompleteCircuit {
   anchor: number;
   members: ReadonlyMap<string, number>;
   linking: ReadonlySet<number>;
+  // The way each Medium takes from one Fixture to the next of its link: the source, the links crossed in order, and the target.
+  routes: readonly { medium: FixtureMedium; ids: readonly number[] }[];
 }
 
 export interface EngineRoomReport {
@@ -88,6 +91,7 @@ const reachOf = (reaches: Map<string, Reach>, source: VenueFixture, medium: Fixt
 function circuitAround(anchor: VenueFixture, circuit: EngineRoomCircuit, fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, used: ReadonlySet<number>, reaches: Map<string, Reach>): CompleteCircuit | undefined {
   const members = new Map<string, VenueFixture>([[circuit.anchor, anchor]]);
   const linking = new Set<number>();
+  const routes: { medium: FixtureMedium; ids: number[] }[] = [];
   const free = (fixture: VenueFixture): boolean => isSound(fixture) && !used.has(fixture.id) && ![...members.values()].includes(fixture);
   const pending = [...circuit.links];
   while (pending.length > 0) {
@@ -105,16 +109,20 @@ function circuitAround(anchor: VenueFixture, circuit: EngineRoomCircuit, fixture
       const target = reach.ends.find(end => familyOf(end) === link.to && free(end));
       if (!target) return undefined;
       members.set(link.to, target);
-      for (const crossed of reach.crossed.get(target.id) ?? []) linking.add(crossed.id);
+      const way = reach.crossed.get(target.id) ?? [];
+      for (const crossed of way) linking.add(crossed.id);
+      routes.push({ medium: link.medium, ids: [members.get(link.from)!.id, ...way.map(crossed => crossed.id), target.id] });
       continue;
     }
     const target = members.get(link.to)!;
     const source = fixtures.find(candidate => familyOf(candidate) === link.from && free(candidate) && reachOf(reaches, candidate, link.medium, at).ends.includes(target));
     if (!source) return undefined;
     members.set(link.from, source);
-    for (const crossed of reachOf(reaches, source, link.medium, at).crossed.get(target.id) ?? []) linking.add(crossed.id);
+    const way = reachOf(reaches, source, link.medium, at).crossed.get(target.id) ?? [];
+    for (const crossed of way) linking.add(crossed.id);
+    routes.push({ medium: link.medium, ids: [source.id, ...way.map(crossed => crossed.id), target.id] });
   }
-  return { anchor: anchor.id, members: new Map([...members].map(([family, fixture]) => [family, fixture.id])), linking };
+  return { anchor: anchor.id, members: new Map([...members].map(([family, fixture]) => [family, fixture.id])), linking, routes };
 }
 
 const circuitsOf = (fixtures: readonly VenueFixture[], type: BuildingType): EngineRoomReport => {
@@ -187,4 +195,33 @@ export function engineRoomMotionOf(building: Pick<Building, 'type' | 'interior'>
   const motion = new Map([...used].map((id): [number, 'cw'] => [id, 'cw']));
   motions.set(used, motion);
   return motion;
+}
+
+const COAL_MOUTH = 0.15;
+const HOPPER = 0.45;
+
+const centreOf = (fixture: VenueFixture) => ({ x: fixture.x + 0.5, y: fixture.y + 0.5 });
+
+const towardSide = (fixture: VenueFixture, side: 'front' | 'back', distance: number) => {
+  const offset = turned(SIDE_OFFSETS[side], fixture.rotation);
+  return { x: fixture.x + 0.5 + offset.x * distance, y: fixture.y + 0.5 + offset.y * distance };
+};
+
+const coalPaths = new WeakMap<ReadonlySet<number>, readonly LinePath[]>();
+
+// The ways the coal takes on the floor of an Engine room, one for each complete Circuit that carries some: from the mouth of the Coal quay, along the Conveyors, to the hopper of the Steam boiler. A picture, never counted.
+export function engineRoomCoalPathsOf(building: Pick<Building, 'type' | 'interior'>): readonly LinePath[] {
+  const report = engineRoomReportOf(building);
+  const known = coalPaths.get(report.used);
+  if (known) return known;
+  const byId = new Map((building.interior?.fixtures ?? []).map(fixture => [fixture.id, fixture]));
+  const paths = report.circuits.flatMap(circuit => circuit.routes.filter(route => route.medium === 'coal').flatMap((route): LinePath[] => {
+    const fixtures = route.ids.map(id => byId.get(id)).filter((fixture): fixture is VenueFixture => fixture !== undefined);
+    if (fixtures.length < 2) return [];
+    const first = fixtures[0]!;
+    const last = fixtures[fixtures.length - 1]!;
+    return [{ source: first.id, coal: true, points: [towardSide(first, 'front', COAL_MOUTH), ...fixtures.slice(1, -1).map(centreOf), towardSide(last, 'back', HOPPER)] }];
+  }));
+  coalPaths.set(report.used, paths);
+  return paths;
 }
