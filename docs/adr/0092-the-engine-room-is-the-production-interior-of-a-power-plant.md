@@ -2,6 +2,8 @@
 status: accepted
 ---
 
+Accepted, amended by [ADR 0093](0093-fixtures-are-templates-with-ports-effects-and-traits.md): the Circuits are derived from the ports of the Fixtures, no longer listed as flowcharts in the balance file.
+
 # The Engine room is the Production interior of a Power plant
 
 A Power plant has no interior today. The Coal Power plant, the Hydro power plant, the Geothermal power plant and the Large geothermal power plant supply a fixed Capacity by Tier. The player wants to build their machinery from the inside, in the same Management view as a Factory or a Recycling plant, and to be rewarded for a working circuit.
