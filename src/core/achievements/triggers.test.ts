@@ -7,6 +7,7 @@ import { latchAchievements } from './latch';
 import { categoryProgress } from './progress';
 import { isProvenBy, isRaised } from './triggers';
 
+const ALL_FLAGS = new Set(['clubs', 'architect', 'advisor']);
 const city = () => newGame({ seed: 'amber-fox-4821', now: 1_700_000_000_000 });
 const withBuilding = (state: GameState, type: Parameters<typeof createBuilding>[1], id = 900): GameState => ({ ...state, buildings: [...state.buildings, createBuilding(id, type, 56, 50, 0)] });
 const raised = (trigger: AchievementTrigger, before: GameState, after: GameState, events: GameEvent[] = [], command?: Command) => isRaised(trigger, { before, after, events, command });
@@ -101,7 +102,7 @@ describe('the catalogue', () => {
   it.each(ACHIEVEMENT_CATEGORIES)('completes the %s category when each of its Achievements is acquired', (category) => {
     const ids = ACHIEVEMENTS.filter((achievement) => achievement.category === category).map(({ id }) => id);
     const easy = { ...city(), difficulty: 'easy' as const };
-    expect(categoryProgress({ ...easy, achievements: ids }, category).complete).toBe(true);
-    expect(categoryProgress({ ...easy, achievements: ids.slice(1) }, category).complete).toBe(false);
+    expect(categoryProgress({ ...easy, achievements: ids }, category, ALL_FLAGS).complete).toBe(true);
+    expect(categoryProgress({ ...easy, achievements: ids.slice(1) }, category, ALL_FLAGS).complete).toBe(false);
   });
 });

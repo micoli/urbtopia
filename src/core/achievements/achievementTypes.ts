@@ -24,6 +24,9 @@ export type AchievementTrigger =
   // The interface reports that the player did something.
   | { readonly type: 'signal'; readonly signal: AchievementSignal };
 
+// The features that ship switched off, named by the flags of the game.
+export type AchievementFlag = 'clubs' | 'architect' | 'advisor';
+
 export interface LocalizedText {
   readonly en: string;
   readonly fr: string;
@@ -39,6 +42,8 @@ export interface AchievementDef {
   readonly unlockCitizens?: number;
   // The lowest Difficulty that has the feature.
   readonly fromDifficulty?: Difficulty;
+  // The beta feature it needs: it only counts for a player who switched that feature on.
+  readonly flag?: AchievementFlag;
 }
 
 export interface TriggerContext {

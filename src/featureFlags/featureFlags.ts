@@ -122,6 +122,9 @@ export function createFeatureFlagStore(
 
 export const featureFlagStore = createFeatureFlagStore(import.meta.env.DEV);
 
+// The beta features switched on, as the Achievements count them.
+export const enabledFlagIds = (): ReadonlySet<string> => new Set(FLAG_IDS.filter(id => featureFlagStore.getState().enabled[id]));
+
 export const isBetaSubscribed = (): boolean => featureFlagStore.getState().subscribed;
 
 export const isFlagEnabled = (id: FlagId): boolean => featureFlagStore.getState().enabled[id];

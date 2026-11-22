@@ -7,10 +7,11 @@ import { AchievementRow } from './AchievementRow';
 
 interface CategorySectionProps {
   state: GameState;
+  flags: ReadonlySet<string>;
   progress: CategoryProgress;
 }
 
-export function CategorySection({ state, progress }: CategorySectionProps) {
+export function CategorySection({ state, flags, progress }: CategorySectionProps) {
   const name = t(`achievementCategory.${progress.category}` as MessageKey);
   const headingId = `achievements-${progress.category}`;
   return (
@@ -23,7 +24,7 @@ export function CategorySection({ state, progress }: CategorySectionProps) {
       </p>
       <ProgressBar value={progress.acquired} max={progress.total} label={name} />
       <ul className="achievement-list">
-        {achievementsOf(progress.category).map((achievement) => <AchievementRow key={achievement.id} state={state} achievement={achievement} />)}
+        {achievementsOf(progress.category).map((achievement) => <AchievementRow key={achievement.id} state={state} flags={flags} achievement={achievement} />)}
       </ul>
     </section>
   );

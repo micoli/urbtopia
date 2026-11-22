@@ -5,6 +5,7 @@ import { latchAchievements } from './latch';
 import { categoryProgress, visibleCategories } from './progress';
 
 const NOW = 1_700_000_000_000;
+const ALL_FLAGS = new Set(['clubs', 'architect', 'advisor']);
 const city = () => newGame({ seed: 'amber-fox-4821', now: NOW });
 
 function applied(state: GameState, command: Command) {
@@ -54,16 +55,16 @@ describe('Achievements', () => {
 describe('category progress', () => {
   it('counts the acquired Achievements of a category', () => {
     const state = { ...city(), achievements: ['transport.firstRoad', 'transport.bridge'] };
-    expect(categoryProgress(state, 'transport')).toMatchObject({ acquired: 2, total: 7, complete: false });
+    expect(categoryProgress(state, 'transport', ALL_FLAGS)).toMatchObject({ acquired: 2, total: 7, complete: false });
   });
 
   it('is complete when every Achievement of the category is acquired', () => {
     const state = { ...city(), achievements: ACHIEVEMENTS.map(({ id }) => id) };
-    expect(categoryProgress(state, 'transport').complete).toBe(true);
+    expect(categoryProgress(state, 'transport', ALL_FLAGS).complete).toBe(true);
   });
 
   it('shows the categories that have Achievements', () => {
-    expect(visibleCategories(city()).map(({ category }) => category)).toEqual(['production', 'housing', 'transport', 'interiors', 'energy', 'architect', 'leisure', 'environment']);
+    expect(visibleCategories(city(), ALL_FLAGS).map(({ category }) => category)).toEqual(['production', 'housing', 'transport', 'interiors', 'energy', 'architect', 'leisure', 'environment']);
   });
 });
 
@@ -81,10 +82,10 @@ describe('Difficulty', () => {
 describe('Politics category', () => {
   it('is hidden under Cozy and cannot be completed there, and shown from Easy', () => {
     const cozy = { ...city(), difficulty: 'cozy' as const, achievements: ACHIEVEMENTS.filter(({ category }) => category === 'politics').map(({ id }) => id) };
-    expect(visibleCategories(cozy).map(({ category }) => category)).not.toContain('politics');
-    expect(categoryProgress(cozy, 'politics').complete).toBe(false);
-    expect(visibleCategories({ ...cozy, difficulty: 'easy' }).map(({ category }) => category)).toContain('politics');
-    expect(categoryProgress({ ...cozy, difficulty: 'easy' }, 'politics').complete).toBe(true);
+    expect(visibleCategories(cozy, ALL_FLAGS).map(({ category }) => category)).not.toContain('politics');
+    expect(categoryProgress(cozy, 'politics', ALL_FLAGS).complete).toBe(false);
+    expect(visibleCategories({ ...cozy, difficulty: 'easy' }, ALL_FLAGS).map(({ category }) => category)).toContain('politics');
+    expect(categoryProgress({ ...cozy, difficulty: 'easy' }, 'politics', ALL_FLAGS).complete).toBe(true);
   });
 
   it('latches an adopted Ordinance and the Grants claimed, from Easy', () => {
@@ -96,5 +97,25 @@ describe('Politics category', () => {
 
   it('earns no Politics Achievement under Cozy', () => {
     expect(latchAchievements(city(), city(), [{ type: 'OrdinanceAdopted', id: 'greenBelt' }]).unlocked).toEqual([]);
+  });
+});
+
+describe('beta features', () => {
+  const noClubs = new Set(['architect', 'advisor']);
+
+  it('leaves an Achievement of a feature the player did not switch on out of its category', () => {
+    const without = categoryProgress(city(), 'leisure', noClubs);
+    const withClubs = categoryProgress(city(), 'leisure', ALL_FLAGS);
+    expect(withClubs.total).toBe(without.total + 1);
+  });
+
+  it('completes a category without its beta Achievements', () => {
+    const ids = ACHIEVEMENTS.filter(({ category, flag }) => category === 'leisure' && flag !== 'clubs').map(({ id }) => id);
+    expect(categoryProgress({ ...city(), achievements: ids }, 'leisure', noClubs).complete).toBe(true);
+    expect(categoryProgress({ ...city(), achievements: ids }, 'leisure', ALL_FLAGS).complete).toBe(false);
+  });
+
+  it('still latches a beta Achievement, since only the gateway gates the feature', () => {
+    expect(latchAchievements(city(), city(), [], { type: 'FoundClub', buildingId: 1 } as never).unlocked).toEqual(['leisure.club']);
   });
 });

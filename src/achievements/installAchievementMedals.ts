@@ -1,4 +1,5 @@
 import { completedCategories, medalNamesOf, type AchievementCategoryId } from '../core';
+import { enabledFlagIds, featureFlagStore } from '../featureFlags/featureFlags';
 import { cloudStore } from '../store/cloudStore';
 import { gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
@@ -15,12 +16,12 @@ export function installAchievementMedals(loadClient: () => Promise<AchievementMe
   let client: AchievementMedalClient | null = null;
   let disposed = false;
   let syncing = false;
-  let known = new Set<AchievementCategoryId>(completedCategories(gameStore.getState().state));
+  let known = new Set<AchievementCategoryId>(completedCategories(gameStore.getState().state, enabledFlagIds()));
   const accountId = () => cloudStore.getState().account?.userId;
 
   const announceCompletions = () => {
     if (readOnlyStore.getState().readOnly) return;
-    const now = completedCategories(gameStore.getState().state);
+    const now = completedCategories(gameStore.getState().state, enabledFlagIds());
     for (const category of now.filter((candidate) => !known.has(candidate))) announceCategoryComplete(category);
     known = new Set(now);
   };
@@ -28,7 +29,7 @@ export function installAchievementMedals(loadClient: () => Promise<AchievementMe
   const sync = async () => {
     const id = accountId();
     if (disposed || syncing || !client || !id || !cloudStore.getState().account?.email || !socialStore.getState().profile || readOnlyStore.getState().readOnly) return;
-    const waiting = completedCategories(gameStore.getState().state).filter((category) => !done[id]?.includes(category));
+    const waiting = completedCategories(gameStore.getState().state, enabledFlagIds()).filter((category) => !done[id]?.includes(category));
     if (waiting.length === 0) return;
     syncing = true;
     try {
@@ -58,6 +59,9 @@ export function installAchievementMedals(loadClient: () => Promise<AchievementMe
   const stopCloud = cloudStore.subscribe((current, previous) => {
     if (current.account?.userId !== previous.account?.userId || current.account?.email !== previous.account?.email) update();
   });
+  const stopFlags = featureFlagStore.subscribe((current, previous) => {
+    if (current.enabled !== previous.enabled) update();
+  });
   const stopSocial = socialStore.subscribe((current, previous) => {
     if (!!current.profile !== !!previous.profile) update();
   });
@@ -77,6 +81,7 @@ export function installAchievementMedals(loadClient: () => Promise<AchievementMe
     disposed = true;
     stopGame();
     stopCloud();
+    stopFlags();
     stopSocial();
     window.removeEventListener('online', update);
     window.removeEventListener('storage', onStorage);
