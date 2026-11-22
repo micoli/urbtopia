@@ -36,6 +36,33 @@
             "type": "string",
             "minLength": 1
           },
+          "fixtureCategories": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "games",
+                "service",
+                "furniture",
+                "shelves",
+                "checkouts",
+                "decor",
+                "beds",
+                "bathroom",
+                "comfort",
+                "reception",
+                "walls",
+                "kitchen",
+                "dining",
+                "bar",
+                "power",
+                "plumbing",
+                "machines",
+                "line"
+              ]
+            }
+          },
           "unlockCitizens": {
             "type": "integer",
             "minimum": 0,

@@ -1,4 +1,5 @@
 import { FIXTURES, driveSidesOf, flowSidesOf, lineInSidesOf, lineOutSidesOf, type FixtureId, type FixtureSpec } from '../core';
+import type { FixtureEffect } from '../core/venues/venueVocabulary';
 import type { MessageKey } from '../i18n/messages';
 import type { FixturePage } from './fixturePages';
 
@@ -28,27 +29,40 @@ export interface FixtureInteriorRow {
 
 const percentOf = (value: number): string => `${Math.round(value * 1000) / 10}%`;
 
-const FIGURES: readonly { field: keyof FixtureSpec; key: MessageKey; format: (value: number) => string }[] = [
-  { field: 'attract', key: 'codex.fixtures.figure.attract', format: percentOf },
-  { field: 'quality', key: 'codex.fixtures.figure.quality', format: percentOf },
-  { field: 'capacity', key: 'codex.fixtures.figure.capacity', format: percentOf },
-  { field: 'speed', key: 'codex.fixtures.figure.speed', format: percentOf },
-  { field: 'yield', key: 'codex.fixtures.figure.yield', format: percentOf },
-  { field: 'sales', key: 'codex.fixtures.figure.sales', format: percentOf },
-  { field: 'coolant', key: 'codex.fixtures.figure.coolant', format: percentOf },
-  { field: 'wear', key: 'codex.fixtures.figure.wear', format: percentOf },
-  { field: 'comfort', key: 'codex.fixtures.figure.comfort', format: String },
-  { field: 'playsPerHour', key: 'codex.fixtures.figure.playsPerHour', format: String },
-  { field: 'shelf', key: 'codex.fixtures.figure.shelf', format: String },
-  { field: 'checkout', key: 'codex.fixtures.figure.checkout', format: String },
-  { field: 'cook', key: 'codex.fixtures.figure.cook', format: String },
-  { field: 'seats', key: 'codex.fixtures.figure.seats', format: String },
-  { field: 'drinks', key: 'codex.fixtures.figure.drinks', format: String },
-  { field: 'stools', key: 'codex.fixtures.figure.stools', format: String },
-  { field: 'waiting', key: 'codex.fixtures.figure.waiting', format: String },
-  { field: 'sleeps', key: 'codex.fixtures.figure.sleeps', format: String },
-  { field: 'bath', key: 'codex.fixtures.figure.bath', format: String },
-];
+interface Figure {
+  key: MessageKey;
+  format: (value: number) => string;
+}
+
+const figure = (name: string, format: Figure['format']): Figure => ({ key: `codex.fixtures.figure.${name}` as MessageKey, format });
+
+// How the Codex shows each effect of a Fixture, in the order of the page; null for an effect that it does not show. A new effect has to be given its place here.
+const FIGURES = {
+  attract: figure('attract', percentOf),
+  quality: figure('quality', percentOf),
+  capacity: figure('capacity', percentOf),
+  speed: figure('speed', percentOf),
+  yield: figure('yield', percentOf),
+  sales: figure('sales', percentOf),
+  coolant: figure('coolant', percentOf),
+  wear: figure('wear', percentOf),
+  comfort: figure('comfort', String),
+  playsPerHour: figure('playsPerHour', String),
+  shelf: figure('shelf', String),
+  checkout: figure('checkout', String),
+  cook: figure('cook', String),
+  seats: figure('seats', String),
+  drinks: figure('drinks', String),
+  stools: figure('stools', String),
+  waiting: figure('waiting', String),
+  sleeps: figure('sleeps', String),
+  bath: figure('bath', String),
+  strength: null,
+  draw: null,
+  power: null,
+  generation: null,
+  cleaner: null,
+} satisfies Record<FixtureEffect | 'wear', Figure | null>;
 
 const HOME_ROLES: readonly string[] = ['bed', 'table', 'chair', 'stove', 'sink', 'washer', 'toilet'];
 
@@ -82,9 +96,9 @@ const usageOf = (spec: FixtureSpec): FactLine[] => [
 ];
 
 export function figuresOf(spec: FixtureSpec): FixtureFigure[] {
-  return FIGURES.flatMap(({ field, key, format }) => {
-    const value = spec[field];
-    return typeof value === 'number' && value > 0 ? [{ key, value: format(value) }] : [];
+  return Object.entries(FIGURES).flatMap(([field, shown]) => {
+    const value = spec[field as keyof FixtureSpec];
+    return shown && typeof value === 'number' && value > 0 ? [{ key: shown.key, value: shown.format(value) }] : [];
   });
 }
 

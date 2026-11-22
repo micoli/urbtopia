@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { HEX_CATEGORIES } from '../districtPlan/districtPlanVocabulary.ts';
 import { SANCTIONABLE_FACTOR_IDS } from '../environment/needFactors.ts';
-import { INTERIOR_FAMILIES_ALL, INTERIOR_PARTS_ALL, INTERIOR_ROLES_ALL, STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
+import { FIXTURE_CATEGORIES_ALL, INTERIOR_FAMILIES_ALL, INTERIOR_PARTS_ALL, INTERIOR_ROLES_ALL, STAFF_ROLES_ALL } from '../venues/venueVocabulary.ts';
 
 const count = z.int().min(0);
 const positive = z.number().positive();
@@ -87,6 +87,8 @@ export const interiorsBalanceSchema = z
         bonusModel: z.enum(['factory', 'packhouse', 'machines', 'line', 'assigned', 'engineRoom']).optional(),
         // The building whose Fixtures, shell and demonstrations this interior shares, when it is not its own kind: the Vault and the Material depot run the Storehouse interior.
         fixtureKind: z.string().min(1).optional(),
+        // The sections of the build menu of the Fixtures of the interior, in order.
+        fixtureCategories: z.array(z.enum(FIXTURE_CATEGORIES_ALL)).min(1).optional(),
         // The Citizens a city needs before the interior can be fitted out.
         unlockCitizens: count.optional(),
         // Service interiors: the size of the room and the most quality the furniture can add, by Tier.
@@ -128,6 +130,8 @@ export const packhouseInteriorBalanceSchema = z
 export const homeInteriorBalanceSchema = z
   .strictObject({
     ...schemaField,
+    // The sections of the build menu of a Home interior, in order; they are also the groups its Comfort covers.
+    fixtureCategories: z.array(z.enum(FIXTURE_CATEGORIES_ALL)).min(1),
     gridSizes: z.array(z.int().min(1)).min(1),
     wellbeingCaps: z.array(positive).min(1),
     weights: z.strictObject({ sleeping: positive, washing: positive, eating: positive, cooking: positive, leisure: positive, decor: positive }),
