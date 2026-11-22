@@ -1273,7 +1273,7 @@ The units the player has set aside for an accepted Challenge, taken from the Sto
 _Avoid_: Basket, deposit, contribution
 
 **Medal**:
-A permanent distinction earned by completing a Challenge whose reward is a Medal, or by reaching cumulative Donation value milestones. It is shown in the Social window, on the Player account's own profile and on its Friends'.
+A permanent distinction earned by completing a Challenge whose reward is a Medal, by reaching cumulative Donation value milestones, or by completing an Achievement category. A Medal belongs to the Player account, not to a City. It is shown in the Social window, on the Player account's own profile and on its Friends'.
 _Avoid_: Badge (reserved for the notification counter on a button), trophy. Distinct from an Achievement.
 
 **Achievement category**:
