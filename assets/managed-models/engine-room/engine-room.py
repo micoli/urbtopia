@@ -74,6 +74,18 @@ def pipe_elbow(body, flange, band):
             flange_x("flange_right", 0.46, flange)] + pipe_support("support")
 
 
+def pipe_tee(body, flange, band):
+    """Tee joining the front (-y), the right (+x) and the left (-x): the elbow with a third arm."""
+    return [pipe_run_y("run_y", -0.46, 0.0, body), pipe_run_x("run_x", -0.46, 0.46, body), pipe_joint(band), flange_y("flange_front", -0.5, flange),
+            flange_x("flange_right", 0.46, flange), flange_x("flange_left", -0.5, flange)] + pipe_support("support")
+
+
+def pipe_cross(body, flange, band):
+    """Cross joining the four sides: the tee with a fourth arm, toward the back (+y)."""
+    return [pipe_run_y("run_y", -0.46, 0.46, body), pipe_run_x("run_x", -0.46, 0.46, body), pipe_joint(band), flange_y("flange_front", -0.5, flange), flange_y("flange_back", 0.46, flange),
+            flange_x("flange_right", 0.46, flange), flange_x("flange_left", -0.5, flange)] + pipe_support("support")
+
+
 def water_pipe_straight(rng):
     return pipe_straight("blue", "blue_dark", "blue_dark")
 
@@ -82,12 +94,28 @@ def water_pipe_elbow(rng):
     return pipe_elbow("blue", "blue_dark", "blue_dark")
 
 
+def water_pipe_tee(rng):
+    return pipe_tee("blue", "blue_dark", "blue_dark")
+
+
+def water_pipe_cross(rng):
+    return pipe_cross("blue", "blue_dark", "blue_dark")
+
+
 def steam_pipe_straight(rng):
     return pipe_straight("steam", "steel_dark", "brass")
 
 
 def steam_pipe_elbow(rng):
     return pipe_elbow("steam", "steel_dark", "brass")
+
+
+def steam_pipe_tee(rng):
+    return pipe_tee("steam", "steel_dark", "brass")
+
+
+def steam_pipe_cross(rng):
+    return pipe_cross("steam", "steel_dark", "brass")
 
 
 def coal_conveyor_straight(rng):
@@ -164,6 +192,18 @@ def cable_straight(rng):
 def cable_elbow(rng):
     """Elbow Cable joining the front (-y) to the right (+x), lying on the floor: two black runs meeting on a yellow clip, a brass plug at each end."""
     return [cable_run_y("run_y", -0.46, 0.04), cable_run_x("run_x", -0.04, 0.46), cable_plug_y("plug_front", -0.5), cable_plug_x("plug_right", 0.46),
+            block("clip_corner", -0.08, 0.08, -0.08, 0.08, 0.0, CABLE_Z + 0.03, P["yellow"])]
+
+
+def cable_tee(rng):
+    """Tee Cable joining the front (-y), the right (+x) and the left (-x), lying on the floor: a black run along x and an arm toward the front, meeting on a yellow clip."""
+    return [cable_run_y("run_y", -0.46, 0.04), cable_run_x("run_x", -0.46, 0.46), cable_plug_y("plug_front", -0.5), cable_plug_x("plug_right", 0.46), cable_plug_x("plug_left", -0.5),
+            block("clip_corner", -0.08, 0.08, -0.08, 0.08, 0.0, CABLE_Z + 0.03, P["yellow"])]
+
+
+def cable_cross(rng):
+    """Cross Cable joining the four sides, lying on the floor: the tee with a fourth arm, toward the back (+y)."""
+    return [cable_run_y("run_y", -0.46, 0.46), cable_run_x("run_x", -0.46, 0.46), cable_plug_y("plug_front", -0.5), cable_plug_y("plug_back", 0.46), cable_plug_x("plug_right", 0.46), cable_plug_x("plug_left", -0.5),
             block("clip_corner", -0.08, 0.08, -0.08, 0.08, 0.0, CABLE_Z + 0.03, P["yellow"])]
 
 
@@ -428,6 +468,12 @@ if __name__ == "__main__":
         "power-outlet": power_outlet,
         "cable-straight": cable_straight,
         "cable-elbow": cable_elbow,
+        "cable-tee": cable_tee,
+        "cable-cross": cable_cross,
+        "water-pipe-tee": water_pipe_tee,
+        "water-pipe-cross": water_pipe_cross,
+        "steam-pipe-tee": steam_pipe_tee,
+        "steam-pipe-cross": steam_pipe_cross,
     }
     export_all(models, P, 1200, HERE, center=False, ground=False)
     # The previews are for the eyes only: they are exported when asked for by name, never with the Fixtures, so that no unused model is kept.

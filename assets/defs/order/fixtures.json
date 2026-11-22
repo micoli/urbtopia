@@ -477,5 +477,11 @@
   "coalPlantWall",
   "coalPlantWallFull",
   "coalPlantWindow",
-  "coalPlantDoorway"
+  "coalPlantDoorway",
+  "coalPlantWaterPipeTee",
+  "coalPlantWaterPipeCross",
+  "coalPlantSteamPipeTee",
+  "coalPlantSteamPipeCross",
+  "coalPlantCableTee",
+  "coalPlantCableCross"
 ]

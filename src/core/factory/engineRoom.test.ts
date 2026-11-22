@@ -96,6 +96,26 @@ describe('the wall ports of an Engine room', () => {
   });
 });
 
+describe('tees and crosses', () => {
+  const swapped = (from: FixtureId, to: FixtureId): VenueFixture[] => coalCircuit().map(fixture => (fixture.type === from ? { ...fixture, type: to, rotation: 0 as const } : fixture));
+
+  it('pass steam, water and electricity through a straight run', () => {
+    expect(engineRoomReportOf(plant(swapped('coalPlantSteamPipe', 'coalPlantSteamPipeTee'))).circuits).toHaveLength(1);
+    expect(engineRoomReportOf(plant(swapped('coalPlantSteamPipe', 'coalPlantSteamPipeCross'))).circuits).toHaveLength(1);
+    expect(engineRoomReportOf(plant(swapped('coalPlantCable', 'coalPlantCableCross'))).circuits).toHaveLength(1);
+    expect(engineRoomReportOf(plant(swapped('coalPlantWaterPipe', 'coalPlantWaterPipeCross'))).circuits).toHaveLength(1);
+  });
+
+  it('carry a branch to a second Circuit, each Circuit taking its own ports', () => {
+    const fixtures = [...swapped('coalPlantSteamPipe', 'coalPlantSteamPipeCross'), put('coalPlantSteamBoiler', 3, 4)];
+    expect(engineRoomReportOf(plant(fixtures)).circuits).toHaveLength(1);
+  });
+
+  it('leave a Medium on its own links: a steam Tee never carries electricity', () => {
+    expect(engineRoomReportOf(plant(swapped('coalPlantCable', 'coalPlantSteamPipeTee'))).circuits).toHaveLength(0);
+  });
+});
+
 describe('what moves in an Engine room', () => {
   it('sends coal from the quay along the Conveyor to the boiler on a complete Circuit', () => {
     const [path, ...others] = engineRoomCoalPathsOf(plant(coalCircuit()));

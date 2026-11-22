@@ -21095,6 +21095,16 @@
     ],
     "flush": true
   },
+  "engine-room-cable-cross": {
+    "file": "engine-room/cable-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "engine-room-cable-elbow": {
     "file": "engine-room/cable-elbow",
     "source": "managed",
@@ -21107,6 +21117,16 @@
   },
   "engine-room-cable-straight": {
     "file": "engine-room/cable-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-cable-tee": {
+    "file": "engine-room/cable-tee",
     "source": "managed",
     "license": "Own work",
     "footprint": [
@@ -21175,6 +21195,16 @@
     ],
     "flush": true
   },
+  "engine-room-steam-pipe-cross": {
+    "file": "engine-room/steam-pipe-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "engine-room-steam-pipe-elbow": {
     "file": "engine-room/steam-pipe-elbow",
     "source": "managed",
@@ -21187,6 +21217,16 @@
   },
   "engine-room-steam-pipe-straight": {
     "file": "engine-room/steam-pipe-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-steam-pipe-tee": {
+    "file": "engine-room/steam-pipe-tee",
     "source": "managed",
     "license": "Own work",
     "footprint": [
@@ -21235,6 +21275,16 @@
     ],
     "flush": true
   },
+  "engine-room-water-pipe-cross": {
+    "file": "engine-room/water-pipe-cross",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "engine-room-water-pipe-elbow": {
     "file": "engine-room/water-pipe-elbow",
     "source": "managed",
@@ -21247,6 +21297,16 @@
   },
   "engine-room-water-pipe-straight": {
     "file": "engine-room/water-pipe-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-water-pipe-tee": {
+    "file": "engine-room/water-pipe-tee",
     "source": "managed",
     "license": "Own work",
     "footprint": [
