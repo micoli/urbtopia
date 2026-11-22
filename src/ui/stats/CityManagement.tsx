@@ -7,6 +7,7 @@ import {useUi} from '../common/hooks';
 import {gameStore} from '../../store/gameStore';
 import {useThrottledValue} from '../common/useThrottledValue';
 import {Tabs, type TabItem} from '../common/Tabs';
+import {AchievementsSection} from '../achievements/AchievementsSection';
 import {CitiesSection} from '../system/CitiesSection';
 import {ShipmentsSection} from '../shipments/ShipmentsSection';
 import {readRegistry} from '../../persistence/cities';
@@ -76,7 +77,7 @@ function CityManagementDialog() {
     }, []);
     if (!open) return null;
     const multiCity = (readRegistry(rawSaveStore)?.cities.length ?? 0) > 1;
-    const tabs: TabItem<ManagementTab>[] = [{id: 'dashboard', icon: 'stats', label: t('eco.tab.dashboard')}, {id: 'cities', icon: 'city', label: t('cities.title')}, ...(multiCity ? [{id: 'shipments' as const, icon: 'shipment' as const, label: t('shipments.title')}] : [])];
+    const tabs: TabItem<ManagementTab>[] = [{id: 'dashboard', icon: 'stats', label: t('eco.tab.dashboard')}, {id: 'achievements', icon: 'trophy', label: t('achievements.title')}, {id: 'cities', icon: 'city', label: t('cities.title')}, ...(multiCity ? [{id: 'shipments' as const, icon: 'shipment' as const, label: t('shipments.title')}] : [])];
     const groupTabs: TabItem<DashboardGroup>[] = [{id: 'overview', icon: 'stats', label: t('eco.tab.overview')}, {id: 'production', icon: 'production', label: t('eco.tab.production')}, {id: 'city', icon: 'services', label: t('eco.tab.city')}, {id: 'environment', icon: 'nature', label: t('eco.tab.environment')}, {id: 'transport', icon: 'transport', label: t('eco.tab.transport')}, {id: 'transit', icon: 'bus', label: t('eco.transport')}, {id: 'tourism', icon: 'tourism', label: t('tourism.title')}];
     const selected = tabs.some(entry => entry.id === tab) ? tab : 'dashboard';
     const energy = energyStats(state);
@@ -166,7 +167,7 @@ function CityManagementDialog() {
             </header>
             <Tabs label={t('eco.title')} idPrefix="eco-tab" panelId="eco-panel" tabs={tabs} selected={selected} onSelect={setTab}/>
             <div id="eco-panel" role="tabpanel" aria-labelledby={`eco-tab-${selected}`}>
-            {selected === 'cities' ? <CitiesSection/> : selected === 'shipments' ? <ShipmentsSection/> : tabbed ? <>
+            {selected === 'achievements' ? <AchievementsSection/> : selected === 'cities' ? <CitiesSection/> : selected === 'shipments' ? <ShipmentsSection/> : tabbed ? <>
             <Tabs label={t('eco.tab.dashboard')} idPrefix="eco-group" panelId="eco-group-panel" tabs={groupTabs} selected={group} onSelect={setGroup}/>
             <div id="eco-group-panel" role="tabpanel" aria-labelledby={`eco-group-${group}`}>
             {group === 'overview' && <>{overviewSection}<p className="eco-units">{t('eco.units')}</p></>}

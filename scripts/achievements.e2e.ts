@@ -1,5 +1,15 @@
 import { readFileSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+async function openAchievementsTab(page: Page) {
+  await page.evaluate(async () => {
+    const { uiStore } = await import('../src/store/uiStore.ts');
+    uiStore.getState().toggleStats();
+  });
+  const window = page.getByRole('dialog', { name: 'Gestion de la ville' });
+  await window.getByRole('tab', { name: 'Succès' }).click();
+  return window;
+}
 
 test.describe('achievements', () => {
   test.use({ viewport: { width: 1280, height: 900 } });
@@ -16,8 +26,7 @@ test.describe('achievements', () => {
 
     await expect(page.getByRole('status')).toContainText('Succès : À pied');
 
-    await page.getByRole('button', { name: 'Succès' }).first().click();
-    const window = page.getByRole('dialog', { name: 'Succès' });
+    const window = await openAchievementsTab(page);
     await expect(window).toBeVisible();
     await expect(window).toContainText('Transports');
     await expect(window).toContainText('1 sur 7');
@@ -38,8 +47,7 @@ test.describe('achievements', () => {
     await expect(page.getByRole('status')).toContainText('3 succès reconnus dans votre City', { timeout: 30_000 });
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
 
-    await page.getByRole('button', { name: 'Succès' }).first().click();
-    const window = page.getByRole('dialog', { name: 'Succès' });
+    const window = await openAchievementsTab(page);
     await expect(window).toContainText('1 sur 7');
     await expect(window.locator('[data-done="true"]')).toHaveCount(3);
     await expect(window).toContainText('Première route');
@@ -82,8 +90,7 @@ test.describe('achievements', () => {
     await page.goto('/?e2e');
     await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
 
-    await page.getByRole('button', { name: 'Succès' }).first().click();
-    const window = page.getByRole('dialog', { name: 'Succès' });
+    const window = await openAchievementsTab(page);
     await expect(window).toContainText('Architect');
     await expect(window.getByRole('heading', { name: 'Politique' })).toHaveCount(0);
 

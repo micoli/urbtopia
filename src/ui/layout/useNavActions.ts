@@ -31,8 +31,6 @@ export function useNavActions(): NavAction[] {
   const toggleStats = useUi(store => store.toggleStats);
   const socialOpen = useUi(store => store.socialOpen);
   const toggleSocial = useUi(store => store.toggleSocial);
-  const achievementsOpen = useUi(store => store.achievementsOpen);
-  const toggleAchievements = useUi(store => store.toggleAchievements);
   const codexOpen = useUi(store => store.codexOpen);
   const openCodex = useUi(store => store.openCodex);
   const openFlyout = useUi((store) => store.openFlyout);
@@ -54,7 +52,6 @@ export function useNavActions(): NavAction[] {
     { id: 'market', icon: 'market', image: 'market.png', label: t('dock.market'), pressed: marketOpen, disabled: !marketUnlocked, guided: false, badge: newChallenges, badgeLabel: t('challenge.badge'), onClick: toggleMarket },
     { id: 'stats', icon: 'stats', image: 'town-management.png', label: t('eco.title'), pressed: statsOpen, disabled: false, guided: false, badge: sanctionedCount, badgeLabel: t('sanction.alert'), onClick: toggleStats },
     ...(cloudEnabled ? [{ id: 'social', icon: 'globe' as const, image: 'social-network.png', label: t('social.title'), pressed: socialOpen, disabled: false, guided: false, badge: pendingRequests, onClick: toggleSocial }] : []),
-    { id: 'achievements', icon: 'trophy' as const, label: t('achievements.title'), pressed: achievementsOpen, disabled: false, guided: false, onClick: toggleAchievements },
     { id: 'codex', icon: 'book' as const, image: 'codex.png', label: t('codex.title'), pressed: codexOpen, disabled: false, guided: false, onClick: () => openCodex() },
     { id: 'settings', icon: 'settings' as const, image: 'settings.png', label: t('dock.settings'), pressed: settingsOpen, disabled: false, guided: false, onClick: toggleSettings },
   ];
