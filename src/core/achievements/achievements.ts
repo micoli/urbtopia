@@ -5,11 +5,13 @@ import { HOUSING } from './categories/housing';
 import { ENVIRONMENT } from './categories/environment';
 import { INTERIORS } from './categories/interiors';
 import { LEISURE } from './categories/leisure';
+import { MANAGEMENT } from './categories/management';
+import { SOCIAL } from './categories/social';
 import { POLITICS } from './categories/politics';
 import { PRODUCTION } from './categories/production';
 import { TRANSPORT } from './categories/transport';
 
-export const ACHIEVEMENTS: readonly AchievementDef[] = [...PRODUCTION, ...HOUSING, ...TRANSPORT, ...INTERIORS, ...ENERGY, ...POLITICS, ...ARCHITECT, ...LEISURE, ...ENVIRONMENT];
+export const ACHIEVEMENTS: readonly AchievementDef[] = [...PRODUCTION, ...HOUSING, ...TRANSPORT, ...INTERIORS, ...ENERGY, ...POLITICS, ...ARCHITECT, ...LEISURE, ...ENVIRONMENT, ...SOCIAL, ...MANAGEMENT];
 
 export const CATEGORY_NAMES: Record<AchievementCategoryId, { readonly en: string; readonly fr: string }> = {
   production: { en: 'Production and economy', fr: 'Production et économie' },
@@ -21,6 +23,8 @@ export const CATEGORY_NAMES: Record<AchievementCategoryId, { readonly en: string
   architect: { en: 'Architect', fr: 'Architect' },
   leisure: { en: 'Leisure and tourism', fr: 'Loisirs et tourisme' },
   environment: { en: 'Environment', fr: 'Environnement' },
+  social: { en: 'Social', fr: 'Social' },
+  management: { en: 'City management', fr: 'Gestion de la ville' },
 };
 
 export function achievementsOf(category: AchievementCategoryId): readonly AchievementDef[] {

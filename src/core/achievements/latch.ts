@@ -14,10 +14,11 @@ export function isAcquired(state: GameState, id: string): boolean {
   return state.achievements?.includes(id) ?? false;
 }
 
-// A Replan only lays down again what was already placed, and a City read-only earns nothing: the callers skip those cases.
+// A City being replanned earns nothing: the layout is lifted off the map and laid down again, which is not building. Finishing the Replan only earns what its Command says.
 export function latchAchievements(before: GameState, after: GameState, events: readonly GameEvent[], command?: Command): { state: GameState; unlocked: string[] } {
-  if (before.replan || after.replan) return { state: after, unlocked: [] };
-  const unlocked = ACHIEVEMENTS.filter((achievement) => isPossible(after, achievement) && !isAcquired(after, achievement.id) && isRaised(achievement.trigger, { before, after, events, command })).map((achievement) => achievement.id);
+  if (after.replan || (before.replan && command?.type !== 'FinishReplan')) return { state: after, unlocked: [] };
+  const commandOnly = before.replan !== undefined;
+  const unlocked = ACHIEVEMENTS.filter((achievement) => isPossible(after, achievement) && (!commandOnly || achievement.trigger.type === 'command') && !isAcquired(after, achievement.id) && isRaised(achievement.trigger, { before, after, events, command })).map((achievement) => achievement.id);
   if (unlocked.length === 0) return { state: after, unlocked };
   return { state: { ...after, achievements: [...(after.achievements ?? []), ...unlocked] }, unlocked };
 }

@@ -4,11 +4,11 @@ import type { Command } from '../engine/commands';
 import type { GameState } from '../engine/state';
 import type { CounterId } from './counters';
 
-export const ACHIEVEMENT_CATEGORIES = ['production', 'housing', 'transport', 'interiors', 'energy', 'politics', 'architect', 'leisure', 'environment'] as const;
+export const ACHIEVEMENT_CATEGORIES = ['production', 'housing', 'transport', 'interiors', 'energy', 'politics', 'architect', 'leisure', 'environment', 'social', 'management'] as const;
 export type AchievementCategoryId = (typeof ACHIEVEMENT_CATEGORIES)[number];
 
 // What the player does outside the game state, which the interface reports with a Signal Command.
-export const ACHIEVEMENT_SIGNALS = ['interiorOpened', 'demonstrationFinished', 'landValueOpened'] as const;
+export const ACHIEVEMENT_SIGNALS = ['interiorOpened', 'demonstrationFinished', 'landValueOpened', 'handleSet', 'friendRequestSent', 'tradeOfferCreated', 'visitStarted', 'cityCreated', 'cloudSaved', 'analyticsOpened', 'advisorAsked', 'codexOpened'] as const;
 export type AchievementSignal = (typeof ACHIEVEMENT_SIGNALS)[number];
 
 // The closed set of ways an Achievement is raised; each is judged between the state before a Command or a simulation step and the state after it.
@@ -24,8 +24,8 @@ export type AchievementTrigger =
   // The interface reports that the player did something.
   | { readonly type: 'signal'; readonly signal: AchievementSignal };
 
-// The features that ship switched off, named by the flags of the game.
-export type AchievementFlag = 'clubs' | 'architect' | 'advisor';
+// The features that ship switched off, named by the flags of the game, and the Cloud, which a build may not have.
+export type AchievementFlag = 'clubs' | 'architect' | 'advisor' | 'cloud';
 
 export interface LocalizedText {
   readonly en: string;
@@ -42,7 +42,7 @@ export interface AchievementDef {
   readonly unlockCitizens?: number;
   // The lowest Difficulty that has the feature.
   readonly fromDifficulty?: Difficulty;
-  // The beta feature it needs: it only counts for a player who switched that feature on.
+  // The feature it needs: it only counts for a player who has that feature.
   readonly flag?: AchievementFlag;
 }
 

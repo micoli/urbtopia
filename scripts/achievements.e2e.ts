@@ -93,4 +93,20 @@ test.describe('achievements', () => {
     });
     await expect(window.getByRole('heading', { name: 'Politique' })).toHaveCount(1);
   });
+
+  test('opening the Codex, the Analytics view and skipping time each earn an Achievement of City management', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+
+    const acquired = await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      const { uiStore } = await import('../src/store/uiStore.ts');
+      uiStore.getState().openCodex();
+      uiStore.getState().enterAnalytics('movement.flows');
+      gameStore.getState().send({ type: 'SkipTime', hours: 1 });
+      return gameStore.getState().state.achievements;
+    });
+    expect(acquired).toEqual(expect.arrayContaining(['management.codex', 'management.analytics', 'management.timeSkip']));
+  });
 });

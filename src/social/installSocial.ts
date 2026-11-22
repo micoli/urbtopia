@@ -1,3 +1,4 @@
+import { sendAchievementSignal } from '../store/achievementSignal';
 import { cloudEnabled } from '../persistence/cloud/cloudConfig';
 import { openCityId } from '../persistence/instance';
 import { saveNowHandle } from '../persistence/saveNow';
@@ -38,6 +39,7 @@ export function installSocial(): () => void {
       () => socialStore.getState().conversation,
       trades,
       () => socialStore.getState().profile?.offers ?? [],
+      sendAchievementSignal,
     );
     const groupActions = createGroupActions(
       client,

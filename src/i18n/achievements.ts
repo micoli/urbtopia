@@ -7,7 +7,7 @@ const texts = {
   'achievements.complete': ['Complete', 'Terminé'],
   'achievements.needsCitizens': ['From {citizens} Citizens', 'À partir de {citizens} Citizens'],
   'achievements.needsDifficulty': ['Not on this Difficulty', 'Absent de cette difficulté'],
-  'achievements.needsBeta': ['Beta feature, switch it on in the Settings', 'Fonctionnalité bêta, activez-la dans les réglages'],
+  'achievements.needsBeta': ['Needs a beta feature or the online services', 'Demande une fonctionnalité bêta ou les services en ligne'],
   'achievements.done': ['Done', 'Fait'],
   'achievements.todo': ['To do', 'À faire'],
   'achievements.empty': ['No Achievement on this Difficulty.', 'Aucun succès à cette difficulté.'],

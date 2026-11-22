@@ -5,7 +5,7 @@ import { latchAchievements } from './latch';
 import { categoryProgress, visibleCategories } from './progress';
 
 const NOW = 1_700_000_000_000;
-const ALL_FLAGS = new Set(['clubs', 'architect', 'advisor']);
+const ALL_FLAGS = new Set(['clubs', 'architect', 'advisor', 'cloud']);
 const city = () => newGame({ seed: 'amber-fox-4821', now: NOW });
 
 function applied(state: GameState, command: Command) {
@@ -39,6 +39,13 @@ describe('Achievements', () => {
     expect(razed.state.achievements).toContain('transport.pedestrianWay');
   });
 
+  it('earns the Replan Achievement when the Replan is finished, and nothing else it moved', () => {
+    const before = { ...city(), replan: { stash: { buildings: [] } } } as GameState;
+    const after = { ...city(), busLines: [{ id: 1, stops: [] }] };
+    expect(latchAchievements(before, after, [], { type: 'FinishReplan' }).unlocked).toEqual(['management.replan']);
+    expect(latchAchievements(before, after, [], { type: 'CancelReplan' }).unlocked).toEqual([]);
+  });
+
   it('earns nothing during a Replan', () => {
     const before = city();
     const after = { ...before, replan: { stash: { buildings: [] } }, busLines: [{ id: 99, stops: [] }] } as GameState;
@@ -64,7 +71,7 @@ describe('category progress', () => {
   });
 
   it('shows the categories that have Achievements', () => {
-    expect(visibleCategories(city(), ALL_FLAGS).map(({ category }) => category)).toEqual(['production', 'housing', 'transport', 'interiors', 'energy', 'architect', 'leisure', 'environment']);
+    expect(visibleCategories(city(), ALL_FLAGS).map(({ category }) => category)).toEqual(['production', 'housing', 'transport', 'interiors', 'energy', 'architect', 'leisure', 'environment', 'social', 'management']);
   });
 });
 
@@ -117,5 +124,14 @@ describe('beta features', () => {
 
   it('still latches a beta Achievement, since only the gateway gates the feature', () => {
     expect(latchAchievements(city(), city(), [], { type: 'FoundClub', buildingId: 1 } as never).unlocked).toEqual(['leisure.club']);
+  });
+});
+
+describe('the Cloud', () => {
+  it('leaves the Achievements that need it out of a category when the build has none', () => {
+    const online = categoryProgress(city(), 'social', ALL_FLAGS);
+    const offline = categoryProgress(city(), 'social', new Set(['clubs', 'architect', 'advisor']));
+    expect(offline.total).toBeLessThan(online.total);
+    expect(offline.total).toBe(1);
   });
 });

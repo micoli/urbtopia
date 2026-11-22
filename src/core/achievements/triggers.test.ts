@@ -7,7 +7,7 @@ import { latchAchievements } from './latch';
 import { categoryProgress } from './progress';
 import { isProvenBy, isRaised } from './triggers';
 
-const ALL_FLAGS = new Set(['clubs', 'architect', 'advisor']);
+const ALL_FLAGS = new Set(['clubs', 'architect', 'advisor', 'cloud']);
 const city = () => newGame({ seed: 'amber-fox-4821', now: 1_700_000_000_000 });
 const withBuilding = (state: GameState, type: Parameters<typeof createBuilding>[1], id = 900): GameState => ({ ...state, buildings: [...state.buildings, createBuilding(id, type, 56, 50, 0)] });
 const raised = (trigger: AchievementTrigger, before: GameState, after: GameState, events: GameEvent[] = [], command?: Command) => isRaised(trigger, { before, after, events, command });

@@ -1,5 +1,5 @@
 import { visibleCategories } from '../../core';
-import { useEnabledFlagIds } from '../../featureFlags/useFeatureFlag';
+import { useAvailableFeatures } from '../../achievements/availableFeatures';
 import { t } from '../../i18n/t';
 import { CloseButton } from '../common/CloseButton';
 import { Note } from '../common/Note';
@@ -10,7 +10,7 @@ import { CategorySection } from './CategorySection';
 
 function AchievementsDialog() {
   const state = useGame((store) => store.state);
-  const flags = useEnabledFlagIds();
+  const flags = useAvailableFeatures();
   const open = useUi((store) => store.achievementsOpen);
   const close = useUi((store) => store.closeAchievements);
   const panel = useModalFocus(open, close);

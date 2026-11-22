@@ -1,3 +1,4 @@
+import { sendAchievementSignal } from '../../store/achievementSignal';
 import { useState } from 'react';
 import { MAX_CITIES, readRegistry } from '../../persistence/cities';
 import { openCityId, rawSaveStore } from '../../persistence/instance';
@@ -39,7 +40,10 @@ export function CitiesSection() {
           />
         ))}
       </ul>
-      <NewCityForm full={registry.cities.length >= MAX_CITIES} onCreate={(difficulty) => liveCityLifecycle.create(difficulty)} />
+      <NewCityForm full={registry.cities.length >= MAX_CITIES} onCreate={(difficulty) => {
+        sendAchievementSignal('cityCreated');
+        return liveCityLifecycle.create(difficulty);
+      }} />
     </section>
   );
 }
