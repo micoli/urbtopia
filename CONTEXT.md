@@ -1263,7 +1263,15 @@ _Avoid_: Basket, deposit, contribution
 
 **Medal**:
 A permanent distinction earned by completing a Challenge whose reward is a Medal, or by reaching cumulative Donation value milestones. It is shown in the Social window, on the Player account's own profile and on its Friends'.
-_Avoid_: Badge (reserved for the notification counter on a button), trophy, achievement
+_Avoid_: Badge (reserved for the notification counter on a button), trophy. Distinct from an Achievement.
+
+**Achievement category**:
+A themed group of Achievements (Social, Transport, Construction…) that together cover one area of the game. It is complete when all its Achievements are, and completing it earns a Medal.
+_Avoid_: Chapter, tab
+
+**Achievement**:
+A feature of the game that the player has used at least once in a City, such as placing a first Bus line. It is acquired by City and kept in its save, is binary (done or not, no counter), pays no Urbs, and is never taken back, even if the player later demolishes what earned it. Its purpose is to push the player to try every feature. Distinct from a Medal and from a Challenge.
+_Avoid_: Trophy, badge, quest, mission
 
 **Hall of fame**:
 The public ranking of the ten biggest Cities by Citizens, among the Cities that have a Showcase and whose Player account has a Handle. A Player account can have several Cities in it. Each entry shows the Avatar, the Handle, the City name and the Citizens count of its City. Anyone can consult it.

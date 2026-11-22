@@ -1,8 +1,10 @@
 import { definitionOf } from '../buildings/buildingDefinitions';
 import { entriesOf } from '../defs/entries';
 import fixtureOrder from '../../../assets/defs/order/fixtures.json' with { type: 'json' };
+import templateOrder from '../../../assets/defs/order/fixtureTemplates.json' with { type: 'json' };
 import type { FixtureId, VenueType } from '../engine/state';
 import { modelFileOf } from '../models/modelFiles';
+import { expandFixtureTemplate, type FixtureTemplate } from './fixtureExpansion';
 import type { FixtureDefinition } from './fixtureSchema';
 import { VENUE_TYPES } from './profiles';
 import { ENGINE_ROOM_FIXTURE_CATEGORIES, FACTORY_FIXTURE_CATEGORIES, HOSPITAL_FIXTURE_CATEGORIES, LIBRARY_FIXTURE_CATEGORIES, SCHOOL_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, LINE_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, TEXTILE_FIXTURE_CATEGORIES, type PRODUCTION_INTERIOR_KINDS, type SERVICE_INTERIOR_KINDS, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type FixturePort, type PackSize } from './venueVocabulary';
@@ -128,7 +130,14 @@ const specOf = ({ id: _id, kind: _kind, name: _name, model, tint, footprint, joi
   ...(tint ? { tint: Number.parseInt(tint.slice(1), 16) } : {}),
 });
 
-export const FIXTURE_ENTRIES = entriesOf<FixtureDefinition, FixtureId>(files, fixtureOrder);
+const templateFiles = import.meta.glob<FixtureTemplate>('../../../assets/defs/fixtureTemplates/*.json', { eager: true, import: 'default' });
+
+// A template becomes one Fixture per venue, after those written one by one.
+const templateEntries = entriesOf<FixtureTemplate>(templateFiles, templateOrder).flatMap(({ id: templateId, ...template }) =>
+  expandFixtureTemplate(templateId, template).map(fixture => ({ ...fixture.definition, id: fixture.id }) as unknown as FixtureDefinition & { id: FixtureId }),
+);
+
+export const FIXTURE_ENTRIES = [...entriesOf<FixtureDefinition, FixtureId>(files, fixtureOrder), ...templateEntries];
 
 export const FIXTURES = Object.fromEntries(FIXTURE_ENTRIES.map(entry => [entry.id, specOf(entry)])) as Record<FixtureId, FixtureSpec>;
 

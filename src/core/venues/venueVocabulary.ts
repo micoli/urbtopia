@@ -83,3 +83,20 @@ export const HOME_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['beds', 'bat
 export const HOME_FIXTURE_ROLES = ['bed', 'table', 'chair', 'stove', 'sink', 'washer', 'toilet', 'leisure', 'decor'] as const;
 
 export type HomeFixtureRole = (typeof HOME_FIXTURE_ROLES)[number];
+
+// Every place a Fixture can stand: a Venue, a Home interior, a Service interior or a Production interior.
+export const FIXTURE_VENUES = ['arcade', 'supermarket', 'hotel', 'restaurant', 'home', ...SERVICE_INTERIOR_KINDS, ...PRODUCTION_INTERIOR_KINDS] as const;
+
+export type FixtureVenueKind = (typeof FIXTURE_VENUES)[number];
+
+// The numbers a Fixture adds to what its venue earns, serves, holds or draws. Each is read by the code of the venue that declares it.
+export const FIXTURE_EFFECTS = [
+  'speed', 'yield', 'sales', 'capacity', 'coolant', 'draw', 'strength', 'power', 'quality', 'comfort', 'attract', 'checkout', 'cook', 'shelf', 'playsPerHour', 'seats', 'drinks', 'stools', 'waiting', 'sleeps', 'bath',
+] as const;
+
+export type FixtureEffect = (typeof FIXTURE_EFFECTS)[number];
+
+// What a Fixture is, besides numbers: a flag when it has no value, a word when it has one.
+export const FIXTURE_TRAITS = ['heat', 'prep', 'reception', 'picks', 'loud', 'reverses', 'turns', 'seat', 'packSize', 'assigns', 'yieldGroup'] as const;
+
+export type FixtureTrait = (typeof FIXTURE_TRAITS)[number];

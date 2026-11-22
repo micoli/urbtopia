@@ -9,6 +9,8 @@ import { annualEventSchema, type AnnualEventDefinition } from '../src/core/annua
 import { boatSchema, type BoatDefinition } from '../src/core/water/boatSchema.ts';
 import { serviceVehicleSchema, trafficVehicleSchema, transitVehicleSchema, type ServiceVehicleDefinition, type TrafficVehicleDefinition, type TransitVehicleDefinition } from '../src/core/transit/vehicleSchemas.ts';
 import { fixtureSchema, type FixtureDefinition } from '../src/core/venues/fixtureSchema.ts';
+import { expandFixtureTemplate, type FixtureTemplate } from '../src/core/venues/fixtureExpansion.ts';
+import { fixtureTemplateSchema, type FixtureTemplateDefinition } from '../src/core/venues/fixtureTemplate.ts';
 
 // Every kind of Game object stored one file per id under assets/defs/<dir>. Pure: shared by the scripts, the build and the editor.
 
@@ -142,6 +144,27 @@ export const COLLECTIONS = {
     idRule: 'be camelCase letters and digits',
     fieldOrder: ['kind', 'venue', 'category'],
     references: (fixture: FixtureDefinition) => [...modelReference(fixture.model, 'model'), { target: ['buildings'], id: fixture.venue, path: 'venue' }],
+  },
+  fixtureTemplates: {
+    dir: 'fixtureTemplates',
+    title: 'Fixture templates',
+    schemaName: 'fixture-template',
+    idTypes: {
+      file: 'src/core/venues/fixtureTemplateTypes.generated.ts',
+      unions: (templates: Record<string, FixtureTemplateDefinition>) => ({
+        TemplateFixtureId: Object.entries(templates)
+          .flatMap(([id, template]) => expandFixtureTemplate(id, template as FixtureTemplate).map(fixture => fixture.id))
+          .sort(),
+      }),
+    },
+    schema: fixtureTemplateSchema,
+    idPattern: ITEM_ID_PATTERN,
+    idRule: 'be camelCase letters and digits',
+    fieldOrder: ['kind', 'venues', 'category'],
+    references: (template: FixtureTemplateDefinition) => [
+      ...modelReference(template.model, 'model'),
+      ...template.venues.map((venue, index): Reference => ({ target: ['buildings'], id: venue, path: `venues.${index}` })),
+    ],
   },
   boats: {
     dir: 'boats',
