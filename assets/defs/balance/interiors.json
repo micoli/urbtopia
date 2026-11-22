@@ -75,6 +75,50 @@
       "roles": {},
       "unlockCitizens": 0
     },
+    "coalPlant": {
+      "family": "production",
+      "bonusModel": "engineRoom",
+      "layout": {
+        "gridSizes": [6, 8, 10, 12],
+        "speedCaps": [0.01],
+        "yieldCaps": [0.01],
+        "technicianPosts": [1, 2, 3, 4],
+        "engineRoom": {
+          "circuitShare": 0.5,
+          "generationCaps": [0.08, 0.15, 0.22, 0.3],
+          "pollutionCaps": [0.1, 0.2, 0.3, 0.4],
+          "circuits": [
+            {
+              "anchor": "steamBoiler",
+              "links": [
+                {
+                  "from": "coalQuay",
+                  "to": "steamBoiler",
+                  "medium": "coal"
+                },
+                {
+                  "from": "waterInlet",
+                  "to": "steamBoiler",
+                  "medium": "water"
+                },
+                {
+                  "from": "steamBoiler",
+                  "to": "alternator",
+                  "medium": "steam"
+                },
+                {
+                  "from": "alternator",
+                  "to": "powerOutlet",
+                  "medium": "electricity"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "roles": {},
+      "unlockCitizens": 400
+    },
     "bakery": {
       "family": "production",
       "bonusModel": "assigned",

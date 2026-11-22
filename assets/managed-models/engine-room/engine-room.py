@@ -434,6 +434,6 @@ if __name__ == "__main__":
         "cable-elbow": cable_elbow,
     }
     export_all(models, P, 1200, HERE, center=False, ground=False)
-    export_all({"wall-ports-preview": wall_ports}, P, 4000, HERE, center=False, ground=False)
-    export_all({"hydro-line-preview": hydro_line, "geothermal-line-preview": geothermal_line}, P, 9000, HERE, center=False, ground=False)
-    export_all({"coal-line-preview": coal_line}, P, 9000, HERE, center=False, ground=False)
+    # The previews are for the eyes only: they are exported when asked for by name, never with the Fixtures, so that no unused model is kept.
+    previews = {"wall-ports-preview": wall_ports, "hydro-line-preview": hydro_line, "geothermal-line-preview": geothermal_line, "coal-line-preview": coal_line}
+    export_all({name: builder for name, builder in previews.items() if name in sys.argv}, P, 9000, HERE, center=False, ground=False)

@@ -173,6 +173,9 @@ type VenueMessageKey =
   | 'factory.interior.fieldCap'
   | 'factory.interior.wasteCapacity'
   | 'factory.interior.reach'
+  | 'factory.interior.circuits'
+  | 'factory.interior.generation'
+  | 'factory.interior.cleaner'
   | 'factory.interior.motorLoad'
   | 'factory.interior.benefit.own'
   | 'factory.interior.benefit.cooled'
@@ -614,6 +617,9 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'factory.interior.fieldCap': ['Field cap added', 'Parcelles de culture ajoutées'],
   'factory.interior.wasteCapacity': ['Waste capacity per day', 'Capacité de déchets par jour'],
   'factory.interior.reach': ['Collection distance (tiles)', 'Distance de collecte (cases)'],
+  'factory.interior.circuits': ['Complete circuits', 'Circuits complets'],
+  'factory.interior.generation': ['Capacity added to the plant', 'Capacité ajoutée à la centrale'],
+  'factory.interior.cleaner': ['Pollution taken away', 'Pollution retirée'],
   'factory.interior.problem.tankFull': ['Its Tank already feeds three Cooling vats, Washers or Sprinklers: add a Tank, or take one off this one.', 'Son réservoir alimente déjà trois cuves réfrigérantes, laveuses ou arroseurs : ajoutez un réservoir, ou retirez-en un de celui-ci.'],
   'factory.interior.problem.overloaded': ['Its Motor drives too many Machines and Pumps, so it is stopped: add a Motor or take one off.', 'Son moteur entraîne trop de machines et de pompes, elle est donc arrêtée : ajoutez un moteur ou retirez-en une.'],
   'factory.interior.motorOverloaded': ['{count} stopped: the Motor cannot drive them.', '{count} à l’arrêt : le moteur ne peut pas les entraîner.'],

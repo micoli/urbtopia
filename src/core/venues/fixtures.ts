@@ -5,7 +5,7 @@ import type { FixtureId, VenueType } from '../engine/state';
 import { modelFileOf } from '../models/modelFiles';
 import type { FixtureDefinition } from './fixtureSchema';
 import { VENUE_TYPES } from './profiles';
-import { FACTORY_FIXTURE_CATEGORIES, HOSPITAL_FIXTURE_CATEGORIES, LIBRARY_FIXTURE_CATEGORIES, SCHOOL_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, LINE_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, TEXTILE_FIXTURE_CATEGORIES, type PRODUCTION_INTERIOR_KINDS, type SERVICE_INTERIOR_KINDS, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type PackSize } from './venueVocabulary';
+import { ENGINE_ROOM_FIXTURE_CATEGORIES, FACTORY_FIXTURE_CATEGORIES, HOSPITAL_FIXTURE_CATEGORIES, LIBRARY_FIXTURE_CATEGORIES, SCHOOL_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, LINE_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, TEXTILE_FIXTURE_CATEGORIES, type PRODUCTION_INTERIOR_KINDS, type SERVICE_INTERIOR_KINDS, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type FixturePort, type PackSize } from './venueVocabulary';
 
 export type { FixtureCategory };
 
@@ -20,6 +20,7 @@ export const FIXTURE_CATEGORIES = {
   workshop: LINE_FIXTURE_CATEGORIES,
   storehouse: PACKHOUSE_FIXTURE_CATEGORIES,
   recyclingPlant: PACKHOUSE_FIXTURE_CATEGORIES,
+  coalPlant: ENGINE_ROOM_FIXTURE_CATEGORIES,
   textileMill: TEXTILE_FIXTURE_CATEGORIES,
   knitwearFactory: PACKHOUSE_FIXTURE_CATEGORIES,
   livestockFarm: PACKHOUSE_FIXTURE_CATEGORIES,
@@ -100,6 +101,9 @@ export interface FixtureSpec {
   // Packhouse interior: the sides through which Packets come into a Line Fixture and leave it, and the size of packed Goods an Exit serves.
   lineIn?: readonly FixtureSide[];
   lineOut?: readonly FixtureSide[];
+  // Engine room: the ports through which the Media of a Circuit pass, and whether the Fixture stands against the back wall.
+  ports?: readonly FixturePort[];
+  wallPort?: true;
   packSize?: PackSize;
   truck?: string;
   // A wall: it only divides the room, and earns, serves and wears nothing.

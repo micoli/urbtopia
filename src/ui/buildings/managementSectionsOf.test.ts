@@ -12,7 +12,7 @@ describe('managementSectionsOf', () => {
     ['mill', ['eco-production', 'eco-interiors']],
     ['waterTower', ['eco-water']],
     ['powerPlant', ['eco-energy']],
-    ['coalPlant', ['eco-energy', 'eco-emissions']],
+    ['coalPlant', ['eco-energy', 'eco-emissions', 'eco-interiors']],
     ['backup', ['eco-energy', 'eco-emissions']],
     ['school', ['eco-services', 'eco-interiors']],
     ['mound', ['eco-waste']],

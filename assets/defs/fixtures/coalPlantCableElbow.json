@@ -1,0 +1,29 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "coalPlant",
+  "category": "line",
+  "name": {
+    "en": "Cable elbow",
+    "fr": "Câble coudé"
+  },
+  "model": "engine-room-cable-elbow",
+  "footprint": [1, 1],
+  "price": 20,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "circuit",
+  "family": "link",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "electricity",
+      "direction": "both"
+    },
+    {
+      "side": "right",
+      "medium": "electricity",
+      "direction": "both"
+    }
+  ]
+}

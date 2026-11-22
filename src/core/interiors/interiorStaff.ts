@@ -3,12 +3,13 @@ import type { Building, BuildingType, InteriorData, InteriorRole } from '../engi
 import { stackCountOf } from '../economy/counterSlots';
 import { modelFileOf } from '../models/modelFiles';
 import { STAFF } from '../venues/staff';
+import type { FixtureMedium } from '../venues/venueVocabulary';
 import { valueByTier } from './valueByTier';
 
 export type InteriorFamily = 'production' | 'service' | 'home';
 
 // How the bonus of a Production interior is computed: its own formula (the Factory, the Packhouse), the Machines alone, a Line of crates, or a Line whose Staff are assigned by hand to the Fixtures that carry their part (a baker to an Oven, a seller to a Display counter).
-export type InteriorBonusModel = 'factory' | 'packhouse' | 'machines' | 'line' | 'assigned';
+export type InteriorBonusModel = 'factory' | 'packhouse' | 'machines' | 'line' | 'assigned' | 'engineRoom';
 
 type DeclaredInteriorFamily = Exclude<InteriorFamily, 'home'>;
 
@@ -46,6 +47,29 @@ export interface InteriorLayout {
   milling?: { input: string; destinations: Record<string, string> };
   // Recycling plant: the Waste capacity each Exit adds, the capacity all three kinds of Recycler add together, the Collection distance each Recycler adds, and the most Exits, Sorters and Recyclers by Tier.
   recycling?: RecyclingBalance;
+  // Engine room: the Circuits that count, and the most the complete ones add to the Capacity of the plant and take away from its pollution, by Tier.
+  engineRoom?: EngineRoomBalance;
+}
+
+// A link of a flowchart: the Fixtures of the family `from` hand the Medium to those of the family `to`.
+export interface EngineRoomLink {
+  from: string;
+  to: string;
+  medium: FixtureMedium;
+}
+
+// A Circuit counts once for each Fixture of the family `anchor` that every link of its flowchart reaches.
+export interface EngineRoomCircuit {
+  anchor: string;
+  links: EngineRoomLink[];
+}
+
+export interface EngineRoomBalance {
+  circuits: EngineRoomCircuit[];
+  // The share of the cap that one complete Circuit adds before the gains slow down.
+  circuitShare: number;
+  generationCaps: number[];
+  pollutionCaps?: number[];
 }
 
 export interface RecyclingBalance {
@@ -95,6 +119,8 @@ export const isPlainRole = (role: InteriorRole | undefined): boolean => role ===
 export const yieldGroupOf = (type: BuildingType, item: string): string | undefined => Object.entries(DECLARATIONS[type]?.layout?.yieldGroups ?? {}).find(([, items]) => items.includes(item))?.[0];
 
 export const interiorLayoutOf = (type: BuildingType): InteriorLayout | undefined => DECLARATIONS[type]?.layout;
+
+export const engineRoomBalanceOf = (type: BuildingType): EngineRoomBalance | undefined => DECLARATIONS[type]?.layout?.engineRoom;
 
 export const interiorUnlockCitizensOf = (type: BuildingType): number => DECLARATIONS[type]?.unlockCitizens ?? 0;
 

@@ -1,4 +1,5 @@
 import { COAL_CAPACITY } from '../economy/economy';
+import { coalPollutionShareOf } from '../environment/coalCapacity';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { createBuilding, footprintTiles } from '../buildings/buildingSpecs';
 import { diagnosisOf, type Cause } from '../diagnosis/diagnosis';
@@ -65,7 +66,7 @@ function pollutionCauses(state: GameState, tile: Coord): Cause[] {
   const home = createBuilding(0, 'home', tile.x, tile.y, 0);
   const rates = energyStats(state).coalRates;
   const coal = state.buildings.filter(building => building.type === 'coalPlant' && distance(building, home) <= ECOLOGY.coalPollutionRadius);
-  const smoke = coal.map(plant => ECOLOGY.coalWellbeingPenalty * (rates.get(plant.id) ?? 0) / (COAL_CAPACITY[plant.tier - 1] || 1) / ECOLOGY.coalWellbeingCap);
+  const smoke = coal.map(plant => ECOLOGY.coalWellbeingPenalty * (rates.get(plant.id) ?? 0) * coalPollutionShareOf(plant) / (COAL_CAPACITY[plant.tier - 1] || 1) / ECOLOGY.coalWellbeingCap);
   const total = smoke.reduce((sum, share) => sum + share, 0);
   const causes = coal.length > 0 && total > 0 ? [cause('analytics.cause.coal', 1, [{ x: coal[0]!.x, y: coal[0]!.y }], { count: coal.length })] : [];
   const incinerators = state.buildings.filter(building => wasteKindOf(building.type) === 'incinerator');

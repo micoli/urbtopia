@@ -28,7 +28,8 @@
               "packhouse",
               "machines",
               "line",
-              "assigned"
+              "assigned",
+              "engineRoom"
             ]
           },
           "fixtureKind": {
@@ -310,6 +311,88 @@
                   "exitLimits",
                   "sorterLimits",
                   "recyclerLimits"
+                ],
+                "additionalProperties": false
+              },
+              "engineRoom": {
+                "type": "object",
+                "properties": {
+                  "circuitShare": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1
+                  },
+                  "generationCaps": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    }
+                  },
+                  "pollutionCaps": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    }
+                  },
+                  "circuits": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "anchor": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "links": {
+                          "minItems": 1,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "from": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "to": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "medium": {
+                                "type": "string",
+                                "enum": [
+                                  "coal",
+                                  "water",
+                                  "steam",
+                                  "electricity"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "from",
+                              "to",
+                              "medium"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "anchor",
+                        "links"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "circuitShare",
+                  "generationCaps",
+                  "circuits"
                 ],
                 "additionalProperties": false
               }

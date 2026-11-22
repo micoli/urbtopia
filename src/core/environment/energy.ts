@@ -2,7 +2,8 @@ import { DAY_CYCLE, cycleHourOf, cycleTimeOf, isDaytime } from './dayCycle';
 import { isVenueType } from '../venues/profiles';
 import { transitServices } from '../transit/transitService';
 import { ECOLOGY, distance, economicPower, homePower } from './ecology';
-import { COAL_CAPACITY, UTILITY_CAPACITY } from '../economy/economy';
+import { UTILITY_CAPACITY } from '../economy/economy';
+import { coalCapacityOf } from './coalCapacity';
 import type { Building, GameState } from '../engine/state';
 import { isHomeType } from '../buildings/buildingDefinitions';
 import { flowFactor } from '../water/flow';
@@ -134,7 +135,7 @@ function computeEnergyStats(state: GameState, now: number) {
   const beforeGrid = [...surplus.values()].reduce((n, x) => n + x, 0);
   for (const source of generation) surplus.set(source.id, beforeGrid > 0 ? (surplus.get(source.id) ?? 0) * grid / beforeGrid : 0);
   const coalPlants = buildings.filter(b => b.type === PLANT_TYPES.coal);
-  const coalCapacity = coalPlants.reduce((sum, b) => sum + (b.coalEnabled !== false ? COAL_CAPACITY[b.tier - 1] ?? 0 : 0), 0);
+  const coalCapacity = coalPlants.reduce((sum, b) => sum + (b.coalEnabled !== false ? coalCapacityOf(b) : 0), 0);
   const remainingDemand = [...need.values()].reduce((sum, demand) => sum + demand, 0) + transitDemand - transitSupplied;
   const coal = state.urbs > 1e-9 ? Math.min(remainingDemand, coalCapacity) : 0;
   let coalSupplied = distribute(homes, coal);
@@ -144,7 +145,7 @@ function computeEnergyStats(state: GameState, now: number) {
   coalSupplied += transitCoal;
   coalSupplied += distribute(arcades, coal - coalSupplied); coalSupplied += distribute(casinos, coal - coalSupplied);
   const coalRates = new Map(coalPlants.map(b => [b.id,
-    b.coalEnabled !== false && coalCapacity > 0 ? coalSupplied * (COAL_CAPACITY[b.tier - 1] ?? 0) / coalCapacity : 0]));
+    b.coalEnabled !== false && coalCapacity > 0 ? coalSupplied * coalCapacityOf(b) / coalCapacity : 0]));
   const batteries = buildings.filter(b => b.type === 'battery');
   const batteryRates = new Map<number, number>();
   for (const battery of batteries) {

@@ -21085,6 +21085,186 @@
     ],
     "flush": true
   },
+  "engine-room-alternator": {
+    "file": "engine-room/alternator",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-cable-elbow": {
+    "file": "engine-room/cable-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-cable-straight": {
+    "file": "engine-room/cable-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-coal-conveyor-straight": {
+    "file": "engine-room/coal-conveyor-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-coal-quay": {
+    "file": "engine-room/coal-quay",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-condenser": {
+    "file": "engine-room/condenser",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-injection-well": {
+    "file": "engine-room/injection-well",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-power-outlet": {
+    "file": "engine-room/power-outlet",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-steam-boiler": {
+    "file": "engine-room/steam-boiler",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-steam-pipe-elbow": {
+    "file": "engine-room/steam-pipe-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-steam-pipe-straight": {
+    "file": "engine-room/steam-pipe-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-steam-turbine": {
+    "file": "engine-room/steam-turbine",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-underground-water-inlet": {
+    "file": "engine-room/underground-water-inlet",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-water-inlet": {
+    "file": "engine-room/water-inlet",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-water-outlet": {
+    "file": "engine-room/water-outlet",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-water-pipe-elbow": {
+    "file": "engine-room/water-pipe-elbow",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-water-pipe-straight": {
+    "file": "engine-room/water-pipe-straight",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
+  "engine-room-water-turbine": {
+    "file": "engine-room/water-turbine",
+    "source": "managed",
+    "license": "Own work",
+    "footprint": [
+      1,
+      1
+    ],
+    "flush": true
+  },
   "events-autumn-autumn-tree-2x2": {
     "file": "events/autumn/autumn-tree-2x2",
     "source": "managed",

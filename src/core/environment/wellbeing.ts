@@ -1,5 +1,6 @@
 import { gatheringPenaltyOf } from '../tourism/gatheringMalus';
 import { COAL_CAPACITY } from '../economy/economy';
+import { coalPollutionShareOf } from './coalCapacity';
 import { cityGreenBenefits, distance, ECOLOGY, greenBenefits } from './ecology';
 import { energyStats } from './energy';
 import { SERVICES } from '../services/facilities';
@@ -75,7 +76,7 @@ export function pollutionPenaltyOf(state: GameState, home: Building, coalRates: 
     if (distance(b, home) > ECOLOGY.coalPollutionRadius) return sum;
     const capacity = COAL_CAPACITY[b.tier - 1] ?? 0;
     if (capacity <= 0) return sum;
-    return sum + ECOLOGY.coalWellbeingPenalty * (coalRates.get(b.id) ?? 0) / capacity;
+    return sum + ECOLOGY.coalWellbeingPenalty * (coalRates.get(b.id) ?? 0) * coalPollutionShareOf(b) / capacity;
   }, 0);
   return Math.min(ECOLOGY.coalWellbeingCap, penalty + incineratorPenaltyOf(state, home));
 }

@@ -1,0 +1,29 @@
+{
+  "$schema": "../schemas/fixture.schema.json",
+  "kind": "fixture",
+  "venue": "coalPlant",
+  "category": "machines",
+  "name": {
+    "en": "Alternator",
+    "fr": "Alternateur"
+  },
+  "model": "engine-room-alternator",
+  "footprint": [1, 1],
+  "price": 1800,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "circuit",
+  "family": "alternator",
+  "ports": [
+    {
+      "side": "left",
+      "medium": "steam",
+      "direction": "in"
+    },
+    {
+      "side": "right",
+      "medium": "electricity",
+      "direction": "out"
+    }
+  ]
+}

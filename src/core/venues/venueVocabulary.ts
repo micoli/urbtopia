@@ -27,7 +27,26 @@ export const PACKHOUSE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power'
 export const LINE_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['power', 'plumbing', 'machines', 'line', 'walls'];
 
 // The Production interiors that share the engine of the Factory interior, by the kind of their Fixtures.
-export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse', 'workshop', 'recyclingPlant', 'textileMill', 'knitwearFactory', 'livestockFarm', 'farm'] as const;
+export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'bakery', 'dairy', 'storehouse', 'workshop', 'recyclingPlant', 'textileMill', 'knitwearFactory', 'livestockFarm', 'farm', 'coalPlant'] as const;
+
+// The sections of the build menu of an Engine room, in order: the Machines and the wall ports, then the links (Conveyors, pipes and Cables).
+export const ENGINE_ROOM_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['machines', 'line', 'walls'];
+
+// What a link of a Circuit of an Engine room carries.
+export const FIXTURE_MEDIA = ['coal', 'water', 'steam', 'electricity'] as const;
+
+export type FixtureMedium = (typeof FIXTURE_MEDIA)[number];
+
+// Whether a port takes its Medium in, gives it out, or does both (a pipe, a Cable).
+export const PORT_DIRECTIONS = ['in', 'out', 'both'] as const;
+
+export type PortDirection = (typeof PORT_DIRECTIONS)[number];
+
+export interface FixturePort {
+  side: FixtureSide;
+  medium: FixtureMedium;
+  direction: PortDirection;
+}
 
 // The Service interiors, by the kind of their Fixtures.
 export const SERVICE_INTERIOR_KINDS = ['school', 'library', 'hospital'] as const;
@@ -47,7 +66,8 @@ export const FIXTURE_SIDES = ['front', 'right', 'back', 'left'] as const;
 export type FixtureSide = (typeof FIXTURE_SIDES)[number];
 
 // A Conveyor, a Scanner and an Exit belong to the Line of a Packhouse interior.
-export const FACTORY_FIXTURE_ROLES = ['motor', 'gear', 'shaft', 'bevel', 'pump', 'tank', 'pipe', 'machine', 'conveyor', 'scanner', 'exit'] as const;
+// A Fixture of an Engine room has the role `circuit`: it takes no Drive and no Flow, only the links of its ports.
+export const FACTORY_FIXTURE_ROLES = ['motor', 'gear', 'shaft', 'bevel', 'pump', 'tank', 'pipe', 'machine', 'conveyor', 'scanner', 'exit', 'circuit'] as const;
 
 // The sizes of packed Goods an Exit serves.
 export const PACK_SIZES = ['Crate', 'Box', 'Pallet'] as const;

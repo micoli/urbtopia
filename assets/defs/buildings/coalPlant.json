@@ -43,5 +43,13 @@
         "goods": {}
       }
     }
-  ]
+  ],
+  "floorShell": {
+    "floor": "workshop-interior-floor",
+    "wall": "workshop-interior-wall",
+    "corner": "workshop-interior-wall-corner",
+    "cornerX": 0,
+    "cornerZ": 0,
+    "cornerRotation": 0
+  }
 }

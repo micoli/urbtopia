@@ -461,5 +461,21 @@
   "textileWindow",
   "workshopDoorway",
   "workshopWallFull",
-  "workshopWindow"
+  "workshopWindow",
+  "coalPlantCoalQuay",
+  "coalPlantWaterInlet",
+  "coalPlantSteamBoiler",
+  "coalPlantAlternator",
+  "coalPlantPowerOutlet",
+  "coalPlantConveyor",
+  "coalPlantWaterPipe",
+  "coalPlantWaterPipeElbow",
+  "coalPlantSteamPipe",
+  "coalPlantSteamPipeElbow",
+  "coalPlantCable",
+  "coalPlantCableElbow",
+  "coalPlantWall",
+  "coalPlantWallFull",
+  "coalPlantWindow",
+  "coalPlantDoorway"
 ]

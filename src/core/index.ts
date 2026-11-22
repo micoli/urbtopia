@@ -113,6 +113,8 @@ export type { ProductionType, ShopType } from './buildings/buildingTypes.generat
 export { colorVariantsOf, colorVariantsOfKit, colorVariantsOfType, isRepaintableType, mayCarryLegacyColor, paintKitAt, paintKitOf, toneLabelOf, type PaintKit, type ToneLabel } from './buildings/paint';
 export { citizensOf, totalCitizens, utilityCapacity, utilityDemand, waterDemandSplit } from './buildings/city';
 export type { UtilityTotals } from './buildings/city';
+export { coalCapacityOf, coalPollutionShareOf } from './environment/coalCapacity';
+export { engineRoomGainsOf, engineRoomReportOf, type EngineRoomGains } from './factory/engineRoomCircuits';
 export { FARM_TIERS, PRODUCTION_UPGRADE_COSTS, HOME_FOOTPRINTS, HOME_TIERS, HOME_UPGRADE_COSTS, MAX_HOME_TIER, TAX, UTILITY_CAPACITY, COAL_CAPACITY } from './economy/economy';
 export { SHOP_TYPES, canSell, goodCategoryOf, hasCounter, newGoodsAtNextTier, isShopType, sellsGoods, stackCountOf, saleIntervalOf, sellableGoodsOf, shopTierOf, slotPriceOf } from './economy/shops';
 export { ORCHARD_BUILDINGS, isOrchard } from './economy/orchards';
@@ -221,7 +223,7 @@ export { interiorFixturesOf } from './factory/interiorLinks';
 export { interiorUpstreamOf, suppliedGoodsOf, lineFaultOf, linePathsOf, linkedExitsOf } from './factory/interiorLine';
 export { interiorBenefitsOf, interiorBonusOf, interiorBonusOfBuilding, interiorCapsOf, interiorCapsOfType, interiorGridSizeOfType, interiorGridSizeOf, interiorPowerOfBuilding, packSizeOf, packhouseBonusOf, packhouseExitLimitOf, packhouseGridSizeOf } from './factory/interiorBonus';
 export { interiorLinksOf, interiorMotionOf, interiorMotorLoadOf, interiorOverloadedOf, interiorUsageWeightsOf } from './factory/interiorLinks';
-export { canStandOnInterior, fixtureVenueOf, hasLineInterior, hasProductionInterior, hasServiceInterior, isMill, interiorKindOf, interiorSizeOf, assignInteriorRestocker, hireInteriorRestocker, hireInteriorTechnician, setExitRestock, unassignInteriorRestocker, releaseInteriorRestocker, isFactory, isInteriorBuilding, isPackhouse, moveInteriorFixture, fixtureWallOf, wallFacingOf, placeInteriorFixture, setInteriorParquet, releaseInteriorTechnician, removeInteriorFixture, repairAllInteriorFixtures, repairInteriorFixture } from './factory/interiorCommands';
+export { hasEngineRoom, canStandOnInterior, fixtureVenueOf, hasLineInterior, hasProductionInterior, hasServiceInterior, isMill, interiorKindOf, interiorSizeOf, assignInteriorRestocker, hireInteriorRestocker, hireInteriorTechnician, setExitRestock, unassignInteriorRestocker, releaseInteriorRestocker, isFactory, isInteriorBuilding, isPackhouse, moveInteriorFixture, fixtureWallOf, wallFacingOf, placeInteriorFixture, setInteriorParquet, releaseInteriorTechnician, removeInteriorFixture, repairAllInteriorFixtures, repairInteriorFixture } from './factory/interiorCommands';
 export { PARQUETS, PARQUET_MODELS, parquetModelOf, canHangOnWall, hangsOnWall, hostWallOf, wallPlacementOf, COMFORT_GROUPS, isHomeInteriorUnlocked, comfortBonusOf, comfortCoverageOf, comfortOf, HOME_INTERIOR, homeFixtureRefund, homeGridSizeOf, homeWellbeingCapOf } from './homes/homeInterior';
 export type { ComfortGroup } from './homes/homeInterior';
 export { advanceInteriors, minTierOfTechnician, restockerPostsOf, technicianPostsOf, technicianWagePerHour } from './factory/interiorWear';

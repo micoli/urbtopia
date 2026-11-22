@@ -10,14 +10,14 @@ interface InteriorStatsProps {
 
 // What sits at the top of the main menu of a Factory interior: the Urbs, then in one box the Machines that are linked, the levers the building has and the power the Motors draw.
 export function InteriorStats({ factory }: InteriorStatsProps) {
-  const { machines, linked, power, effects } = useInteriorIndicators(factory);
+  const { machines, linked, power, circuits, effects } = useInteriorIndicators(factory);
   return (
     <>
       <UrbsStat />
       <div className="dock-stat dock-stat--rates">
-        <span className="dock-rate" title={t('factory.interior.linked')}>
+        <span className="dock-rate" title={t(circuits === undefined ? 'factory.interior.linked' : 'factory.interior.circuits')}>
           <Icon name="production" />
-          {linked} / {machines}
+          {circuits === undefined ? `${linked} / ${machines}` : circuits}
         </span>
         {effects.map(effect => (
           <span key={effect.id} className="dock-rate" title={t(effect.label)}>
@@ -25,10 +25,10 @@ export function InteriorStats({ factory }: InteriorStatsProps) {
             {effect.value}
           </span>
         ))}
-        <span className="dock-rate" title={t('factory.interior.power')}>
+        {circuits === undefined ? <span className="dock-rate" title={t('factory.interior.power')}>
           <Icon name="power" />
           {power.toFixed(1)}
-        </span>
+        </span> : null}
       </div>
     </>
   );
