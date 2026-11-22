@@ -1,0 +1,36 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["knitwearFactory"],
+  "category": "power",
+  "ids": {
+    "knitwearFactory": "knitwearReverser"
+  },
+  "name": {
+    "en": "Reverser",
+    "fr": "Inverseur"
+  },
+  "model": "factory-floor-reverser",
+  "footprint": [1, 1],
+  "price": 120,
+  "minTier": 2,
+  "wear": 0.05,
+  "role": "shaft",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "drive",
+      "direction": "both"
+    }
+  ],
+  "traits": [
+    {
+      "trait": "reverses"
+    }
+  ]
+}

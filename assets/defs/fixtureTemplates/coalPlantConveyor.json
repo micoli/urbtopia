@@ -1,0 +1,32 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["coalPlant"],
+  "category": "line",
+  "ids": {
+    "coalPlant": "coalPlantConveyor"
+  },
+  "name": {
+    "en": "Coal conveyor",
+    "fr": "Tapis à charbon"
+  },
+  "model": "engine-room-coal-conveyor-straight",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "circuit",
+  "family": "link",
+  "ports": [
+    {
+      "side": "back",
+      "medium": "coal",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "coal",
+      "direction": "out"
+    }
+  ]
+}

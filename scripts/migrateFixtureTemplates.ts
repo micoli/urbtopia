@@ -15,7 +15,8 @@ const PLAIN = ['name', 'category', 'model', 'footprint', 'price', 'minTier', 'we
 const PLACEMENT = ['minRank', 'partition', 'passable', 'joins'] as const;
 const VISUAL = ['tint', 'truck', 'smoke', 'hatch'] as const;
 const FLAG_TRAITS: readonly string[] = ['heat', 'prep', 'reception', 'picks', 'loud', 'reverses'];
-const SHAPE_KEYS = new Set<string>(['$schema', 'kind', 'venue', ...PLAIN, ...PLACEMENT, ...VISUAL, 'wall', 'wallPort', ...FIXTURE_EFFECTS, ...FIXTURE_TRAITS]);
+const SIDE_FIELDS = ['drive', 'rim', 'flow', 'lineIn', 'lineOut'] as const;
+const SHAPE_KEYS = new Set<string>(['$schema', 'kind', 'venue', ...PLAIN, ...PLACEMENT, ...VISUAL, ...SIDE_FIELDS, 'wall', 'wallPort', ...FIXTURE_EFFECTS, ...FIXTURE_TRAITS]);
 
 const same = (a: unknown, b: unknown): boolean => JSON.stringify(sorted(a)) === JSON.stringify(sorted(b));
 
@@ -32,7 +33,27 @@ const nonEmpty = <T extends object>(name: string, value: T): Record<string, T> =
 // The fields that the flat shape holds and a template cannot say yet, which keep a Fixture in its own file.
 export const unsayableFields = (definition: Definition): string[] => Object.keys(definition).filter(key => !SHAPE_KEYS.has(key));
 
-export function bodyOf(definition: Definition): FixtureTemplateBody | undefined {
+const portsFromSides = (definition: Definition): Record<string, unknown>[] => {
+  const sides = (key: string): string[] => (definition[key] as string[] | undefined) ?? [];
+  return [
+    ...sides('drive').map(side => ({ side, medium: sides('rim').includes(side) ? 'gear' : 'drive', direction: 'both' })),
+    ...sides('flow').map(side => ({ side, medium: 'flow', direction: 'both' })),
+    ...sides('lineIn').map(side => ({ side, medium: 'line', direction: 'in' })),
+    ...sides('lineOut').map(side => ({ side, medium: 'line', direction: 'out' })),
+  ];
+};
+
+// The sides of Drive, Flow and the Line are ports like the others; a Fixture that already has ports keeps them as they are.
+export function withPorts(definition: Definition): Definition {
+  const added = portsFromSides(definition);
+  const rest = Object.fromEntries(Object.entries(definition).filter(([key]) => !(SIDE_FIELDS as readonly string[]).includes(key)));
+  if (!added.length) return rest;
+  if ('ports' in definition) throw new Error('a Fixture with ports has sides too');
+  return { ...rest, ports: added };
+}
+
+export function bodyOf(raw: Definition): FixtureTemplateBody | undefined {
+  const definition = withPorts(raw);
   if (unsayableFields(definition).length || ('wall' in definition && 'wallPort' in definition)) return undefined;
   const bonuses = FIXTURE_EFFECTS.filter(effect => effect in definition).map(effect => ({ effect, value: definition[effect] as number }));
   const traits = FIXTURE_TRAITS.filter(trait => trait in definition).map(trait => ({ trait, ...(FLAG_TRAITS.includes(trait) ? {} : { value: definition[trait] as string }) }));
@@ -132,7 +153,7 @@ export function mismatches(plan: Plan, definitions: Record<string, Definition>):
   return Object.entries(plan.templates).flatMap(([templateId, template]) =>
     expandFixtureTemplate(templateId, template).flatMap(({ id, definition }) => {
       seen.add(id);
-      return same(definition, withoutSchema(definitions[id] ?? {})) ? [] : [id];
+      return same(definition, withoutSchema(withPorts(definitions[id] ?? {}))) ? [] : [id];
     }),
   ).concat(plan.moved.filter(id => !seen.has(id)));
 }

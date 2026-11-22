@@ -1,0 +1,28 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["factory", "mill", "bakery", "dairy", "workshop", "farm"],
+  "category": "plumbing",
+  "name": {
+    "en": "Straight pipe",
+    "fr": "Tuyau droit"
+  },
+  "model": "factory-floor-pipe-straight",
+  "footprint": [1, 1],
+  "price": 20,
+  "minTier": 1,
+  "wear": 0.04,
+  "role": "pipe",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "flow",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "flow",
+      "direction": "both"
+    }
+  ]
+}

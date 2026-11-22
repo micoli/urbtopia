@@ -1,0 +1,44 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["packhouse"],
+  "category": "machines",
+  "name": {
+    "en": "Strapper (Drive on the right)",
+    "fr": "Cercleuse (prise à droite)"
+  },
+  "model": "packhouse-floor-strapper",
+  "footprint": [1, 1],
+  "price": 1200,
+  "minTier": 2,
+  "wear": 0.1,
+  "role": "machine",
+  "family": "strapper",
+  "ports": [
+    {
+      "side": "right",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "speed",
+      "value": 0.1
+    },
+    {
+      "effect": "yield",
+      "value": 0.05
+    }
+  ]
+}

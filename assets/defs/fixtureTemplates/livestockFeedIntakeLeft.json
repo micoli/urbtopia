@@ -1,0 +1,32 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["livestockFarm"],
+  "category": "machines",
+  "ids": {
+    "livestockFarm": "livestockFeedIntakeLeft"
+  },
+  "name": {
+    "en": "Feed intake (Drive on the left)",
+    "fr": "Entrée de fourrage (prise à gauche)"
+  },
+  "model": "livestock-interior-feed-intake-left",
+  "footprint": [1, 1],
+  "price": 500,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "family": "feedIntake",
+  "ports": [
+    {
+      "side": "left",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ]
+}

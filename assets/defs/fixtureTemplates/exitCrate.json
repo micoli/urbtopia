@@ -1,0 +1,33 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["packhouse"],
+  "category": "machines",
+  "name": {
+    "en": "Crate exit",
+    "fr": "Sortie caisses"
+  },
+  "model": "packhouse-floor-exit",
+  "footprint": [1, 1],
+  "price": 200,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "exit",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "in"
+    }
+  ],
+  "traits": [
+    {
+      "trait": "packSize",
+      "value": "Crate"
+    }
+  ],
+  "visual": {
+    "tint": "#e8b04a",
+    "truck": "packhouse-floor-truck"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["dairy"],
+  "category": "machines",
+  "name": {
+    "en": "Pasteuriser (milk on the right)",
+    "fr": "Pasteurisateur (arrivée à droite)"
+  },
+  "model": "dairy-interior-pasteurizer-right",
+  "footprint": [1, 1],
+  "price": 900,
+  "minTier": 2,
+  "wear": 0.1,
+  "role": "machine",
+  "family": "pasteurizer",
+  "ports": [
+    {
+      "side": "right",
+      "medium": "flow",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "yield",
+      "value": 0.15
+    }
+  ],
+  "traits": [
+    {
+      "trait": "assigns",
+      "value": "creamMaker"
+    },
+    {
+      "trait": "yieldGroup",
+      "value": "cream"
+    }
+  ]
+}

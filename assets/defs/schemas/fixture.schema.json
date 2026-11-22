@@ -1196,45 +1196,6 @@
             "circuit"
           ]
         },
-        "drive": {
-          "minItems": 1,
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": [
-              "front",
-              "right",
-              "back",
-              "left"
-            ]
-          }
-        },
-        "flow": {
-          "minItems": 1,
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": [
-              "front",
-              "right",
-              "back",
-              "left"
-            ]
-          }
-        },
-        "rim": {
-          "minItems": 1,
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": [
-              "front",
-              "right",
-              "back",
-              "left"
-            ]
-          }
-        },
         "turns": {
           "type": "string",
           "enum": [
@@ -1332,32 +1293,6 @@
           "type": "boolean",
           "const": true
         },
-        "lineIn": {
-          "minItems": 1,
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": [
-              "front",
-              "right",
-              "back",
-              "left"
-            ]
-          }
-        },
-        "lineOut": {
-          "minItems": 1,
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": [
-              "front",
-              "right",
-              "back",
-              "left"
-            ]
-          }
-        },
         "packSize": {
           "type": "string",
           "enum": [
@@ -1392,7 +1327,11 @@
                   "water",
                   "steam",
                   "electricity",
-                  "smoke"
+                  "smoke",
+                  "drive",
+                  "gear",
+                  "flow",
+                  "line"
                 ]
               },
               "direction": {

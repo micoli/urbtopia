@@ -1,0 +1,31 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["livestockFarm"],
+  "category": "line",
+  "ids": {
+    "livestockFarm": "livestockConveyor"
+  },
+  "name": {
+    "en": "Conveyor",
+    "fr": "Tapis roulant"
+  },
+  "model": "packhouse-floor-conveyor-straight",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "conveyor",
+  "ports": [
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ]
+}

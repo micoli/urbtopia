@@ -1,0 +1,37 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["livestockFarm"],
+  "category": "machines",
+  "ids": {
+    "livestockFarm": "livestockPackerLeft"
+  },
+  "name": {
+    "en": "Packer (Drive on the left)",
+    "fr": "Emballeuse (prise à gauche)"
+  },
+  "model": "packhouse-floor-packer-left",
+  "footprint": [1, 1],
+  "price": 800,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "family": "livestockPacker",
+  "ports": [
+    {
+      "side": "left",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ]
+}

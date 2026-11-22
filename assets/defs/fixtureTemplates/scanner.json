@@ -1,0 +1,28 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["packhouse"],
+  "category": "machines",
+  "name": {
+    "en": "Scanner",
+    "fr": "Contrôleur"
+  },
+  "model": "packhouse-floor-scanner",
+  "footprint": [1, 1],
+  "price": 1500,
+  "minTier": 3,
+  "wear": 0.05,
+  "role": "scanner",
+  "ports": [
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ]
+}

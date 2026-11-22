@@ -1,0 +1,43 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["knitwearFactory"],
+  "category": "machines",
+  "ids": {
+    "knitwearFactory": "knitwearFinisher"
+  },
+  "name": {
+    "en": "Finisher (Drive on the right)",
+    "fr": "Finition (prise à droite)"
+  },
+  "model": "knitwear-interior-finisher",
+  "footprint": [1, 1],
+  "price": 900,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "family": "finisher",
+  "ports": [
+    {
+      "side": "right",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "speed",
+      "value": 0.2
+    }
+  ]
+}

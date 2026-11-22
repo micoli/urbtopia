@@ -7,7 +7,7 @@ import { modelFileOf } from '../models/modelFiles';
 import { expandFixtureTemplate, type FixtureTemplate } from './fixtureExpansion';
 import type { FixtureDefinition } from './fixtureSchema';
 import { VENUE_TYPES } from './profiles';
-import { ENGINE_ROOM_FIXTURE_CATEGORIES, FACTORY_FIXTURE_CATEGORIES, HOSPITAL_FIXTURE_CATEGORIES, LIBRARY_FIXTURE_CATEGORIES, SCHOOL_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, LINE_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, TEXTILE_FIXTURE_CATEGORIES, type PRODUCTION_INTERIOR_KINDS, type SERVICE_INTERIOR_KINDS, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type FixturePort, type PackSize } from './venueVocabulary';
+import { ENGINE_ROOM_FIXTURE_CATEGORIES, FACTORY_FIXTURE_CATEGORIES, HOSPITAL_FIXTURE_CATEGORIES, LIBRARY_FIXTURE_CATEGORIES, SCHOOL_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, LINE_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, TEXTILE_FIXTURE_CATEGORIES, type PRODUCTION_INTERIOR_KINDS, type SERVICE_INTERIOR_KINDS, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixturePort, type PackSize } from './venueVocabulary';
 
 export type { FixtureCategory };
 
@@ -72,14 +72,11 @@ export interface FixtureSpec {
   waiting?: number;
   // Decoration: attractiveness it adds.
   attract?: number;
-  // Factory interior: what the Fixture does, the sides through which Drive and Flow pass, the direction a Machine needs its Drive to turn,
+  // Factory interior: what the Fixture does, the direction a Machine needs its Drive to turn,
   // and what a linked Machine adds to the speed and the yield of the Factory's Slots.
   role?: FactoryFixtureRole | HomeFixtureRole;
   // Home interior: the Fixture hangs on a wall segment.
   wall?: true;
-  drive?: readonly FixtureSide[];
-  flow?: readonly FixtureSide[];
-  rim?: readonly FixtureSide[];
   turns?: 'cw' | 'ccw';
   speed?: number;
   smoke?: readonly [number, number, number];
@@ -102,10 +99,7 @@ export interface FixtureSpec {
   family?: string;
   coolant?: number;
   heat?: true;
-  // Packhouse interior: the sides through which Packets come into a Line Fixture and leave it, and the size of packed Goods an Exit serves.
-  lineIn?: readonly FixtureSide[];
-  lineOut?: readonly FixtureSide[];
-  // Engine room: the ports through which the Media of a Circuit pass, and whether the Fixture stands against the back wall.
+  // The ports through which Drive, Flow, Packets and the Media of a Circuit pass, and whether the Fixture stands against the back wall of an Engine room.
   ports?: readonly FixturePort[];
   // Engine room: the weights that a Fixture anchoring a Circuit gives to the generation and to the cleaning of its plant.
   generation?: number;

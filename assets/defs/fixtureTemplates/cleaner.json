@@ -1,0 +1,29 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["mill"],
+  "category": "machines",
+  "name": {
+    "en": "Cleaner (intake)",
+    "fr": "Nettoyeuse (entrée)"
+  },
+  "model": "factory-floor-mixing-vat",
+  "footprint": [1, 1],
+  "price": 350,
+  "minTier": 1,
+  "wear": 0.06,
+  "role": "machine",
+  "family": "cleaner",
+  "ports": [
+    {
+      "side": "back",
+      "medium": "flow",
+      "direction": "both"
+    },
+    {
+      "side": "front",
+      "medium": "flow",
+      "direction": "both"
+    }
+  ]
+}

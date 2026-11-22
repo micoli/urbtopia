@@ -1,0 +1,36 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["livestockFarm"],
+  "category": "line",
+  "ids": {
+    "livestockFarm": "livestockConveyorTee"
+  },
+  "name": {
+    "en": "Merging conveyor",
+    "fr": "Tapis fusionneur"
+  },
+  "model": "packhouse-floor-conveyor-tee",
+  "footprint": [1, 1],
+  "price": 50,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "conveyor",
+  "ports": [
+    {
+      "side": "left",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "right",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ]
+}

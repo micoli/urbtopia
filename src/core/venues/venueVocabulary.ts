@@ -32,8 +32,9 @@ export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'baker
 // The sections of the build menu of an Engine room, in order: the Machines and the wall ports, then the links (Conveyors, pipes and Cables).
 export const ENGINE_ROOM_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['machines', 'line', 'walls'];
 
-// What a link of a Circuit of an Engine room carries.
-export const FIXTURE_MEDIA = ['coal', 'water', 'steam', 'electricity', 'smoke'] as const;
+// What passes through a port. Drive turns the Machines of a Factory interior and a Gear passes it on through its axle ends or meshes with another Gear's rim (gear);
+// Flow is what its Pumps push through Pipes; Packets travel a Line; the others are carried by the links of the Circuits of an Engine room.
+export const FIXTURE_MEDIA = ['coal', 'water', 'steam', 'electricity', 'smoke', 'drive', 'gear', 'flow', 'line'] as const;
 
 export type FixtureMedium = (typeof FIXTURE_MEDIA)[number];
 

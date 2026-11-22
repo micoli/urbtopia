@@ -83,11 +83,6 @@ export const fixtureSchema = z
       ...common,
       // What the Fixture does on a Factory interior or a Packhouse interior: a Motor and a Pump are the sources of Drive and Flow, Gears, Shafts and Pipes carry them, a Machine uses them.
       role: z.enum(FACTORY_FIXTURE_ROLES).optional(),
-      // The sides through which Drive passes or enters, and those through which Flow does.
-      drive: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
-      flow: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
-      // The sides of a Gear that are its rim: they mesh with the rim of the next Gear, while its other sides are its axle ends, which meet the axle of the next Gear in line. A Motor, a Shaft or a Machine can feed a Gear on any side.
-      rim: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
       // The direction a Machine needs its Drive to turn; it takes either way when left out.
       turns: z.enum(['cw', 'ccw']).optional(),
       // What a linked Machine adds to the speed and to the yield of the Factory's Slots.
@@ -120,14 +115,13 @@ export const fixtureSchema = z
       coolant: z.number().positive().optional(),
       // A Machine that heats its circuit of Flow, which a coolant on the same circuit then cools twice as well.
       heat: z.literal(true).optional(),
-      // Packhouse interior: the sides through which Packets come into a Line Fixture and leave it.
-      lineIn: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
-      lineOut: z.array(z.enum(FIXTURE_SIDES)).min(1).optional(),
       // An Exit: the size of packed Goods it serves.
       packSize: z.enum(PACK_SIZES).optional(),
       // An Exit: the Model of the truck that waits outside it while its Line is linked.
       truck: filled.optional(),
-      // Engine room: the ports of the Fixture, each on one side, of one Medium, taking it in, giving it out or both. Two Fixtures are linked through ports of the same Medium on the two sides of their edge.
+      // The ports of the Fixture, each on one side, of one Medium, taking it in, giving it out or both. Two Fixtures are linked through ports of the same Medium on the two sides of their edge.
+      // On a Factory interior: Drive goes through the ports of the medium drive and through those of the medium gear, the rim of a Gear, which meshes with the rim of another Gear;
+      // Flow goes through those of the medium flow; Packets come into a Line Fixture by a port line that takes them in and leave it by one that gives them out.
       ports: z.array(z.strictObject({ side: z.enum(FIXTURE_SIDES), medium: z.enum(FIXTURE_MEDIA), direction: z.enum(PORT_DIRECTIONS), optional: z.literal(true).optional() })).min(1).optional(),
       // Engine room: what the Fixture that anchors a Circuit adds to the Capacity of the plant, and to what it takes away from its pollution once the Circuit is cleaned; both are weights, the caps are those of the building.
       generation: z.number().positive().optional(),

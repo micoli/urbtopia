@@ -1,0 +1,33 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["packhouse", "bakery", "dairy", "workshop", "recyclingPlant", "storehouse", "farm"],
+  "category": "line",
+  "name": {
+    "en": "Straight splitting conveyor (left)",
+    "fr": "Tapis répartiteur droit (gauche)"
+  },
+  "model": "packhouse-floor-conveyor-split-straight-left",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "conveyor",
+  "ports": [
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    },
+    {
+      "side": "left",
+      "medium": "line",
+      "direction": "out"
+    }
+  ]
+}

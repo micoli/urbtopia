@@ -1,0 +1,34 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["recyclingPlant"],
+  "category": "machines",
+  "name": {
+    "en": "Sorter (Drive on the right)",
+    "fr": "Trieuse (prise à droite)"
+  },
+  "model": "recycling-interior-sorter",
+  "footprint": [1, 1],
+  "price": 1000,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "family": "sorter",
+  "ports": [
+    {
+      "side": "right",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ]
+}

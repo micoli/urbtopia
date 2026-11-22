@@ -1,0 +1,36 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["knitwearFactory"],
+  "category": "power",
+  "ids": {
+    "knitwearFactory": "knitwearMotorStrong"
+  },
+  "name": {
+    "en": "Strong motor",
+    "fr": "Moteur puissant"
+  },
+  "model": "factory-floor-motor-strong",
+  "footprint": [2, 1],
+  "price": 750,
+  "minTier": 3,
+  "wear": 0.1,
+  "role": "motor",
+  "ports": [
+    {
+      "side": "right",
+      "medium": "drive",
+      "direction": "both"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "draw",
+      "value": 1.5
+    },
+    {
+      "effect": "strength",
+      "value": 5
+    }
+  ]
+}

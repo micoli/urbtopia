@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["livestockFarm"],
+  "category": "line",
+  "ids": {
+    "livestockFarm": "livestockConveyorCross"
+  },
+  "name": {
+    "en": "Cross splitting conveyor",
+    "fr": "Tapis répartiteur en croix"
+  },
+  "model": "packhouse-floor-conveyor-cross",
+  "footprint": [1, 1],
+  "price": 90,
+  "minTier": 2,
+  "wear": 0.03,
+  "role": "conveyor",
+  "ports": [
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    },
+    {
+      "side": "left",
+      "medium": "line",
+      "direction": "out"
+    },
+    {
+      "side": "right",
+      "medium": "line",
+      "direction": "out"
+    }
+  ]
+}

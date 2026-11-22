@@ -1,0 +1,38 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["factory", "packhouse", "mill", "bakery", "dairy", "workshop", "recyclingPlant", "storehouse", "farm"],
+  "category": "power",
+  "name": {
+    "en": "Bevel gear cross",
+    "fr": "Renvoi conique en croix"
+  },
+  "model": "factory-floor-bevel-cross",
+  "footprint": [1, 1],
+  "price": 260,
+  "minTier": 3,
+  "wear": 0.06,
+  "role": "bevel",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "right",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "left",
+      "medium": "drive",
+      "direction": "both"
+    }
+  ]
+}

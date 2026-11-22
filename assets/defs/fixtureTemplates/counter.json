@@ -1,23 +1,46 @@
 {
   "$schema": "../schemas/fixture-template.schema.json",
   "kind": "fixtureTemplate",
-  "venues": ["arcade"],
-  "category": "service",
-  "ids": {
-    "arcade": "counter"
-  },
+  "venues": ["bakery"],
+  "category": "machines",
   "name": {
-    "en": "Counter",
-    "fr": "Comptoir"
+    "en": "Display counter",
+    "fr": "Comptoir vitrine"
   },
-  "model": "mini-arcade-cash-register",
+  "model": "bakery-interior-counter-exit",
   "footprint": [1, 1],
-  "price": 100,
+  "price": 300,
   "minTier": 1,
+  "wear": 0.03,
+  "role": "exit",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "in"
+    }
+  ],
   "bonuses": [
     {
-      "effect": "playsPerHour",
-      "value": 0
+      "effect": "yield",
+      "value": 0.04
+    },
+    {
+      "effect": "sales",
+      "value": 0.3
+    },
+    {
+      "effect": "power",
+      "value": 0.3
     }
-  ]
+  ],
+  "traits": [
+    {
+      "trait": "assigns",
+      "value": "seller"
+    }
+  ],
+  "visual": {
+    "hatch": 0.3
+  }
 }

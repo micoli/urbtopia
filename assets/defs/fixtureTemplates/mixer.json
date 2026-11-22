@@ -1,0 +1,35 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["bakery"],
+  "category": "machines",
+  "name": {
+    "en": "Dough mixer (Drive on the right)",
+    "fr": "Pétrin (prise à droite)"
+  },
+  "model": "bakery-interior-mixer",
+  "footprint": [1, 1],
+  "price": 600,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "family": "mixer",
+  "ports": [
+    {
+      "side": "right",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "speed",
+      "value": 0.15
+    }
+  ]
+}

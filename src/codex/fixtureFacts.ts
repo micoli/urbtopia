@@ -1,4 +1,4 @@
-import { FIXTURES, type FixtureId, type FixtureSpec } from '../core';
+import { FIXTURES, driveSidesOf, flowSidesOf, lineInSidesOf, lineOutSidesOf, type FixtureId, type FixtureSpec } from '../core';
 import type { MessageKey } from '../i18n/messages';
 import type { FixturePage } from './fixturePages';
 
@@ -62,16 +62,18 @@ const descriptionOf = (spec: FixtureSpec): FactLine => {
 
 const sidesOf = (sides: readonly string[]): readonly MessageKey[] => sides.map(side => `codex.fixtures.side.${side}` as MessageKey);
 
+const sidesLine = (use: 'drive' | 'flow' | 'lineIn' | 'lineOut', sides: readonly string[]): FactLine[] => (sides.length ? [{ key: `codex.fixtures.use.${use}` as MessageKey, names: { sides: sidesOf(sides) } }] : []);
+
 const usageOf = (spec: FixtureSpec): FactLine[] => [
   { key: 'codex.fixtures.use.place', names: { category: [`venue.category.${spec.category}`] } },
   ...(spec.wall ? [{ key: 'codex.fixtures.use.wall' } as FactLine] : []),
   ...(spec.picks ? [{ key: 'codex.fixtures.use.picks' } as FactLine] : []),
   ...(spec.assigns ? [{ key: 'codex.fixtures.use.assigns', names: { role: [`interior.role.${spec.assigns}` as MessageKey] } } as FactLine] : []),
-  ...(spec.drive ? [{ key: 'codex.fixtures.use.drive', names: { sides: sidesOf(spec.drive) } } as FactLine] : []),
+  ...sidesLine('drive', driveSidesOf(spec)),
   ...(spec.turns ? [{ key: `codex.fixtures.use.turns.${spec.turns}` } as FactLine] : []),
-  ...(spec.flow ? [{ key: 'codex.fixtures.use.flow', names: { sides: sidesOf(spec.flow) } } as FactLine] : []),
-  ...(spec.lineIn ? [{ key: 'codex.fixtures.use.lineIn', names: { sides: sidesOf(spec.lineIn) } } as FactLine] : []),
-  ...(spec.lineOut ? [{ key: 'codex.fixtures.use.lineOut', names: { sides: sidesOf(spec.lineOut) } } as FactLine] : []),
+  ...sidesLine('flow', flowSidesOf(spec)),
+  ...sidesLine('lineIn', lineInSidesOf(spec)),
+  ...sidesLine('lineOut', lineOutSidesOf(spec)),
   ...(spec.packSize ? [{ key: 'codex.fixtures.use.packSize', values: { size: spec.packSize } } as FactLine] : []),
   ...(spec.speed ? [{ key: 'codex.fixtures.use.speed', values: { value: percentOf(spec.speed) } } as FactLine] : []),
   ...(spec.yield ? [{ key: 'codex.fixtures.use.yield', values: { value: percentOf(spec.yield) } } as FactLine] : []),

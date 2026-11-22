@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["textileMill"],
+  "category": "power",
+  "ids": {
+    "textileMill": "textileGear"
+  },
+  "name": {
+    "en": "Gear",
+    "fr": "Engrenage"
+  },
+  "model": "factory-floor-gear",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "wear": 0.05,
+  "role": "gear",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "gear",
+      "direction": "both"
+    },
+    {
+      "side": "right",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "gear",
+      "direction": "both"
+    },
+    {
+      "side": "left",
+      "medium": "drive",
+      "direction": "both"
+    }
+  ]
+}

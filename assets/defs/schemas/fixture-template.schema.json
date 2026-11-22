@@ -238,7 +238,11 @@
                     "water",
                     "steam",
                     "electricity",
-                    "smoke"
+                    "smoke",
+                    "drive",
+                    "gear",
+                    "flow",
+                    "line"
                   ]
                 },
                 "direction": {
@@ -558,7 +562,11 @@
               "water",
               "steam",
               "electricity",
-              "smoke"
+              "smoke",
+              "drive",
+              "gear",
+              "flow",
+              "line"
             ]
           },
           "direction": {

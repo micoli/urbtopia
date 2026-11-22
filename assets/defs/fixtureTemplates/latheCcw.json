@@ -1,0 +1,40 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["factory"],
+  "category": "machines",
+  "name": {
+    "en": "Lathe (counter-clockwise)",
+    "fr": "Tour (sens antihoraire)"
+  },
+  "model": "factory-floor-lathe-ccw",
+  "footprint": [1, 1],
+  "price": 1200,
+  "minTier": 3,
+  "wear": 0.1,
+  "role": "machine",
+  "family": "lathe",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "drive",
+      "direction": "both"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "speed",
+      "value": 0.15
+    },
+    {
+      "effect": "yield",
+      "value": 0.05
+    }
+  ],
+  "traits": [
+    {
+      "trait": "turns",
+      "value": "ccw"
+    }
+  ]
+}
