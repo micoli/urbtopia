@@ -33,7 +33,18 @@
     {
       "side": "front",
       "medium": "smoke",
-      "direction": "out"
+      "direction": "out",
+      "optional": true
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "generation",
+      "value": 1
+    },
+    {
+      "effect": "cleaner",
+      "value": 1
     }
   ],
   "visual": {

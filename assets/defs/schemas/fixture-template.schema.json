@@ -248,6 +248,10 @@
                     "out",
                     "both"
                   ]
+                },
+                "optional": {
+                  "type": "boolean",
+                  "const": true
                 }
               },
               "required": [
@@ -287,7 +291,9 @@
                     "stools",
                     "waiting",
                     "sleeps",
-                    "bath"
+                    "bath",
+                    "generation",
+                    "cleaner"
                   ]
                 },
                 "value": {
@@ -562,6 +568,10 @@
               "out",
               "both"
             ]
+          },
+          "optional": {
+            "type": "boolean",
+            "const": true
           }
         },
         "required": [
@@ -601,7 +611,9 @@
               "stools",
               "waiting",
               "sleeps",
-              "bath"
+              "bath",
+              "generation",
+              "cleaner"
             ]
           },
           "value": {

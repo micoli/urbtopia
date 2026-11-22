@@ -337,96 +337,11 @@
                       "type": "number",
                       "exclusiveMinimum": 0
                     }
-                  },
-                  "circuits": {
-                    "minItems": 1,
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "anchor": {
-                          "type": "string",
-                          "minLength": 1
-                        },
-                        "links": {
-                          "minItems": 1,
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "from": {
-                                "type": "string",
-                                "minLength": 1
-                              },
-                              "to": {
-                                "type": "string",
-                                "minLength": 1
-                              },
-                              "medium": {
-                                "type": "string",
-                                "enum": [
-                                  "coal",
-                                  "water",
-                                  "steam",
-                                  "electricity",
-                                  "smoke"
-                                ]
-                              }
-                            },
-                            "required": [
-                              "from",
-                              "to",
-                              "medium"
-                            ],
-                            "additionalProperties": false
-                          }
-                        },
-                        "cleaning": {
-                          "minItems": 1,
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "from": {
-                                "type": "string",
-                                "minLength": 1
-                              },
-                              "to": {
-                                "type": "string",
-                                "minLength": 1
-                              },
-                              "medium": {
-                                "type": "string",
-                                "enum": [
-                                  "coal",
-                                  "water",
-                                  "steam",
-                                  "electricity",
-                                  "smoke"
-                                ]
-                              }
-                            },
-                            "required": [
-                              "from",
-                              "to",
-                              "medium"
-                            ],
-                            "additionalProperties": false
-                          }
-                        }
-                      },
-                      "required": [
-                        "anchor",
-                        "links"
-                      ],
-                      "additionalProperties": false
-                    }
                   }
                 },
                 "required": [
                   "circuitShare",
-                  "generationCaps",
-                  "circuits"
+                  "generationCaps"
                 ],
                 "additionalProperties": false
               }

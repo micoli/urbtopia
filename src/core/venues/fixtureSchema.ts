@@ -128,7 +128,10 @@ export const fixtureSchema = z
       // An Exit: the Model of the truck that waits outside it while its Line is linked.
       truck: filled.optional(),
       // Engine room: the ports of the Fixture, each on one side, of one Medium, taking it in, giving it out or both. Two Fixtures are linked through ports of the same Medium on the two sides of their edge.
-      ports: z.array(z.strictObject({ side: z.enum(FIXTURE_SIDES), medium: z.enum(FIXTURE_MEDIA), direction: z.enum(PORT_DIRECTIONS) })).min(1).optional(),
+      ports: z.array(z.strictObject({ side: z.enum(FIXTURE_SIDES), medium: z.enum(FIXTURE_MEDIA), direction: z.enum(PORT_DIRECTIONS), optional: z.literal(true).optional() })).min(1).optional(),
+      // Engine room: what the Fixture that anchors a Circuit adds to the Capacity of the plant, and to what it takes away from its pollution once the Circuit is cleaned; both are weights, the caps are those of the building.
+      generation: z.number().positive().optional(),
+      cleaner: z.number().positive().optional(),
       // Engine room: a wall port, which only stands against the back wall of the room, facing it.
       wallPort: z.literal(true).optional(),
     }),

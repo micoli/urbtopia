@@ -86,41 +86,7 @@
         "engineRoom": {
           "circuitShare": 0.5,
           "generationCaps": [0.08, 0.15, 0.22, 0.3],
-          "pollutionCaps": [0.1, 0.2, 0.3, 0.4],
-          "circuits": [
-            {
-              "anchor": "steamBoiler",
-              "links": [
-                {
-                  "from": "coalQuay",
-                  "to": "steamBoiler",
-                  "medium": "coal"
-                },
-                {
-                  "from": "waterInlet",
-                  "to": "steamBoiler",
-                  "medium": "water"
-                },
-                {
-                  "from": "steamBoiler",
-                  "to": "alternator",
-                  "medium": "steam"
-                },
-                {
-                  "from": "alternator",
-                  "to": "powerOutlet",
-                  "medium": "electricity"
-                }
-              ],
-              "cleaning": [
-                {
-                  "from": "steamBoiler",
-                  "to": "filter",
-                  "medium": "smoke"
-                }
-              ]
-            }
-          ]
+          "pollutionCaps": [0.1, 0.2, 0.3, 0.4]
         }
       },
       "roles": {},
@@ -136,34 +102,7 @@
         "technicianPosts": [1, 1, 2, 2, 3, 4],
         "engineRoom": {
           "circuitShare": 0.5,
-          "generationCaps": [0.05, 0.08, 0.11, 0.15, 0.2, 0.25],
-          "circuits": [
-            {
-              "anchor": "steamTurbine",
-              "links": [
-                {
-                  "from": "undergroundWaterInlet",
-                  "to": "steamTurbine",
-                  "medium": "steam"
-                },
-                {
-                  "from": "steamTurbine",
-                  "to": "condenser",
-                  "medium": "steam"
-                },
-                {
-                  "from": "condenser",
-                  "to": "injectionWell",
-                  "medium": "steam"
-                },
-                {
-                  "from": "steamTurbine",
-                  "to": "powerOutlet",
-                  "medium": "electricity"
-                }
-              ]
-            }
-          ]
+          "generationCaps": [0.05, 0.08, 0.11, 0.15, 0.2, 0.25]
         }
       },
       "roles": {},
@@ -180,34 +119,7 @@
         "technicianPosts": [4],
         "engineRoom": {
           "circuitShare": 0.5,
-          "generationCaps": [0.25],
-          "circuits": [
-            {
-              "anchor": "steamTurbine",
-              "links": [
-                {
-                  "from": "undergroundWaterInlet",
-                  "to": "steamTurbine",
-                  "medium": "steam"
-                },
-                {
-                  "from": "steamTurbine",
-                  "to": "condenser",
-                  "medium": "steam"
-                },
-                {
-                  "from": "condenser",
-                  "to": "injectionWell",
-                  "medium": "steam"
-                },
-                {
-                  "from": "steamTurbine",
-                  "to": "powerOutlet",
-                  "medium": "electricity"
-                }
-              ]
-            }
-          ]
+          "generationCaps": [0.25]
         }
       },
       "roles": {},
@@ -223,29 +135,7 @@
         "technicianPosts": [1, 2, 3],
         "engineRoom": {
           "circuitShare": 0.5,
-          "generationCaps": [0.06, 0.13, 0.2],
-          "circuits": [
-            {
-              "anchor": "waterTurbine",
-              "links": [
-                {
-                  "from": "waterInlet",
-                  "to": "waterTurbine",
-                  "medium": "water"
-                },
-                {
-                  "from": "waterTurbine",
-                  "to": "waterOutlet",
-                  "medium": "water"
-                },
-                {
-                  "from": "waterTurbine",
-                  "to": "powerOutlet",
-                  "medium": "electricity"
-                }
-              ]
-            }
-          ]
+          "generationCaps": [0.06, 0.13, 0.2]
         }
       },
       "roles": {},

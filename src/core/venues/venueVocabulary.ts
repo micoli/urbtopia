@@ -46,6 +46,8 @@ export interface FixturePort {
   side: FixtureSide;
   medium: FixtureMedium;
   direction: PortDirection;
+  // The Fixture works without this port being linked; linking it adds something (the smoke of a Steam boiler to a Filter).
+  optional?: true;
 }
 
 // The Service interiors, by the kind of their Fixtures.
@@ -91,7 +93,7 @@ export type FixtureVenueKind = (typeof FIXTURE_VENUES)[number];
 
 // The numbers a Fixture adds to what its venue earns, serves, holds or draws. Each is read by the code of the venue that declares it.
 export const FIXTURE_EFFECTS = [
-  'speed', 'yield', 'sales', 'capacity', 'coolant', 'draw', 'strength', 'power', 'quality', 'comfort', 'attract', 'checkout', 'cook', 'shelf', 'playsPerHour', 'seats', 'drinks', 'stools', 'waiting', 'sleeps', 'bath',
+  'speed', 'yield', 'sales', 'capacity', 'coolant', 'draw', 'strength', 'power', 'quality', 'comfort', 'attract', 'checkout', 'cook', 'shelf', 'playsPerHour', 'seats', 'drinks', 'stools', 'waiting', 'sleeps', 'bath', 'generation', 'cleaner',
 ] as const;
 
 export type FixtureEffect = (typeof FIXTURE_EFFECTS)[number];

@@ -107,6 +107,9 @@ export interface FixtureSpec {
   lineOut?: readonly FixtureSide[];
   // Engine room: the ports through which the Media of a Circuit pass, and whether the Fixture stands against the back wall.
   ports?: readonly FixturePort[];
+  // Engine room: the weights that a Fixture anchoring a Circuit gives to the generation and to the cleaning of its plant.
+  generation?: number;
+  cleaner?: number;
   wallPort?: true;
   packSize?: PackSize;
   truck?: string;

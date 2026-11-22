@@ -30,5 +30,11 @@
       "medium": "electricity",
       "direction": "out"
     }
+  ],
+  "bonuses": [
+    {
+      "effect": "generation",
+      "value": 1
+    }
   ]
 }

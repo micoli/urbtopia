@@ -37,7 +37,7 @@ const body = {
   wear: z.number().min(0).optional(),
   role: z.enum([...FACTORY_FIXTURE_ROLES, ...HOME_FIXTURE_ROLES]).optional(),
   family: z.string().min(1).optional(),
-  ports: z.array(z.strictObject({ side: z.enum(FIXTURE_SIDES), medium: z.enum(FIXTURE_MEDIA), direction: z.enum(PORT_DIRECTIONS) })).min(1).optional(),
+  ports: z.array(z.strictObject({ side: z.enum(FIXTURE_SIDES), medium: z.enum(FIXTURE_MEDIA), direction: z.enum(PORT_DIRECTIONS), optional: z.literal(true).optional() })).min(1).optional(),
   bonuses: z.array(z.strictObject({ effect: z.enum(FIXTURE_EFFECTS), value: z.number().min(0) })).min(1).optional(),
   traits: z.array(z.strictObject({ trait: z.enum(FIXTURE_TRAITS), value: filled.optional() })).min(1).optional(),
   placement: placement.optional(),

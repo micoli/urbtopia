@@ -3,7 +3,6 @@ import type { Building, BuildingType, InteriorData, InteriorRole } from '../engi
 import { stackCountOf } from '../economy/counterSlots';
 import { modelFileOf } from '../models/modelFiles';
 import { STAFF } from '../venues/staff';
-import type { FixtureMedium } from '../venues/venueVocabulary';
 import { valueByTier } from './valueByTier';
 
 export type InteriorFamily = 'production' | 'service' | 'home';
@@ -47,27 +46,11 @@ export interface InteriorLayout {
   milling?: { input: string; destinations: Record<string, string> };
   // Recycling plant: the Waste capacity each Exit adds, the capacity all three kinds of Recycler add together, the Collection distance each Recycler adds, and the most Exits, Sorters and Recyclers by Tier.
   recycling?: RecyclingBalance;
-  // Engine room: the Circuits that count, and the most the complete ones add to the Capacity of the plant and take away from its pollution, by Tier.
+  // Engine room: the most the complete ones add to the Capacity of the plant and take away from its pollution, by Tier.
   engineRoom?: EngineRoomBalance;
 }
 
-// A link of a flowchart: the Fixtures of the family `from` hand the Medium to those of the family `to`.
-export interface EngineRoomLink {
-  from: string;
-  to: string;
-  medium: FixtureMedium;
-}
-
-// A Circuit counts once for each Fixture of the family `anchor` that every link of its flowchart reaches.
-export interface EngineRoomCircuit {
-  anchor: string;
-  links: EngineRoomLink[];
-  // The links that only the pollution gain asks for: the Circuit counts without them, but takes pollution away only once they are laid too (the Filter of the Coal plant).
-  cleaning?: EngineRoomLink[];
-}
-
 export interface EngineRoomBalance {
-  circuits: EngineRoomCircuit[];
   // The share of the cap that one complete Circuit adds before the gains slow down.
   circuitShare: number;
   generationCaps: number[];

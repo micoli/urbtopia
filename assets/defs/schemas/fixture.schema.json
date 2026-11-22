@@ -1402,6 +1402,10 @@
                   "out",
                   "both"
                 ]
+              },
+              "optional": {
+                "type": "boolean",
+                "const": true
               }
             },
             "required": [
@@ -1411,6 +1415,14 @@
             ],
             "additionalProperties": false
           }
+        },
+        "generation": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "cleaner": {
+          "type": "number",
+          "exclusiveMinimum": 0
         },
         "wallPort": {
           "type": "boolean",

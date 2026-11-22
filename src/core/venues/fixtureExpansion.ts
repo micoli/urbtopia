@@ -11,7 +11,7 @@ export interface FixtureTemplateBody {
   wear?: number;
   role?: FactoryFixtureRole | HomeFixtureRole;
   family?: string;
-  ports?: readonly { side: FixtureSide; medium: FixtureMedium; direction: PortDirection }[];
+  ports?: readonly { side: FixtureSide; medium: FixtureMedium; direction: PortDirection; optional?: true }[];
   bonuses?: readonly { effect: FixtureEffect; value: number }[];
   traits?: readonly { trait: FixtureTrait; value?: string }[];
   placement?: {
