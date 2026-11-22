@@ -343,6 +343,6 @@ export { homeLevelOf } from './architect/homeLevel';
 export { ACHIEVEMENTS, CATEGORY_NAMES, achievementsOf } from './achievements/achievements';
 export { ACHIEVEMENT_CATEGORIES } from './achievements/achievementTypes';
 export type { AchievementCategoryId, AchievementDef } from './achievements/achievementTypes';
-export { isAcquired } from './achievements/latch';
+export { isAcquired, withAchievements } from './achievements/latch';
 export { categoryProgress, completedCategories, isPossible, visibleCategories } from './achievements/progress';
 export type { CategoryProgress } from './achievements/progress';

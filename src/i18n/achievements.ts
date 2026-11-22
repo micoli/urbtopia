@@ -11,6 +11,8 @@ const texts = {
   'achievements.todo': ['To do', 'À faire'],
   'achievements.empty': ['No Achievement on this Difficulty.', 'Aucun succès à cette difficulté.'],
   'achievements.unlocked': ['Achievement: {name}', 'Succès : {name}'],
+  'achievements.unlockedMany': ['{count} Achievements unlocked', '{count} succès débloqués'],
+  'achievements.medal': ['Medal earned: {name}', 'Médaille obtenue : {name}'],
 } as const satisfies Record<string, readonly [string, string]>;
 
 type TextKey = keyof typeof texts;

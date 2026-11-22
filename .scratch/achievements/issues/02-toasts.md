@@ -1,6 +1,6 @@
 # Toasts
 
-Status: ready-for-agent
+Status: done - implemented
 Spec: ../spec.md
 Blocked by: 01
 
@@ -14,3 +14,7 @@ A toast at each unlock and a distinct one for a Medal.
 - [ ] A Catch-up lists the Achievements it earned in its return summary instead of toasting each.
 - [ ] A separate Medal toast, same Icon family, no emoji.
 - [ ] Motion stops under `prefers-reduced-motion`.
+
+## Notes
+
+The tick path now latches too (`withAchievements`). A Catch-up ends with one toast that lists what the absence earned. `announceMedal(category)` is ready for ticket 04.

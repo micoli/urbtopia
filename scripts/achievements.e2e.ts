@@ -13,7 +13,9 @@ test.describe('achievements', () => {
       gameStore.getState().send({ type: 'BuildPedestrianWay', from: { x: 55, y: 60 }, to: { x: 58, y: 60 } });
     });
 
-    await page.getByRole('button', { name: 'Succès' }).click();
+    await expect(page.getByRole('status')).toContainText('Succès : À pied');
+
+    await page.getByRole('button', { name: 'Succès' }).first().click();
     const window = page.getByRole('dialog', { name: 'Succès' });
     await expect(window).toBeVisible();
     await expect(window).toContainText('Transports');

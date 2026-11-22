@@ -14,3 +14,10 @@ export function latchAchievements(before: GameState, after: GameState, events: r
   if (unlocked.length === 0) return { state: after, unlocked };
   return { state: { ...after, achievements: [...(after.achievements ?? []), ...unlocked] }, unlocked };
 }
+
+// The result of a simulation step or a Command, with the Achievements it earned latched and announced.
+export function withAchievements<R extends { state: GameState; events: GameEvent[] }>(before: GameState, result: R): R {
+  const latched = latchAchievements(before, result.state, result.events);
+  if (latched.unlocked.length === 0) return result;
+  return { ...result, state: latched.state, events: [...result.events, ...latched.unlocked.map((id): GameEvent => ({ type: 'AchievementUnlocked', id }))] };
+}

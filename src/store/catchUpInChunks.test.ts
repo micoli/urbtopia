@@ -3,6 +3,7 @@ import { advance, GAME_CONFIG } from '../core';
 import { buildIdealCity } from '../saves/idealCity';
 import { catchUpInChunks } from './catchUpInChunks';
 import { createGameStore } from './gameStore';
+import { toastStore } from './toastStore';
 
 vi.hoisted(() => vi.stubGlobal('window', { location: { search: '' } }));
 
@@ -47,5 +48,16 @@ describe('catchUpInChunks', () => {
     await catchUpInChunks(now, store);
     await first;
     expect(store.getState().state.lastSeen).toBeGreaterThanOrEqual(now);
+  });
+
+  it('lists the Achievements earned during the absence in one toast', async () => {
+    const city = buildIdealCity();
+    const store = createGameStore(city);
+    vi.spyOn(store.getState(), 'tick').mockImplementation((now) => {
+      const state = store.getState().state;
+      store.setState({ state: { ...state, lastSeen: now, achievements: [...(state.achievements ?? []), ...(state.lastSeen === city.lastSeen ? ['transport.bridge', 'transport.busLine'] : [])] } });
+    });
+    await catchUpInChunks(city.lastSeen + 4 * HOUR_MS, store);
+    expect(toastStore.getState().text).toBe('2 Achievements unlocked');
   });
 });

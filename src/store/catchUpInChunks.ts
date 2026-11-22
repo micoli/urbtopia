@@ -1,6 +1,7 @@
 import { GAME_CONFIG } from '../core';
 import { measureTick } from '../monitoring/gameMetrics';
 import { gameStore, type createGameStore } from './gameStore';
+import { achievementToast, toastStore } from './toastStore';
 
 type GameStoreApi = ReturnType<typeof createGameStore>;
 
@@ -19,6 +20,7 @@ export async function catchUpInChunks(now: number, store: GameStoreApi = gameSto
   if (gap <= CHUNK_MS) return measureTick(() => store.getState().tick(now));
 
   running = true;
+  const known = new Set(store.getState().state.achievements);
   try {
     const replayUntil = store.getState().state.lastSeen + Math.min(gap, GAME_CONFIG.offlineCapMs);
     while (!store.getState().paused && store.getState().state.lastSeen < replayUntil) {
@@ -26,7 +28,14 @@ export async function catchUpInChunks(now: number, store: GameStoreApi = gameSto
       await nextFrame();
     }
     if (!store.getState().paused && gap > GAME_CONFIG.offlineCapMs) store.getState().forfeitOffline(now);
+    announceCaughtUpAchievements(store, known);
   } finally {
     running = false;
   }
+}
+
+// A long absence earns its Achievements hour by hour: the return summary lists them all at once.
+function announceCaughtUpAchievements(store: GameStoreApi, known: ReadonlySet<string>) {
+  const earned = (store.getState().state.achievements ?? []).filter((id) => !known.has(id));
+  if (earned.length > 0) toastStore.getState().showText(achievementToast(earned), undefined, 'trophy');
 }
