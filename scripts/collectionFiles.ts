@@ -6,6 +6,7 @@ import { singletonSpecOf, type SingletonName } from './singletons.ts';
 import { fieldOrderOf, specOf, type CollectionName, type Definition } from './collections.ts';
 import { collectionProblems, describeProblem, singletonProblems, type ReferenceContext } from './definitionProblems.ts';
 import { shippedModelCatalog } from './modelReferences.ts';
+import { FIXTURE_ORDER_FILE, mergedOrder, templateFixtureIds } from './fixtureOrder.ts';
 
 export const SCHEMAS_DIR = `${DEFS_ROOT}/schemas`;
 
@@ -57,6 +58,12 @@ export const orderJson = (ids: readonly string[]): string => `${JSON.stringify(i
 
 const realContext = (name: CollectionName, definitions: Record<string, Definition>): ReferenceContext => ({ collections: { ...readCollections(), [name]: definitions }, catalog: shippedModelCatalog() });
 
+// The order file of the Fixtures lists those that the templates unfold into, which have no file of their own.
+const writeFixtureOrder = (templates: Record<string, Definition>) => {
+  const listed = existsSync(FIXTURE_ORDER_FILE) ? (JSON.parse(readFileSync(FIXTURE_ORDER_FILE, 'utf8')) as string[]) : [];
+  writeIfChanged(FIXTURE_ORDER_FILE, orderJson(mergedOrder(listed, templateFixtureIds(templates))));
+};
+
 // The order of the entries is the menu order, stored as a list of ids in the order file of the directory. Writing the real directory also regenerates its id unions and JSON Schema.
 export function writeCollection(name: CollectionName, definitions: Record<string, Definition>, dir = collectionDir(name)): void {
   const real = dir === collectionDir(name);
@@ -67,6 +74,7 @@ export function writeCollection(name: CollectionName, definitions: Record<string
   for (const file of jsonFilesIn(dir)) if (!(idOfFile(file) in definitions)) rmSync(join(dir, file));
   writeIfChanged(orderFileOf(dir), orderJson(Object.keys(definitions)));
   if (!real) return;
+  if (name === 'fixtureTemplates') writeFixtureOrder(definitions);
   writeIfChanged(specOf(name).idTypes.file, idTypesSource(name, definitions));
   writeIfChanged(schemaFileOf(name), jsonSchemaOf(name));
 }

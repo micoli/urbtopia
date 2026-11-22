@@ -1,0 +1,26 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["knitwearFactory"],
+  "category": "power",
+  "ids": {
+    "knitwearFactory": "knitwearMotor"
+  },
+  "name": {
+    "en": "Motor",
+    "fr": "Moteur"
+  },
+  "model": "factory-floor-motor",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "motor",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "drive",
+      "direction": "both"
+    }
+  ]
+}

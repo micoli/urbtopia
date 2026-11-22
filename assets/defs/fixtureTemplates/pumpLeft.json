@@ -1,0 +1,33 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["factory", "mill", "bakery", "dairy", "workshop", "farm"],
+  "category": "plumbing",
+  "name": {
+    "en": "Pump (Drive on the left)",
+    "fr": "Pompe (prise à gauche)"
+  },
+  "model": "factory-floor-pump-left",
+  "footprint": [1, 1],
+  "price": 300,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "pump",
+  "ports": [
+    {
+      "side": "left",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "front",
+      "medium": "flow",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "flow",
+      "direction": "both"
+    }
+  ]
+}

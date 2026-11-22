@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["hotel"],
+  "category": "walls",
+  "ids": {
+    "hotel": "hotelLowWall"
+  },
+  "name": {
+    "en": "Low wall",
+    "fr": "Demi-mur"
+  },
+  "model": "furniture-partitionlow",
+  "footprint": [1, 1],
+  "price": 25,
+  "minTier": 1,
+  "placement": {
+    "partition": true,
+    "joins": {
+      "elbow": "furniture-partitionlowelbow",
+      "tee": "furniture-partitionlowtee",
+      "cross": "furniture-partitionlowcross"
+    }
+  }
+}

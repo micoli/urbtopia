@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["supermarket"],
+  "category": "decor",
+  "ids": {
+    "supermarket": "shoppingBasket"
+  },
+  "name": {
+    "en": "Shopping basket",
+    "fr": "Panier"
+  },
+  "model": "mini-market-shopping-basket",
+  "footprint": [1, 1],
+  "price": 15,
+  "minTier": 1,
+  "bonuses": [
+    {
+      "effect": "attract",
+      "value": 0.02
+    }
+  ]
+}

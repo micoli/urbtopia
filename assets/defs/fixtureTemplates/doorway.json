@@ -1,0 +1,62 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["arcade", "bakery", "dairy", "factory", "hospital", "farm", "library", "mill", "packhouse", "recyclingPlant", "restaurant", "school", "storehouse", "workshop", "coalPlant", "geothermalPlant", "hydroPlant"],
+  "category": "walls",
+  "overrides": {
+    "arcade": {
+      "model": "mini-arcade-wall-door",
+      "bonuses": [
+        {
+          "effect": "playsPerHour",
+          "value": 0
+        }
+      ]
+    },
+    "bakery": {
+      "model": "bakery-interior-wall-door"
+    },
+    "dairy": {
+      "model": "dairy-interior-wall-door"
+    },
+    "factory": {
+      "model": "factory-floor-wall-door"
+    },
+    "hospital": {
+      "model": "hospital-interior-wall-door"
+    },
+    "farm": {
+      "model": "farm-interior-wall-door"
+    },
+    "library": {
+      "model": "library-interior-wall-door"
+    },
+    "mill": {
+      "model": "mill-interior-wall-door"
+    },
+    "packhouse": {
+      "model": "factory-floor-wall-door"
+    },
+    "restaurant": {
+      "model": "restaurant-wall-door"
+    },
+    "school": {
+      "model": "school-interior-wall-door"
+    },
+    "storehouse": {
+      "model": "storehouse-interior-wall-door"
+    }
+  },
+  "name": {
+    "en": "Wall with a doorway",
+    "fr": "Mur à encadrement de porte"
+  },
+  "model": "workshop-interior-wall-door",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "placement": {
+    "partition": true,
+    "passable": true
+  }
+}

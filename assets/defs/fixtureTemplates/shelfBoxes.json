@@ -1,0 +1,24 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["supermarket"],
+  "category": "shelves",
+  "ids": {
+    "supermarket": "shelfBoxes"
+  },
+  "name": {
+    "en": "Shelf of boxes",
+    "fr": "Rayon de cartons"
+  },
+  "model": "mini-market-shelf-boxes",
+  "footprint": [1, 1],
+  "price": 120,
+  "minTier": 1,
+  "wear": 0.02,
+  "bonuses": [
+    {
+      "effect": "shelf",
+      "value": 12
+    }
+  ]
+}

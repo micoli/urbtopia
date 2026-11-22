@@ -1,0 +1,29 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["coalPlant", "hydroPlant"],
+  "category": "line",
+  "name": {
+    "en": "Water pipe",
+    "fr": "Tuyau d'eau"
+  },
+  "model": "engine-room-water-pipe-straight",
+  "footprint": [1, 1],
+  "price": 25,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "circuit",
+  "family": "link",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "water",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "water",
+      "direction": "both"
+    }
+  ]
+}

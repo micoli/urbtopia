@@ -1,0 +1,22 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["hotel"],
+  "category": "reception",
+  "ids": {
+    "hotel": "receptionDesk"
+  },
+  "name": {
+    "en": "Reception desk",
+    "fr": "Réception"
+  },
+  "model": "furniture-desk",
+  "footprint": [1, 1],
+  "price": 150,
+  "minTier": 1,
+  "traits": [
+    {
+      "trait": "reception"
+    }
+  ]
+}

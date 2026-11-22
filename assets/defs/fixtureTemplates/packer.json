@@ -1,0 +1,39 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["packhouse"],
+  "category": "machines",
+  "name": {
+    "en": "Packer (Drive on the right)",
+    "fr": "Emballeuse (prise à droite)"
+  },
+  "model": "packhouse-floor-packer",
+  "footprint": [1, 1],
+  "price": 800,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "family": "packer",
+  "ports": [
+    {
+      "side": "right",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "speed",
+      "value": 0.2
+    },
+    {
+      "effect": "yield",
+      "value": 0.08
+    }
+  ]
+}

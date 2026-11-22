@@ -1,0 +1,35 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["dairy"],
+  "category": "machines",
+  "name": {
+    "en": "Milk vat (milk on the right)",
+    "fr": "Cuve à lait (arrivée à droite)"
+  },
+  "model": "dairy-interior-milk-vat",
+  "footprint": [1, 1],
+  "price": 600,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "machine",
+  "family": "vat",
+  "ports": [
+    {
+      "side": "right",
+      "medium": "flow",
+      "direction": "both"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "speed",
+      "value": 0.05
+    }
+  ]
+}

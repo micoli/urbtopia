@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["supermarket"],
+  "category": "walls",
+  "ids": {
+    "supermarket": "marketDoorway"
+  },
+  "name": {
+    "en": "Wall with a doorway",
+    "fr": "Mur à encadrement de porte"
+  },
+  "model": "mini-market-wall-door",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "placement": {
+    "partition": true,
+    "passable": true
+  }
+}

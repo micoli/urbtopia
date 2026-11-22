@@ -1,0 +1,31 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["arcade"],
+  "category": "games",
+  "ids": {
+    "arcade": "danceMachine"
+  },
+  "name": {
+    "en": "Dance machine",
+    "fr": "Borne de danse"
+  },
+  "model": "mini-arcade-dance-machine",
+  "footprint": [1, 1],
+  "price": 500,
+  "minTier": 3,
+  "bonuses": [
+    {
+      "effect": "playsPerHour",
+      "value": 8
+    }
+  ],
+  "traits": [
+    {
+      "trait": "loud"
+    }
+  ],
+  "placement": {
+    "minRank": 3
+  }
+}

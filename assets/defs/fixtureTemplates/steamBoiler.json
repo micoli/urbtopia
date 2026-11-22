@@ -1,0 +1,53 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["coalPlant"],
+  "category": "machines",
+  "name": {
+    "en": "Steam boiler",
+    "fr": "Chaudière à vapeur"
+  },
+  "model": "engine-room-steam-boiler",
+  "footprint": [1, 1],
+  "price": 1500,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "circuit",
+  "family": "steamBoiler",
+  "ports": [
+    {
+      "side": "back",
+      "medium": "coal",
+      "direction": "in"
+    },
+    {
+      "side": "left",
+      "medium": "water",
+      "direction": "in"
+    },
+    {
+      "side": "right",
+      "medium": "steam",
+      "direction": "out"
+    },
+    {
+      "side": "front",
+      "medium": "smoke",
+      "direction": "out",
+      "optional": true
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "generation",
+      "value": 1
+    },
+    {
+      "effect": "cleaner",
+      "value": 1
+    }
+  ],
+  "visual": {
+    "smoke": [0, 1.3, 0.3]
+  }
+}

@@ -145,7 +145,7 @@ const jsonOf = (schema: z.ZodType) => z.toJSONSchema(schema) as JsonSchema
 const collectionJson = new Map<CollectionName, JsonSchema>()
 
 // What picks the branch of a collection cannot change once the object exists.
-const BRANCH_KEYS: Partial<Record<CollectionName, string[]>> = { fixtures: ['venue'], boats: ['family'], transitVehicles: ['mode'] }
+const BRANCH_KEYS: Partial<Record<CollectionName, string[]>> = { boats: ['family'], transitVehicles: ['mode'] }
 
 // A discriminated union shows the branch whose constants (kind, Venue) the definition holds.
 export function collectionFieldsOf(collection: CollectionName, definition: Definition): FieldSpec[] {

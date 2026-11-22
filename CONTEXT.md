@@ -793,12 +793,23 @@ _Avoid_: Heat pump, boiler, Coal Power plant
 The Production interior of a Power plant (Coal, Hydro, Geothermal and Large geothermal; never the wind or solar plant), opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the plant's Tier, where the player places Fixtures. It is not a Venue. An empty Engine room leaves the plant exactly as it was; the floor only adds a bonus to the plant's Capacity (and, for a Coal Power plant with a Filter on its boiler, lowers its pollution), counted only for a complete Circuit, capped by the plant's Tier and never reached. Its Fixtures wear and a Technician repairs them; it draws nothing from the city's electricity Demand, spends no coal and no water, and has no power switch.
 _Avoid_: Power interior, machine hall, Factory interior
 
+**Fixture template**:
+The file that defines a Fixture once for every venue that has it: its Name, Model, price, `family` and `role`, its ports, its Effects and Traits, its placement and its look, and the venues that carry it, with the few fields that differ in one of them. The game unfolds it into one Fixture per venue, whose id is the venue followed by the name of the template. Not a Building.
+_Avoid_: Blueprint, prefab
+
+**Port**:
+The place where a Fixture meets another, on one of its four sides, for one Medium, taking it in, giving it out or both. A port can be optional: the Fixture works without it, and linking it adds something (the smoke of a Steam boiler to a Filter). Drive, Flow and the Line of the Production interiors are ports like those of the Engine room.
+
+**Effect**:
+A number that a Fixture adds to what its venue earns, serves, holds or draws: speed, yield, sales, capacity, quality, comfort, generation… Each is read by the code of the venue that declares it; the file only says which Fixture carries which number. A Trait is the same with no number: a flag (heat, loud, picks) or a word (a seat of a table or of a bar, the size of a pack, the role of the Staff assigned).
+_Avoid_: Bonus (that is what a whole building gets from its interior)
+
 **Circuit**:
-The chain of Fixtures of an Engine room that goes from its wall ports to its Power outlet, by typed links, and counts only when every link of its flowchart is laid and no Fixture on it has broken down. Coal: Coal quay and Water inlet feed a Steam boiler, whose steam drives an Alternator that feeds a Power outlet. Hydro: a Water inlet feeds a Water turbine that returns the water to a Water outlet and feeds a Power outlet. Geothermal: an Underground water inlet feeds a Steam turbine whose steam goes through a Condenser to an Injection well, and the turbine feeds a Power outlet. A complete Circuit uses its own ports, never one that another Circuit uses; several can stand in a large room, each adding less than the one before.
+The chain of Fixtures of an Engine room that goes from its wall ports to its Power outlet, by typed links, and counts only when every required port of its Fixtures is met and no Fixture on it has broken down. It is derived from the ports, not listed: it grows from its anchor, the Fixture that carries the generation, and meets each port with a Fixture of another family that the links reach. Coal: Coal quay and Water inlet feed a Steam boiler, whose steam drives an Alternator that feeds a Power outlet. Hydro: a Water inlet feeds a Water turbine that returns the water to a Water outlet and feeds a Power outlet. Geothermal: an Underground water inlet feeds a Steam turbine whose steam goes through a Condenser to an Injection well, and the turbine feeds a Power outlet. A complete Circuit uses its own ports, never one that another Circuit uses; several can stand in a large room, each adding less than the one before.
 _Avoid_: Line (the Packet network of a Packhouse), Flow (the liquid network of a Factory interior)
 
 **Medium**:
-What a link of a Circuit carries: coal, water, steam, electricity or smoke (the boiler's smoke to its Filter). A Fixture declares ports, each on one side, of one Medium and in, out or both; two Fixtures are linked only through ports of the same Medium on the two sides of their edge, an out port facing an in port. Two Media never share a link.
+What a port carries: coal, water, steam, electricity or smoke (the boiler's smoke to its Filter) in an Engine room; Drive, the rim of a Gear, Flow or Packets (a Line) on the other Production interiors. A Fixture declares ports, each on one side, of one Medium and in, out or both; two Fixtures are linked only through ports of the same Medium on the two sides of their edge, an out port facing an in port. Two Media never share a link.
 _Avoid_: Fluid, resource
 
 **Wall port**:
@@ -1263,7 +1274,15 @@ _Avoid_: Basket, deposit, contribution
 
 **Medal**:
 A permanent distinction earned by completing a Challenge whose reward is a Medal, or by reaching cumulative Donation value milestones. It is shown in the Social window, on the Player account's own profile and on its Friends'.
-_Avoid_: Badge (reserved for the notification counter on a button), trophy, achievement
+_Avoid_: Badge (reserved for the notification counter on a button), trophy. Distinct from an Achievement.
+
+**Achievement category**:
+A themed group of Achievements (Social, Transport, Construction…) that together cover one area of the game. It is complete when all its Achievements are, and completing it earns a Medal.
+_Avoid_: Chapter, tab
+
+**Achievement**:
+A feature of the game that the player has used at least once in a City, such as placing a first Bus line. It is acquired by City and kept in its save, is binary (done or not, no counter), pays no Urbs, and is never taken back, even if the player later demolishes what earned it. Its purpose is to push the player to try every feature. Distinct from a Medal and from a Challenge.
+_Avoid_: Trophy, badge, quest, mission
 
 **Hall of fame**:
 The public ranking of the ten biggest Cities by Citizens, among the Cities that have a Showcase and whose Player account has a Handle. A Player account can have several Cities in it. Each entry shows the Avatar, the Handle, the City name and the Citizens count of its City. Anyone can consult it.

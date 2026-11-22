@@ -1,0 +1,20 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["school"],
+  "category": "furniture",
+  "name": {
+    "en": "Pupil's desk",
+    "fr": "Pupitre"
+  },
+  "model": "school-interior-desk",
+  "footprint": [1, 1],
+  "price": 60,
+  "minTier": 1,
+  "bonuses": [
+    {
+      "effect": "quality",
+      "value": 0.06
+    }
+  ]
+}

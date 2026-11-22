@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["supermarket"],
+  "category": "walls",
+  "ids": {
+    "supermarket": "marketLowWall"
+  },
+  "name": {
+    "en": "Low wall",
+    "fr": "Demi-mur"
+  },
+  "model": "mini-market-partition-low",
+  "footprint": [1, 1],
+  "price": 24,
+  "minTier": 1,
+  "placement": {
+    "partition": true,
+    "joins": {
+      "elbow": "mini-market-partition-low-elbow",
+      "tee": "mini-market-partition-low-tee",
+      "cross": "mini-market-partition-low-cross"
+    }
+  }
+}

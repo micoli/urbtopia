@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["restaurant"],
+  "category": "kitchen",
+  "ids": {
+    "restaurant": "prepTable"
+  },
+  "name": {
+    "en": "Prep table",
+    "fr": "Table de préparation"
+  },
+  "model": "restaurant-prep-table",
+  "footprint": [1, 1],
+  "price": 150,
+  "minTier": 1,
+  "wear": 0.03,
+  "traits": [
+    {
+      "trait": "prep"
+    }
+  ]
+}

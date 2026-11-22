@@ -1,0 +1,26 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["hotel"],
+  "category": "comfort",
+  "ids": {
+    "hotel": "television"
+  },
+  "name": {
+    "en": "Television",
+    "fr": "Télévision"
+  },
+  "model": "furniture-televisionmodern",
+  "footprint": [1, 1],
+  "price": 160,
+  "minTier": 2,
+  "bonuses": [
+    {
+      "effect": "comfort",
+      "value": 1
+    }
+  ],
+  "placement": {
+    "minRank": 2
+  }
+}

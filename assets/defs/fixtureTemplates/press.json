@@ -1,0 +1,30 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["factory"],
+  "category": "machines",
+  "name": {
+    "en": "Press",
+    "fr": "Presse"
+  },
+  "model": "factory-floor-press",
+  "footprint": [1, 1],
+  "price": 600,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "machine",
+  "family": "press",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "drive",
+      "direction": "both"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "speed",
+      "value": 0.2
+    }
+  ]
+}

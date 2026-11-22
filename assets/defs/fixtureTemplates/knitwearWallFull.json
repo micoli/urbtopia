@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["knitwearFactory"],
+  "category": "walls",
+  "ids": {
+    "knitwearFactory": "knitwearWallFull"
+  },
+  "name": {
+    "en": "Full-height wall",
+    "fr": "Mur pleine hauteur"
+  },
+  "model": "knitwear-interior-partition-full",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "placement": {
+    "partition": true,
+    "joins": {
+      "elbow": "knitwear-interior-partition-full-elbow",
+      "tee": "knitwear-interior-partition-full-tee",
+      "cross": "knitwear-interior-partition-full-cross"
+    }
+  }
+}

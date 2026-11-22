@@ -3,16 +3,19 @@
   "buildings": {
     "factory": {
       "family": "production",
+      "fixtureCategories": ["power", "plumbing", "machines", "walls"],
       "bonusModel": "factory",
       "roles": {}
     },
     "packhouse": {
       "family": "production",
+      "fixtureCategories": ["power", "machines", "line", "walls"],
       "bonusModel": "packhouse",
       "roles": {}
     },
     "mill": {
       "family": "production",
+      "fixtureCategories": ["power", "plumbing", "machines", "walls"],
       "bonusModel": "machines",
       "layout": {
         "gridSizes": [5, 6, 7, 8, 9],
@@ -39,6 +42,7 @@
     },
     "workshop": {
       "family": "production",
+      "fixtureCategories": ["power", "plumbing", "machines", "line", "walls"],
       "bonusModel": "line",
       "layout": {
         "gridSizes": [5, 6, 7, 8, 9],
@@ -57,6 +61,7 @@
     },
     "recyclingPlant": {
       "family": "production",
+      "fixtureCategories": ["power", "machines", "line", "walls"],
       "bonusModel": "line",
       "layout": {
         "gridSizes": [5, 6, 7, 8],
@@ -77,6 +82,7 @@
     },
     "coalPlant": {
       "family": "production",
+      "fixtureCategories": ["machines", "line", "walls"],
       "bonusModel": "engineRoom",
       "layout": {
         "gridSizes": [6, 8, 10, 12],
@@ -86,41 +92,7 @@
         "engineRoom": {
           "circuitShare": 0.5,
           "generationCaps": [0.08, 0.15, 0.22, 0.3],
-          "pollutionCaps": [0.1, 0.2, 0.3, 0.4],
-          "circuits": [
-            {
-              "anchor": "steamBoiler",
-              "links": [
-                {
-                  "from": "coalQuay",
-                  "to": "steamBoiler",
-                  "medium": "coal"
-                },
-                {
-                  "from": "waterInlet",
-                  "to": "steamBoiler",
-                  "medium": "water"
-                },
-                {
-                  "from": "steamBoiler",
-                  "to": "alternator",
-                  "medium": "steam"
-                },
-                {
-                  "from": "alternator",
-                  "to": "powerOutlet",
-                  "medium": "electricity"
-                }
-              ],
-              "cleaning": [
-                {
-                  "from": "steamBoiler",
-                  "to": "filter",
-                  "medium": "smoke"
-                }
-              ]
-            }
-          ]
+          "pollutionCaps": [0.1, 0.2, 0.3, 0.4]
         }
       },
       "roles": {},
@@ -128,6 +100,7 @@
     },
     "geothermalPlant": {
       "family": "production",
+      "fixtureCategories": ["machines", "line", "walls"],
       "bonusModel": "engineRoom",
       "layout": {
         "gridSizes": [6, 8, 10, 12, 14, 14],
@@ -136,34 +109,7 @@
         "technicianPosts": [1, 1, 2, 2, 3, 4],
         "engineRoom": {
           "circuitShare": 0.5,
-          "generationCaps": [0.05, 0.08, 0.11, 0.15, 0.2, 0.25],
-          "circuits": [
-            {
-              "anchor": "steamTurbine",
-              "links": [
-                {
-                  "from": "undergroundWaterInlet",
-                  "to": "steamTurbine",
-                  "medium": "steam"
-                },
-                {
-                  "from": "steamTurbine",
-                  "to": "condenser",
-                  "medium": "steam"
-                },
-                {
-                  "from": "condenser",
-                  "to": "injectionWell",
-                  "medium": "steam"
-                },
-                {
-                  "from": "steamTurbine",
-                  "to": "powerOutlet",
-                  "medium": "electricity"
-                }
-              ]
-            }
-          ]
+          "generationCaps": [0.05, 0.08, 0.11, 0.15, 0.2, 0.25]
         }
       },
       "roles": {},
@@ -180,34 +126,7 @@
         "technicianPosts": [4],
         "engineRoom": {
           "circuitShare": 0.5,
-          "generationCaps": [0.25],
-          "circuits": [
-            {
-              "anchor": "steamTurbine",
-              "links": [
-                {
-                  "from": "undergroundWaterInlet",
-                  "to": "steamTurbine",
-                  "medium": "steam"
-                },
-                {
-                  "from": "steamTurbine",
-                  "to": "condenser",
-                  "medium": "steam"
-                },
-                {
-                  "from": "condenser",
-                  "to": "injectionWell",
-                  "medium": "steam"
-                },
-                {
-                  "from": "steamTurbine",
-                  "to": "powerOutlet",
-                  "medium": "electricity"
-                }
-              ]
-            }
-          ]
+          "generationCaps": [0.25]
         }
       },
       "roles": {},
@@ -215,6 +134,7 @@
     },
     "hydroPlant": {
       "family": "production",
+      "fixtureCategories": ["machines", "line", "walls"],
       "bonusModel": "engineRoom",
       "layout": {
         "gridSizes": [6, 8, 10],
@@ -223,29 +143,7 @@
         "technicianPosts": [1, 2, 3],
         "engineRoom": {
           "circuitShare": 0.5,
-          "generationCaps": [0.06, 0.13, 0.2],
-          "circuits": [
-            {
-              "anchor": "waterTurbine",
-              "links": [
-                {
-                  "from": "waterInlet",
-                  "to": "waterTurbine",
-                  "medium": "water"
-                },
-                {
-                  "from": "waterTurbine",
-                  "to": "waterOutlet",
-                  "medium": "water"
-                },
-                {
-                  "from": "waterTurbine",
-                  "to": "powerOutlet",
-                  "medium": "electricity"
-                }
-              ]
-            }
-          ]
+          "generationCaps": [0.06, 0.13, 0.2]
         }
       },
       "roles": {},
@@ -253,6 +151,7 @@
     },
     "bakery": {
       "family": "production",
+      "fixtureCategories": ["power", "plumbing", "machines", "line", "walls"],
       "bonusModel": "assigned",
       "layout": {
         "gridSizes": [6, 7, 8, 9, 10],
@@ -289,6 +188,7 @@
     },
     "dairy": {
       "family": "production",
+      "fixtureCategories": ["power", "plumbing", "machines", "line", "walls"],
       "bonusModel": "line",
       "layout": {
         "gridSizes": [6, 7, 8, 9, 10],
@@ -319,6 +219,7 @@
     },
     "storehouse": {
       "family": "production",
+      "fixtureCategories": ["power", "machines", "line", "walls"],
       "bonusModel": "line",
       "layout": {
         "gridSizes": [6, 6, 7, 7, 8, 8, 9, 9, 10, 10],
@@ -375,6 +276,7 @@
     },
     "school": {
       "family": "service",
+      "fixtureCategories": ["furniture", "shelves", "decor", "walls"],
       "roles": {
         "teacher": {
           "part": "schooling",
@@ -389,6 +291,7 @@
     },
     "library": {
       "family": "service",
+      "fixtureCategories": ["shelves", "furniture", "comfort", "walls"],
       "roles": {
         "librarian": {
           "part": "knowledge",
@@ -403,6 +306,7 @@
     },
     "hospital": {
       "family": "service",
+      "fixtureCategories": ["beds", "service", "furniture", "walls"],
       "roles": {
         "nurse": {
           "part": "carePrimary",
@@ -445,6 +349,7 @@
     },
     "textileMill": {
       "family": "production",
+      "fixtureCategories": ["power", "machines", "walls"],
       "bonusModel": "machines",
       "layout": {
         "gridSizes": [5, 6, 7, 8, 9],
@@ -463,6 +368,7 @@
     },
     "knitwearFactory": {
       "family": "production",
+      "fixtureCategories": ["power", "machines", "line", "walls"],
       "bonusModel": "assigned",
       "layout": {
         "gridSizes": [6, 7, 8, 9, 10],
@@ -500,6 +406,7 @@
     },
     "livestockFarm": {
       "family": "production",
+      "fixtureCategories": ["power", "machines", "line", "walls"],
       "bonusModel": "line",
       "layout": {
         "gridSizes": [6, 7, 8, 9, 10],
@@ -519,6 +426,7 @@
     },
     "farm": {
       "family": "production",
+      "fixtureCategories": ["power", "plumbing", "machines", "line", "walls"],
       "bonusModel": "line",
       "layout": {
         "gridSizes": [5, 6, 7, 8, 9],

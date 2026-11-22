@@ -1,0 +1,28 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["factory", "mill", "bakery", "dairy", "workshop", "farm"],
+  "category": "plumbing",
+  "name": {
+    "en": "Elbow pipe",
+    "fr": "Tuyau coudé"
+  },
+  "model": "factory-floor-pipe-elbow",
+  "footprint": [1, 1],
+  "price": 25,
+  "minTier": 1,
+  "wear": 0.04,
+  "role": "pipe",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "flow",
+      "direction": "both"
+    },
+    {
+      "side": "right",
+      "medium": "flow",
+      "direction": "both"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["storehouse"],
+  "category": "machines",
+  "name": {
+    "en": "Rack",
+    "fr": "Rayonnage"
+  },
+  "model": "storehouse-interior-rack-exit",
+  "footprint": [1, 1],
+  "price": 400,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "exit",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "in"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "capacity",
+      "value": 0.15
+    }
+  ]
+}

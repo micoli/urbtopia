@@ -1,0 +1,27 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["geothermalPlant"],
+  "category": "machines",
+  "name": {
+    "en": "Injection well",
+    "fr": "Puits d'injection"
+  },
+  "model": "engine-room-injection-well",
+  "footprint": [1, 1],
+  "price": 1000,
+  "minTier": 1,
+  "wear": 0.05,
+  "role": "circuit",
+  "family": "injectionWell",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "steam",
+      "direction": "in"
+    }
+  ],
+  "placement": {
+    "onWall": "back"
+  }
+}

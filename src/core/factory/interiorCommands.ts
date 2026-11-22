@@ -1,4 +1,5 @@
 import { FIXTURES, isRestockable } from '../venues/fixtures';
+import { lineInSidesOf, lineOutSidesOf } from '../venues/fixturePorts';
 import { entranceCell } from '../venues/shared';
 import { isVenueType } from '../venues/profiles';
 import { fixtureRefund, fixtureTiles } from '../venues/venues';
@@ -61,7 +62,7 @@ export const interiorSizeOf = (building: Building): number => interiorProfileOf(
 
 const refundOf = (host: Building, type: FixtureId): number => (hasProductionInterior(host) || hasServiceInterior(host) ? fixtureRefund(type) : homeFixtureRefund(type));
 
-const startsALine = (type: FixtureId): boolean => FIXTURES[type].role === 'machine' && FIXTURES[type].lineOut !== undefined && FIXTURES[type].lineIn === undefined;
+const startsALine = (type: FixtureId): boolean => FIXTURES[type].role === 'machine' && lineOutSidesOf(FIXTURES[type]).length > 0 && lineInSidesOf(FIXTURES[type]).length === 0;
 
 // The turns a Fixture of a Packhouse interior can take on a cell of the edge of a floor of a given size, with its back to that edge: a Packer stands against the back wall
 // only, an Exit against any of the four edges. None for a Fixture that stands anywhere, and none for a cell where it cannot stand.

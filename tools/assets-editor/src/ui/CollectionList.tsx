@@ -22,7 +22,7 @@ export function CollectionList({ collection }: Props) {
   const [creating, setCreating] = useState(false)
   const search = query.trim().toLowerCase()
   const sectioned = collection === 'buildings'
-  const grouped = sectioned || collection === 'fixtures'
+  const grouped = sectioned || collection === 'fixtureTemplates'
 
   const groups = useMemo(() => {
     const text = (id: string) => `${id} ${JSON.stringify((definitions[id] as { name?: unknown }).name ?? '')}`.toLowerCase()

@@ -1,37 +1,26 @@
+import homeBalance from '../../../assets/defs/balance/homeInterior.json' with { type: 'json' };
+import interiorDeclarations from '../../../assets/defs/balance/interiors.json' with { type: 'json' };
 import { definitionOf } from '../buildings/buildingDefinitions';
 import { entriesOf } from '../defs/entries';
 import fixtureOrder from '../../../assets/defs/order/fixtures.json' with { type: 'json' };
+import templateOrder from '../../../assets/defs/order/fixtureTemplates.json' with { type: 'json' };
 import type { FixtureId, VenueType } from '../engine/state';
 import { modelFileOf } from '../models/modelFiles';
+import { expandFixtureTemplate, type FixtureTemplate } from './fixtureExpansion';
 import type { FixtureDefinition } from './fixtureSchema';
 import { VENUE_TYPES } from './profiles';
-import { ENGINE_ROOM_FIXTURE_CATEGORIES, FACTORY_FIXTURE_CATEGORIES, HOSPITAL_FIXTURE_CATEGORIES, LIBRARY_FIXTURE_CATEGORIES, SCHOOL_FIXTURE_CATEGORIES, HOME_FIXTURE_CATEGORIES, LINE_FIXTURE_CATEGORIES, PACKHOUSE_FIXTURE_CATEGORIES, TEXTILE_FIXTURE_CATEGORIES, type PRODUCTION_INTERIOR_KINDS, type SERVICE_INTERIOR_KINDS, type FactoryFixtureRole, type HomeFixtureRole, type FixtureCategory, type FixtureSide, type FixturePort, type PackSize } from './venueVocabulary';
+import type { PRODUCTION_INTERIOR_KINDS, SERVICE_INTERIOR_KINDS, FactoryFixtureRole, HomeFixtureRole, FixtureCategory, FixturePort, PackSize } from './venueVocabulary';
 
 export type { FixtureCategory };
 
-// The sections of the build menu of each kind of Venue, in order.
+// The sections of the build menu of each kind of Venue, in order: those of a Venue are in its building, those of an interior in its declaration, and those of a Home in its balance.
+const interiorCategories = Object.fromEntries(Object.entries(interiorDeclarations.buildings).flatMap(([type, declaration]) => ('fixtureCategories' in declaration ? [[type, declaration.fixtureCategories]] : [])));
+
 export const FIXTURE_CATEGORIES = {
   ...(Object.fromEntries(VENUE_TYPES.map(type => [type, definitionOf(type).fixtureCategories!])) as unknown as Record<VenueType, readonly FixtureCategory[]>),
-  factory: FACTORY_FIXTURE_CATEGORIES,
-  packhouse: PACKHOUSE_FIXTURE_CATEGORIES,
-  mill: FACTORY_FIXTURE_CATEGORIES,
-  bakery: LINE_FIXTURE_CATEGORIES,
-  dairy: LINE_FIXTURE_CATEGORIES,
-  workshop: LINE_FIXTURE_CATEGORIES,
-  storehouse: PACKHOUSE_FIXTURE_CATEGORIES,
-  recyclingPlant: PACKHOUSE_FIXTURE_CATEGORIES,
-  coalPlant: ENGINE_ROOM_FIXTURE_CATEGORIES,
-  geothermalPlant: ENGINE_ROOM_FIXTURE_CATEGORIES,
-  hydroPlant: ENGINE_ROOM_FIXTURE_CATEGORIES,
-  textileMill: TEXTILE_FIXTURE_CATEGORIES,
-  knitwearFactory: PACKHOUSE_FIXTURE_CATEGORIES,
-  livestockFarm: PACKHOUSE_FIXTURE_CATEGORIES,
-  farm: LINE_FIXTURE_CATEGORIES,
-  school: SCHOOL_FIXTURE_CATEGORIES,
-  library: LIBRARY_FIXTURE_CATEGORIES,
-  hospital: HOSPITAL_FIXTURE_CATEGORIES,
-  home: HOME_FIXTURE_CATEGORIES,
-} as Record<FixtureVenue, readonly FixtureCategory[]>;
+  ...interiorCategories,
+  home: homeBalance.fixtureCategories,
+} as unknown as Record<FixtureVenue, readonly FixtureCategory[]>;
 
 // What a Fixture can be placed in: a Venue, a Factory interior, a Packhouse interior or a Home interior.
 export type FixtureVenue = VenueType | (typeof PRODUCTION_INTERIOR_KINDS)[number] | (typeof SERVICE_INTERIOR_KINDS)[number] | 'home';
@@ -70,14 +59,11 @@ export interface FixtureSpec {
   waiting?: number;
   // Decoration: attractiveness it adds.
   attract?: number;
-  // Factory interior: what the Fixture does, the sides through which Drive and Flow pass, the direction a Machine needs its Drive to turn,
+  // Factory interior: what the Fixture does, the direction a Machine needs its Drive to turn,
   // and what a linked Machine adds to the speed and the yield of the Factory's Slots.
   role?: FactoryFixtureRole | HomeFixtureRole;
   // Home interior: the Fixture hangs on a wall segment.
   wall?: true;
-  drive?: readonly FixtureSide[];
-  flow?: readonly FixtureSide[];
-  rim?: readonly FixtureSide[];
   turns?: 'cw' | 'ccw';
   speed?: number;
   smoke?: readonly [number, number, number];
@@ -100,11 +86,11 @@ export interface FixtureSpec {
   family?: string;
   coolant?: number;
   heat?: true;
-  // Packhouse interior: the sides through which Packets come into a Line Fixture and leave it, and the size of packed Goods an Exit serves.
-  lineIn?: readonly FixtureSide[];
-  lineOut?: readonly FixtureSide[];
-  // Engine room: the ports through which the Media of a Circuit pass, and whether the Fixture stands against the back wall.
+  // The ports through which Drive, Flow, Packets and the Media of a Circuit pass, and whether the Fixture stands against the back wall of an Engine room.
   ports?: readonly FixturePort[];
+  // Engine room: the weights that a Fixture anchoring a Circuit gives to the generation and to the cleaning of its plant.
+  generation?: number;
+  cleaner?: number;
   wallPort?: true;
   packSize?: PackSize;
   truck?: string;
@@ -114,9 +100,6 @@ export interface FixtureSpec {
   passable?: true;
   joins?: { elbow: string; tee: string; cross: string };
 }
-
-// Checked against their schema by the definitions plugin at dev start and build, and by the tests.
-const files = import.meta.glob<FixtureDefinition>('../../../assets/defs/fixtures/*.json', { eager: true, import: 'default' });
 
 const specOf = ({ id: _id, kind: _kind, name: _name, model, tint, footprint, joins, ...fixture }: FixtureDefinition & { id: FixtureId }): FixtureSpec => ({
   playsPerHour: 0,
@@ -128,7 +111,17 @@ const specOf = ({ id: _id, kind: _kind, name: _name, model, tint, footprint, joi
   ...(tint ? { tint: Number.parseInt(tint.slice(1), 16) } : {}),
 });
 
-export const FIXTURE_ENTRIES = entriesOf<FixtureDefinition, FixtureId>(files, fixtureOrder);
+// Checked against their schema by the definitions plugin at dev start and build, and by the tests.
+const templateFiles = import.meta.glob<FixtureTemplate>('../../../assets/defs/fixtureTemplates/*.json', { eager: true, import: 'default' });
+
+// A template becomes one Fixture per venue. The order file lists the Fixtures, not the templates.
+const positions = new Map(fixtureOrder.map((id, index) => [id, index]));
+
+const position = (id: string): number => positions.get(id) ?? fixtureOrder.length;
+
+export const FIXTURE_ENTRIES = entriesOf<FixtureTemplate>(templateFiles, templateOrder)
+  .flatMap(({ id: templateId, ...template }) => expandFixtureTemplate(templateId, template).map(fixture => ({ ...fixture.definition, id: fixture.id }) as unknown as FixtureDefinition & { id: FixtureId }))
+  .sort((a, b) => position(a.id) - position(b.id) || a.id.localeCompare(b.id));
 
 export const FIXTURES = Object.fromEntries(FIXTURE_ENTRIES.map(entry => [entry.id, specOf(entry)])) as Record<FixtureId, FixtureSpec>;
 

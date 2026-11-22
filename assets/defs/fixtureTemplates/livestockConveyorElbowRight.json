@@ -1,0 +1,31 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["livestockFarm"],
+  "category": "line",
+  "ids": {
+    "livestockFarm": "livestockConveyorElbowRight"
+  },
+  "name": {
+    "en": "Conveyor elbow (right)",
+    "fr": "Tapis coude (droite)"
+  },
+  "model": "packhouse-floor-conveyor-elbow-right",
+  "footprint": [1, 1],
+  "price": 40,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "conveyor",
+  "ports": [
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "left",
+      "medium": "line",
+      "direction": "out"
+    }
+  ]
+}

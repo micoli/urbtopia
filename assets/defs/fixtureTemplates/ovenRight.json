@@ -1,0 +1,46 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["bakery"],
+  "category": "machines",
+  "name": {
+    "en": "Tunnel oven (gas on the right)",
+    "fr": "Four tunnel (gaz à droite)"
+  },
+  "model": "bakery-interior-oven-right",
+  "footprint": [1, 1],
+  "price": 900,
+  "minTier": 2,
+  "wear": 0.1,
+  "role": "machine",
+  "family": "oven",
+  "ports": [
+    {
+      "side": "right",
+      "medium": "flow",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "speed",
+      "value": 0.2
+    }
+  ],
+  "traits": [
+    {
+      "trait": "assigns",
+      "value": "baker"
+    }
+  ]
+}

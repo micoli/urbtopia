@@ -1,4 +1,4 @@
-// Generated from assets/defs/fixtures by scripts/collectionFiles.ts. Do not edit.
+// Generated from assets/defs/fixtureTemplates by scripts/collectionFiles.ts. Do not edit.
 export type FixtureId =
   | 'airHockey'
   | 'arcadeDoorway'

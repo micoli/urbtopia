@@ -1,0 +1,24 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["supermarket"],
+  "category": "shelves",
+  "ids": {
+    "supermarket": "displayBread"
+  },
+  "name": {
+    "en": "Bread display",
+    "fr": "Étal de pain"
+  },
+  "model": "mini-market-display-bread",
+  "footprint": [1, 1],
+  "price": 150,
+  "minTier": 1,
+  "wear": 0.02,
+  "bonuses": [
+    {
+      "effect": "shelf",
+      "value": 8
+    }
+  ]
+}

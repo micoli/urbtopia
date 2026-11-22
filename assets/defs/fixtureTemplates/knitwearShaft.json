@@ -1,0 +1,31 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["knitwearFactory"],
+  "category": "power",
+  "ids": {
+    "knitwearFactory": "knitwearShaft"
+  },
+  "name": {
+    "en": "Shaft",
+    "fr": "Arbre"
+  },
+  "model": "factory-floor-shaft",
+  "footprint": [1, 1],
+  "price": 30,
+  "minTier": 1,
+  "wear": 0.04,
+  "role": "shaft",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "drive",
+      "direction": "both"
+    }
+  ]
+}

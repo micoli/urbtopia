@@ -1,0 +1,39 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["textileMill"],
+  "category": "machines",
+  "ids": {
+    "textileMill": "textileSpinnerRight"
+  },
+  "name": {
+    "en": "Spinner (yarn out on the right)",
+    "fr": "Filature (fil à droite)"
+  },
+  "model": "textile-interior-spinner-right",
+  "footprint": [1, 1],
+  "price": 450,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "machine",
+  "family": "spinner",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "drive",
+      "direction": "both"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "speed",
+      "value": 0.25
+    }
+  ],
+  "traits": [
+    {
+      "trait": "assigns",
+      "value": "spinner"
+    }
+  ]
+}

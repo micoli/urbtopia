@@ -1,0 +1,31 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["arcade"],
+  "category": "games",
+  "ids": {
+    "arcade": "spaceShooter"
+  },
+  "name": {
+    "en": "Space shooter",
+    "fr": "Tir spatial"
+  },
+  "model": "mini-arcade-arcade-machine",
+  "footprint": [1, 1],
+  "price": 180,
+  "minTier": 2,
+  "bonuses": [
+    {
+      "effect": "playsPerHour",
+      "value": 8
+    }
+  ],
+  "traits": [
+    {
+      "trait": "loud"
+    }
+  ],
+  "visual": {
+    "tint": "#8fb4ff"
+  }
+}

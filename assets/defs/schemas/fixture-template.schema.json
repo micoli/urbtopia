@@ -1,0 +1,770 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "const": "fixtureTemplate"
+    },
+    "venues": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "arcade",
+          "supermarket",
+          "hotel",
+          "restaurant",
+          "home",
+          "school",
+          "library",
+          "hospital",
+          "factory",
+          "packhouse",
+          "mill",
+          "bakery",
+          "dairy",
+          "storehouse",
+          "workshop",
+          "recyclingPlant",
+          "textileMill",
+          "knitwearFactory",
+          "livestockFarm",
+          "farm",
+          "coalPlant",
+          "geothermalPlant",
+          "hydroPlant"
+        ]
+      }
+    },
+    "ids": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "enum": [
+          "arcade",
+          "supermarket",
+          "hotel",
+          "restaurant",
+          "home",
+          "school",
+          "library",
+          "hospital",
+          "factory",
+          "packhouse",
+          "mill",
+          "bakery",
+          "dairy",
+          "storehouse",
+          "workshop",
+          "recyclingPlant",
+          "textileMill",
+          "knitwearFactory",
+          "livestockFarm",
+          "farm",
+          "coalPlant",
+          "geothermalPlant",
+          "hydroPlant"
+        ]
+      },
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "\\S"
+      }
+    },
+    "overrides": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "enum": [
+          "arcade",
+          "supermarket",
+          "hotel",
+          "restaurant",
+          "home",
+          "school",
+          "library",
+          "hospital",
+          "factory",
+          "packhouse",
+          "mill",
+          "bakery",
+          "dairy",
+          "storehouse",
+          "workshop",
+          "recyclingPlant",
+          "textileMill",
+          "knitwearFactory",
+          "livestockFarm",
+          "farm",
+          "coalPlant",
+          "geothermalPlant",
+          "hydroPlant"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "object",
+            "properties": {
+              "en": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "fr": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "required": [
+              "en",
+              "fr"
+            ],
+            "additionalProperties": false
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "games",
+              "service",
+              "furniture",
+              "shelves",
+              "checkouts",
+              "decor",
+              "beds",
+              "bathroom",
+              "comfort",
+              "reception",
+              "walls",
+              "kitchen",
+              "dining",
+              "bar",
+              "power",
+              "plumbing",
+              "machines",
+              "line"
+            ]
+          },
+          "model": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "footprint": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "price": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "minTier": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "wear": {
+            "type": "number",
+            "minimum": 0
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "motor",
+              "gear",
+              "shaft",
+              "bevel",
+              "pump",
+              "tank",
+              "pipe",
+              "machine",
+              "conveyor",
+              "scanner",
+              "exit",
+              "circuit",
+              "bed",
+              "table",
+              "chair",
+              "stove",
+              "sink",
+              "washer",
+              "toilet",
+              "leisure",
+              "decor"
+            ]
+          },
+          "family": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ports": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "side": {
+                  "type": "string",
+                  "enum": [
+                    "front",
+                    "right",
+                    "back",
+                    "left"
+                  ]
+                },
+                "medium": {
+                  "type": "string",
+                  "enum": [
+                    "coal",
+                    "water",
+                    "steam",
+                    "electricity",
+                    "smoke",
+                    "drive",
+                    "gear",
+                    "flow",
+                    "line"
+                  ]
+                },
+                "direction": {
+                  "type": "string",
+                  "enum": [
+                    "in",
+                    "out",
+                    "both"
+                  ]
+                },
+                "optional": {
+                  "type": "boolean",
+                  "const": true
+                }
+              },
+              "required": [
+                "side",
+                "medium",
+                "direction"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "bonuses": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "effect": {
+                  "type": "string",
+                  "enum": [
+                    "speed",
+                    "yield",
+                    "sales",
+                    "capacity",
+                    "coolant",
+                    "draw",
+                    "strength",
+                    "power",
+                    "quality",
+                    "comfort",
+                    "attract",
+                    "checkout",
+                    "cook",
+                    "shelf",
+                    "playsPerHour",
+                    "seats",
+                    "drinks",
+                    "stools",
+                    "waiting",
+                    "sleeps",
+                    "bath",
+                    "generation",
+                    "cleaner"
+                  ]
+                },
+                "value": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "effect",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "traits": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "trait": {
+                  "type": "string",
+                  "enum": [
+                    "heat",
+                    "prep",
+                    "reception",
+                    "picks",
+                    "loud",
+                    "reverses",
+                    "turns",
+                    "seat",
+                    "packSize",
+                    "assigns",
+                    "yieldGroup"
+                  ]
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "\\S"
+                }
+              },
+              "required": [
+                "trait"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "placement": {
+            "type": "object",
+            "properties": {
+              "minRank": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "partition": {
+                "type": "boolean",
+                "const": true
+              },
+              "passable": {
+                "type": "boolean",
+                "const": true
+              },
+              "onWall": {
+                "type": "string",
+                "enum": [
+                  "any",
+                  "back"
+                ]
+              },
+              "joins": {
+                "type": "object",
+                "properties": {
+                  "elbow": {
+                    "type": "string",
+                    "pattern": "\\S"
+                  },
+                  "tee": {
+                    "type": "string",
+                    "pattern": "\\S"
+                  },
+                  "cross": {
+                    "type": "string",
+                    "pattern": "\\S"
+                  }
+                },
+                "required": [
+                  "elbow",
+                  "tee",
+                  "cross"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "visual": {
+            "type": "object",
+            "properties": {
+              "tint": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}$"
+              },
+              "truck": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "smoke": {
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "items": false,
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "hatch": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "name": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "fr": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "en",
+        "fr"
+      ],
+      "additionalProperties": false
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "games",
+        "service",
+        "furniture",
+        "shelves",
+        "checkouts",
+        "decor",
+        "beds",
+        "bathroom",
+        "comfort",
+        "reception",
+        "walls",
+        "kitchen",
+        "dining",
+        "bar",
+        "power",
+        "plumbing",
+        "machines",
+        "line"
+      ]
+    },
+    "model": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "footprint": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "price": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "minTier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "wear": {
+      "type": "number",
+      "minimum": 0
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "motor",
+        "gear",
+        "shaft",
+        "bevel",
+        "pump",
+        "tank",
+        "pipe",
+        "machine",
+        "conveyor",
+        "scanner",
+        "exit",
+        "circuit",
+        "bed",
+        "table",
+        "chair",
+        "stove",
+        "sink",
+        "washer",
+        "toilet",
+        "leisure",
+        "decor"
+      ]
+    },
+    "family": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ports": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "side": {
+            "type": "string",
+            "enum": [
+              "front",
+              "right",
+              "back",
+              "left"
+            ]
+          },
+          "medium": {
+            "type": "string",
+            "enum": [
+              "coal",
+              "water",
+              "steam",
+              "electricity",
+              "smoke",
+              "drive",
+              "gear",
+              "flow",
+              "line"
+            ]
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "in",
+              "out",
+              "both"
+            ]
+          },
+          "optional": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "side",
+          "medium",
+          "direction"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "bonuses": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "effect": {
+            "type": "string",
+            "enum": [
+              "speed",
+              "yield",
+              "sales",
+              "capacity",
+              "coolant",
+              "draw",
+              "strength",
+              "power",
+              "quality",
+              "comfort",
+              "attract",
+              "checkout",
+              "cook",
+              "shelf",
+              "playsPerHour",
+              "seats",
+              "drinks",
+              "stools",
+              "waiting",
+              "sleeps",
+              "bath",
+              "generation",
+              "cleaner"
+            ]
+          },
+          "value": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "effect",
+          "value"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "traits": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "trait": {
+            "type": "string",
+            "enum": [
+              "heat",
+              "prep",
+              "reception",
+              "picks",
+              "loud",
+              "reverses",
+              "turns",
+              "seat",
+              "packSize",
+              "assigns",
+              "yieldGroup"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "pattern": "\\S"
+          }
+        },
+        "required": [
+          "trait"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "placement": {
+      "type": "object",
+      "properties": {
+        "minRank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "partition": {
+          "type": "boolean",
+          "const": true
+        },
+        "passable": {
+          "type": "boolean",
+          "const": true
+        },
+        "onWall": {
+          "type": "string",
+          "enum": [
+            "any",
+            "back"
+          ]
+        },
+        "joins": {
+          "type": "object",
+          "properties": {
+            "elbow": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "tee": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "cross": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "elbow",
+            "tee",
+            "cross"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "visual": {
+      "type": "object",
+      "properties": {
+        "tint": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "truck": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "smoke": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "hatch": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "kind",
+    "venues",
+    "name",
+    "category",
+    "model",
+    "footprint",
+    "price",
+    "minTier"
+  ],
+  "additionalProperties": false,
+  "title": "Fixture template",
+  "description": "A Fixture shared by several venues, one file in assets/defs/fixtureTemplates; the game unfolds it into one Fixture per venue."
+}

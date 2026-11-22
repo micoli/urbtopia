@@ -44,9 +44,9 @@ export const toggleRetired = ({ retired, ...definition }: Definition): Definitio
 export const sectionOf = (building: FlatBuilding): BuildSection =>
   building.kind === 'nature' ? (building.family === 'decoration' ? 'build.decoration' : 'build.greenSpaces') : (building.section ?? BUILD_SECTION_TITLES[0])
 
-// The list groups of a collection: build menu sections for buildings, their Venue for Fixtures, one group otherwise.
+// The list groups of a collection: build menu sections for buildings, the first Venue of their templates for Fixtures, one group otherwise.
 export const groupOf = (collection: CollectionName, definition: Definition): string =>
-  collection === 'buildings' ? sectionOf(definition as unknown as FlatBuilding) : collection === 'fixtures' ? String(definition.venue) : collection
+  collection === 'buildings' ? sectionOf(definition as unknown as FlatBuilding) : collection === 'fixtureTemplates' ? String((definition.venues as string[] | undefined)?.[0] ?? '') : collection
 
 const PLACED_DEFAULTS = { footprint: [1, 1] as [number, number], cost: 0, unlockCitizens: 0, requiresRoad: true }
 
@@ -102,7 +102,7 @@ const name = { en: '', fr: '' }
 export function blankDefinition(collection: CollectionName, model: string): Definition {
   if (collection === 'buildings') return blankBuilding('standard', model) as unknown as Definition
   if (collection === 'materials') return { kind: 'material', name, producedBy: 'workshop', durationMinutes: 1, unlockCitizens: 0, minTier: 1, value: 0 }
-  if (collection === 'fixtures') return { kind: 'fixture', venue: 'arcade', category: 'games', name, model, footprint: [1, 1], price: 0, minTier: 1, playsPerHour: 0 }
+  if (collection === 'fixtureTemplates') return { kind: 'fixtureTemplate', venues: ['arcade'], category: 'games', name, model, footprint: [1, 1], price: 0, minTier: 1, bonuses: [{ effect: 'playsPerHour', value: 0 }] }
   if (collection === 'boats') return { kind: 'boat', family: 'pleasure', name, model, cost: 0, unlockCitizens: 0, radius: 1, wellbeingBonus: 0, operatingCostPerHour: 0 }
   if (collection === 'transitVehicles') return { kind: 'transitVehicle', mode: 'bus', name, model }
   if (collection === 'trafficVehicles') return { kind: 'trafficVehicle', name, model, weight: 1 }

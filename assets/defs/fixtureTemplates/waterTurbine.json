@@ -1,0 +1,40 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["hydroPlant"],
+  "category": "machines",
+  "name": {
+    "en": "Water turbine",
+    "fr": "Turbine hydraulique"
+  },
+  "model": "engine-room-water-turbine",
+  "footprint": [1, 1],
+  "price": 2000,
+  "minTier": 1,
+  "wear": 0.1,
+  "role": "circuit",
+  "family": "waterTurbine",
+  "ports": [
+    {
+      "side": "left",
+      "medium": "water",
+      "direction": "in"
+    },
+    {
+      "side": "right",
+      "medium": "water",
+      "direction": "out"
+    },
+    {
+      "side": "front",
+      "medium": "electricity",
+      "direction": "out"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "generation",
+      "value": 1
+    }
+  ]
+}

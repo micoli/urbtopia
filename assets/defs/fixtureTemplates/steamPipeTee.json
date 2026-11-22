@@ -1,0 +1,34 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["coalPlant", "geothermalPlant"],
+  "category": "line",
+  "name": {
+    "en": "Steam pipe tee",
+    "fr": "Tuyau de vapeur en T"
+  },
+  "model": "engine-room-steam-pipe-tee",
+  "footprint": [1, 1],
+  "price": 35,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "circuit",
+  "family": "link",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "steam",
+      "direction": "both"
+    },
+    {
+      "side": "right",
+      "medium": "steam",
+      "direction": "both"
+    },
+    {
+      "side": "left",
+      "medium": "steam",
+      "direction": "both"
+    }
+  ]
+}

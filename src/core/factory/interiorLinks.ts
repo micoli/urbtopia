@@ -1,6 +1,7 @@
 import interiorBalance from '../../../assets/defs/balance/factoryInterior.json' with { type: 'json' };
 import packhouseBalance from '../../../assets/defs/balance/packhouseInterior.json' with { type: 'json' };
 import { FIXTURES } from '../venues/fixtures';
+import { driveSidesOf, flowSidesOf, lineInSidesOf, lineOutSidesOf, rimSidesOf } from '../venues/fixturePorts';
 import { PRODUCTION_INTERIOR_KINDS, type FixtureSide } from '../venues/venueVocabulary';
 import { tilesOf } from '../venues/layout';
 import type { Building, BuildingType, VenueFixture } from '../engine/state';
@@ -45,7 +46,7 @@ export const roleOf = (fixture: VenueFixture) => FIXTURES[fixture.type].role;
 export const motorStrengthOf = (motor: VenueFixture): number => FIXTURES[motor.type].strength ?? interiorBalance.motorCapacity;
 export const motorDrawOf = (motor: VenueFixture): number => FIXTURES[motor.type].draw ?? 1;
 
-const sidesOf = (fixture: VenueFixture, kind: Kind): readonly FixtureSide[] => FIXTURES[fixture.type][kind] ?? [];
+const sidesOf = (fixture: VenueFixture, kind: Kind): readonly FixtureSide[] => (kind === 'drive' ? driveSidesOf : flowSidesOf)(FIXTURES[fixture.type]);
 
 // The cell a side of a Fixture opens onto: the one beyond the tile that lies farthest that way, so a Fixture of several tiles opens at its ends.
 export function cellBeyond(fixture: VenueFixture, side: FixtureSide): Cell {
@@ -64,7 +65,7 @@ export function sideToward(fixture: VenueFixture, target: VenueFixture): Fixture
 
 const isRim = (fixture: VenueFixture, target: VenueFixture): boolean => {
   const side = sideToward(fixture, target);
-  return side !== undefined && (FIXTURES[fixture.type].rim ?? []).includes(side);
+  return side !== undefined && rimSidesOf(FIXTURES[fixture.type]).includes(side);
 };
 
 // A Gear takes and gives Drive through its axle ends only: a Motor, a Shaft, a Machine or a Pump never meets its rim. The rim meshes with the rim of another Gear:
@@ -250,7 +251,7 @@ export interface LineReach {
 // A Line: Packets come out of a Fixture by a side of its lineOut and go into the next one when that one takes them in on the side that faces back. They start from a Packer
 // whose Drive is linked and stop at a Strapper that is not linked; only what leads to an Exit counts.
 function unlimitedLineReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, linked: ReadonlySet<number>): LineReach {
-  const sides = (fixture: VenueFixture, key: 'lineIn' | 'lineOut'): readonly FixtureSide[] => FIXTURES[fixture.type][key] ?? [];
+  const sides = (fixture: VenueFixture, key: 'lineIn' | 'lineOut'): readonly FixtureSide[] => (key === 'lineIn' ? lineInSidesOf : lineOutSidesOf)(FIXTURES[fixture.type]);
   const reached = new Set<number>();
   const next = new Map<number, number[]>();
   const queue = fixtures.filter(fixture => linked.has(fixture.id) && sides(fixture, 'lineOut').length > 0 && sides(fixture, 'lineIn').length === 0);
@@ -412,7 +413,7 @@ function flowReach(fixtures: readonly VenueFixture[], at: ReadonlyMap<string, Ve
 // The Cooling vats a Tank reaches through its Pumps, and the ones it cannot feed: each Tank feeds a few, the lowest ids first, and the vat no Tank feeds is cut from the Flow.
 function starvedVats(fixtures: readonly VenueFixture[], fedByTank: ReadonlyMap<number, number[]>, outputs: FlowReach['outputs'], reached: Set<number>): Set<number> {
   // The Machines of a Farm interior that take Flow, the Washer and the Sprinklers, count with the Cooling vats against the strength of a Tank.
-  const isVat = new Set(fixtures.filter(fixture => FIXTURES[fixture.type].coolant !== undefined || (FIXTURES[fixture.type].venue === 'farm' && isMachine(fixture) && FIXTURES[fixture.type].flow !== undefined)).map(fixture => fixture.id));
+  const isVat = new Set(fixtures.filter(fixture => FIXTURES[fixture.type].coolant !== undefined || (FIXTURES[fixture.type].venue === 'farm' && isMachine(fixture) && flowSidesOf(FIXTURES[fixture.type]).length > 0)).map(fixture => fixture.id));
   const fed = new Set<number>();
   const wanted = new Set<number>();
   for (const pumps of fedByTank.values()) {
@@ -457,15 +458,16 @@ const poweredPumps = (fixtures: readonly VenueFixture[], drive: DriveReceipts): 
 function problemsOf(machine: VenueFixture, drive: DriveReceipts, flowing: ReadonlySet<number>, starved: ReadonlySet<number>): MachineProblem[] {
   const spec = FIXTURES[machine.type];
   const problems: MachineProblem[] = [];
-  if (spec.drive) {
+  if (driveSidesOf(spec).length > 0) {
     const turns = drive.received.get(machine.id);
     if (drive.overloaded.has(machine.id)) problems.push('overloaded');
     else if (drive.jammedMachines.has(machine.id) || (turns?.size ?? 0) > 1) problems.push('jammed');
     else if (turns === undefined) problems.push('noDrive');
     else if (spec.turns !== undefined && !turns.has(spec.turns)) problems.push('wrongTurn');
   }
-  if (spec.flow && starved.has(machine.id)) problems.push('tankFull');
-  else if (spec.flow && !flowing.has(machine.id)) problems.push('noFlow');
+  const flows = flowSidesOf(spec).length > 0;
+  if (flows && starved.has(machine.id)) problems.push('tankFull');
+  else if (flows && !flowing.has(machine.id)) problems.push('noFlow');
   return problems;
 }
 

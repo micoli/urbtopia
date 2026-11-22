@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["home"],
+  "category": "kitchen",
+  "name": {
+    "en": "Sink on a cabinet",
+    "fr": "Évier sur meuble"
+  },
+  "model": "furniture-kitchensinkcabinet",
+  "footprint": [1, 1],
+  "price": 150,
+  "minTier": 1,
+  "role": "sink"
+}

@@ -3,7 +3,7 @@ import { FIXTURES } from '../venues/fixtures';
 import { tilesOf } from '../venues/layout';
 import type { FixtureMedium, FixturePort } from '../venues/venueVocabulary';
 import type { Building, BuildingType, VenueFixture } from '../engine/state';
-import { engineRoomBalanceOf, type EngineRoomCircuit, type EngineRoomLink } from '../interiors/interiorStaff';
+import { engineRoomBalanceOf } from '../interiors/interiorStaff';
 import { valueByTier } from '../interiors/valueByTier';
 import { SIDE_OFFSETS, cellBeyond, keyOf, placedOn, turned } from './interiorLinks';
 import type { LinePath } from './interiorLine';
@@ -20,6 +20,9 @@ export interface CompleteCircuit {
   cleaned: boolean;
   // The Fixtures whose smoke goes to the Filter instead of their own chimney.
   diverted: readonly number[];
+  // The weights of its anchor: what it adds to the generation of the plant, and, once cleaned, to the pollution it takes away.
+  generation: number;
+  cleaner: number;
 }
 
 export interface EngineRoomReport {
@@ -91,73 +94,113 @@ const reachOf = (reaches: Map<string, Reach>, source: VenueFixture, medium: Fixt
   return reach;
 };
 
+// A port of a Fixture of the Circuit that no Fixture has met yet.
+interface Unmet {
+  fixture: VenueFixture;
+  port: FixturePort;
+}
+
 interface Solving {
   members: Map<string, VenueFixture>;
   linking: Set<number>;
   routes: { medium: FixtureMedium; ids: number[] }[];
+  unmet: Unmet[];
+  diverted: number[];
 }
 
-// The links of a flowchart that go from a family already taken to one that is not, or the other way, one after the other: every family takes one Fixture that nothing else uses, reached through the links.
-function solveLinks(links: readonly EngineRoomLink[], solving: Solving, fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, used: ReadonlySet<number>, reaches: Map<string, Reach>): boolean {
-  const { members, linking, routes } = solving;
-  const free = (fixture: VenueFixture): boolean => isSound(fixture) && !used.has(fixture.id) && ![...members.values()].includes(fixture);
-  const pending = [...links];
-  while (pending.length > 0) {
-    const closing = pending.findIndex((link: EngineRoomLink) => members.has(link.from) && members.has(link.to));
-    if (closing >= 0) {
-      const [link] = pending.splice(closing, 1) as [EngineRoomLink];
-      if (!reachOf(reaches, members.get(link.from)!, link.medium, at).ends.includes(members.get(link.to)!)) return false;
-      continue;
-    }
-    const index = pending.findIndex((link: EngineRoomLink) => members.has(link.from) !== members.has(link.to));
-    if (index < 0) return false;
-    const [link] = pending.splice(index, 1) as [EngineRoomLink];
-    if (members.has(link.from)) {
-      const reach = reachOf(reaches, members.get(link.from)!, link.medium, at);
-      const target = reach.ends.find(end => familyOf(end) === link.to && free(end));
-      if (!target) return false;
-      members.set(link.to, target);
-      const way = reach.crossed.get(target.id) ?? [];
-      for (const crossed of way) linking.add(crossed.id);
-      routes.push({ medium: link.medium, ids: [members.get(link.from)!.id, ...way.map(crossed => crossed.id), target.id] });
-      continue;
-    }
-    const target = members.get(link.to)!;
-    const source = fixtures.find(candidate => familyOf(candidate) === link.from && free(candidate) && reachOf(reaches, candidate, link.medium, at).ends.includes(target));
-    if (!source) return false;
-    members.set(link.from, source);
-    const way = reachOf(reaches, source, link.medium, at).crossed.get(target.id) ?? [];
-    for (const crossed of way) linking.add(crossed.id);
-    routes.push({ medium: link.medium, ids: [source.id, ...way.map(crossed => crossed.id), target.id] });
+const copyOf = (solving: Solving): Solving => ({ members: new Map(solving.members), linking: new Set(solving.linking), routes: [...solving.routes], unmet: [...solving.unmet], diverted: [...solving.diverted] });
+
+const requiredPortsOf = (fixture: VenueFixture): Unmet[] => portsOf(fixture).filter(port => port.optional !== true).map(port => ({ fixture, port }));
+
+const optionalPortsOf = (fixture: VenueFixture): Unmet[] => portsOf(fixture).filter(port => port.optional === true).map(port => ({ fixture, port }));
+
+interface Context {
+  fixtures: readonly VenueFixture[];
+  at: ReadonlyMap<string, VenueFixture>;
+  used: Set<number>;
+  reaches: Map<string, Reach>;
+}
+
+// A Fixture that a Circuit can still take: sound, used by no other Circuit, and the only one of its family in this Circuit. A link is never a member.
+const isFree = (fixture: VenueFixture, solving: Solving, { used }: Context): boolean => {
+  const family = familyOf(fixture);
+  return family !== undefined && family !== 'link' && isSound(fixture) && !used.has(fixture.id) && !solving.members.has(family);
+};
+
+interface Meeting {
+  fixture: VenueFixture;
+  // The Fixtures between the two, from the one that gives the Medium to the one that takes it.
+  way: VenueFixture[];
+  // The port of the new Fixture that the meeting uses up.
+  met: FixturePort | undefined;
+}
+
+// The Fixtures that can meet a port: those that a port that gives a Medium reaches through unbroken links, or those that reach a port that takes it.
+function meetingsOf({ fixture, port }: Unmet, solving: Solving, context: Context): Meeting[] {
+  const { fixtures, at, reaches } = context;
+  if (gives(port)) {
+    const reach = reachOf(reaches, fixture, port.medium, at);
+    return reach.ends
+      .filter(end => isFree(end, solving, context))
+      .map(end => ({ fixture: end, way: reach.crossed.get(end.id) ?? [], met: portsOf(end).find(other => other.medium === port.medium && takes(other)) }));
   }
-  return true;
+  return fixtures
+    .filter(candidate => isFree(candidate, solving, context) && reachOf(reaches, candidate, port.medium, at).ends.includes(fixture))
+    .map(candidate => ({ fixture: candidate, way: reachOf(reaches, candidate, port.medium, at).crossed.get(fixture.id) ?? [], met: portsOf(candidate).find(other => other.medium === port.medium && gives(other)) }));
 }
 
-// One Circuit around an anchor, then, if the flowchart asks for them, the links that clean its smoke: the Circuit counts without them, and is cleaned only with them.
-function circuitAround(anchor: VenueFixture, circuit: EngineRoomCircuit, fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, used: ReadonlySet<number>, reaches: Map<string, Reach>): CompleteCircuit | undefined {
-  const solving: Solving = { members: new Map([[circuit.anchor, anchor]]), linking: new Set(), routes: [] };
-  if (!solveLinks(circuit.links, solving, fixtures, at, used, reaches)) return undefined;
-  const cleaning: Solving = { members: new Map(solving.members), linking: new Set(solving.linking), routes: [...solving.routes] };
-  const cleaned = circuit.cleaning !== undefined && solveLinks(circuit.cleaning, cleaning, fixtures, at, used, reaches);
-  const kept = cleaned ? cleaning : solving;
-  const diverted = cleaned ? (circuit.cleaning ?? []).map(link => kept.members.get(link.from)!.id) : [];
-  return { anchor: anchor.id, members: new Map([...kept.members].map(([family, fixture]) => [family, fixture.id])), linking: kept.linking, routes: kept.routes, cleaned, diverted };
+// Meets the ports one after the other: each takes a Fixture that nothing else uses, reached through the links, and the ports of that Fixture are met in turn. A port that has several candidates tries them in turn.
+function meetAll(solving: Solving, context: Context, optional: boolean): Solving | undefined {
+  const [unmet, ...rest] = solving.unmet;
+  if (!unmet) return solving;
+  for (const meeting of meetingsOf(unmet, solving, context)) {
+    const next = copyOf(solving);
+    const family = familyOf(meeting.fixture)!;
+    next.members.set(family, meeting.fixture);
+    for (const crossed of meeting.way) next.linking.add(crossed.id);
+    const between = meeting.way.map(crossed => crossed.id);
+    next.routes.push({ medium: unmet.port.medium, ids: gives(unmet.port) ? [unmet.fixture.id, ...between, meeting.fixture.id] : [meeting.fixture.id, ...between, unmet.fixture.id] });
+    if (optional) next.diverted.push(unmet.fixture.id);
+    const others = requiredPortsOf(meeting.fixture).filter(other => other.port !== meeting.met);
+    next.unmet = [...rest, ...others];
+    const solved = meetAll(next, context, optional);
+    if (solved) return solved;
+  }
+  return undefined;
+}
+
+// One Circuit around an anchor: every port of its Fixtures is met, then, for the ports that are only optional, as many as can be: the Circuit counts without them, and is cleaned only with them all.
+function circuitAround(anchor: VenueFixture, context: Context): CompleteCircuit | undefined {
+  const start: Solving = { members: new Map([[familyOf(anchor)!, anchor]]), linking: new Set(), routes: [], unmet: requiredPortsOf(anchor), diverted: [] };
+  const required = meetAll(start, context, false);
+  if (!required) return undefined;
+  const optional = [...required.members.values()].flatMap(optionalPortsOf);
+  const cleaning = optional.length > 0 ? meetAll({ ...copyOf(required), unmet: optional }, context, true) : undefined;
+  const kept = cleaning ?? required;
+  const spec = FIXTURES[anchor.type];
+  return {
+    anchor: anchor.id,
+    members: new Map([...kept.members].map(([family, fixture]) => [family, fixture.id])),
+    linking: kept.linking,
+    routes: kept.routes,
+    cleaned: cleaning !== undefined,
+    diverted: cleaning ? cleaning.diverted : [],
+    generation: spec.generation ?? 0,
+    cleaner: cleaning ? (spec.cleaner ?? 0) : 0,
+  };
 }
 
 const circuitsOf = (fixtures: readonly VenueFixture[], type: BuildingType): EngineRoomReport => {
-  const balance = engineRoomBalanceOf(type);
-  if (!balance) return NO_REPORT;
-  const at = placedOn(fixtures);
-  const reaches = new Map<string, Reach>();
-  const used = new Set<number>();
+  if (!engineRoomBalanceOf(type)) return NO_REPORT;
+  const context: Context = { fixtures, at: placedOn(fixtures), used: new Set<number>(), reaches: new Map<string, Reach>() };
+  const { used } = context;
   const complete: CompleteCircuit[] = [];
-  for (const circuit of balance.circuits) {
-    for (const anchor of fixtures.filter(fixture => familyOf(fixture) === circuit.anchor && isSound(fixture) && !used.has(fixture.id))) {
-      const found = circuitAround(anchor, circuit, fixtures, at, used, reaches);
-      if (!found) continue;
-      complete.push(found);
-      for (const id of [...found.members.values(), ...found.linking]) used.add(id);
-    }
+  for (const anchor of fixtures.filter(fixture => (FIXTURES[fixture.type].generation ?? 0) > 0 && isSound(fixture))) {
+    if (used.has(anchor.id)) continue;
+    const found = circuitAround(anchor, context);
+    if (!found) continue;
+    complete.push(found);
+    for (const id of [...found.members.values(), ...found.linking]) used.add(id);
   }
   return { circuits: complete, used };
 };
@@ -197,12 +240,13 @@ export function engineRoomGainsOf(building: Pick<Building, 'type' | 'tier' | 'in
   if (!balance) return NO_ENGINE_ROOM_GAINS;
   const complete = engineRoomReportOf(building).circuits;
   if (complete.length === 0) return NO_ENGINE_ROOM_GAINS;
-  const cleaned = complete.filter(circuit => circuit.cleaned).length;
+  const generating = complete.reduce((sum, circuit) => sum + circuit.generation, 0);
+  const cleaning = complete.reduce((sum, circuit) => sum + circuit.cleaner, 0);
   const gainOf = (caps: readonly number[], count: number): number => {
     const cap = valueByTier(caps, building.tier);
     return count === 0 ? 0 : saturated(count * cap * balance.circuitShare, cap, interiorBalance.bonusKnee);
   };
-  return { circuits: complete.length, generation: gainOf(balance.generationCaps, complete.length), cleaner: balance.pollutionCaps ? gainOf(balance.pollutionCaps, cleaned) : 0 };
+  return { circuits: complete.length, generation: gainOf(balance.generationCaps, generating), cleaner: balance.pollutionCaps ? gainOf(balance.pollutionCaps, cleaning) : 0 };
 }
 
 const motions = new WeakMap<ReadonlySet<number>, ReadonlyMap<number, 'cw'>>();

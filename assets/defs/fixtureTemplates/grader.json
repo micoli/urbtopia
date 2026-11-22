@@ -1,0 +1,34 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["farm"],
+  "category": "machines",
+  "name": {
+    "en": "Grader (Drive on the right)",
+    "fr": "Calibreuse (prise à droite)"
+  },
+  "model": "farm-interior-grader",
+  "footprint": [1, 1],
+  "price": 600,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "machine",
+  "family": "grader",
+  "ports": [
+    {
+      "side": "right",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "line",
+      "direction": "in"
+    },
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "out"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["arcade"],
+  "category": "furniture",
+  "ids": {
+    "arcade": "chair"
+  },
+  "name": {
+    "en": "Chair",
+    "fr": "Chaise"
+  },
+  "model": "furniture-chair",
+  "footprint": [1, 1],
+  "price": 25,
+  "minTier": 1,
+  "bonuses": [
+    {
+      "effect": "playsPerHour",
+      "value": 0
+    }
+  ]
+}

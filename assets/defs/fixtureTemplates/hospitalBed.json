@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["hospital"],
+  "category": "beds",
+  "ids": {
+    "hospital": "hospitalBed"
+  },
+  "name": {
+    "en": "Hospital bed",
+    "fr": "Lit d'hôpital"
+  },
+  "model": "hospital-interior-bed",
+  "footprint": [1, 1],
+  "price": 200,
+  "minTier": 1,
+  "bonuses": [
+    {
+      "effect": "quality",
+      "value": 0.07
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import { FIXTURES } from '../venues/fixtures';
+import { lineInSidesOf, lineOutSidesOf } from '../venues/fixturePorts';
 import { type FixtureSide } from '../venues/venueVocabulary';
 import type { VenueFixture } from '../engine/state';
 import { isProducerRole } from '../interiors/interiorStaff';
@@ -27,7 +28,7 @@ export const linePathsOf = memoizedByLayout((allFixtures): readonly LinePath[] =
     const offset = turned(SIDE_OFFSETS[side], fixture.rotation);
     return { x: fixture.x + 0.5 + offset.x * distance, y: fixture.y + 0.5 + offset.y * distance };
   };
-  const sources = fixtures.filter(fixture => line.lined.has(fixture.id) && (FIXTURES[fixture.type].lineOut?.length ?? 0) > 0 && FIXTURES[fixture.type].lineIn === undefined);
+  const sources = fixtures.filter(fixture => line.lined.has(fixture.id) && lineOutSidesOf(FIXTURES[fixture.type]).length > 0 && lineInSidesOf(FIXTURES[fixture.type]).length === 0);
   const paths: LinePath[] = [];
   const walk = (source: VenueFixture, current: VenueFixture, points: readonly { x: number; y: number }[], seen: ReadonlySet<number>, baked?: { from: number; good: string }): void => {
     const nexts = (line.next.get(current.id) ?? []).filter(id => line.lined.has(id) && !seen.has(id));
@@ -71,7 +72,7 @@ export function lineFaultOf(allFixtures: readonly VenueFixture[], start: VenueFi
   const { links } = interiorReportOf(allFixtures);
   if (links.lined.has(start.id)) return undefined;
   if (links.overfed.has(start.id)) return { kind: 'overfed', fixture: start };
-  const sides = (fixture: VenueFixture, key: 'lineIn' | 'lineOut'): readonly FixtureSide[] => FIXTURES[fixture.type][key] ?? [];
+  const sides = (fixture: VenueFixture, key: 'lineIn' | 'lineOut'): readonly FixtureSide[] => (key === 'lineIn' ? lineInSidesOf : lineOutSidesOf)(FIXTURES[fixture.type]);
   const at = placedOn(allFixtures.filter(isFactoryFixture));
   const cellAt = (fixture: VenueFixture, side: FixtureSide) => {
     const offset = turned(SIDE_OFFSETS[side], fixture.rotation);

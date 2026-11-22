@@ -1,0 +1,49 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["mill"],
+  "category": "machines",
+  "ids": {
+    "mill": "millstoneRight"
+  },
+  "name": {
+    "en": "Millstone (output on the right)",
+    "fr": "Meule (sortie à droite)"
+  },
+  "model": "mill-interior-millstone-right",
+  "footprint": [1, 1],
+  "price": 450,
+  "minTier": 1,
+  "wear": 0.08,
+  "role": "machine",
+  "family": "millstone",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "drive",
+      "direction": "both"
+    },
+    {
+      "side": "back",
+      "medium": "flow",
+      "direction": "both"
+    },
+    {
+      "side": "right",
+      "medium": "flow",
+      "direction": "both"
+    }
+  ],
+  "bonuses": [
+    {
+      "effect": "speed",
+      "value": 0.25
+    }
+  ],
+  "traits": [
+    {
+      "trait": "assigns",
+      "value": "miller"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["coalPlant", "geothermalPlant", "hydroPlant"],
+  "category": "machines",
+  "name": {
+    "en": "Power outlet",
+    "fr": "Sortie d'électricité"
+  },
+  "model": "engine-room-power-outlet",
+  "footprint": [1, 1],
+  "price": 500,
+  "minTier": 1,
+  "wear": 0.05,
+  "role": "circuit",
+  "family": "powerOutlet",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "electricity",
+      "direction": "in"
+    }
+  ],
+  "placement": {
+    "onWall": "back"
+  }
+}

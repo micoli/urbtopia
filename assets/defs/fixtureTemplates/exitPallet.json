@@ -1,0 +1,33 @@
+{
+  "$schema": "../schemas/fixture-template.schema.json",
+  "kind": "fixtureTemplate",
+  "venues": ["packhouse"],
+  "category": "machines",
+  "name": {
+    "en": "Pallet exit",
+    "fr": "Sortie palettes"
+  },
+  "model": "packhouse-floor-exit",
+  "footprint": [1, 1],
+  "price": 200,
+  "minTier": 1,
+  "wear": 0.03,
+  "role": "exit",
+  "ports": [
+    {
+      "side": "front",
+      "medium": "line",
+      "direction": "in"
+    }
+  ],
+  "traits": [
+    {
+      "trait": "packSize",
+      "value": "Pallet"
+    }
+  ],
+  "visual": {
+    "tint": "#d86a5a",
+    "truck": "packhouse-floor-truck"
+  }
+}
