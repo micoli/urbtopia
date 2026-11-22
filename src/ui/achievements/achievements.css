@@ -8,3 +8,5 @@
 .achievement-row-text small { color: var(--color-text-muted); }
 .achievement-row-text .achievement-row-needs { color: var(--color-caution); }
 .achievement-row-status { font-size: var(--font-size-md); color: var(--color-text-muted); }
+.achievement-row[data-done='true'] .achievement-row-text strong { color: var(--color-positive); }
+.achievement-row[data-done='true'] .achievement-row-text small { opacity: 0.6; }
