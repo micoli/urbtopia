@@ -77,6 +77,10 @@ export function announceSeededAchievements(count: number): void {
   toastStore.getState().showText(t('achievements.seeded').replace('{count}', String(count)), undefined, 'trophy');
 }
 
+export function announceCategoryComplete(category: string): void {
+  toastStore.getState().showText(t('achievements.categoryComplete').replace('{name}', t(`achievementCategory.${category}` as MessageKey)), undefined, 'trophy');
+}
+
 export function announceMedal(category: string): void {
   toastStore.getState().showText(t('achievements.medal').replace('{name}', t(`achievementCategory.${category}` as MessageKey)), undefined, 'medal');
 }

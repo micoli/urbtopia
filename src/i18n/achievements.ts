@@ -13,6 +13,7 @@ const texts = {
   'achievements.unlocked': ['Achievement: {name}', 'Succès : {name}'],
   'achievements.unlockedMany': ['{count} Achievements unlocked', '{count} succès débloqués'],
   'achievements.seeded': ['{count} Achievements recognised in your City', '{count} succès reconnus dans votre City'],
+  'achievements.categoryComplete': ['Category complete: {name}', 'Catégorie terminée : {name}'],
   'achievements.medal': ['Medal earned: {name}', 'Médaille obtenue : {name}'],
 } as const satisfies Record<string, readonly [string, string]>;
 

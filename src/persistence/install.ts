@@ -11,6 +11,7 @@ import { saveNowHandle } from './saveNow';
 import { installBackOffice } from '../backOffice/installBackOffice';
 import { installChallenges } from '../challenges/installChallenges';
 import { installSolidarity } from '../solidarity/installSolidarity';
+import { installAchievementMedals } from '../achievements/installAchievementMedals';
 import { installShowcase } from '../showcase/installShowcase';
 import { installShipments } from '../shipments/installShipments';
 import { installSocial } from '../social/installSocial';
@@ -105,6 +106,7 @@ export function installPersistence(): () => void {
   const disposeShowcase = installShowcase();
   const disposeChallenges = installChallenges();
   const disposeSolidarity = installSolidarity();
+  const disposeAchievementMedals = installAchievementMedals();
   const disposeShipments = installShipments();
 
   return () => {
@@ -115,6 +117,7 @@ export function installPersistence(): () => void {
     disposeShowcase();
     disposeChallenges();
     disposeSolidarity();
+    disposeAchievementMedals();
     disposeShipments();
     unsubscribe();
     unsubscribePrefs();

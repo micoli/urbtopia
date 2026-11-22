@@ -903,6 +903,10 @@ export type Database = {
         };
         Returns: number;
       };
+      urb_record_achievement_medal: {
+        Args: { p_category: string; p_name_en: string; p_name_fr: string };
+        Returns: Json;
+      };
       urb_record_donations: { Args: { p_donations?: Json }; Returns: Json };
       urb_refuse_friend_request: { Args: { p_user: string }; Returns: undefined };
       urb_remove_friend: { Args: { p_user: string }; Returns: undefined };
