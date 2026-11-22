@@ -174,6 +174,8 @@ type VenueMessageKey =
   | 'factory.interior.wasteCapacity'
   | 'factory.interior.reach'
   | 'factory.interior.circuits'
+  | 'factory.interior.onCircuit'
+  | 'factory.interior.offCircuit'
   | 'factory.interior.generation'
   | 'factory.interior.cleaner'
   | 'factory.interior.motorLoad'
@@ -618,6 +620,8 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'factory.interior.wasteCapacity': ['Waste capacity per day', 'Capacité de déchets par jour'],
   'factory.interior.reach': ['Collection distance (tiles)', 'Distance de collecte (cases)'],
   'factory.interior.circuits': ['Complete circuits', 'Circuits complets'],
+  'factory.interior.onCircuit': ['On a complete Circuit: it adds its part of the bonus.', 'Sur un circuit complet : elle apporte sa part du bonus.'],
+  'factory.interior.offCircuit': ['Not on a complete Circuit: lay every link of its flowchart, with no Fixture broken down.', 'Hors d\'un circuit complet : posez tous les liens de son schéma, sans équipement en panne.'],
   'factory.interior.generation': ['Capacity added to the plant', 'Capacité ajoutée à la centrale'],
   'factory.interior.cleaner': ['Pollution taken away', 'Pollution retirée'],
   'factory.interior.problem.tankFull': ['Its Tank already feeds three Cooling vats, Washers or Sprinklers: add a Tank, or take one off this one.', 'Son réservoir alimente déjà trois cuves réfrigérantes, laveuses ou arroseurs : ajoutez un réservoir, ou retirez-en un de celui-ci.'],
