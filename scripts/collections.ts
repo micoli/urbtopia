@@ -8,7 +8,6 @@ import { objectiveSchema, type ObjectiveDefinition } from '../src/core/politics/
 import { annualEventSchema, type AnnualEventDefinition } from '../src/core/annualEvents/annualEventSchema.ts';
 import { boatSchema, type BoatDefinition } from '../src/core/water/boatSchema.ts';
 import { serviceVehicleSchema, trafficVehicleSchema, transitVehicleSchema, type ServiceVehicleDefinition, type TrafficVehicleDefinition, type TransitVehicleDefinition } from '../src/core/transit/vehicleSchemas.ts';
-import { fixtureSchema, type FixtureDefinition } from '../src/core/venues/fixtureSchema.ts';
 import { expandFixtureTemplate, type FixtureTemplate } from '../src/core/venues/fixtureExpansion.ts';
 import { fixtureTemplateSchema, type FixtureTemplateDefinition } from '../src/core/venues/fixtureTemplate.ts';
 
@@ -123,39 +122,25 @@ export const COLLECTIONS = {
       ...modelReference(models?.item, 'models.item'),
     ],
   },
-  fixtures: {
-    dir: 'fixtures',
-    title: 'Fixtures',
-    schemaName: 'fixture',
-    idTypes: {
-      file: 'src/core/venues/fixtureTypes.generated.ts',
-      unions: (fixtures: Record<string, FixtureDefinition>) => ({
-        FixtureId: idsWhere(fixtures),
-        ArcadeFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'arcade'),
-        SupermarketFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'supermarket'),
-        HotelFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'hotel'),
-        RestaurantFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'restaurant'),
-        FactoryFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'factory'),
-        HomeFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'home'),
-      }),
-    },
-    schema: fixtureSchema,
-    idPattern: ITEM_ID_PATTERN,
-    idRule: 'be camelCase letters and digits',
-    fieldOrder: ['kind', 'venue', 'category'],
-    references: (fixture: FixtureDefinition) => [...modelReference(fixture.model, 'model'), { target: ['buildings'], id: fixture.venue, path: 'venue' }],
-  },
   fixtureTemplates: {
     dir: 'fixtureTemplates',
     title: 'Fixture templates',
     schemaName: 'fixture-template',
     idTypes: {
-      file: 'src/core/venues/fixtureTemplateTypes.generated.ts',
-      unions: (templates: Record<string, FixtureTemplateDefinition>) => ({
-        TemplateFixtureId: Object.entries(templates)
-          .flatMap(([id, template]) => expandFixtureTemplate(id, template as FixtureTemplate).map(fixture => fixture.id))
-          .sort(),
-      }),
+      file: 'src/core/venues/fixtureTypes.generated.ts',
+      // The Fixtures are the ones that the templates unfold into.
+      unions: (templates: Record<string, FixtureTemplateDefinition>) => {
+        const fixtures = Object.fromEntries(Object.entries(templates).flatMap(([id, template]) => expandFixtureTemplate(id, template as FixtureTemplate).map(fixture => [fixture.id, fixture.definition as { venue: string }])));
+        return {
+          FixtureId: idsWhere(fixtures),
+          ArcadeFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'arcade'),
+          SupermarketFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'supermarket'),
+          HotelFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'hotel'),
+          RestaurantFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'restaurant'),
+          FactoryFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'factory'),
+          HomeFixtureId: idsWhere(fixtures, ({ venue }) => venue === 'home'),
+        };
+      },
     },
     schema: fixtureTemplateSchema,
     idPattern: ITEM_ID_PATTERN,

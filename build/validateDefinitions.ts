@@ -2,20 +2,25 @@ import type { Plugin } from 'vite';
 import { collectionDir, idOfFile, jsonFilesIn, readCollections, readOrder, readSingletons } from '../scripts/collectionRead.ts';
 import { COLLECTION_NAMES } from '../scripts/collections.ts';
 import { allCollectionProblems, allSingletonProblems, describeProblem, orderProblems } from '../scripts/definitionProblems.ts';
-import { listedFixtureIds } from '../scripts/fixtureOrder.ts';
+import { existsSync, readFileSync } from 'node:fs';
+import { FIXTURE_ORDER_FILE, templateFixtureIds } from '../scripts/fixtureOrder.ts';
 import { shippedModelCatalog } from '../scripts/modelReferences.ts';
 import { modelsProblems } from '../scripts/modelsFile.ts';
 
 const WATCHED = ['assets/defs/', 'assets/models.json'];
 
-const allOrderProblems = (): string[] => {
-  const collections = readCollections();
-  return COLLECTION_NAMES.flatMap(name => {
-    const dir = collectionDir(name);
-    const ids = name === 'fixtures' ? listedFixtureIds(collections.fixtures, collections.fixtureTemplates) : jsonFilesIn(dir).map(idOfFile);
-    return orderProblems(readOrder(dir), ids).map(problem => `order/${name}/${describeProblem(problem)}`);
-  });
+const fixtureOrderProblems = (): string[] => {
+  const listed = existsSync(FIXTURE_ORDER_FILE) ? (JSON.parse(readFileSync(FIXTURE_ORDER_FILE, 'utf8')) as string[]) : [];
+  return orderProblems(listed, templateFixtureIds(readCollections().fixtureTemplates)).map(problem => `order/fixtures/${describeProblem(problem)}`);
 };
+
+const allOrderProblems = (): string[] => [
+  ...COLLECTION_NAMES.flatMap(name => {
+    const dir = collectionDir(name);
+    return orderProblems(readOrder(dir), jsonFilesIn(dir).map(idOfFile)).map(problem => `order/${name}/${describeProblem(problem)}`);
+  }),
+  ...fixtureOrderProblems(),
+];
 
 export function definitionProblems(): string[] {
   const catalog = shippedModelCatalog();

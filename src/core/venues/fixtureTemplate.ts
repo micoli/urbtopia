@@ -57,9 +57,12 @@ const shape = {
   ...body,
 };
 
-export const fixtureTemplateSchema = z
-  .strictObject(shape)
+const base = z.strictObject(shape);
+
+// The checks across fields run on a template whose fields are valid one by one.
+export const fixtureTemplateSchema = base
   .superRefine((template, context) => {
+    if (!base.safeParse(template).success) return;
     const duplicated = template.venues.filter((name, index) => template.venues.indexOf(name) !== index);
     for (const name of duplicated) context.addIssue({ code: 'custom', path: ['venues'], message: `${name} is listed twice` });
     for (const name of [...Object.keys(template.ids ?? {}), ...Object.keys(template.overrides ?? {})]) {

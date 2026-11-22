@@ -114,9 +114,6 @@ export interface FixtureSpec {
   joins?: { elbow: string; tee: string; cross: string };
 }
 
-// Checked against their schema by the definitions plugin at dev start and build, and by the tests.
-const files = import.meta.glob<FixtureDefinition>('../../../assets/defs/fixtures/*.json', { eager: true, import: 'default' });
-
 const specOf = ({ id: _id, kind: _kind, name: _name, model, tint, footprint, joins, ...fixture }: FixtureDefinition & { id: FixtureId }): FixtureSpec => ({
   playsPerHour: 0,
   ...fixture,
@@ -127,19 +124,17 @@ const specOf = ({ id: _id, kind: _kind, name: _name, model, tint, footprint, joi
   ...(tint ? { tint: Number.parseInt(tint.slice(1), 16) } : {}),
 });
 
+// Checked against their schema by the definitions plugin at dev start and build, and by the tests.
 const templateFiles = import.meta.glob<FixtureTemplate>('../../../assets/defs/fixtureTemplates/*.json', { eager: true, import: 'default' });
 
-// A template becomes one Fixture per venue, after those written one by one.
-const templateEntries = entriesOf<FixtureTemplate>(templateFiles, templateOrder).flatMap(({ id: templateId, ...template }) =>
-  expandFixtureTemplate(templateId, template).map(fixture => ({ ...fixture.definition, id: fixture.id }) as unknown as FixtureDefinition & { id: FixtureId }),
-);
-
-// The order file lists the Fixtures of both kinds.
+// A template becomes one Fixture per venue. The order file lists the Fixtures, not the templates.
 const positions = new Map(fixtureOrder.map((id, index) => [id, index]));
 
 const position = (id: string): number => positions.get(id) ?? fixtureOrder.length;
 
-export const FIXTURE_ENTRIES = [...entriesOf<FixtureDefinition, FixtureId>(files, fixtureOrder), ...templateEntries].sort((a, b) => position(a.id) - position(b.id) || a.id.localeCompare(b.id));
+export const FIXTURE_ENTRIES = entriesOf<FixtureTemplate>(templateFiles, templateOrder)
+  .flatMap(({ id: templateId, ...template }) => expandFixtureTemplate(templateId, template).map(fixture => ({ ...fixture.definition, id: fixture.id }) as unknown as FixtureDefinition & { id: FixtureId }))
+  .sort((a, b) => position(a.id) - position(b.id) || a.id.localeCompare(b.id));
 
 export const FIXTURES = Object.fromEntries(FIXTURE_ENTRIES.map(entry => [entry.id, specOf(entry)])) as Record<FixtureId, FixtureSpec>;
 

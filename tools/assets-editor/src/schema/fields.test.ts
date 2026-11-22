@@ -40,11 +40,9 @@ describe('form fields from the JSON Schemas', () => {
     expect(models?.type === 'object' && models.fields.map(({ key, type }) => `${key}:${type}`)).toEqual(['growth:modelList', 'produce:model', 'harvested:model', 'item:model'])
   })
 
-  it('gives a Fixture the fields of its own Venue', () => {
-    const keys = (venue: string) => collectionFieldsOf('fixtures', { kind: 'fixture', venue }).map(({ key }) => key)
-    expect(keys('hotel')).toContain('sleeps')
-    expect(keys('hotel')).not.toContain('playsPerHour')
-    expect(keys('arcade')).toContain('playsPerHour')
+  it('gives a Fixture template its venues and its blocks of ports, bonuses and traits', () => {
+    const keys = collectionFieldsOf('fixtureTemplates', { kind: 'fixtureTemplate' }).map(({ key }) => key)
+    expect(keys).toEqual(expect.arrayContaining(['venues', 'ports', 'bonuses', 'traits', 'placement', 'visual', 'overrides']))
   })
 
   it('describes pack formats as a list of objects', () => {

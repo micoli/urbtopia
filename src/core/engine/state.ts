@@ -56,11 +56,8 @@ export interface MarketPrice {
 }
 
 export type { VenueType } from '../buildings/buildingTypes.generated';
-export type { ArcadeFixtureId, HotelFixtureId, RestaurantFixtureId, SupermarketFixtureId } from '../venues/fixtureTypes.generated';
-import type { FixtureId as FixtureFileId } from '../venues/fixtureTypes.generated';
-import type { TemplateFixtureId } from '../venues/fixtureTemplateTypes.generated';
-
-export type FixtureId = FixtureFileId | TemplateFixtureId;
+export type { ArcadeFixtureId, FixtureId, HotelFixtureId, RestaurantFixtureId, SupermarketFixtureId } from '../venues/fixtureTypes.generated';
+import type { FixtureId } from '../venues/fixtureTypes.generated';
 
 export interface VenueFixture extends Coord {
   id: number;
