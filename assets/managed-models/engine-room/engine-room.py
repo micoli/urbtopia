@@ -91,14 +91,12 @@ def steam_pipe_elbow(rng):
 
 
 def coal_conveyor_straight(rng):
-    """Straight Conveyor carrying coal toward -y, from edge to edge of its tile: two steel rails and a black belt at BELT_Z, lumps of coal and a yellow arrow on the belt."""
+    """Straight Conveyor carrying coal toward -y, from edge to edge of its tile: two steel rails and a black belt at BELT_Z, and a yellow arrow on the belt: the coal that rides it is drawn by the game."""
     parts = [block("belt_rail_l", -0.2, -0.17, -0.5, 0.5, 0.3, BELT_Z, P["steel"]), block("belt_rail_r", 0.17, 0.2, -0.5, 0.5, 0.3, BELT_Z, P["steel"]),
              block("belt_bed", -0.17, 0.17, -0.5, 0.5, 0.3, BELT_Z - 0.02, P["belt"])]
     for k, y in enumerate((-0.42, 0.42)):
         parts += [block(f"leg_l{k}", -0.2, -0.17, y - 0.03, y + 0.03, 0.0, 0.3, P["iron"]), block(f"leg_r{k}", 0.17, 0.2, y - 0.03, y + 0.03, 0.0, 0.3, P["iron"]),
                   block(f"brace{k}", -0.2, 0.2, y - 0.02, y + 0.02, 0.12, 0.15, P["iron"])]
-    for k, (x, y, size) in enumerate(((-0.07, 0.3, 0.07), (0.07, 0.12, 0.06), (-0.04, -0.12, 0.07), (0.08, -0.3, 0.06))):
-        parts.append(block(f"lump{k}", x - size, x + size, y - size, y + size, BELT_Z - 0.02, BELT_Z + size, P["coal"]))
     head = lpm.prism("arrow_head", 3, 0.07, 0.004, at=(0, 0, BELT_Z - 0.02), color=P["yellow"])
     lpm.rotate(head, 30, axis="Z")
     lpm.move(head, 0.0, -0.4, 0)
@@ -220,7 +218,7 @@ def pipe_stand(name, y):
 
 def coal_quay(rng):
     """Coal quay, against the back wall on the tile along it, facing -y: a brick unloading house with a wide black hatch and a hazard-striped lip lets coal fall down a steel chute
-    onto the belt of a Conveyor that leaves toward -y at BELT_Z. A heap of coal lies under the hatch."""
+    onto the belt of a Conveyor that leaves toward -y at BELT_Z."""
     parts = [pad("pad", -0.12), block("house", -0.4, 0.4, 0.1, 0.5, 0.05, 0.8, P["brick"]), block("house_roof", -0.44, 0.44, 0.06, 0.5, 0.8, 0.86, P["brick_dark"]),
              block("hatch_frame", -0.3, 0.3, 0.085, 0.1, 0.3, 0.7, P["iron"]), block("hatch", -0.26, 0.26, 0.075, 0.085, 0.34, 0.66, P["black"]),
              block("hatch_beam", -0.3, 0.3, 0.07, 0.1, 0.7, 0.74, P["steel_dark"])]
@@ -231,8 +229,6 @@ def coal_quay(rng):
               block("belt_bed", -0.17, 0.17, -0.5, 0.1, 0.3, BELT_Z - 0.02, P["belt"]),
               block("leg_l", -0.2, -0.17, -0.45, -0.39, 0.0, 0.3, P["iron"]), block("leg_r", 0.17, 0.2, -0.45, -0.39, 0.0, 0.3, P["iron"]),
               block("brace", -0.2, 0.2, -0.43, -0.41, 0.12, 0.15, P["iron"])]
-    for k, (x, y, size) in enumerate(((-0.07, 0.0, 0.09), (0.07, 0.04, 0.08), (0.0, -0.1, 0.07), (-0.08, -0.22, 0.06), (0.07, -0.34, 0.06))):
-        parts.append(block(f"lump{k}", x - size, x + size, y - size, y + size, BELT_Z - 0.02, BELT_Z + size + 0.02, P["coal"]))
     return parts + [flow_arrow("arrow", -0.42, BELT_Z - 0.02, -1)]
 
 
