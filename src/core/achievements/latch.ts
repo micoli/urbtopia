@@ -1,7 +1,12 @@
 import type { GameEvent } from '../engine/events';
 import type { GameState } from '../engine/state';
 import { ACHIEVEMENTS } from './achievements';
-import { isRaised } from './triggers';
+import { isProvenBy, isRaised } from './triggers';
+
+// The Achievements an existing City proves, for a save made before they existed.
+export function provenAchievements(state: GameState): string[] {
+  return ACHIEVEMENTS.filter((achievement) => isProvenBy(achievement.trigger, state)).map((achievement) => achievement.id);
+}
 
 export function isAcquired(state: GameState, id: string): boolean {
   return state.achievements?.includes(id) ?? false;

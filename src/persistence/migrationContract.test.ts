@@ -9,9 +9,9 @@ const versions = Array.from({ length: CURRENT_VERSION }, (_, index) => index + 1
 
 // Update this snapshot together with CURRENT_VERSION: a schema change needs a migration and a new frozen fixture.
 const SCHEMA_SNAPSHOT = {
-  version: 21,
+  version: 22,
   keys: [
-    'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'dayCycleOffset', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
+    'achievements', 'adaptationUntil', 'brtRoads', 'buildings', 'busLines', 'casinoRng', 'dayCycleOffset', 'fields', 'lastSeen', 'market', 'marketUnlocked', 'nextId',
     'ownedParcels', 'rails', 'rngState', 'roads', 'roundabouts', 'seed', 'seedStock', 'storage', 'tradeLedger', 'transitFleet', 'transitLines', 'tutorial', 'urbs',
   ],
 };
@@ -34,7 +34,7 @@ describe('save migration contract', () => {
     const v17 = JSON.parse(fixtureText(17));
     const loaded = parseEnvelope(JSON.stringify(v17));
     if (!loaded.ok) throw new Error(loaded.reason);
-    expect(loaded.state).toEqual({ ...v17.state, adaptationUntil: v17.state.lastSeen + 24 * 3_600_000 });
+    expect(loaded.state).toEqual({ ...v17.state, achievements: ['transport.firstRoad'], adaptationUntil: v17.state.lastSeen + 24 * 3_600_000 });
   });
 
   it('turns the Silo of a version-12 city into a Material depot', () => {

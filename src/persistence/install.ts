@@ -4,6 +4,7 @@ import { dialogStore } from '../store/dialogStore';
 import { catchUpInChunks } from '../store/catchUpInChunks';
 import { bootResult, gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
+import { announceSeededAchievements } from '../store/toastStore';
 import { measureSave, recordLoad, recordSaveFailure } from '../monitoring/gameMetrics';
 import { createAutosave } from './autosave';
 import { saveNowHandle } from './saveNow';
@@ -43,6 +44,7 @@ export function installPersistence(): () => void {
   }
 
   if (bootResult.kind === 'loaded') adoptSavedPrefs(bootResult.prefs);
+  if (bootResult.kind === 'loaded' && bootResult.seededAchievements > 0) announceSeededAchievements(bootResult.seededAchievements);
   nameOpenCity(rawSaveStore, gameStore.getState().state.seed);
   recordLoad(bootResult.kind, bootResult.kind === 'failed' ? bootResult.reason : undefined);
 

@@ -1,5 +1,7 @@
 import { isHomeType } from '../core/buildings/buildingDefinitions';
 import { citizensOf } from '../core/buildings/city';
+import { provenAchievements } from '../core/achievements/latch';
+import type { GameState } from '../core';
 import { workplaceTypes } from '../core/traffic/jobs';
 import { WASTE } from '../core/waste/wasteBalance';
 
@@ -76,8 +78,15 @@ function renameFloorToInterior(state: unknown): unknown {
   };
 }
 
-// 19 to 20: the games of a Planning office are new optional data on a building, so nothing moves. 20 to 21: the house plans of the city are new optional data, so nothing moves either.
-export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }), 14: finishTutorialsOfPlacedVenues, 15: startWasteAdaptation, 16: startKnowledgeAdaptation, 17: startJobSearchAdaptation, 18: renameFloorToInterior, 19: state => state, 20: state => state };
+// A City saved before Achievements existed gets the ones its state proves; the others stay to do.
+function seedAchievements(state: unknown): unknown {
+  const value = state as GameState;
+  if (value.achievements !== undefined) return state;
+  return { ...value, achievements: provenAchievements(value) };
+}
+
+// 19 to 20: the games of a Planning office are new optional data on a building, so nothing moves. 20 to 21: the house plans of the city are new optional data, so nothing moves either. 21 to 22: the Achievements the state proves are written down.
+export const MIGRATIONS: Record<number, MigrationStep> = { 1: toPerBuildingTier, 2: addQueueQuantity, 3: addEcology, 4: state => ({ ...(state as object), brtRoads: [], rails: [], transitLines: [], transitFleet: [] }), 5: state => state, 6: state => state, 7: startServiceAdaptation, 8: state => ({ ...(state as object), seedStock: {}, fields: [] }), 9: state => state, 10: startServiceAdaptation, 11: state => state, 12: renameSiloToMaterialDepot, 13: state => ({ ...(state as object), tradeLedger: [] }), 14: finishTutorialsOfPlacedVenues, 15: startWasteAdaptation, 16: startKnowledgeAdaptation, 17: startJobSearchAdaptation, 18: renameFloorToInterior, 19: state => state, 20: state => state, 21: seedAchievements };
 
 export function migrate(state: unknown, fromVersion: number, toVersion: number, steps: Record<number, MigrationStep> = MIGRATIONS): unknown {
   let current = state;

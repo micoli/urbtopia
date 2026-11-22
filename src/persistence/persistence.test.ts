@@ -212,7 +212,7 @@ describe('SaveSession', () => {
 
   it('loads what it saved', () => {
     session.save(state, T0);
-    expect(session.load()).toEqual({ kind: 'loaded', state, savedAt: T0, prefs: {} });
+    expect(session.load()).toEqual({ kind: 'loaded', state, savedAt: T0, prefs: {}, seededAchievements: 0 });
   });
 
   it('loads the preferences it saved, whatever their keys and values', () => {

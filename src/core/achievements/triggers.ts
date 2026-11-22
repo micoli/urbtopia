@@ -10,3 +10,8 @@ function countOf(state: GameState, collection: CreatedCollection, mode?: string)
 export function isRaised(trigger: AchievementTrigger, { before, after }: TriggerContext): boolean {
   return countOf(after, trigger.collection, trigger.mode) > countOf(before, trigger.collection, trigger.mode);
 }
+
+// What the state of a City proves about a trigger, without the Command that raised it; a trigger the state cannot prove returns false.
+export function isProvenBy(trigger: AchievementTrigger, state: GameState): boolean {
+  return countOf(state, trigger.collection, trigger.mode) > 0;
+}
