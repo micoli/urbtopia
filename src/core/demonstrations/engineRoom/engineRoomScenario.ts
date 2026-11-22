@@ -52,11 +52,13 @@ export const engineRoomScenario = ({ type, name, level, intro, circuitDescriptio
   }
   if (faulty) steps.push({ id: 'fix-turn', title: en(`Turn ${faulty.label[0]}`, `Tourner ${faulty.label[1]}`), objective: en('Reconnect the Circuit.', 'Reconnecter le circuit.'),
     action: en(`Turn ${faulty.label[0]} so that it joins the two pipes.`, `Tourne ${faulty.label[1]} pour qu’il relie les deux tuyaux.`), explanation: en('A link only carries its Medium to the neighbour that faces it. A piece turned the wrong way cuts the Circuit, which then counts for nothing.', 'Un lien ne transmet son fluide qu’au voisin qui lui fait face. Une pièce mal tournée coupe le circuit, qui ne compte plus.'),
-    result: en('The Circuit is complete: the plant gains Capacity.', 'Le circuit est complet : la centrale gagne en capacité.'),
+    result: pieces.some(item => item.fixture === 'coalPlantFilter') ? en('The Circuit is complete and filtered: the plant gains Capacity and loses pollution.', 'Le circuit est complet et filtré : la centrale gagne en capacité et perd de la pollution.') : en('The Circuit is complete: the plant gains Capacity.', 'Le circuit est complet : la centrale gagne en capacité.'),
     commands: [{ type: 'MoveInteriorFixture', buildingId: BUILDING_ID, fixtureId: faulty.fixtureId, x: faulty.x, y: faulty.y, rotation: faulty.rotation }], highlight: [{ x: faulty.x, y: faulty.y }],
     check: state => {
       checkEngineRoom(pieces.length, 1)(state);
-      if (engineRoomGainsOf(roomOf(state)).generation <= 0) throw new Error('expected a gain of Capacity');
+      const gains = engineRoomGainsOf(roomOf(state));
+      if (gains.generation <= 0) throw new Error('expected a gain of Capacity');
+      if (pieces.some(item => item.fixture === 'coalPlantFilter') && gains.cleaner <= 0) throw new Error('expected a Filter that takes pollution away');
     },
   });
   return { id: `${type}-${level}`, buildingType: type, buildingId: BUILDING_ID, level, title: levelTitle(name, level), objective: intro.summary, initial: () => lineCity(type, `guided-${type}-${level}-v1`, 1), steps };

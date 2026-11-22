@@ -31,18 +31,20 @@ export const coalPlantSimple = engineRoomScenario({
     summary: en('Build one complete Coal circuit.', 'Construire un circuit à charbon complet.') },
 });
 
-export const coalPlantAdvanced = engineRoomScenario({
-  type: 'coalPlant', name, level: 'advanced', circuitDescription: circuit, faulty: { fixtureId: 6, x: 1, y: 2, rotation: 3, label: labels.elbow },
-  pieces: pieces().map(item => (item.id === 'elbow' ? { ...item, rotation: 1 as const } : item)),
-  intro: { title: en('A circuit that counts for nothing', 'Un circuit qui ne compte pas'), objective: en('Find why the Circuit is not complete and fix it.', 'Trouver pourquoi le circuit n’est pas complet et le corriger.'),
-    explanation: en('The Water pipe elbow will be turned the wrong way. You will lay the Circuit, see that it does not count, then turn the elbow.', 'Le coude du tuyau d’eau sera tourné à l’envers. Tu vas poser le circuit, constater qu’il ne compte pas, puis tourner le coude.'),
-    summary: en('Diagnose and repair a Coal circuit with a misturned elbow.', 'Diagnostiquer et réparer un circuit à charbon dont un coude est mal tourné.') },
-});
+const filterPiece = () => piece('filter', 'coalPlantFilter', 2, 3, 0, labels.filter, en('The Filter stands in front of the boiler, its back against it. Its arm joins the chimney of the boiler, so that the smoke goes into the Filter instead of out of the boiler. Only a Circuit whose boiler has a Filter takes pollution away.', 'Le filtre se place devant la chaudière, son dos contre elle. Son bras rejoint la cheminée de la chaudière : la fumée entre dans le filtre au lieu de sortir de la chaudière. Seul un circuit dont la chaudière a un filtre retire de la pollution.'));
 
 export const coalPlantIntermediate = engineRoomScenario({
   type: 'coalPlant', name, level: 'intermediate', circuitDescription: circuit, completeAt: 'outlet',
-  pieces: [...pieces(), piece('filter', 'coalPlantFilter', 2, 3, 0, labels.filter, en('The Filter stands in front of the boiler, its back against it: the flue of the boiler goes into it instead of out of its own chimney. Only a Filter takes pollution away.', 'Le filtre se place devant la chaudière, son dos contre elle : le conduit de la chaudière entre dedans au lieu de sortir par sa propre cheminée. Seul un filtre retire de la pollution.'))],
+  pieces: [...pieces(), filterPiece()],
   intro: { title: en('A filtered Coal circuit', 'Un circuit à charbon filtré'), objective: en('Complete the Circuit, then add a Filter in front of the boiler.', 'Terminer le circuit, puis ajouter un filtre devant la chaudière.'),
     explanation: en('A complete Circuit raises the Capacity of the plant, but it only takes pollution away if a Filter stands in front of its boiler and takes its smoke.', 'Un circuit complet augmente la capacité de la centrale, mais il ne retire de la pollution que si un filtre se tient devant sa chaudière et prend sa fumée.'),
     summary: en('Build a Coal circuit and filter its boiler.', 'Construire un circuit à charbon et filtrer sa chaudière.') },
+});
+
+export const coalPlantAdvanced = engineRoomScenario({
+  type: 'coalPlant', name, level: 'advanced', circuitDescription: circuit, faulty: { fixtureId: 6, x: 1, y: 2, rotation: 3, label: labels.elbow },
+  pieces: [...pieces().map(item => (item.id === 'elbow' ? { ...item, rotation: 1 as const } : item)), filterPiece()],
+  intro: { title: en('A filtered circuit that counts for nothing', 'Un circuit filtré qui ne compte pas'), objective: en('Find why the Circuit is not complete, fix it, and see the Filter work.', 'Trouver pourquoi le circuit n’est pas complet, le corriger, et voir le filtre agir.'),
+    explanation: en('The Water pipe elbow will be turned the wrong way. You will lay the Circuit and its Filter, see that nothing counts, then turn the elbow: the Circuit then raises the Capacity and the Filter takes pollution away.', 'Le coude du tuyau d’eau sera tourné à l’envers. Tu vas poser le circuit et son filtre, constater que rien ne compte, puis tourner le coude : le circuit augmente alors la capacité et le filtre retire de la pollution.'),
+    summary: en('Diagnose and repair a filtered Coal circuit with a misturned elbow.', 'Diagnostiquer et réparer un circuit à charbon filtré dont un coude est mal tourné.') },
 });
