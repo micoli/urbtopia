@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createBuilding, dispatch, newGame, type Building, type BuildingType, type GameState, type VenueFixture } from '../index';
+import { createBuilding, dispatch, hasEngineRoom, newGame, type Building, type BuildingType, type GameState, type VenueFixture } from '../index';
+import { engineRoomReportOf } from '../factory/engineRoomCircuits';
 import { interiorLinksOf } from '../factory/interiorLinks';
 import { FIXTURES } from '../venues/fixtures';
 import { INTERIOR_EXAMPLES } from './interiorExamples';
@@ -24,6 +25,10 @@ describe('the examples of set-ups of the Production interiors', () => {
     const building = fitted(type).buildings.find(candidate => candidate.id === 1) as Building;
     const fixtures = building.interior!.fixtures;
     expect(fixtures).toHaveLength(INTERIOR_EXAMPLES[type]!.fixtures.length);
+    if (hasEngineRoom(building)) {
+      expect(engineRoomReportOf(building).circuits).toHaveLength(1);
+      return;
+    }
     const { linked, lined, problems } = interiorLinksOf(fixtures);
     const withRole = (role: string) => fixtures.filter(fixture => FIXTURES[fixture.type].role === role);
     expect(withRole('machine').filter(machine => !linked.has(machine.id))).toEqual([]);
@@ -32,7 +37,13 @@ describe('the examples of set-ups of the Production interiors', () => {
   });
 
   it.each(types)('%s: no Fixture can be taken away without stopping a Machine or a Line', type => {
-    const all = (fitted(type).buildings.find(candidate => candidate.id === 1) as Building).interior!.fixtures;
+    const host = fitted(type).buildings.find(candidate => candidate.id === 1) as Building;
+    const all = host.interior!.fixtures;
+    if (hasEngineRoom(host)) {
+      const spareOnes = all.filter(fixture => engineRoomReportOf({ ...host, interior: { ...host.interior!, fixtures: all.filter(other => other.id !== fixture.id) } }).circuits.length === 1);
+      expect(spareOnes.map(fixture => fixture.type)).toEqual([]);
+      return;
+    }
     const countOf = (list: readonly VenueFixture[], role: string) => list.filter(fixture => FIXTURES[fixture.type].role === role).length;
     const works = (list: readonly VenueFixture[]) => {
       const { linked, lined } = interiorLinksOf(list);

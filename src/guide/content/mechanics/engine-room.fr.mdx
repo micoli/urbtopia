@@ -1,0 +1,33 @@
+export const meta = {
+  title: 'Salles des machines',
+  summary: 'Équipez de l’intérieur les centrales à charbon, hydraulique et géothermique : posez les liens d’un circuit et augmentez la capacité de la centrale.',
+  order: 38,
+};
+
+## De quoi s’agit-il
+
+La **centrale à charbon**, la **centrale hydraulique**, la **centrale géothermique** et la **grande centrale géothermique** ouvrent une **salle des machines** : une salle où l’on place des équipements, comme dans l’intérieur d’une usine. Les centrales éolienne et solaire n’en ont pas. Une salle des machines vide laisse la centrale exactement comme elle était. Une salle équipée augmente sa **capacité** et, pour la centrale à charbon, diminue sa pollution. Elle s’ouvre quand la ville compte assez de Citizens : 400 pour la centrale à charbon, 500 pour l’hydraulique, 600 pour la géothermique et 1 500 pour la grande géothermique. Ouvrez-la depuis le panneau latéral de la centrale ou depuis le bouton placé dessous.
+
+## Les circuits
+
+Une salle des machines ne fonctionne ni à la force ni au flux. Elle fonctionne par **circuits** : des chaînes d’équipements reliés par des liens, chacun portant un **fluide**, charbon, eau, vapeur ou électricité. Chaque équipement a des ports sur certains côtés, chacun d’un fluide, qui le reçoit, le donne, ou fait les deux (un tuyau). Un fluide ne passe d’un équipement au suivant que par des ports du même fluide qui se font face, un port de sortie contre un port d’entrée. Deux fluides ne partagent jamais une case.
+
+- **Charbon** : un **quai à charbon** contre le mur du fond décharge le charbon sur un **tapis** qui le porte à la **chaudière à vapeur**. Une **arrivée d’eau** amène l’eau à la chaudière par des **tuyaux d’eau**. La chaudière donne de la vapeur, par des **tuyaux de vapeur**, à l’**alternateur**, qui donne de l’électricité, par des **câbles**, à une **sortie d’électricité** sur le mur du fond.
+- **Hydraulique** : une **arrivée d’eau** amène l’eau, par des tuyaux d’eau, à la **turbine hydraulique**. La turbine rend l’eau, par des tuyaux d’eau, à une **sortie d’eau**, et donne de l’électricité, par des câbles, à une **sortie d’électricité**.
+- **Géothermique** : une **arrivée d’eau souterraine** amène de la vapeur, par des tuyaux de vapeur, à la **turbine à vapeur**. La turbine donne sa vapeur à un **condenseur**, et le condenseur à un **puits d’injection** qui renvoie l’eau dans le sol. La turbine donne de l’électricité, par des câbles, à une **sortie d’électricité**.
+
+Les six **ports muraux** (le quai, les arrivées, les sorties, le puits et la sortie d’électricité) se tiennent contre le **mur du fond** de la salle et lui font face. Les tuyaux et les câbles existent en pièces droites, en coude, en T et en croix : tournez-les pour que leurs côtés rejoignent ceux des voisins.
+
+## Quand un circuit compte
+
+Un circuit ne compte que si **tous les liens de son schéma sont posés** et si **aucun équipement n’est en panne**. Une pièce manquante, une pièce mal tournée, un lien du mauvais fluide ou une panne le coupe : il ne compte alors pour rien. Chaque circuit utilise ses propres ports : une deuxième chaudière sur le même quai n’apporte rien. Sélectionnez un équipement pour voir s’il se trouve sur un circuit complet.
+
+## Ce que ça apporte
+
+Chaque circuit complet augmente la **capacité** de la centrale, jusqu’à un plafond qui croît avec son niveau. Le premier circuit apporte la moitié du plafond ; chaque circuit de plus apporte moins que le précédent, et le plafond n’est jamais atteint. Sur la centrale à charbon, les circuits retirent aussi une part de sa **pollution**, de la même façon.
+
+Les équipements d’un circuit complet fonctionnent, et s’usent : un **technicien**, embauché comme ceux de l’intérieur d’usine, les répare. La salle ne prend rien à l’électricité de la ville et ne brûle pas de charbon à elle. Le charbon d’une centrale à charbon reste payé en Urbs pour l’électricité qu’elle fournit.
+
+## Apprendre en faisant
+
+Chaque centrale a une démonstration guidée : la centrale à charbon en a deux, un premier circuit et un circuit dont un coude est mal tourné, à trouver et à réparer.

@@ -1,0 +1,33 @@
+export const meta = {
+  title: 'Engine rooms',
+  summary: 'Fit out the Coal, Hydro and Geothermal power plants from the inside: lay the links of a Circuit, and raise the Capacity of the plant.',
+  order: 38,
+};
+
+## What it is
+
+The **Coal power plant**, the **Hydro power plant**, the **Geothermal power plant** and the **Large geothermal power plant** open an **Engine room**: a room where you place Fixtures, like the interior of a Factory. The wind and solar plants have none. An empty Engine room leaves the plant exactly as it was. A fitted one raises its **Capacity**, and, for the Coal plant, lowers its pollution. It opens once the city has enough Citizens: 400 for the Coal plant, 500 for the Hydro plant, 600 for the Geothermal plant and 1,500 for the Large geothermal plant. Open it from the side panel of the plant or from the button under it.
+
+## Circuits
+
+An Engine room does not run on Drive or Flow. It runs on **Circuits**: chains of Fixtures joined by links, each link carrying one **Medium**, coal, water, steam or electricity. Every Fixture has ports on some of its sides, each of one Medium, taking it in, giving it out, or both (a pipe). A Medium goes from one Fixture to the next only through ports of the same Medium that face each other, an out port onto an in port. Two Media never share a tile.
+
+- **Coal**: a **Coal quay** against the back wall unloads coal onto a **Conveyor** that carries it to the **Steam boiler**. A **Water inlet** brings water to the boiler through **Water pipes**. The boiler gives steam, through **Steam pipes**, to the **Alternator**, which gives electricity, through **Cables**, to a **Power outlet** on the back wall.
+- **Hydro**: a **Water inlet** brings water, through Water pipes, to the **Water turbine**. The turbine gives the water back, through Water pipes, to a **Water outlet**, and gives electricity, through Cables, to a **Power outlet**.
+- **Geothermal**: an **Underground water inlet** brings steam, through Steam pipes, to the **Steam turbine**. The turbine gives its steam to a **Condenser**, and the Condenser to an **Injection well** that sends the water back into the ground. The turbine gives electricity, through Cables, to a **Power outlet**.
+
+The six **wall ports** (the quay, the inlets, the outlets, the well and the Power outlet) stand against the **back wall** of the room and face it. Pipes and Cables come as straight, elbow, tee and cross pieces: turn them so that their sides meet the ones next to them.
+
+## When a Circuit counts
+
+A Circuit counts only when **every link of its flowchart is laid** and **no Fixture on it is broken down**. A missing piece, a piece turned the wrong way, a link of the wrong Medium or a breakdown cuts it, and it then counts for nothing. Each Circuit uses its own ports: a second boiler on the same quay adds nothing. Select a Fixture to see whether it stands on a complete Circuit.
+
+## What it brings
+
+Each complete Circuit raises the **Capacity** of the plant, up to a cap that grows with the Tier of the plant. The first Circuit brings half the cap; each further Circuit brings less than the one before, and the cap is never reached. On the Coal plant, the Circuits also take away a share of its **pollution**, in the same way.
+
+The Fixtures of a complete Circuit run, and wear: a **Technician**, hired like those of the Factory interior, repairs them. The room draws nothing from the city's electricity and burns no coal of its own. The coal a Coal plant uses is still paid in Urbs for the electricity it delivers.
+
+## Learn by doing
+
+Each plant has a guided demonstration: the Coal plant has two, a first Circuit and a Circuit with a misturned elbow to find and repair.

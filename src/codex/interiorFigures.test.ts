@@ -29,6 +29,22 @@ describe('the figures of the Interiors page', () => {
     expect(live!.benefits.every(({ value }) => value > 0)).toBe(true);
   });
 
+  it('lists the Engine rooms with the Capacity they add by Tier, and the pollution they take away for the Coal one', () => {
+    expect(interiorFigures(state, 'coalPlant').columns.map(({ label }) => label)).toEqual(['factory.interior.generation', 'factory.interior.cleaner']);
+    expect(interiorFigures(state, 'hydroPlant').columns.map(({ label }) => label)).toEqual(['factory.interior.generation']);
+    expect(interiorFigures(state, 'geothermalPlant').columns[0]!.values).toEqual([0.05, 0.08, 0.11, 0.15, 0.2, 0.25]);
+    expect(interiorFigures(state, 'largeGeothermalPlant').columns[0]!.values).toEqual([0.25]);
+  });
+
+  it('shows the gains of the complete Circuits of an Engine room now', () => {
+    for (const type of ['coalPlant', 'hydroPlant', 'geothermalPlant'] as const) {
+      const plant = { ...createBuilding(1, type, 55, 50, 0), interior: { nextFixtureId: 100, fixtures: INTERIOR_EXAMPLES[type]!.fixtures.map((fixture, index) => ({ id: index + 1, ...fixture })) } };
+      const [live] = liveInteriorsOf({ ...state, buildings: [plant] }, type);
+      expect(live!.benefits[0]!.label, type).toBe('factory.interior.generation');
+      expect(live!.benefits[0]!.value, type).toBeGreaterThan(0);
+    }
+  });
+
   it('reads the Staff posts of an interior from the rules', () => {
     expect(interiorFigures(state, 'hospital').roles.map(({ role }) => role)).toEqual(['nurse', 'doctor', 'surgeon']);
     expect(interiorFigures(state, 'factory').roles).toEqual([]);
