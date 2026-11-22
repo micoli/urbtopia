@@ -16,6 +16,10 @@ export interface CompleteCircuit {
   linking: ReadonlySet<number>;
   // The way each Medium takes from one Fixture to the next of its link: the source, the links crossed in order, and the target.
   routes: readonly { medium: FixtureMedium; ids: readonly number[] }[];
+  // The links that clean the smoke are laid too.
+  cleaned: boolean;
+  // The Fixtures whose smoke goes to the Filter instead of their own chimney.
+  diverted: readonly number[];
 }
 
 export interface EngineRoomReport {
@@ -87,27 +91,31 @@ const reachOf = (reaches: Map<string, Reach>, source: VenueFixture, medium: Fixt
   return reach;
 };
 
-// One Circuit around an anchor: every family of the Circuit takes one Fixture that no other Circuit uses, reached from the ones already taken through the links of the flowchart.
-function circuitAround(anchor: VenueFixture, circuit: EngineRoomCircuit, fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, used: ReadonlySet<number>, reaches: Map<string, Reach>): CompleteCircuit | undefined {
-  const members = new Map<string, VenueFixture>([[circuit.anchor, anchor]]);
-  const linking = new Set<number>();
-  const routes: { medium: FixtureMedium; ids: number[] }[] = [];
+interface Solving {
+  members: Map<string, VenueFixture>;
+  linking: Set<number>;
+  routes: { medium: FixtureMedium; ids: number[] }[];
+}
+
+// The links of a flowchart that go from a family already taken to one that is not, or the other way, one after the other: every family takes one Fixture that nothing else uses, reached through the links.
+function solveLinks(links: readonly EngineRoomLink[], solving: Solving, fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, used: ReadonlySet<number>, reaches: Map<string, Reach>): boolean {
+  const { members, linking, routes } = solving;
   const free = (fixture: VenueFixture): boolean => isSound(fixture) && !used.has(fixture.id) && ![...members.values()].includes(fixture);
-  const pending = [...circuit.links];
+  const pending = [...links];
   while (pending.length > 0) {
     const closing = pending.findIndex((link: EngineRoomLink) => members.has(link.from) && members.has(link.to));
     if (closing >= 0) {
       const [link] = pending.splice(closing, 1) as [EngineRoomLink];
-      if (!reachOf(reaches, members.get(link.from)!, link.medium, at).ends.includes(members.get(link.to)!)) return undefined;
+      if (!reachOf(reaches, members.get(link.from)!, link.medium, at).ends.includes(members.get(link.to)!)) return false;
       continue;
     }
     const index = pending.findIndex((link: EngineRoomLink) => members.has(link.from) !== members.has(link.to));
-    if (index < 0) return undefined;
+    if (index < 0) return false;
     const [link] = pending.splice(index, 1) as [EngineRoomLink];
     if (members.has(link.from)) {
       const reach = reachOf(reaches, members.get(link.from)!, link.medium, at);
       const target = reach.ends.find(end => familyOf(end) === link.to && free(end));
-      if (!target) return undefined;
+      if (!target) return false;
       members.set(link.to, target);
       const way = reach.crossed.get(target.id) ?? [];
       for (const crossed of way) linking.add(crossed.id);
@@ -116,13 +124,24 @@ function circuitAround(anchor: VenueFixture, circuit: EngineRoomCircuit, fixture
     }
     const target = members.get(link.to)!;
     const source = fixtures.find(candidate => familyOf(candidate) === link.from && free(candidate) && reachOf(reaches, candidate, link.medium, at).ends.includes(target));
-    if (!source) return undefined;
+    if (!source) return false;
     members.set(link.from, source);
     const way = reachOf(reaches, source, link.medium, at).crossed.get(target.id) ?? [];
     for (const crossed of way) linking.add(crossed.id);
     routes.push({ medium: link.medium, ids: [source.id, ...way.map(crossed => crossed.id), target.id] });
   }
-  return { anchor: anchor.id, members: new Map([...members].map(([family, fixture]) => [family, fixture.id])), linking, routes };
+  return true;
+}
+
+// One Circuit around an anchor, then, if the flowchart asks for them, the links that clean its smoke: the Circuit counts without them, and is cleaned only with them.
+function circuitAround(anchor: VenueFixture, circuit: EngineRoomCircuit, fixtures: readonly VenueFixture[], at: ReadonlyMap<string, VenueFixture>, used: ReadonlySet<number>, reaches: Map<string, Reach>): CompleteCircuit | undefined {
+  const solving: Solving = { members: new Map([[circuit.anchor, anchor]]), linking: new Set(), routes: [] };
+  if (!solveLinks(circuit.links, solving, fixtures, at, used, reaches)) return undefined;
+  const cleaning: Solving = { members: new Map(solving.members), linking: new Set(solving.linking), routes: [...solving.routes] };
+  const cleaned = circuit.cleaning !== undefined && solveLinks(circuit.cleaning, cleaning, fixtures, at, used, reaches);
+  const kept = cleaned ? cleaning : solving;
+  const diverted = cleaned ? (circuit.cleaning ?? []).map(link => kept.members.get(link.from)!.id) : [];
+  return { anchor: anchor.id, members: new Map([...kept.members].map(([family, fixture]) => [family, fixture.id])), linking: kept.linking, routes: kept.routes, cleaned, diverted };
 }
 
 const circuitsOf = (fixtures: readonly VenueFixture[], type: BuildingType): EngineRoomReport => {
@@ -161,7 +180,7 @@ export interface EngineRoomGains {
   circuits: number;
   // The share of the plant's Capacity that its complete Circuits add.
   generation: number;
-  // The share of the plant's pollution that its complete Circuits take away (a Coal Power plant).
+  // The share of the plant's pollution that its cleaned Circuits take away (a Coal Power plant with a Filter on its boiler).
   cleaner: number;
 }
 
@@ -176,13 +195,14 @@ const saturated = (total: number, cap: number, kneeShare: number): number => {
 export function engineRoomGainsOf(building: Pick<Building, 'type' | 'tier' | 'interior'>): EngineRoomGains {
   const balance = engineRoomBalanceOf(building.type);
   if (!balance) return NO_ENGINE_ROOM_GAINS;
-  const circuits = engineRoomReportOf(building).circuits.length;
-  if (circuits === 0) return NO_ENGINE_ROOM_GAINS;
-  const gainOf = (caps: readonly number[]): number => {
+  const complete = engineRoomReportOf(building).circuits;
+  if (complete.length === 0) return NO_ENGINE_ROOM_GAINS;
+  const cleaned = complete.filter(circuit => circuit.cleaned).length;
+  const gainOf = (caps: readonly number[], count: number): number => {
     const cap = valueByTier(caps, building.tier);
-    return saturated(circuits * cap * balance.circuitShare, cap, interiorBalance.bonusKnee);
+    return count === 0 ? 0 : saturated(count * cap * balance.circuitShare, cap, interiorBalance.bonusKnee);
   };
-  return { circuits, generation: gainOf(balance.generationCaps), cleaner: balance.pollutionCaps ? gainOf(balance.pollutionCaps) : 0 };
+  return { circuits: complete.length, generation: gainOf(balance.generationCaps, complete.length), cleaner: balance.pollutionCaps ? gainOf(balance.pollutionCaps, cleaned) : 0 };
 }
 
 const motions = new WeakMap<ReadonlySet<number>, ReadonlyMap<number, 'cw'>>();
@@ -224,4 +244,17 @@ export function engineRoomCoalPathsOf(building: Pick<Building, 'type' | 'interio
   }));
   coalPaths.set(report.used, paths);
   return paths;
+}
+
+const pictures = new WeakMap<ReadonlySet<number>, ReadonlyMap<number, 'cw'>>();
+
+// What the scene moves: the Fixtures that run, but a boiler whose smoke goes to a Filter no longer smokes by its own chimney.
+export function engineRoomPictureMotionOf(building: Pick<Building, 'type' | 'interior'>): ReadonlyMap<number, 'cw'> {
+  const report = engineRoomReportOf(building);
+  const known = pictures.get(report.used);
+  if (known) return known;
+  const diverted = new Set(report.circuits.flatMap(circuit => circuit.diverted));
+  const picture = new Map([...engineRoomMotionOf(building)].filter(([id]) => !diverted.has(id)));
+  pictures.set(report.used, picture);
+  return picture;
 }

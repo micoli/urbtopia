@@ -10,7 +10,7 @@ The **Coal power plant**, the **Hydro power plant**, the **Geothermal power plan
 
 ## Circuits
 
-An Engine room does not run on Drive or Flow. It runs on **Circuits**: chains of Fixtures joined by links, each link carrying one **Medium**, coal, water, steam or electricity. Every Fixture has ports on some of its sides, each of one Medium, taking it in, giving it out, or both (a pipe). A Medium goes from one Fixture to the next only through ports of the same Medium that face each other, an out port onto an in port. Two Media never share a tile.
+An Engine room does not run on Drive or Flow. It runs on **Circuits**: chains of Fixtures joined by links, each link carrying one **Medium**, coal, water, steam or electricity. Every Fixture has ports on some of its sides, each of one Medium, taking it in, giving it out, or both (a pipe). A Medium goes from one Fixture to the next only through ports of the same Medium that face each other, an out port onto an in port. Two Media never share a tile. The boiler also gives its **smoke**, through a port on its front, to the Filter.
 
 - **Coal**: a **Coal quay** against the back wall unloads coal onto a **Conveyor** that carries it to the **Steam boiler**. A **Water inlet** brings water to the boiler through **Water pipes**. The boiler gives steam, through **Steam pipes**, to the **Alternator**, which gives electricity, through **Cables**, to a **Power outlet** on the back wall.
 - **Hydro**: a **Water inlet** brings water, through Water pipes, to the **Water turbine**. The turbine gives the water back, through Water pipes, to a **Water outlet**, and gives electricity, through Cables, to a **Power outlet**.
@@ -24,10 +24,10 @@ A Circuit counts only when **every link of its flowchart is laid** and **no Fixt
 
 ## What it brings
 
-Each complete Circuit raises the **Capacity** of the plant, up to a cap that grows with the Tier of the plant. The first Circuit brings half the cap; each further Circuit brings less than the one before, and the cap is never reached. On the Coal plant, the Circuits also take away a share of its **pollution**, in the same way.
+Each complete Circuit raises the **Capacity** of the plant, up to a cap that grows with the Tier of the plant. The first Circuit brings half the cap; each further Circuit brings less than the one before, and the cap is never reached. On the Coal plant, a Circuit also takes away a share of its **pollution**, in the same way, but **only if a Filter** stands in front of its Steam boiler, its back against it: the Filter takes the smoke of the chimney, and the boiler no longer smokes by itself. Without a Filter the Circuit still raises the Capacity.
 
 The Fixtures of a complete Circuit run, and wear: a **Technician**, hired like those of the Factory interior, repairs them. The room draws nothing from the city's electricity and burns no coal of its own. The coal a Coal plant uses is still paid in Urbs for the electricity it delivers.
 
 ## Learn by doing
 
-Each plant has a guided demonstration: the Coal plant has two, a first Circuit and a Circuit with a misturned elbow to find and repair.
+Each plant has a guided demonstration: the Coal plant has three: a first Circuit, a filtered Circuit, and a Circuit with a misturned elbow to find and repair.

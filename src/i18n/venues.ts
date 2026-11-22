@@ -627,7 +627,7 @@ const texts: Record<Exclude<VenueMessageKey, `venue.fixture.${FixtureId}`>, read
   'factory.interior.onCircuit': ['On a complete Circuit: it adds its part of the bonus.', 'Sur un circuit complet : elle apporte sa part du bonus.'],
   'factory.interior.offCircuit': ['Not on a complete Circuit: lay every link of its flowchart, with no Fixture broken down.', 'Hors d\'un circuit complet : posez tous les liens de son schéma, sans équipement en panne.'],
   'factory.interior.generation': ['Capacity added to the plant', 'Capacité ajoutée à la centrale'],
-  'factory.interior.cleaner': ['Pollution taken away', 'Pollution retirée'],
+  'factory.interior.cleaner': ['Pollution taken away (with a Filter)', 'Pollution retirée (avec un filtre)'],
   'factory.interior.problem.tankFull': ['Its Tank already feeds three Cooling vats, Washers or Sprinklers: add a Tank, or take one off this one.', 'Son réservoir alimente déjà trois cuves réfrigérantes, laveuses ou arroseurs : ajoutez un réservoir, ou retirez-en un de celui-ci.'],
   'factory.interior.problem.overloaded': ['Its Motor drives too many Machines and Pumps, so it is stopped: add a Motor or take one off.', 'Son moteur entraîne trop de machines et de pompes, elle est donc arrêtée : ajoutez un moteur ou retirez-en une.'],
   'factory.interior.motorOverloaded': ['{count} stopped: the Motor cannot drive them.', '{count} à l’arrêt : le moteur ne peut pas les entraîner.'],

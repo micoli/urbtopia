@@ -6,7 +6,7 @@ const circuit = en('Lay the coal, water, steam and electricity links.', 'Poser l
 const labels = {
   quay: en('the Coal quay', 'le quai à charbon'), conveyor: en('a Coal conveyor', 'un tapis à charbon'), boiler: en('the Steam boiler', 'la chaudière à vapeur'), inlet: en('the Water inlet', 'l’arrivée d’eau'),
   pipe: en('a Water pipe', 'un tuyau d’eau'), elbow: en('a Water pipe elbow', 'un coude de tuyau d’eau'), steam: en('a Steam pipe', 'un tuyau de vapeur'), alternator: en('the Alternator', 'l’alternateur'),
-  cableElbow: en('a Cable elbow', 'un coude de câble'), cable: en('a Cable', 'un câble'), outlet: en('the Power outlet', 'la sortie d’électricité'),
+  filter: en('the Filter', 'le filtre'), cableElbow: en('a Cable elbow', 'un coude de câble'), cable: en('a Cable', 'un câble'), outlet: en('the Power outlet', 'la sortie d’électricité'),
 };
 
 // The Coal quay and the Water inlet stand against the back wall and feed the boiler, whose steam drives the Alternator; its Cable climbs back to the Power outlet on the same wall.
@@ -37,4 +37,12 @@ export const coalPlantAdvanced = engineRoomScenario({
   intro: { title: en('A circuit that counts for nothing', 'Un circuit qui ne compte pas'), objective: en('Find why the Circuit is not complete and fix it.', 'Trouver pourquoi le circuit n’est pas complet et le corriger.'),
     explanation: en('The Water pipe elbow will be turned the wrong way. You will lay the Circuit, see that it does not count, then turn the elbow.', 'Le coude du tuyau d’eau sera tourné à l’envers. Tu vas poser le circuit, constater qu’il ne compte pas, puis tourner le coude.'),
     summary: en('Diagnose and repair a Coal circuit with a misturned elbow.', 'Diagnostiquer et réparer un circuit à charbon dont un coude est mal tourné.') },
+});
+
+export const coalPlantIntermediate = engineRoomScenario({
+  type: 'coalPlant', name, level: 'intermediate', circuitDescription: circuit, completeAt: 'outlet',
+  pieces: [...pieces(), piece('filter', 'coalPlantFilter', 2, 3, 0, labels.filter, en('The Filter stands in front of the boiler, its back against it: the flue of the boiler goes into it instead of out of its own chimney. Only a Filter takes pollution away.', 'Le filtre se place devant la chaudière, son dos contre elle : le conduit de la chaudière entre dedans au lieu de sortir par sa propre cheminée. Seul un filtre retire de la pollution.'))],
+  intro: { title: en('A filtered Coal circuit', 'Un circuit à charbon filtré'), objective: en('Complete the Circuit, then add a Filter in front of the boiler.', 'Terminer le circuit, puis ajouter un filtre devant la chaudière.'),
+    explanation: en('A complete Circuit raises the Capacity of the plant, but it only takes pollution away if a Filter stands in front of its boiler and takes its smoke.', 'Un circuit complet augmente la capacité de la centrale, mais il ne retire de la pollution que si un filtre se tient devant sa chaudière et prend sa fumée.'),
+    summary: en('Build a Coal circuit and filter its boiler.', 'Construire un circuit à charbon et filtrer sa chaudière.') },
 });

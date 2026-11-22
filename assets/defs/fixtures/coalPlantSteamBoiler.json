@@ -30,6 +30,11 @@
       "side": "right",
       "medium": "steam",
       "direction": "out"
+    },
+    {
+      "side": "front",
+      "medium": "smoke",
+      "direction": "out"
     }
   ]
 }

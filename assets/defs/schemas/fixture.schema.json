@@ -1391,7 +1391,8 @@
                   "coal",
                   "water",
                   "steam",
-                  "electricity"
+                  "electricity",
+                  "smoke"
                 ]
               },
               "direction": {

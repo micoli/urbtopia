@@ -1,4 +1,4 @@
-import { avatarsOfBuilding, engineRoomCoalPathsOf, engineRoomMotionOf, fixtureTiles, gridSizeOf, hasEngineRoom, hasLineInterior, hasProductionInterior, hasServiceInterior, interiorBonusOfBuilding, interiorFixturesOf, interiorMotionOf, interiorOverloadedOf, interiorSizeOf, isBroken, isInteriorBuilding, isPackhouse, isVenue, linePathsOf, linkedExitsOf, parquetModelOf, type Building, type Coord, type InteriorAvatars, type LinePath, type VenueFixture, type VenueType } from '../core';
+import { avatarsOfBuilding, engineRoomCoalPathsOf, engineRoomPictureMotionOf, fixtureTiles, gridSizeOf, hasEngineRoom, hasLineInterior, hasProductionInterior, hasServiceInterior, interiorBonusOfBuilding, interiorFixturesOf, interiorMotionOf, interiorOverloadedOf, interiorSizeOf, isBroken, isInteriorBuilding, isPackhouse, isVenue, linePathsOf, linkedExitsOf, parquetModelOf, type Building, type Coord, type InteriorAvatars, type LinePath, type VenueFixture, type VenueType } from '../core';
 
 // The share of its light a room keeps when its breaker is off.
 const BREAKER_OFF_LIGHT = 0.3;
@@ -43,7 +43,7 @@ const interiorPlanOf = (building: Building): ScenePlan => {
     floorModel: parquet === undefined ? undefined : parquetModelOf(parquet),
     fixtures,
     line: { paths: running ? (hasEngineRoom(building) ? engineRoomCoalPathsOf(building) : hasLineInterior(building) ? linePathsOf(fixtures) : NO_PATHS) : NO_PATHS, pace },
-    motion: { motion: hasProductionInterior(building) && running ? (hasEngineRoom(building) ? engineRoomMotionOf(building) : interiorMotionOf(fixtures)) : NO_MOTION, pace },
+    motion: { motion: hasProductionInterior(building) && running ? (hasEngineRoom(building) ? engineRoomPictureMotionOf(building) : interiorMotionOf(fixtures)) : NO_MOTION, pace },
     avatars: hasServiceInterior(building) ? avatarsOfBuilding(building) : NO_AVATARS,
     trucks: isPackhouse(building) || building.type === 'recyclingPlant' ? linkedExitsOf(fixtures) : NO_EXITS,
     broken: brokenTilesOf(fixtures, hasProductionInterior(building) ? interiorOverloadedOf(fixtures) : NO_OVERLOAD),

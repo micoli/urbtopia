@@ -33,7 +33,7 @@ export const PRODUCTION_INTERIOR_KINDS = ['factory', 'packhouse', 'mill', 'baker
 export const ENGINE_ROOM_FIXTURE_CATEGORIES: readonly FixtureCategory[] = ['machines', 'line', 'walls'];
 
 // What a link of a Circuit of an Engine room carries.
-export const FIXTURE_MEDIA = ['coal', 'water', 'steam', 'electricity'] as const;
+export const FIXTURE_MEDIA = ['coal', 'water', 'steam', 'electricity', 'smoke'] as const;
 
 export type FixtureMedium = (typeof FIXTURE_MEDIA)[number];
 

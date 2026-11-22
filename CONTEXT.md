@@ -790,7 +790,7 @@ A clean Power plant that supplies the same Capacity around the clock whatever th
 _Avoid_: Heat pump, boiler, Coal Power plant
 
 **Engine room**:
-The Production interior of a Power plant (Coal, Hydro, Geothermal and Large geothermal; never the wind or solar plant), opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the plant's Tier, where the player places Fixtures. It is not a Venue. An empty Engine room leaves the plant exactly as it was; the floor only adds a bonus to the plant's Capacity (and, for a Coal Power plant, lowers its pollution), counted only for a complete Circuit, capped by the plant's Tier and never reached. Its Fixtures wear and a Technician repairs them; it draws nothing from the city's electricity Demand, spends no coal and no water, and has no power switch.
+The Production interior of a Power plant (Coal, Hydro, Geothermal and Large geothermal; never the wind or solar plant), opened from its side panel in the same Management view as a Venue: a 3D room whose grid grows with the plant's Tier, where the player places Fixtures. It is not a Venue. An empty Engine room leaves the plant exactly as it was; the floor only adds a bonus to the plant's Capacity (and, for a Coal Power plant with a Filter on its boiler, lowers its pollution), counted only for a complete Circuit, capped by the plant's Tier and never reached. Its Fixtures wear and a Technician repairs them; it draws nothing from the city's electricity Demand, spends no coal and no water, and has no power switch.
 _Avoid_: Power interior, machine hall, Factory interior
 
 **Circuit**:
@@ -798,7 +798,7 @@ The chain of Fixtures of an Engine room that goes from its wall ports to its Pow
 _Avoid_: Line (the Packet network of a Packhouse), Flow (the liquid network of a Factory interior)
 
 **Medium**:
-What a link of a Circuit carries: coal, water, steam or electricity. A Fixture declares ports, each on one side, of one Medium and in, out or both; two Fixtures are linked only through ports of the same Medium on the two sides of their edge, an out port facing an in port. Two Media never share a link.
+What a link of a Circuit carries: coal, water, steam, electricity or smoke (the boiler's smoke to its Filter). A Fixture declares ports, each on one side, of one Medium and in, out or both; two Fixtures are linked only through ports of the same Medium on the two sides of their edge, an out port facing an in port. Two Media never share a link.
 _Avoid_: Fluid, resource
 
 **Wall port**:
@@ -808,6 +808,10 @@ _Avoid_: Intake, Exit (those of the Packhouse and the Recycling interior)
 **Steam boiler**:
 The central Fixture of a Coal Circuit: it takes coal from a Conveyor, water from a Water pipe, and gives steam to a Steam pipe. Not the Boiler of the Factory interior, which only heats a circuit of Flow.
 _Avoid_: Boiler
+
+**Filter**:
+The Fixture of a Coal Engine room that stands in front of the Steam boiler, its back against it, and takes the smoke of its chimney. The Circuit counts, and raises the Capacity, without it; only a Circuit whose boiler has a Filter takes pollution away. A boiler with a Filter no longer smokes by its own chimney. A Filter serves one boiler.
+_Avoid_: Scrubber, chimney
 
 **Alternator**:
 The Fixture of a Coal Circuit that turns steam into electricity for a Cable that leads to a Power outlet.

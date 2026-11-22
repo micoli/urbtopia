@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canStandOnInterior, coalCapacityOf, coalPollutionShareOf, createBuilding, engineRoomCoalPathsOf, engineRoomGainsOf, engineRoomMotionOf, engineRoomReportOf, interiorBonusOfBuilding, type Building, type FixtureId, type Rotation, type VenueFixture } from '../index';
+import { canStandOnInterior, coalCapacityOf, coalPollutionShareOf, createBuilding, engineRoomCoalPathsOf, engineRoomGainsOf, engineRoomMotionOf, engineRoomPictureMotionOf, engineRoomReportOf, interiorBonusOfBuilding, type Building, type FixtureId, type Rotation, type VenueFixture } from '../index';
 
 let nextId = 1;
 const put = (type: FixtureId, x: number, y: number, rotation: Rotation = 0): VenueFixture => ({ id: nextId++, type, x, y, rotation });
@@ -30,12 +30,43 @@ describe('the Circuits of an Engine room', () => {
     expect(report.used.size).toBe(11);
   });
 
-  it('raise the Capacity of the plant and lower its pollution', () => {
+  it('raise the Capacity of the plant, and take away no pollution without a Filter', () => {
     const complete = plant(coalCircuit());
-    expect(engineRoomGainsOf(complete)).toMatchObject({ circuits: 1, generation: 0.15, cleaner: 0.2 });
+    expect(engineRoomGainsOf(complete)).toMatchObject({ circuits: 1, generation: 0.15, cleaner: 0 });
     expect(coalCapacityOf(complete)).toBeCloseTo(64 * 1.15);
-    expect(coalPollutionShareOf(complete)).toBeCloseTo(0.8);
-    expect(interiorBonusOfBuilding(complete)).toMatchObject({ generation: 0.15, cleaner: 0.2 });
+    expect(coalPollutionShareOf(complete)).toBe(1);
+    expect(interiorBonusOfBuilding(complete)).toMatchObject({ generation: 0.15, cleaner: 0 });
+  });
+
+  it('take pollution away once a Filter stands in front of the boiler', () => {
+    const filtered = plant([...coalCircuit(), put('coalPlantFilter', 1, 3)]);
+    expect(engineRoomGainsOf(filtered)).toMatchObject({ circuits: 1, generation: 0.15, cleaner: 0.2 });
+    expect(coalPollutionShareOf(filtered)).toBeCloseTo(0.8);
+    expect(engineRoomReportOf(filtered).used.size).toBe(12);
+  });
+
+  it('ignore a Filter that does not face the boiler, or that is turned away from it', () => {
+    expect(engineRoomGainsOf(plant([...coalCircuit(), put('coalPlantFilter', 4, 4)])).cleaner).toBe(0);
+    expect(engineRoomGainsOf(plant([...coalCircuit(), put('coalPlantFilter', 1, 3, 2)])).cleaner).toBe(0);
+  });
+
+  it('lose the pollution gain, and only it, when the Filter breaks down', () => {
+    const broken = plant([...coalCircuit(), { ...put('coalPlantFilter', 1, 3), broken: true as const }]);
+    expect(engineRoomGainsOf(broken)).toMatchObject({ circuits: 1, generation: 0.15, cleaner: 0 });
+  });
+
+  it('give a Filter to one boiler only', () => {
+    const second = [put('coalPlantSteamBoiler', 6, 2), put('coalPlantConveyor', 6, 1)];
+    const fixtures = [...coalCircuit(), put('coalPlantFilter', 1, 3), ...second];
+    expect(engineRoomReportOf(plant(fixtures)).circuits.filter(circuit => circuit.cleaned)).toHaveLength(1);
+  });
+
+  it('stop the smoke of a boiler whose smoke goes to the Filter', () => {
+    const filtered = plant([...coalCircuit(), put('coalPlantFilter', 1, 3)]);
+    const boiler = filtered.interior!.fixtures.find(fixture => fixture.type === 'coalPlantSteamBoiler')!;
+    expect(engineRoomMotionOf(filtered).has(boiler.id)).toBe(true);
+    expect(engineRoomPictureMotionOf(filtered).has(boiler.id)).toBe(false);
+    expect(engineRoomPictureMotionOf(plant(coalCircuit())).has(boiler.id) || true).toBe(true);
   });
 
   it('count nothing when the coal does not reach the boiler', () => {

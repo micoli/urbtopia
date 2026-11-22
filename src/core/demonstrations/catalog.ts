@@ -39,14 +39,14 @@ import { packhouseSimple } from './packhouse/packhouseSimple';
 import { workshopAdvanced } from './workshop/workshopAdvanced';
 import { workshopIntermediate } from './workshop/workshopIntermediate';
 import { workshopSimple } from './workshop/workshopSimple';
-import { coalPlantAdvanced, coalPlantSimple } from './engineRoom/coalPlant';
+import { coalPlantAdvanced, coalPlantIntermediate, coalPlantSimple } from './engineRoom/coalPlant';
 import { geothermalPlantSimple } from './engineRoom/geothermalPlant';
 import { hydroPlantSimple } from './engineRoom/hydroPlant';
 import type { Demonstration } from './scenario';
 import type { BuildingType } from '../engine/state';
 import { interiorFixtureKindOf } from '../interiors/interiorStaff';
 
-export const DEMONSTRATIONS: readonly Demonstration[] = [factorySimple, factoryIntermediate, factoryAdvanced, workshopSimple, workshopIntermediate, workshopAdvanced, packhouseSimple, packhouseIntermediate, packhouseAdvanced, bakerySimple, bakeryIntermediate, bakeryAdvanced, millSimple, millIntermediate, millAdvanced, storehouseSimple, storehouseIntermediate, storehouseAdvanced, textileMillSimple, textileMillIntermediate, textileMillAdvanced, recyclingPlantSimple, recyclingPlantIntermediate, recyclingPlantAdvanced, dairySimple, dairyIntermediate, dairyAdvanced, knitwearFactorySimple, knitwearFactoryIntermediate, knitwearFactoryAdvanced, livestockFarmSimple, livestockFarmIntermediate, livestockFarmAdvanced, farmSimple, farmIntermediate, farmAdvanced, farmExpert, livestockFarmExpert, bakeryExpert, millExpert, packhouseExpert, coalPlantSimple, coalPlantAdvanced, hydroPlantSimple, geothermalPlantSimple];
+export const DEMONSTRATIONS: readonly Demonstration[] = [factorySimple, factoryIntermediate, factoryAdvanced, workshopSimple, workshopIntermediate, workshopAdvanced, packhouseSimple, packhouseIntermediate, packhouseAdvanced, bakerySimple, bakeryIntermediate, bakeryAdvanced, millSimple, millIntermediate, millAdvanced, storehouseSimple, storehouseIntermediate, storehouseAdvanced, textileMillSimple, textileMillIntermediate, textileMillAdvanced, recyclingPlantSimple, recyclingPlantIntermediate, recyclingPlantAdvanced, dairySimple, dairyIntermediate, dairyAdvanced, knitwearFactorySimple, knitwearFactoryIntermediate, knitwearFactoryAdvanced, livestockFarmSimple, livestockFarmIntermediate, livestockFarmAdvanced, farmSimple, farmIntermediate, farmAdvanced, farmExpert, livestockFarmExpert, bakeryExpert, millExpert, packhouseExpert, coalPlantSimple, coalPlantIntermediate, coalPlantAdvanced, hydroPlantSimple, geothermalPlantSimple];
 // The building whose demonstrations a type plays: a Vault and a Material depot run the Storehouse interior.
 export const demonstrationTypeOf = (type: BuildingType): BuildingType => interiorFixtureKindOf(type);
 

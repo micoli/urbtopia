@@ -30,9 +30,12 @@ interface EngineRoomScenarioOptions {
   pieces: readonly EnginePiece[];
   // Advanced: the last piece placed is turned the wrong way, and a last step turns it back.
   faulty?: { fixtureId: number; x: number; y: number; rotation: Rotation; label: DemonstrationText };
+  // The piece that completes the Circuit, when it is not the last one (the Filter comes after it); the last piece must then clean the smoke.
+  completeAt?: string;
 }
 
-export const engineRoomScenario = ({ type, name, level, intro, circuitDescription, pieces, faulty }: EngineRoomScenarioOptions): Demonstration => {
+export const engineRoomScenario = ({ type, name, level, intro, circuitDescription, pieces, faulty, completeAt }: EngineRoomScenarioOptions): Demonstration => {
+  const completeIndex = completeAt === undefined ? pieces.length - 1 : pieces.findIndex(item => item.id === completeAt);
   const steps: DemonstrationStep[] = [{ id: 'goal', title: intro.title, objective: intro.objective,
     action: en('The room you see is an empty Tier 1 Engine room. You will fit it out piece by piece.', 'La salle que tu vois est une salle des machines de niveau 1, vide. Tu vas l’équiper pièce par pièce.'),
     explanation: intro.explanation, result: en('The room is empty.', 'La salle est vide.'), check: checkEngineRoom(0, 0) }];
@@ -40,9 +43,11 @@ export const engineRoomScenario = ({ type, name, level, intro, circuitDescriptio
     const last = index === pieces.length - 1;
     steps.push({ id: item.id, title: placeTitle(pieces.map(other => other.label), index), objective: circuitDescription,
       action: en(`Place ${item.label[0]} at the highlighted cell, its front toward ${FACING[item.rotation]![0]}.`, `Place ${item.label[1]} sur la case indiquée, son avant tourné vers ${FACING[item.rotation]![1]}.`), explanation: item.description,
-      result: last && !faulty ? en('The Circuit is complete: the plant gains Capacity.', 'Le circuit est complet : la centrale gagne en capacité.') : en('Continue laying the Circuit.', 'Continue à poser le circuit.'),
+      result: last && completeAt !== undefined ? en('The Filter cleans the smoke: the plant loses pollution.', 'Le filtre nettoie la fumée : la centrale perd de la pollution.') : last && !faulty ? en('The Circuit is complete: the plant gains Capacity.', 'Le circuit est complet : la centrale gagne en capacité.') : index === completeIndex && completeAt !== undefined ? en('The Circuit is complete: the plant gains Capacity.', 'Le circuit est complet : la centrale gagne en capacité.') : en('Continue laying the Circuit.', 'Continue à poser le circuit.'),
       commands: [{ type: 'PlaceInteriorFixture', buildingId: BUILDING_ID, fixture: item.fixture, x: item.x, y: item.y, rotation: item.rotation }], highlight: [{ x: item.x, y: item.y }],
-      check: checkEngineRoom(index + 1, last && !faulty ? 1 : 0),
+      check: last && completeAt !== undefined
+        ? state => { checkEngineRoom(index + 1, 1)(state); if (engineRoomGainsOf(roomOf(state)).cleaner <= 0) throw new Error('expected a Filter that takes pollution away'); }
+        : checkEngineRoom(index + 1, !faulty && index >= completeIndex ? 1 : 0),
     });
   }
   if (faulty) steps.push({ id: 'fix-turn', title: en(`Turn ${faulty.label[0]}`, `Tourner ${faulty.label[1]}`), objective: en('Reconnect the Circuit.', 'Reconnecter le circuit.'),

@@ -971,6 +971,7 @@ export type ModelId =
   | 'engine-room-coal-conveyor-straight'
   | 'engine-room-coal-quay'
   | 'engine-room-condenser'
+  | 'engine-room-filter'
   | 'engine-room-injection-well'
   | 'engine-room-power-outlet'
   | 'engine-room-steam-boiler'

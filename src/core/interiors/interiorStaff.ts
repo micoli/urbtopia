@@ -62,6 +62,8 @@ export interface EngineRoomLink {
 export interface EngineRoomCircuit {
   anchor: string;
   links: EngineRoomLink[];
+  // The links that only the pollution gain asks for: the Circuit counts without them, but takes pollution away only once they are laid too (the Filter of the Coal plant).
+  cleaning?: EngineRoomLink[];
 }
 
 export interface EngineRoomBalance {

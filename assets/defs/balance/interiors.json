@@ -111,6 +111,13 @@
                   "to": "powerOutlet",
                   "medium": "electricity"
                 }
+              ],
+              "cleaning": [
+                {
+                  "from": "steamBoiler",
+                  "to": "filter",
+                  "medium": "smoke"
+                }
               ]
             }
           ]

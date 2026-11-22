@@ -57,6 +57,7 @@ export type FixtureId =
   | 'coalPlantCoalQuay'
   | 'coalPlantConveyor'
   | 'coalPlantDoorway'
+  | 'coalPlantFilter'
   | 'coalPlantPowerOutlet'
   | 'coalPlantSteamBoiler'
   | 'coalPlantSteamPipe'
