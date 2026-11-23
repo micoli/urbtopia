@@ -1,0 +1,147 @@
+import { describe, expect, it } from 'vitest';
+import { dispatch, newGame, type Command, type GameState } from '../index';
+import { ACHIEVEMENTS, CATEGORY_NAMES } from './achievements';
+import { latchAchievements } from './latch';
+import { categoryProgress, visibleCategories } from './progress';
+
+const NOW = 1_700_000_000_000;
+const ALL_FLAGS = new Set(['clubs', 'architect', 'advisor', 'cloud']);
+const city = () => newGame({ seed: 'amber-fox-4821', now: NOW });
+
+function applied(state: GameState, command: Command) {
+  const result = dispatch(state, command, NOW);
+  if (!result.ok) throw new Error(result.error.key);
+  return result;
+}
+
+describe('Achievements', () => {
+  it('has unique ids and a name for each category', () => {
+    expect(new Set(ACHIEVEMENTS.map(({ id }) => id)).size).toBe(ACHIEVEMENTS.length);
+    for (const { category } of ACHIEVEMENTS) expect(CATEGORY_NAMES[category]).toBeDefined();
+  });
+
+  it('latches an Achievement when its Command is applied, and announces it', () => {
+    const result = applied(city(), { type: 'BuildPedestrianWay', from: { x: 55, y: 60 }, to: { x: 58, y: 60 } });
+    expect(result.state.achievements).toContain('transport.pedestrianWay');
+    expect(result.events).toContainEqual({ type: 'AchievementUnlocked', id: 'transport.pedestrianWay' });
+  });
+
+  it('does not earn an Achievement the City already had', () => {
+    const first = applied(city(), { type: 'BuildPedestrianWay', from: { x: 55, y: 60 }, to: { x: 58, y: 60 } });
+    const second = applied(first.state, { type: 'BuildPedestrianWay', from: { x: 55, y: 61 }, to: { x: 58, y: 61 } });
+    expect(second.events.filter((event) => event.type === 'AchievementUnlocked')).toEqual([]);
+  });
+
+  it('never takes an Achievement back when the player demolishes what earned it', () => {
+    const built = applied(city(), { type: 'BuildPedestrianWay', from: { x: 55, y: 60 }, to: { x: 58, y: 60 } });
+    const razed = applied(built.state, { type: 'DemolishPedestrianWayPath', from: { x: 55, y: 60 }, to: { x: 58, y: 60 } });
+    expect(razed.state.pedestrianWays ?? []).toHaveLength(0);
+    expect(razed.state.achievements).toContain('transport.pedestrianWay');
+  });
+
+  it('earns the Replan Achievement when the Replan is finished, and nothing else it moved', () => {
+    const before = { ...city(), replan: { stash: { buildings: [] } } } as GameState;
+    const after = { ...city(), busLines: [{ id: 1, stops: [] }] };
+    expect(latchAchievements(before, after, [], { type: 'FinishReplan' }).unlocked).toEqual(['management.replan']);
+    expect(latchAchievements(before, after, [], { type: 'CancelReplan' }).unlocked).toEqual([]);
+  });
+
+  it('earns nothing during a Replan', () => {
+    const before = city();
+    const after = { ...before, replan: { stash: { buildings: [] } }, busLines: [{ id: 99, stops: [] }] } as GameState;
+    expect(latchAchievements(before, after, []).unlocked).toEqual([]);
+  });
+
+  it('counts a transit line only in its own mode', () => {
+    const before = city();
+    const after = { ...before, transitLines: [{ id: 1, stops: [], mode: 'rail' as const, peakHeadway: 1, offPeakHeadway: 1 }] };
+    expect(latchAchievements(before, after, []).unlocked).toEqual(['transport.railwayLine']);
+  });
+});
+
+describe('category progress', () => {
+  it('counts the acquired Achievements of a category', () => {
+    const state = { ...city(), achievements: ['transport.firstRoad', 'transport.bridge'] };
+    expect(categoryProgress(state, 'transport', ALL_FLAGS)).toMatchObject({ acquired: 2, total: 7, complete: false });
+  });
+
+  it('is complete when every Achievement of the category is acquired', () => {
+    const state = { ...city(), achievements: ACHIEVEMENTS.map(({ id }) => id) };
+    expect(categoryProgress(state, 'transport', ALL_FLAGS).complete).toBe(true);
+  });
+
+  it('shows the categories that have Achievements', () => {
+    expect(visibleCategories(city(), ALL_FLAGS).map(({ category }) => category)).toEqual(['production', 'housing', 'transport', 'interiors', 'energy', 'architect', 'leisure', 'environment', 'social', 'management']);
+  });
+});
+
+describe('Difficulty', () => {
+  const politics = { ...ACHIEVEMENTS[0]!, fromDifficulty: 'easy' as const };
+
+  it('rules out an Achievement the Difficulty does not have', async () => {
+    const { isPossible } = await import('./availability');
+    expect(isPossible({ ...city(), difficulty: 'cozy' }, politics)).toBe(false);
+    expect(isPossible({ ...city(), difficulty: 'easy' }, politics)).toBe(true);
+    expect(isPossible({ ...city(), difficulty: 'hard' }, politics)).toBe(true);
+  });
+});
+
+describe('Politics category', () => {
+  it('is hidden under Cozy and cannot be completed there, and shown from Easy', () => {
+    const cozy = { ...city(), difficulty: 'cozy' as const, achievements: ACHIEVEMENTS.filter(({ category }) => category === 'politics').map(({ id }) => id) };
+    expect(visibleCategories(cozy, ALL_FLAGS).map(({ category }) => category)).not.toContain('politics');
+    expect(categoryProgress(cozy, 'politics', ALL_FLAGS).complete).toBe(false);
+    expect(visibleCategories({ ...cozy, difficulty: 'easy' }, ALL_FLAGS).map(({ category }) => category)).toContain('politics');
+    expect(categoryProgress({ ...cozy, difficulty: 'easy' }, 'politics', ALL_FLAGS).complete).toBe(true);
+  });
+
+  it('latches an adopted Ordinance and the Grants claimed, from Easy', () => {
+    const easy = { ...city(), difficulty: 'easy' as const };
+    const adopted = latchAchievements(easy, easy, [{ type: 'OrdinanceAdopted', id: 'greenBelt' }]);
+    expect(adopted.unlocked).toEqual(['politics.ordinance']);
+    expect(latchAchievements(easy, easy, [], { type: 'ClaimGrants' }).unlocked).toEqual(['politics.grant']);
+  });
+
+  it('earns no Politics Achievement under Cozy', () => {
+    expect(latchAchievements(city(), city(), [{ type: 'OrdinanceAdopted', id: 'greenBelt' }]).unlocked).toEqual([]);
+  });
+});
+
+describe('beta features', () => {
+  const noClubs = new Set(['architect', 'advisor']);
+
+  it('leaves an Achievement of a feature the player did not switch on out of its category', () => {
+    const without = categoryProgress(city(), 'leisure', noClubs);
+    const withClubs = categoryProgress(city(), 'leisure', ALL_FLAGS);
+    expect(withClubs.total).toBe(without.total + 1);
+  });
+
+  it('completes a category without its beta Achievements', () => {
+    const ids = ACHIEVEMENTS.filter(({ category, flag }) => category === 'leisure' && flag !== 'clubs').map(({ id }) => id);
+    expect(categoryProgress({ ...city(), achievements: ids }, 'leisure', noClubs).complete).toBe(true);
+    expect(categoryProgress({ ...city(), achievements: ids }, 'leisure', ALL_FLAGS).complete).toBe(false);
+  });
+
+  it('still latches a beta Achievement, since only the gateway gates the feature', () => {
+    expect(latchAchievements(city(), city(), [], { type: 'FoundClub', buildingId: 1 } as never).unlocked).toEqual(['leisure.club']);
+  });
+});
+
+describe('the Cloud', () => {
+  it('leaves the Achievements that need it out of a category when the build has none', () => {
+    const online = categoryProgress(city(), 'social', ALL_FLAGS);
+    const offline = categoryProgress(city(), 'social', new Set(['clubs', 'architect', 'advisor']));
+    expect(offline.total).toBeLessThan(online.total);
+    expect(offline.total).toBe(1);
+  });
+});
+
+describe('the Codex links', () => {
+  it('names the building types an Achievement is about, and finds the Achievements about a building', async () => {
+    const { featureTypesOf, achievementsAbout } = await import('./achievements');
+    const hydro = ACHIEVEMENTS.find(({ id }) => id === 'energy.cleanPower')!;
+    expect(featureTypesOf(hydro)).toEqual(['hydroPlant', 'geothermalPlant', 'largeGeothermalPlant']);
+    expect(achievementsAbout('library').map(({ id }) => id)).toEqual(['housing.library']);
+    expect(achievementsAbout('home')).toEqual([]);
+  });
+});

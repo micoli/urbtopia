@@ -30,6 +30,7 @@ import { natureMessages } from './nature';
 import { challengeMessages } from './challenges';
 import { solidarityMessages } from './solidarity';
 import { politicsMessages } from './politics';
+import { achievementMessages } from './achievements';
 import { politicsCodexMessages } from './politicsCodex';
 import { CATALOG, localize } from './catalog';
 import type { MessageKey } from './messages';
@@ -38,6 +39,7 @@ export const FR: Record<MessageKey, string> = {
   ...localize(CATALOG, 'fr'),
   ...solidarityMessages('fr'),
   ...politicsMessages('fr'),
+  ...achievementMessages('fr'),
   ...politicsCodexMessages('fr'),
   ...natureMessages('fr'),
   ...challengeMessages('fr'),

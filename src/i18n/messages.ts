@@ -30,6 +30,7 @@ import { natureMessages } from './nature';
 import { challengeMessages } from './challenges';
 import { solidarityMessages } from './solidarity';
 import { politicsMessages } from './politics';
+import { achievementMessages } from './achievements';
 import { politicsCodexMessages } from './politicsCodex';
 import { CATALOG, localize } from './catalog';
 
@@ -37,6 +38,7 @@ export const MESSAGES = {
   ...localize(CATALOG, 'en'),
   ...solidarityMessages('en'),
   ...politicsMessages('en'),
+  ...achievementMessages('en'),
   ...politicsCodexMessages('en'),
   ...natureMessages('en'),
   ...challengeMessages('en'),

@@ -1,0 +1,119 @@
+import { readFileSync } from 'node:fs';
+import { expect, test, type Page } from '@playwright/test';
+
+async function openAchievementsTab(page: Page) {
+  await page.evaluate(async () => {
+    const { uiStore } = await import('../src/store/uiStore.ts');
+    uiStore.getState().toggleStats();
+  });
+  const window = page.getByRole('dialog', { name: 'Gestion de la ville' });
+  await window.getByRole('tab', { name: 'Succès' }).click();
+  return window;
+}
+
+test.describe('achievements', () => {
+  test.use({ viewport: { width: 1280, height: 900 } });
+
+  test('building a Pedestrian way earns an Achievement, shown in the window', async ({ page }, testInfo) => {
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      gameStore.getState().send({ type: 'BuildPedestrianWay', from: { x: 55, y: 60 }, to: { x: 58, y: 60 } });
+    });
+
+    await expect(page.getByRole('status')).toContainText('Succès : À pied');
+
+    const window = await openAchievementsTab(page);
+    await expect(window).toBeVisible();
+    await expect(window).toContainText('Transports');
+    await expect(window).toContainText('1 sur 7');
+    await expect(window.locator('[data-done="true"]')).toContainText('À pied');
+    await page.screenshot({ path: testInfo.outputPath('achievements-window.png') });
+  });
+
+  test('an old save gets the Achievements its City proves, with one summary toast', async ({ page }) => {
+    const oldSave = readFileSync(new URL('../src/persistence/fixtures/save-v21.json', import.meta.url), 'utf8');
+    await page.addInitScript((save) => {
+      localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' }));
+      const envelope = JSON.parse(save);
+      envelope.savedAt = Date.now();
+      envelope.state.lastSeen = Date.now();
+      localStorage.setItem('urbtopia-save', JSON.stringify(envelope));
+    }, oldSave);
+    await page.goto('/?e2e');
+    await expect(page.getByRole('status')).toContainText('3 succès reconnus dans votre City', { timeout: 30_000 });
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+
+    const window = await openAchievementsTab(page);
+    await expect(window).toContainText('1 sur 7');
+    await expect(window.locator('[data-done="true"]')).toHaveCount(3);
+    await expect(window).toContainText('Première route');
+  });
+
+  test('opening an interior earns an Achievement of the Interiors category', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      const { openInterior } = await import('../src/store/openInterior.ts');
+      const factory = gameStore.getState().state.buildings.find((building) => building.type === 'factory')!;
+      openInterior(factory);
+    });
+    await expect(page.getByRole('status')).toContainText('Succès : Derrière la porte');
+
+    const acquired = await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      return gameStore.getState().state.achievements;
+    });
+    expect(acquired).toContain('interiors.open');
+  });
+
+  test('opening the Land value Layer earns an Achievement of the Environment category', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+
+    await page.evaluate(async () => {
+      const { uiStore } = await import('../src/store/uiStore.ts');
+      uiStore.getState().enterAnalytics('data.landValue');
+    });
+    await expect(page.getByRole('status')).toContainText('Succès : Valeur du terrain');
+  });
+
+  test('the Politics category shows from Easy and is hidden under Cozy', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+
+    const window = await openAchievementsTab(page);
+    await expect(window).toContainText('Architect');
+    await expect(window.getByRole('heading', { name: 'Politique' })).toHaveCount(0);
+
+    await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      gameStore.getState().replaceState({ ...gameStore.getState().state, difficulty: 'easy' });
+    });
+    await expect(window.getByRole('heading', { name: 'Politique' })).toHaveCount(1);
+  });
+
+  test('opening the Codex, the Analytics view and skipping time each earn an Achievement of City management', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('urbtopia-prefs', JSON.stringify({ language: 'fr', layout: 'C' })));
+    await page.goto('/?e2e');
+    await expect(page.locator('#splash')).toHaveCount(0, { timeout: 30_000 });
+
+    const acquired = await page.evaluate(async () => {
+      const { gameStore } = await import('../src/store/gameStore.ts');
+      const { uiStore } = await import('../src/store/uiStore.ts');
+      uiStore.getState().openCodex();
+      uiStore.getState().enterAnalytics('movement.flows');
+      gameStore.getState().send({ type: 'SkipTime', hours: 1 });
+      return gameStore.getState().state.achievements;
+    });
+    expect(acquired).toEqual(expect.arrayContaining(['management.codex', 'management.analytics', 'management.timeSkip']));
+  });
+});

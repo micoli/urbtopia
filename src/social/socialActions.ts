@@ -15,6 +15,8 @@ export function createSocialActions(
   currentConversation: () => ConversationState | null = () => null,
   trades: TradeCoordinator | null = null,
   currentOffers: () => TradeOffer[] = () => [],
+  // Told what the player did that an Achievement may name: a Handle chosen, a Friend request or a Trade offer sent.
+  onDone: (signal: 'handleSet' | 'friendRequestSent' | 'tradeOfferCreated') => void = () => {},
 ): SocialActions {
   const refresh = async () => {
     target.setStatus('loading');
@@ -55,6 +57,7 @@ export function createSocialActions(
       return target.setHandleForm({ kind: 'error', error: failure.kind, retryAfterSeconds: failure.retryAfterSeconds });
     }
     target.setHandleForm({ kind: 'idle' });
+    onDone('handleSet');
     await refresh();
   };
 
@@ -90,6 +93,7 @@ export function createSocialActions(
       return target.setSearch({ kind: 'error', error: failure.kind, retryAfterSeconds: failure.retryAfterSeconds });
     }
     target.setSearch({ kind: 'sent' });
+    onDone('friendRequestSent');
     await refresh();
   };
 
@@ -161,11 +165,12 @@ export function createSocialActions(
 
   const unavailable: TradeOutcome = { ok: false, failure: { kind: 'read-only' }, pending: false };
 
-  const runTrade = async (step: () => Promise<TradeOutcome>): Promise<TradeOutcome> => {
+  const runTrade = async (step: () => Promise<TradeOutcome>, created = false): Promise<TradeOutcome> => {
     if (!trades) return unavailable;
     target.setTrade({ busy: true, failure: null });
     const outcome = await step();
     target.setTrade({ busy: false, failure: outcome.ok ? null : outcome.failure });
+    if (outcome.ok && created) onDone('tradeOfferCreated');
     await poll();
     return outcome;
   };
@@ -175,7 +180,7 @@ export function createSocialActions(
   };
 
   return {
-    createTradeOffer: (to: string, lot: TradeLine[], price: number) => runTrade(() => trades!.createOffer(to, lot, price)),
+    createTradeOffer: (to: string, lot: TradeLine[], price: number) => runTrade(() => trades!.createOffer(to, lot, price), true),
     acceptTradeOffer: (offer: TradeOffer) => runTrade(() => trades!.acceptOffer(offer)),
     declineTradeOffer: (offerId: string) => runTrade(() => trades!.declineOffer(offerId)),
     reconcileTrades,

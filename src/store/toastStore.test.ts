@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
-import { toastKeyForEvents } from './toastStore';
+import { afterEach, describe, expect, it } from 'vitest';
+import { newGame, type GameEvent } from '../core';
+import { announceEvents, announceMedal, toastKeyForEvents, toastStore } from './toastStore';
 
 describe('toastKeyForEvents', () => {
   it('tells the player when offline time was forfeited, before anything else', () => {
@@ -38,5 +39,28 @@ describe('toastKeyForEvents', () => {
   it('stays silent for events that need no toast', () => {
     expect(toastKeyForEvents([{ type: 'BuildingPlaced', id: 1 }])).toBeNull();
     expect(toastKeyForEvents([])).toBeNull();
+  });
+});
+
+describe('Achievement toasts', () => {
+  afterEach(() => toastStore.getState().dismiss());
+  const unlocked = (id: string): GameEvent => ({ type: 'AchievementUnlocked', id });
+  const state = newGame({ seed: 'amber-fox-4821', now: 1_700_000_000_000 });
+
+  it('names the Achievement just earned, with a trophy', () => {
+    announceEvents([unlocked('transport.bridge')], state);
+    expect(toastStore.getState().text).toBe('Achievement: Bridge builder');
+    expect(toastStore.getState().icon).toBe('trophy');
+  });
+
+  it('groups several Achievements earned together into one toast', () => {
+    announceEvents([unlocked('transport.bridge'), unlocked('transport.busLine')], state);
+    expect(toastStore.getState().text).toBe('2 Achievements unlocked');
+  });
+
+  it('shows the Medal of a category with its own Icon', () => {
+    announceMedal('transport');
+    expect(toastStore.getState().text).toBe('Medal earned: Transport');
+    expect(toastStore.getState().icon).toBe('medal');
   });
 });

@@ -1,3 +1,4 @@
+import { sendAchievementSignal } from '../store/achievementSignal';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { prefsStore } from '../i18n/prefsStore';
 import { gameStore } from '../store/gameStore';
@@ -24,6 +25,7 @@ export function useAdvisorChat() {
     const controller = new AbortController();
     current.current = controller;
     questionHistoryStore.getState().record(question);
+    sendAchievementSignal('advisorAsked');
     const state = gameStore.getState().state;
     const summary = buildAdvisorSummary(state, advisorCauses(state));
     const { language, advisorContextLevel } = prefsStore.getState();

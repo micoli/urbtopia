@@ -1,3 +1,4 @@
+import { sendAchievementSignal } from '../../store/achievementSignal';
 import { advance } from '../../core';
 import { isBackOfficeSessionRequested } from '../../backOffice/handoff';
 import { showcasePublishHandle } from '../../showcase/publishHandle';
@@ -49,7 +50,10 @@ export function installCloudSync(): () => void {
       now: Date.now,
       canPush: () => !readOnlyStore.getState().readOnly,
       keepLocal: isKeepLocalRequested(window.location.search),
-      onPushed: (envelope) => showcasePublishHandle.current(envelope),
+      onPushed: (envelope) => {
+        showcasePublishHandle.current(envelope);
+        sendAchievementSignal('cloudSaved');
+      },
       onStatus: (status) => cloudStore.getState().setStatus(status),
       onAccount: (account) => {
         knownUserId = account?.userId ?? null;

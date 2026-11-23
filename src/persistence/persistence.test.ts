@@ -27,6 +27,16 @@ describe('validateGameState', () => {
     expect(validateGameState({ ...state, difficulty })).toBeNull();
   });
 
+  it('keeps the Achievements of a City across a round trip, including an id this game does not know', () => {
+    const city = { ...state, achievements: ['transport.bridge', 'from.a.newer.game'] };
+    const loaded = parseEnvelope(serializeEnvelope(city, T0));
+    expect(loaded.ok && loaded.state.achievements).toEqual(['transport.bridge', 'from.a.newer.game']);
+  });
+
+  it.each([['a number', [1]], ['a duplicate', ['a', 'a']], ['not a list', 'a']])('rejects Achievements that are %s', (_label, achievements) => {
+    expect(validateGameState({ ...state, achievements })).toBeNull();
+  });
+
   it('loads a city saved before Difficulty existed as Cozy, unchanged', () => {
     const loaded = parseEnvelope(JSON.stringify(fixtureV3));
     if (!loaded.ok) throw new Error(loaded.reason);
@@ -202,7 +212,7 @@ describe('SaveSession', () => {
 
   it('loads what it saved', () => {
     session.save(state, T0);
-    expect(session.load()).toEqual({ kind: 'loaded', state, savedAt: T0, prefs: {} });
+    expect(session.load()).toEqual({ kind: 'loaded', state, savedAt: T0, prefs: {}, seededAchievements: 0 });
   });
 
   it('loads the preferences it saved, whatever their keys and values', () => {

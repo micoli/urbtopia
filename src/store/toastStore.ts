@@ -1,6 +1,7 @@
 import { createStore } from 'zustand/vanilla';
 import type { GameEvent, GameState, ItemId } from '../core';
 import type { MessageKey } from '../i18n/messages';
+import type { IconName } from '../ui/common/iconRegistry';
 import { t } from '../i18n/t';
 
 export interface ToastStore {
@@ -10,8 +11,10 @@ export interface ToastStore {
   target: number | null;
   // The Good a toast shows as an icon after its text.
   item: ItemId | null;
+  // The Icon a text toast opens with.
+  icon: IconName | null;
   show: (key: MessageKey, item?: ItemId) => void;
-  showText: (text: string, target?: number) => void;
+  showText: (text: string, target?: number, icon?: IconName) => void;
   dismiss: () => void;
 }
 
@@ -20,9 +23,10 @@ export const toastStore = createStore<ToastStore>((set) => ({
   text: null,
   target: null,
   item: null,
-  show: (key, item) => set({ toast: key, text: null, target: null, item: item ?? null }),
-  showText: (text, target) => set({ toast: null, text, target: target ?? null, item: null }),
-  dismiss: () => set({ toast: null, text: null, target: null, item: null }),
+  icon: null,
+  show: (key, item) => set({ toast: key, text: null, target: null, item: item ?? null, icon: null }),
+  showText: (text, target, icon) => set({ toast: null, text, target: target ?? null, item: null, icon: icon ?? null }),
+  dismiss: () => set({ toast: null, text: null, target: null, item: null, icon: null }),
 }));
 
 export function toastKeyForEvents(events: GameEvent[]): MessageKey | null {
@@ -63,8 +67,28 @@ function producedItem(events: readonly GameEvent[]): ItemId | undefined {
   return event?.type === 'ProductionCompleted' ? event.item : undefined;
 }
 
+export function achievementToast(ids: readonly string[]): string {
+  const [first] = ids;
+  if (ids.length === 1 && first) return t('achievements.unlocked').replace('{name}', t(`achievement.${first}.name` as MessageKey));
+  return t('achievements.unlockedMany').replace('{count}', String(ids.length));
+}
+
+export function announceSeededAchievements(count: number): void {
+  toastStore.getState().showText(t('achievements.seeded').replace('{count}', String(count)), undefined, 'trophy');
+}
+
+export function announceCategoryComplete(category: string): void {
+  toastStore.getState().showText(t('achievements.categoryComplete').replace('{name}', t(`achievementCategory.${category}` as MessageKey)), undefined, 'trophy');
+}
+
+export function announceMedal(category: string): void {
+  toastStore.getState().showText(t('achievements.medal').replace('{name}', t(`achievementCategory.${category}` as MessageKey)), undefined, 'medal');
+}
+
 // Shows the toast of a batch of events; a Gathering's names its building, which the player can jump to.
 export function announceEvents(events: readonly GameEvent[], state: GameState): void {
+  const unlocked = events.flatMap((event) => (event.type === 'AchievementUnlocked' ? [event.id] : []));
+  if (unlocked.length > 0) return toastStore.getState().showText(achievementToast(unlocked), undefined, 'trophy');
   const key = toastKeyForEvents(events as GameEvent[]);
   if (!key) return;
   const gathering = GATHERING_TOASTS.includes(key) ? gatheringToast(events, state) : null;

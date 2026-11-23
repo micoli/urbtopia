@@ -4,12 +4,14 @@ import { dialogStore } from '../store/dialogStore';
 import { catchUpInChunks } from '../store/catchUpInChunks';
 import { bootResult, gameStore } from '../store/gameStore';
 import { readOnlyStore } from '../store/readOnlyStore';
+import { announceSeededAchievements } from '../store/toastStore';
 import { measureSave, recordLoad, recordSaveFailure } from '../monitoring/gameMetrics';
 import { createAutosave } from './autosave';
 import { saveNowHandle } from './saveNow';
 import { installBackOffice } from '../backOffice/installBackOffice';
 import { installChallenges } from '../challenges/installChallenges';
 import { installSolidarity } from '../solidarity/installSolidarity';
+import { installAchievementMedals } from '../achievements/installAchievementMedals';
 import { installShowcase } from '../showcase/installShowcase';
 import { installShipments } from '../shipments/installShipments';
 import { installSocial } from '../social/installSocial';
@@ -43,6 +45,7 @@ export function installPersistence(): () => void {
   }
 
   if (bootResult.kind === 'loaded') adoptSavedPrefs(bootResult.prefs);
+  if (bootResult.kind === 'loaded' && bootResult.seededAchievements > 0) announceSeededAchievements(bootResult.seededAchievements);
   nameOpenCity(rawSaveStore, gameStore.getState().state.seed);
   recordLoad(bootResult.kind, bootResult.kind === 'failed' ? bootResult.reason : undefined);
 
@@ -103,6 +106,7 @@ export function installPersistence(): () => void {
   const disposeShowcase = installShowcase();
   const disposeChallenges = installChallenges();
   const disposeSolidarity = installSolidarity();
+  const disposeAchievementMedals = installAchievementMedals();
   const disposeShipments = installShipments();
 
   return () => {
@@ -113,6 +117,7 @@ export function installPersistence(): () => void {
     disposeShowcase();
     disposeChallenges();
     disposeSolidarity();
+    disposeAchievementMedals();
     disposeShipments();
     unsubscribe();
     unsubscribePrefs();

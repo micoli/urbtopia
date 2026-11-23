@@ -29,4 +29,5 @@ export type GameEvent =
   | { readonly type: 'OrdinanceAdopted'; readonly id: string }
   | { readonly type: 'OrdinanceRejected'; readonly id: string }
   | { readonly type: 'OrdinanceRepealed'; readonly id: string }
+  | { readonly type: 'AchievementUnlocked'; readonly id: string }
   | { readonly type: 'CropsHarvested'; readonly tiles: readonly { x: number; y: number; species: CropId }[] };

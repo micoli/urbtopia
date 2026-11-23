@@ -1,6 +1,6 @@
 {
   "format": "urbtopia-save",
-  "version": 21,
+  "version": 22,
   "savedAt": 1790000000000,
   "state": {
     "brtRoads": [],
@@ -1344,6 +1344,17 @@
       }
     ],
     "tutorial": null,
-    "tradeLedger": []
+    "tradeLedger": [],
+    "achievements": [
+      "transport.firstRoad",
+      "energy.powerPlant",
+      "housing.upgrade",
+      "energy.waterTower",
+      "production.storage",
+      "production.shop",
+      "housing.firstHome",
+      "housing.thousandCitizens",
+      "housing.school"
+    ]
   }
 }

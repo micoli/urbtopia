@@ -5,6 +5,7 @@ import { toastStore } from '../../store/toastStore';
 import { uiStore } from '../../store/uiStore';
 import { ActionButton } from '../common/ActionButton';
 import { CurrencyText } from '../common/CurrencyText';
+import { Icon } from '../common/Icon';
 import { ItemIcon } from '../common/ItemIcon';
 
 const TOAST_DURATION_MS = 3000;
@@ -15,6 +16,7 @@ export function Toast() {
   const text = useStore(toastStore, (store) => store.text);
   const target = useStore(toastStore, (store) => store.target);
   const item = useStore(toastStore, (store) => store.item);
+  const icon = useStore(toastStore, (store) => store.icon);
   const dismiss = useStore(toastStore, (store) => store.dismiss);
 
   useEffect(() => {
@@ -27,6 +29,7 @@ export function Toast() {
   if (!message) return null;
   return (
     <div className="toast" role="status">
+      {icon === null ? null : <Icon name={icon} />}
       <CurrencyText text={message} />
       {item === null ? null : <ItemIcon item={item} />}
       {target === null ? null : (

@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla';
-import { advance, forfeitOfflineTime, newGame, type Command, type CommandError, type Difficulty, type GameState } from '../core';
+import { advance, forfeitOfflineTime, newGame, withAchievements, type Command, type CommandError, type Difficulty, type GameState } from '../core';
 import { standStill } from '../core/engine/advance';
 import { saveSession } from '../persistence/instance';
 import type { LoadResult } from '../persistence/saveSession';
@@ -77,7 +77,7 @@ export function createGameStore(initial: GameState, gateway: CommandGateway = li
         suspendedAt = Math.max(suspendedAt, tickNow);
         return set({ state, lastChange: 'tick' });
       }
-      const result = advance(get().state, tickNow);
+      const result = withAchievements(get().state, advance(get().state, tickNow));
       announceEvents(result.events, result.state);
       announceTutorialEnd(get().state, result.state);
       set({ state: result.state, lastChange: 'tick' });

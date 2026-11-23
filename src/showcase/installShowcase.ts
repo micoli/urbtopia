@@ -1,3 +1,4 @@
+import { sendAchievementSignal } from '../store/achievementSignal';
 import { cloudEnabled } from '../persistence/cloud/cloudConfig';
 import { SAVE_KEY } from '../persistence/saveStore';
 import { readRegistry } from '../persistence/cities';
@@ -69,6 +70,7 @@ export function installShowcase(): () => void {
       acknowledgeNotice: () => publisher.acknowledgeNotice().catch(() => {}),
       setOptOut: (optedOut) => publisher.setOptOut(optedOut).catch(() => {}),
       visit: async (userId, cityId) => {
+        sendAchievementSignal('visitStarted');
         await visits.visit(userId, cityId);
         if (showcaseStore.getState().visit.kind === 'visiting') presentVisit();
       },

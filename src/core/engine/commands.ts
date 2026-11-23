@@ -1,3 +1,4 @@
+import type { AchievementSignal } from '../achievements/achievementTypes';
 import type { MatchDecision } from '../clubs/clubTypes';
 import { isBuildableAt } from '../annualEvents/annualEventItems';
 import { NETWORK_KEY, TRANSIT, extendNetwork, networkTiles, repairNetwork, validNetworkCrossings } from '../transit/transitNetwork';
@@ -96,6 +97,7 @@ export type Command =
   | { readonly type: 'BuyTransitVehicle'; readonly kind: TransitVehicleKind }
   | { readonly type: 'SellTransitVehicle'; readonly id: number }
   | { readonly type: 'AssignTransitVehicle'; readonly id: number; readonly lineId?: number }
+  | { readonly type: 'Signal'; readonly signal: AchievementSignal }
   | { readonly type: 'BuildRoad'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
   | { readonly type: 'UpgradeRoads'; readonly tiles: readonly Coord[] }
   | { readonly type: 'BuildPedestrianWay'; readonly from: Coord; readonly to: Coord; readonly horizontalFirst?: boolean }
@@ -392,12 +394,14 @@ export function isError(outcome: CommandOutcome): outcome is CommandError {
 const fail = (key: ErrorKey): CommandError => ({ key });
 
 // A Replan edits the layout alone: what the server-side escrow needs still goes through, nothing else does.
-const ALLOWED_IN_REPLAN: readonly Command['type'][] = ['Replan', 'CancelReplan', 'FinishReplan', 'TradeApply', 'TradeConfirm', 'TradeRollback', 'ConfirmDonations'];
+const ALLOWED_IN_REPLAN: readonly Command['type'][] = ['Signal', 'Replan', 'CancelReplan', 'FinishReplan', 'TradeApply', 'TradeConfirm', 'TradeRollback', 'ConfirmDonations'];
 
 export function handleCommand(state: GameState, command: Command, now: number): CommandOutcome {
   if (!tutorialAllows(state, command)) return fail('error.tutorialLocked');
   if (state.replan && !ALLOWED_IN_REPLAN.includes(command.type)) return fail('error.replanActive');
   switch (command.type) {
+    case 'Signal':
+      return { state, events: [] };
     case 'StartReplan':
       return startReplan(state, command.area);
     case 'CancelReplan':

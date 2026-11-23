@@ -1,6 +1,6 @@
 {
   "format": "urbtopia-save",
-  "version": 21,
+  "version": 22,
   "savedAt": 1790000000000,
   "state": {
     "brtRoads": [],
@@ -3083,6 +3083,22 @@
     "roundabouts": [],
     "tutorial": null,
     "tradeLedger": [],
+    "achievements": [
+      "transport.firstRoad",
+      "energy.waterTower",
+      "housing.upgrade",
+      "energy.powerPlant",
+      "housing.firstHome",
+      "housing.library",
+      "housing.thousandCitizens",
+      "housing.school",
+      "environment.waste",
+      "environment.recycling",
+      "production.shop",
+      "environment.greenSpace",
+      "energy.cleanPower",
+      "energy.solar"
+    ],
     "venueTutorials": {
       "supermarket": "checkout"
     },

@@ -6,6 +6,7 @@ import { aimTile, type PointerKind } from '../tools/aim';
 import { confirmTool, evaluateTool, extendBrush, isPathTool, selectionGhost, toolLevel, type Evaluation, type GhostSpec, type Tool } from '../tools/tools';
 import { defaultSocialTab } from '../social/defaultSocialTab';
 import { cloudStore } from './cloudStore';
+import { sendAchievementSignal } from './achievementSignal';
 import { gameStore } from './gameStore';
 import { sceneHandle } from './sceneHandle';
 import { socialStore } from './socialStore';
@@ -150,7 +151,7 @@ function evaluate(tool: Tool | null, tile: Coord, rotation: Rotation | null): Ev
 
 // One window at a time: opening a window, or a flyout menu, closes the others.
 export type ManagementGroup = 'overview' | 'production' | 'city' | 'environment' | 'transport' | 'transit' | 'tourism';
-export type ManagementTab = 'dashboard' | 'cities' | 'shipments';
+export type ManagementTab = 'dashboard' | 'achievements' | 'cities' | 'shipments';
 export interface ManagementView {
   tab: ManagementTab;
   group: ManagementGroup;
@@ -297,6 +298,8 @@ export const uiStore = createStore<UiStore>((set, get) => {
     analyticsBuildingId: null,
     enterAnalytics: (layer, category = get().analyticsCategory) => {
       get().cancelTool();
+      sendAchievementSignal('analyticsOpened');
+      if (layer === 'data.landValue') sendAchievementSignal('landValueOpened');
       get().setLevel(levelOfLayer(layer));
       writeAnalyticsLayer(layer);
       writeAnalyticsCategory(category);
@@ -336,6 +339,7 @@ export const uiStore = createStore<UiStore>((set, get) => {
     codexFixture: null,
     // The Codex is a modal above everything: it leaves the open windows, the menus and the selection where they are.
     openCodex: (entry, page, fixture) => {
+      sendAchievementSignal('codexOpened');
       get().cancelTool();
       set({ codexOpen: true, codexEntryId: entry ?? 'home', codexShowDetail: entry !== undefined || page !== undefined, codexPage: page ?? null, codexFixture: fixture ?? null });
     },

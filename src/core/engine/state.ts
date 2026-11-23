@@ -339,6 +339,8 @@ export interface GameState {
   adaptationUntil?: number;
   ecologyDismissed?: boolean;
   difficulty?: Difficulty;
+  // Ids of the Achievements the City has earned, kept for good.
+  achievements?: readonly string[];
   politics?: PoliticsState;
   challenge?: ChallengeProgress;
   challengeClaims?: ChallengeClaim[];

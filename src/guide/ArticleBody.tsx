@@ -1,5 +1,6 @@
 import type { Language } from '../i18n/prefsStore';
 import { t } from '../i18n/t';
+import { AchievementCatalogue } from './content/AchievementCatalogue';
 import { ArticleLink } from './content/ArticleLink';
 import { EntryLink } from './content/EntryLink';
 import { LiveRules } from './content/LiveRules';
@@ -11,7 +12,7 @@ interface ArticleBodyProps {
   language: Language;
 }
 
-const ARTICLE_COMPONENTS = { ArticleLink, EntryLink, LiveRules, MechanicsLink };
+const ARTICLE_COMPONENTS = { AchievementCatalogue, ArticleLink, EntryLink, LiveRules, MechanicsLink };
 
 export function ArticleBody({ article, language }: ArticleBodyProps) {
   const { default: Content, meta } = translationOf(article, language);
