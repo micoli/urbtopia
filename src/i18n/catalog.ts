@@ -1081,6 +1081,7 @@ export const CATALOG = {
   'cloud.versions.show': ['Previous versions', 'Versions précédentes'],
   'cloud.versions.none': ['No previous version.', 'Aucune version précédente.'],
   'cloud.versions.current': ['Current', 'Actuelle'],
+  'cloud.versions.aside': ['Set aside from another device', 'Mise de côté depuis un autre appareil'],
   'cloud.versions.restore': ['Restore', 'Restaurer'],
   'cloud.delete': ['Delete my cloud data', 'Supprimer mes données en ligne'],
   'cloud.deleteConfirm': ['Delete every online save and sign out? The city on this device stays.', 'Supprimer toutes les sauvegardes en ligne et se déconnecter ? La ville de cet appareil est conservée.'],

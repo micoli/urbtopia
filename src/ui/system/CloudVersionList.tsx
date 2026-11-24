@@ -16,7 +16,10 @@ export function CloudVersionList({ versions, onRestore }: CloudVersionListProps)
     <ul className="cloud-versions">
       {versions.map((version, index) => (
         <li key={version.revision}>
-          <span>{formatCloudTime(version.clientSavedAt, language)}</span>
+          <span>
+            {formatCloudTime(version.clientSavedAt, language)}
+            {version.revision < 0 ? <span className="note note--muted"> {t('cloud.versions.aside')}</span> : null}
+          </span>
           {index === 0 ? (
             <span className="cloud-versions-current">{t('cloud.versions.current')}</span>
           ) : (

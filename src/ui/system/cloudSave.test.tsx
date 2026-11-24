@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { MESSAGES } from '../../i18n/messages';
+import { prefsStore } from '../../i18n/prefsStore';
 import { t } from '../../i18n/t';
 import type { SaveConflict } from '../../persistence/cloud/cloudSync';
 import { CloudSavePanel } from './CloudSavePanel';
@@ -56,6 +57,19 @@ describe('cloud save panel', () => {
     const html = renderToStaticMarkup(<CloudVersionList versions={versions} onRestore={noop} />);
     expect(html.match(new RegExp(t('cloud.versions.restore'), 'g'))).toHaveLength(1);
     expect(html).toContain(t('cloud.versions.current'));
+  });
+
+  it.each(['en', 'fr'] as const)('labels a version set aside by another device, and only that one, in %s', (language) => {
+    prefsStore.getState().setLanguage(language);
+    const versions = [
+      { revision: 3, clientSavedAt: T0, createdAt: T0 },
+      { revision: 2, clientSavedAt: T0 - 1000, createdAt: T0 - 1000 },
+      { revision: -1, clientSavedAt: T0 - 2000, createdAt: T0 - 2000 },
+    ];
+    const html = renderToStaticMarkup(<CloudVersionList versions={versions} onRestore={noop} />);
+    expect(html.match(new RegExp(t('cloud.versions.aside'), 'g'))).toHaveLength(1);
+    expect(html.match(new RegExp(t('cloud.versions.restore'), 'g'))).toHaveLength(2);
+    prefsStore.getState().setLanguage('en');
   });
 
   it('says so when there is no previous version', () => {
