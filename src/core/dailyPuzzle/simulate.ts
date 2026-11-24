@@ -8,6 +8,7 @@ const MOVES: Record<string, { dx: number; dy: number }> = {
   'ramp-right': { dx: 1, dy: 1 },
   'conveyor-right': { dx: 1, dy: 0 },
   'conveyor-left': { dx: -1, dy: 0 },
+  'trampoline-right': { dx: 1, dy: -3 },
 };
 
 function partAt(parts: PlacedPart[], cell: Cell): PlacedPart | undefined {

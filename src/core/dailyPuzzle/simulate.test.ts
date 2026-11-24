@@ -52,4 +52,10 @@ describe('simulate', () => {
     expect(result.solved).toBe(false);
     expect(result.ticks).toBeLessThanOrEqual(MAX_TICKS);
   });
+
+  it('throws the ball up and across on a trampoline, then it falls', () => {
+    const board: Board = { ...emptyBoard, ballStart: { x: 0, y: 0 }, aims: [{ kind: 'deliver', target: { x: 1, y: 5 } }] };
+
+    expect(simulate(board, [{ kind: 'trampoline-right', at: { x: 0, y: 4 } }]).solved).toBe(true);
+  });
 });
