@@ -230,6 +230,28 @@ export type Database = {
         };
         Relationships: [];
       };
+      urb_city_leases: {
+        Row: {
+          city_id: string;
+          device_id: string;
+          expires_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          city_id: string;
+          device_id: string;
+          expires_at: string;
+          user_id: string;
+        };
+        Update: {
+          city_id?: string;
+          device_id?: string;
+          expires_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       urb_donations: {
         Row: {
           created_at: string;
@@ -566,6 +588,37 @@ export type Database = {
         };
         Relationships: [];
       };
+      urb_save_stashes: {
+        Row: {
+          city_id: string;
+          client_saved_at: string;
+          created_at: string;
+          envelope: NonNullable<Json>;
+          format_version: number;
+          id: number;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          city_id: string;
+          client_saved_at: string;
+          created_at?: string;
+          envelope: NonNullable<Json>;
+          format_version: number;
+          id?: never;
+          user_id: string;
+        };
+        Update: {
+          city_id?: string;
+          client_saved_at?: string;
+          created_at?: string;
+          envelope?: NonNullable<Json>;
+          format_version?: number;
+          id?: never;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       urb_saves: {
         Row: {
           city_id: string;
@@ -798,6 +851,13 @@ export type Database = {
         Returns: Json;
       };
       urb_check_send_caps: { Args: { p_user: string }; Returns: undefined };
+      urb_claim_city: {
+        Args: { p_city_id: string; p_device_id: string; p_force?: boolean };
+        Returns: {
+          held: boolean;
+          holder: string;
+        }[];
+      };
       urb_claim_shipment: { Args: { p_city: string; p_id: string }; Returns: Json };
       urb_claim_trade: { Args: { p_city: string; p_id: string; p_slot: string }; Returns: Json };
       urb_close_offer: { Args: { p_id: string }; Returns: undefined };
@@ -897,20 +957,12 @@ export type Database = {
           p_base_revision: number;
           p_city_id: string;
           p_client_saved_at: string;
+          p_device_id?: string;
           p_envelope: Json;
           p_format_version: number;
           p_keep_previous?: boolean;
-          p_device_id?: string;
         };
         Returns: number;
-      };
-      urb_stash_save: {
-        Args: { p_city_id: string; p_client_saved_at: string; p_envelope: Json; p_format_version: number };
-        Returns: number;
-      };
-      urb_claim_city: {
-        Args: { p_city_id: string; p_device_id: string; p_force?: boolean };
-        Returns: { held: boolean; holder: string }[];
       };
       urb_record_achievement_medal: {
         Args: { p_category: string; p_name_en: string; p_name_fr: string };
@@ -959,6 +1011,15 @@ export type Database = {
       };
       urb_showcase_status: { Args: { p_city: string }; Returns: Json };
       urb_social_member: { Args: Record<PropertyKey, never>; Returns: string };
+      urb_stash_save: {
+        Args: {
+          p_city_id: string;
+          p_client_saved_at: string;
+          p_envelope: Json;
+          p_format_version: number;
+        };
+        Returns: number;
+      };
       urb_unblock_user: { Args: { p_user: string }; Returns: undefined };
       urb_visible_city_name: {
         Args: { p_blocked: string; p_name: string; p_seed: string };
