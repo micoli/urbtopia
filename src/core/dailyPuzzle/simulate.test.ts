@@ -58,4 +58,10 @@ describe('simulate', () => {
 
     expect(simulate(board, [{ kind: 'trampoline-right', at: { x: 0, y: 4 } }]).solved).toBe(true);
   });
+
+  it('launches the ball low and far on a spring', () => {
+    const board: Board = { ...emptyBoard, ballStart: { x: 0, y: 0 }, aims: [{ kind: 'deliver', target: { x: 3, y: 5 } }] };
+
+    expect(simulate(board, [{ kind: 'spring-right', at: { x: 0, y: 4 } }]).solved).toBe(true);
+  });
 });
