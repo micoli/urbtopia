@@ -28,7 +28,7 @@ const PART_KINDS = [
 const AIM_KINDS = ['deliver', 'light', 'flip', 'collect'] as const;
 
 const PART_ATTEMPTS = 40;
-const PUZZLE_ATTEMPTS = 200;
+const PUZZLE_ATTEMPTS = 2000;
 
 const sameCell = (a: Cell, b: Cell) => a.x === b.x && a.y === b.y;
 
