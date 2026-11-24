@@ -74,4 +74,18 @@ describe('simulate', () => {
 
     expect(simulate(board, parts).solved).toBe(true);
   });
+
+  describe('fan', () => {
+    const fan = { kind: 'fan-right', at: { x: 0, y: 1 } };
+    const into = (x: number, targetX: number): Board => ({ ...emptyBoard, ballStart: { x, y: 0 }, aims: [{ kind: 'deliver', target: { x: targetX, y: 5 } }] });
+
+    it('blows the ball sideways when it crosses the jet, over the fan and the two cells beside it', () => {
+      expect(simulate(into(0, 2), [fan]).solved).toBe(true);
+      expect(simulate(into(2, 4), [fan]).solved).toBe(true);
+    });
+
+    it('leaves the ball alone outside the jet', () => {
+      expect(simulate(into(3, 3), [fan]).solved).toBe(true);
+    });
+  });
 });
