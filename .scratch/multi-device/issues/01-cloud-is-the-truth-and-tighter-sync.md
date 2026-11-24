@@ -1,6 +1,6 @@
 # Cloud is the truth and sync is tighter
 
-Status: ready-for-agent
+Status: done - implemented
 Spec: ../spec.md
 Blocked by: none
 

@@ -53,7 +53,7 @@ function world() {
 }
 
 describe('CloudSync pushing', () => {
-  it('pushes the first save, then at most every 5 minutes', async () => {
+  it('pushes the first save, then at most every 30 seconds', async () => {
     const { clock, client, device } = world();
     const a = device();
     a.edit(T0);
@@ -62,7 +62,7 @@ describe('CloudSync pushing', () => {
     expect(client.pushes).toHaveLength(1);
     expect(a.sync.current).toEqual({ kind: 'synced', at: T0 });
 
-    clock.now += MINUTE;
+    clock.now += PUSH_INTERVAL_MS - 1;
     a.edit(clock.now);
     await a.sync.tick();
     expect(client.pushes).toHaveLength(1);
@@ -90,7 +90,7 @@ describe('CloudSync pushing', () => {
     expect(client.pushes).toHaveLength(1);
   });
 
-  it('pushes on demand ignoring the 5 minute spacing', async () => {
+  it('pushes on demand ignoring the push spacing', async () => {
     const { clock, client, device } = world();
     const a = device();
     a.edit(T0);
@@ -112,6 +112,83 @@ describe('CloudSync pushing', () => {
     expect(client.pushes).toHaveLength(1);
     expect(client.pushes[0]?.keepalive).toBe(true);
     expect(client.pushes[0]?.formatVersion).toBe(CURRENT_VERSION);
+  });
+});
+
+describe('CloudSync refresh on return', () => {
+  it('adopts a newer Cloud save silently when the local city was not edited', async () => {
+    const { clock, client, device } = world();
+    const a = device();
+    const b = device();
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+    expect(b.log.adopted).toHaveLength(1);
+
+    clock.now += PUSH_INTERVAL_MS;
+    a.edit(clock.now);
+    await a.sync.tick();
+
+    clock.now += PUSH_INTERVAL_MS;
+    await b.sync.refresh();
+    expect(b.log.adopted).toHaveLength(2);
+    expect(b.log.adopted[1]).toBe(envelopeAt(clock.now - PUSH_INTERVAL_MS));
+    expect(b.log.statuses.some((status) => status.kind === 'conflict')).toBe(false);
+    expect(b.sync.current.kind).toBe('synced');
+    expect(readCloudMeta(b.store).baseRevision).toBe(2);
+  });
+
+  it('does nothing when the Cloud save has not moved', async () => {
+    const { clock, client, device } = world();
+    const a = device();
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+
+    clock.now += PUSH_INTERVAL_MS;
+    await a.sync.refresh();
+    expect(a.log.adopted).toHaveLength(0);
+    expect(client.pushes).toHaveLength(1);
+    expect(a.sync.current.kind).toBe('synced');
+  });
+
+  it('raises a Save conflict when both sides really advanced', async () => {
+    const { clock, device } = world();
+    const a = device();
+    const b = device();
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+
+    clock.now += PUSH_INTERVAL_MS;
+    a.edit(clock.now);
+    b.edit(clock.now + 1);
+    await a.sync.tick();
+
+    clock.now += PUSH_INTERVAL_MS;
+    await b.sync.refresh();
+    expect(b.sync.current.kind).toBe('conflict');
+  });
+
+  it('does not check the Cloud save again within the refresh spacing', async () => {
+    const { clock, device } = world();
+    const a = device();
+    const b = device();
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+    clock.now += PUSH_INTERVAL_MS;
+    await b.sync.refresh();
+
+    clock.now += 1_000;
+    a.edit(clock.now);
+    a.log.canPush = true;
+    await a.sync.pushNow();
+    await b.sync.refresh();
+    expect(b.log.adopted).toHaveLength(1);
   });
 });
 

@@ -17,7 +17,7 @@ import { loadCloudClient } from './loadCloudClient';
 import { localAuthPassword, requestedLocalAuthEmail } from './localAuth';
 import { CloudError, type CloudAccount, type CloudSaveClient } from './types';
 
-const TICK_MS = 30_000;
+const TICK_MS = 10_000;
 
 async function startAfterLocalAuth(client: CloudSaveClient, engine: CloudSync): Promise<void> {
   const email = requestedLocalAuthEmail();
@@ -135,7 +135,8 @@ export function installCloudSync(): () => void {
   });
   const timer = setInterval(() => void sync?.tick(), TICK_MS);
   const onVisibility = () => {
-    if (document.visibilityState === 'hidden') sync?.pushOnPageHide();
+    if (document.visibilityState === 'hidden') return sync?.pushOnPageHide();
+    void sync?.refresh();
   };
   const onPageHide = () => sync?.pushOnPageHide();
   document.addEventListener('visibilitychange', onVisibility);

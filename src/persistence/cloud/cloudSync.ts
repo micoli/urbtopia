@@ -4,7 +4,8 @@ import { readCloudMeta, writeCloudMeta } from '../meta';
 import { SAVE_KEY, type SaveStore } from '../saveStore';
 import { CloudError, type CloudAccount, type CloudCity, type CloudSave, type CloudSaveClient, type CloudSaveVersion } from './types';
 
-export const PUSH_INTERVAL_MS = 5 * 60_000;
+export const PUSH_INTERVAL_MS = 30_000;
+export const REFRESH_INTERVAL_MS = 10_000;
 const BACKOFF_START_MS = 30_000;
 const BACKOFF_MAX_MS = 10 * 60_000;
 
@@ -59,6 +60,7 @@ export class CloudSync {
   private status: CloudStatus = { kind: 'idle' };
   private signedIn = false;
   private lastAttemptAt: number | null = null;
+  private lastRefreshAt: number | null = null;
   private retryAt = 0;
   private failures = 0;
   private busy = false;
@@ -94,9 +96,21 @@ export class CloudSync {
       await this.start();
       if (!this.canAct()) return;
     }
-    if (!this.isDirty()) return;
     if (this.failures === 0 && this.lastAttemptAt !== null && now - this.lastAttemptAt < PUSH_INTERVAL_MS) return;
+    if (!this.isDirty()) return;
     await this.pushNow();
+  }
+
+  async refresh(): Promise<void> {
+    if (!this.canAct() || !this.reconciled) return;
+    const now = this.deps.now();
+    if (now < this.retryAt) return;
+    if (this.lastRefreshAt !== null && now - this.lastRefreshAt < REFRESH_INTERVAL_MS) return;
+    this.lastRefreshAt = now;
+    await this.guarded(async () => {
+      await this.ensureSignedIn();
+      await this.reconcile();
+    });
   }
 
   async pushNow(): Promise<void> {
