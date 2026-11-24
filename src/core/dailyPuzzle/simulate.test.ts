@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { simulate } from './simulate';
+import { MAX_TICKS, simulate } from './simulate';
 import type { Board } from './types';
 
 const emptyBoard: Board = {
@@ -28,5 +28,28 @@ describe('simulate', () => {
     const result = simulate(board, [{ kind: 'ramp-right', at: { x: 0, y: 2 } }]);
 
     expect(result.solved).toBe(true);
+  });
+
+  it('carries the ball sideways along a row of conveyors', () => {
+    const board: Board = { ...emptyBoard, ballStart: { x: 0, y: 0 }, aims: [{ kind: 'deliver', target: { x: 2, y: 5 } }] };
+    const parts = [
+      { kind: 'conveyor-right', at: { x: 0, y: 2 } },
+      { kind: 'conveyor-right', at: { x: 1, y: 2 } },
+    ];
+
+    expect(simulate(board, parts).solved).toBe(true);
+  });
+
+  it('ends the run with a lost ball when conveyors loop it forever', () => {
+    const board: Board = { ...emptyBoard, ballStart: { x: 0, y: 0 } };
+    const parts = [
+      { kind: 'conveyor-right', at: { x: 0, y: 2 } },
+      { kind: 'conveyor-left', at: { x: 1, y: 2 } },
+    ];
+
+    const result = simulate(board, parts);
+
+    expect(result.solved).toBe(false);
+    expect(result.ticks).toBeLessThanOrEqual(MAX_TICKS);
   });
 });
