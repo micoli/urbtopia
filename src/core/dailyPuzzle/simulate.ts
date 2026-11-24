@@ -1,4 +1,4 @@
-import type { Board, Cell, PlacedPart, SimulationResult } from './types';
+import type { Aim, Board, Cell, PlacedPart, SimulationResult } from './types';
 
 export const MAX_TICKS = 200;
 
@@ -28,6 +28,16 @@ const FAN_PUSH = 2;
 
 const cellKey = (cell: Cell) => `${cell.x},${cell.y}`;
 
+function visitsOf(visited: Cell[], cell: Cell): number {
+  return visited.filter((seen) => cellKey(seen) === cellKey(cell)).length;
+}
+
+function isMet(aim: Aim, visited: Cell[], end: Cell): boolean {
+  if (aim.kind === 'deliver') return cellKey(aim.target) === cellKey(end);
+  if (aim.kind === 'light') return aim.candles.every((candle) => visitsOf(visited, candle) > 0);
+  return aim.switches.every((cell) => visitsOf(visited, cell) % 2 === 1);
+}
+
 export function simulate(board: Board, parts: PlacedPart[]): SimulationResult {
   const partByCell = new Map(parts.map((part) => [cellKey(part.at), part.kind]));
   const seesawSide = new Map<string, number>();
@@ -54,14 +64,16 @@ export function simulate(board: Board, parts: PlacedPart[]): SimulationResult {
   }
 
   let ball = board.ballStart;
+  const visited: Cell[] = [ball];
   let ticks = 0;
   const onBoard = (cell: Cell) => cell.x >= 0 && cell.x < board.width;
   while (onBoard(ball) && ball.y < board.height - 1 && ticks < MAX_TICKS) {
     const move = moveFrom(ball);
     ball = { x: ball.x + move.dx, y: ball.y + move.dy };
+    visited.push(ball);
     ticks += 1;
   }
   const landed = onBoard(ball) && ticks < MAX_TICKS;
-  const reached = board.aims.every((aim) => aim.target.x === ball.x && aim.target.y === ball.y);
+  const reached = board.aims.every((aim) => isMet(aim, visited, ball));
   return { solved: landed && reached, ticks };
 }

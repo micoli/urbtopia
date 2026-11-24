@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MAX_TICKS, simulate } from './simulate';
-import type { Board } from './types';
+import type { Board, Cell } from './types';
 
 const emptyBoard: Board = {
   width: 5,
@@ -111,5 +111,37 @@ describe('simulate', () => {
     const result = simulate(board, [{ kind: 'conveyor-right', at: { x: 4, y: 2 } }]);
 
     expect(result).toEqual({ solved: false, ticks: 3 });
+  });
+
+  describe('Light aim', () => {
+    const lightBoard = (...candles: Cell[]): Board => ({ ...emptyBoard, aims: [{ kind: 'light', candles }] });
+
+    it('is solved when the ball passes through every candle', () => {
+      expect(simulate(lightBoard({ x: 2, y: 1 }, { x: 2, y: 3 }), []).solved).toBe(true);
+    });
+
+    it('fails while a candle is left unlit', () => {
+      expect(simulate(lightBoard({ x: 2, y: 1 }, { x: 3, y: 3 }), []).solved).toBe(false);
+    });
+  });
+
+  describe('Flip aim', () => {
+    const flipBoard = (...switches: Cell[]): Board => ({ ...emptyBoard, aims: [{ kind: 'flip', switches }] });
+    const twoPasses = [
+      { kind: 'seesaw-right', at: { x: 2, y: 2 } },
+      { kind: 'trampoline-left', at: { x: 3, y: 4 } },
+    ];
+
+    it('is solved when every switch was crossed an odd number of times', () => {
+      expect(simulate(flipBoard({ x: 3, y: 3 }), twoPasses).solved).toBe(true);
+    });
+
+    it('fails when a switch was crossed twice and so is back off', () => {
+      expect(simulate(flipBoard({ x: 3, y: 3 }, { x: 2, y: 1 }), twoPasses).solved).toBe(false);
+    });
+
+    it('fails when a switch was never crossed', () => {
+      expect(simulate(flipBoard({ x: 0, y: 3 }), []).solved).toBe(false);
+    });
   });
 });
