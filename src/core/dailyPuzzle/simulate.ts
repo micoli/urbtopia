@@ -26,6 +26,14 @@ const FAN_SIDE: Record<string, number> = { 'fan-right': 1, 'fan-left': -1 };
 const FAN_REACH = 3;
 const FAN_PUSH = 2;
 
+/** Whether `part` is a fan whose jet reaches `cell`: its own cell and the two beside it, on its row, on the side it blows to. */
+export function fanBlowsOn(part: PlacedPart, cell: Cell): boolean {
+  const side = FAN_SIDE[part.kind];
+  if (side === undefined || part.at.y !== cell.y) return false;
+  const distance = (cell.x - part.at.x) * side;
+  return distance >= 0 && distance < FAN_REACH;
+}
+
 const cellKey = (cell: Cell) => `${cell.x},${cell.y}`;
 
 export function visitsOf(path: Cell[], cell: Cell): number {
@@ -49,13 +57,8 @@ export function runBall(board: Board, parts: PlacedPart[]): BallRun {
   const seesawSide = new Map<string, number>();
 
   function jetPush(ball: Cell): Move | undefined {
-    for (const part of parts) {
-      const side = FAN_SIDE[part.kind];
-      if (side === undefined || part.at.y !== ball.y) continue;
-      const distance = (ball.x - part.at.x) * side;
-      if (distance >= 0 && distance < FAN_REACH) return { dx: FAN_PUSH * side, dy: 1 };
-    }
-    return undefined;
+    const fan = parts.find((part) => fanBlowsOn(part, ball));
+    return fan ? { dx: FAN_PUSH * (FAN_SIDE[fan.kind] as number), dy: 1 } : undefined;
   }
 
   function moveFrom(ball: Cell): Move {
