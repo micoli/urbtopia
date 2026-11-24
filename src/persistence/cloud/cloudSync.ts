@@ -98,6 +98,7 @@ export class CloudSync {
 
   async tick(): Promise<void> {
     if (this.status.kind === 'elsewhere') return this.watchLease();
+    if (this.status.kind === 'conflict') return this.watchLeaseDuringConflict();
     if (!this.canAct()) return;
     const now = this.deps.now();
     if (now < this.retryAt) return;
@@ -135,6 +136,11 @@ export class CloudSync {
       await this.ensureSignedIn();
       if (await this.claim(false)) await this.resume();
     });
+  }
+
+  private async watchLeaseDuringConflict(): Promise<void> {
+    if (!this.deps.canPush() || !this.leaseDue()) return;
+    await this.guarded(async () => void (await this.claim(false)));
   }
 
   private leaseDue(): boolean {
@@ -189,6 +195,7 @@ export class CloudSync {
     this.lastRefreshAt = now;
     await this.guarded(async () => {
       await this.ensureSignedIn();
+      if (!(await this.claim(false))) return;
       await this.reconcile();
     });
   }
@@ -240,7 +247,12 @@ export class CloudSync {
         return;
       }
       if (local) {
-        await this.deps.client.push({ cityId: this.deps.cityId, baseRevision: cloud.revision, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION, keepPrevious: true, deviceId: this.deps.deviceId });
+        try {
+          await this.deps.client.push({ cityId: this.deps.cityId, baseRevision: cloud.revision, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION, keepPrevious: true, deviceId: this.deps.deviceId });
+        } catch (error) {
+          if (error instanceof CloudError && error.kind === 'not-active') return this.enterElsewhere();
+          throw error;
+        }
         const restored = await this.deps.client.restore(this.deps.cityId, cloud.revision);
         this.deps.local.keepAsPreviousVersion();
         this.adoptCloud({ ...cloud, revision: restored });

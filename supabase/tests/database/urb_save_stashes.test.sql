@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(12);
+select plan(16);
 
 insert into auth.users (id, instance_id, aud, role, email, is_anonymous, created_at, last_sign_in_at) values
   ('00000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', null, true, now(), now()),
@@ -46,6 +46,17 @@ select is((select envelope->>'city' from public.urb_saves where city_id = '00000
 
 select pg_temp.act_as('00000000-0000-0000-0000-0000000000b2');
 select is((select count(*) from public.urb_list_saves('00000000-0000-0000-0000-000000000001')), 0::bigint, 'another account sees none of it');
+
+select pg_temp.act_as('00000000-0000-0000-0000-0000000000b1');
+select throws_ok(
+  $$ select public.urb_stash_save('00000000-0000-0000-0000-0000000000c1', '{"city":"nowhere"}'::jsonb, 11, now()) $$,
+  'urb_not_found',
+  'a City that has no save cannot take stashes'
+);
+select is((select held from public.urb_claim_city('00000000-0000-0000-0000-000000000001', 'tablet')), false, 'the lease of the laptop is still alive');
+select public.urb_delete_my_saves();
+select is((select count(*) from public.urb_list_saves('00000000-0000-0000-0000-000000000001')), 0::bigint, 'deleting the cloud data clears the saves and the stashes');
+select is((select held from public.urb_claim_city('00000000-0000-0000-0000-000000000001', 'tablet')), true, 'and the lease');
 
 select * from finish();
 rollback;

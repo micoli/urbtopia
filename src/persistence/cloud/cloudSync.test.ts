@@ -6,7 +6,7 @@ import { restoreCloudCity } from '../restoreCloudCity';
 import { bootCities, FIRST_CITY_ID, readRegistry } from '../cities';
 import { CityScopedSaveStore } from '../cityStore';
 import { MemorySaveStore, SAVE_KEY } from '../saveStore';
-import { CloudSync, LEASE_RENEW_MS, PUSH_INTERVAL_MS, type CloudStatus } from './cloudSync';
+import { CloudSync, LEASE_RENEW_MS, PUSH_INTERVAL_MS, REFRESH_INTERVAL_MS, type CloudStatus } from './cloudSync';
 import { CITY_LEASE_MS, CloudError } from './types';
 import { FakeCloudSaveClient } from './fakeCloudSaveClient';
 
@@ -354,6 +354,66 @@ describe('CloudSync Active device', () => {
     await a.sync.tick();
     expect(a.sync.current.kind).toBe('synced');
     expect(client.rows[client.rows.length - 1]?.envelope).toBe(envelopeAt(clock.now - BACKOFF_MS));
+  });
+});
+
+describe('CloudSync lease checks', () => {
+  async function conflictedPhone() {
+    const { clock, client, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    clock.now += PUSH_INTERVAL_MS;
+    a.edit(clock.now);
+    clock.now += CITY_LEASE_MS;
+    await b.sync.start();
+    b.edit(clock.now + 1);
+    await b.sync.pushNow();
+    await a.sync.takeOver();
+    expect(a.sync.current.kind).toBe('conflict');
+    await b.sync.takeOver();
+    return { clock, client, a, b };
+  }
+
+  it('puts a device aside on return when another device took the City over while the page was hidden', async () => {
+    const { clock, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+    await b.sync.takeOver();
+
+    clock.now += REFRESH_INTERVAL_MS;
+    await a.sync.refresh();
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
+    expect(a.log.active).toEqual([true, false]);
+    expect(a.log.statuses.some((status) => status.kind === 'conflict')).toBe(false);
+  });
+
+  it('turns a conflict into read-only when the Cloud save is chosen while another device holds the lease', async () => {
+    const { a } = await conflictedPhone();
+    await a.sync.resolveConflict('cloud');
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
+    expect(a.log.statuses.some((status) => status.kind === 'error')).toBe(false);
+  });
+
+  it('turns a conflict into read-only when the local save is chosen while another device holds the lease', async () => {
+    const { a, client } = await conflictedPhone();
+    const rows = client.rows.length;
+    await a.sync.resolveConflict('local');
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
+    expect(client.rows).toHaveLength(rows);
+  });
+
+  it('keeps checking the lease while a conflict waits for an answer', async () => {
+    const { clock, a } = await conflictedPhone();
+    clock.now += LEASE_RENEW_MS;
+    await a.sync.tick();
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
   });
 });
 
