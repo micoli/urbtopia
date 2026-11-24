@@ -24,7 +24,7 @@ import bmesh
 import bpy
 from mathutils import Matrix, Vector
 
-__all__ = ["reset", "Palette", "box", "grid_box", "prism", "lathe", "sweep", "plate", "bend", "mirror_x", "move", "rotate",
+__all__ = ["reset", "Palette", "box", "grid_box", "prism", "ring", "lathe", "sweep", "plate", "bend", "mirror_x", "move", "rotate",
            "scale", "taper", "paint", "finish", "tri_count", "report", "export_glb", "save"]
 
 # --------------------------------------------------------------------------- scene / palette
@@ -207,6 +207,23 @@ def prism(name, sides, radius, height, at=(0, 0, 0), color=0, radius_top=None, r
     faces = [(i, (i + 1) % sides, sides + (i + 1) % sides, sides + i) for i in range(sides)]
     if cap:
         faces += [tuple(reversed(range(sides))), tuple(range(sides, 2 * sides))]
+    return _object(name, _bm_from(verts, faces), color)
+
+
+def ring(name, sides, radius, inner_radius, height, at=(0, 0, 0), color=0, rotate=0.0):
+    """Regular n-gon tube standing on its base at `at`: a prism with a hole, open through the middle."""
+    x, y, z = at
+    verts = []
+    for rr, zz in ((radius, z), (inner_radius, z), (radius, z + height), (inner_radius, z + height)):
+        for i in range(sides):
+            a = math.radians(rotate) + 2 * math.pi * i / sides
+            verts.append((x + rr * math.cos(a), y + rr * math.sin(a), zz))
+    out_low, in_low, out_high, in_high = (k * sides for k in range(4))
+    faces = []
+    for i in range(sides):
+        j = (i + 1) % sides
+        faces += [(out_low + i, out_low + j, out_high + j, out_high + i), (in_low + j, in_low + i, in_high + i, in_high + j),
+                  (out_high + i, out_high + j, in_high + j, in_high + i), (out_low + j, out_low + i, in_low + i, in_low + j)]
     return _object(name, _bm_from(verts, faces), color)
 
 
