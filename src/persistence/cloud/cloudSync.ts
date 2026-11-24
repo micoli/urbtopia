@@ -302,9 +302,15 @@ export class CloudSync {
     }
     this.cloudCity = { revision: cloud.revision, envelope: cloud.envelope, savedAt: cloud.clientSavedAt, citizens: citizensIn(cloud.envelope, this.deps.parseOptions) };
     if (cloud.revision === meta.baseRevision) return this.settle(local);
+    if (local && local.savedAt === cloud.clientSavedAt) return this.acknowledgeOwnPush(cloud.revision, local.savedAt);
     if (!local || !meta.editedSinceSync) return this.adoptCloud(this.cloudCity);
     if (this.deps.keepLocal) return this.pushWith(local, cloud.revision, true);
     this.setStatus({ kind: 'conflict', conflict: { local: { savedAt: local.savedAt, citizens: citizensIn(local.envelope, this.deps.parseOptions) }, cloud: this.cloudCity } });
+  }
+
+  private acknowledgeOwnPush(revision: number, savedAt: number): void {
+    this.updateMeta({ baseRevision: revision, syncedSavedAt: savedAt, editedSinceSync: false, lastSyncAt: this.deps.now() });
+    this.setStatus({ kind: 'synced', at: this.deps.now() });
   }
 
   private settle(local: LocalSnapshot | null): void {

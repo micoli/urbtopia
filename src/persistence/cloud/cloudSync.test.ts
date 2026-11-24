@@ -219,6 +219,26 @@ describe('CloudSync across devices', () => {
     expect(client.pushes.filter((push) => push.envelope === envelopeAt(clock.now - 10 * MINUTE + 1))).toHaveLength(1);
   });
 
+  it('recognises its own push whose response was lost instead of raising a Save conflict', async () => {
+    const { clock, client, device } = world();
+    const a = device();
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+
+    clock.now += 10 * MINUTE;
+    a.edit(clock.now);
+    await client.push({ cityId: FIRST_CITY_ID, baseRevision: 1, envelope: envelopeAt(clock.now), savedAt: clock.now, formatVersion: CURRENT_VERSION });
+    expect(readCloudMeta(a.store).baseRevision).toBe(1);
+
+    await a.sync.accountChanged();
+    expect(a.log.statuses.some((status) => status.kind === 'conflict')).toBe(false);
+    expect(a.sync.current.kind).toBe('synced');
+    expect(readCloudMeta(a.store).baseRevision).toBe(2);
+    expect(readCloudMeta(a.store).editedSinceSync).toBe(false);
+    expect(a.log.adopted).toHaveLength(0);
+  });
+
   it('keeps the local city without asking when keep-local is requested', async () => {
     const clock = { now: T0 };
     const client = new FakeCloudSaveClient(() => clock.now);
