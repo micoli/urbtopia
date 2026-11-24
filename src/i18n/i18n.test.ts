@@ -166,17 +166,24 @@ describe('pick mode preference', () => {
 
   it('exports every preference as plain data, without the setters', () => {
     const saved = savedPrefsOf(prefsStore.getState());
-    expect(saved).toMatchObject({ language: expect.any(String), traffic: expect.any(Boolean) });
+    expect(saved).toMatchObject({ language: expect.any(String), confirmSale: expect.any(Boolean) });
     expect(Object.values(saved).some((value) => typeof value === 'function')).toBe(false);
   });
 
   it('applies the saved preferences it knows and keeps the others as they are', () => {
-    prefsStore.getState().setTraffic(true);
-    prefsStore.getState().setLayout('C');
-    prefsStore.getState().applySavedPrefs({ layout: 'B', unknownKey: 1, traffic: 'maybe' });
-    expect(prefsStore.getState().layout).toBe('B');
+    prefsStore.getState().setConfirmSale(true);
+    prefsStore.getState().setLanguage('en');
+    prefsStore.getState().applySavedPrefs({ language: 'fr', unknownKey: 1, confirmSale: 'maybe' });
+    expect(prefsStore.getState().language).toBe('fr');
+    expect(prefsStore.getState().confirmSale).toBe(true);
     expect(prefsStore.getState()).not.toHaveProperty('unknownKey');
+    prefsStore.getState().setLanguage('en');
+  });
+
+  it('leaves the preferences of the device alone when a save holds them', () => {
     prefsStore.getState().setLayout('C');
+    prefsStore.getState().applySavedPrefs({ layout: 'B' });
+    expect(prefsStore.getState().layout).toBe('C');
   });
 
   it('does not let a saved preference named like a prototype reach the store', () => {
