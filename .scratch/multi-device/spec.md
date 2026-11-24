@@ -15,7 +15,7 @@ Vocabulary (Active device, Takeover, Cloud save, Save conflict, Player account) 
 - Offline play is free; on reconnection three cases (nobody advanced, another device advanced, equal).
 - Push 30 s after an edit, on hidden and on page hide; check the revision on return to visible.
 - Device-only Preferences (graphics quality, touch or desktop layout) stay local.
-- The push carries the server time; `lastSeen` is capped at `now` when a Cloud save is adopted.
+- When a Cloud save is adopted, a `lastSeen` ahead of the device is rebased to `now`, timers included. Reading the Catch-up against the server time is deferred.
 - Email is offered at 200 Citizens (12 h snooze, unchanged) and through a permanent "Play on another device" entry in the system menu.
 
 ## Already done

@@ -1,5 +1,5 @@
 import { sendAchievementSignal } from '../../store/achievementSignal';
-import { advance } from '../../core';
+import { advance, rebaseClock } from '../../core';
 import { isBackOfficeSessionRequested } from '../../backOffice/handoff';
 import { showcasePublishHandle } from '../../showcase/publishHandle';
 import { cloudStore } from '../../store/cloudStore';
@@ -73,7 +73,8 @@ export function installCloudSync(): () => void {
           saveSession.backupNow();
           saveStore.put(SAVE_KEY, envelope);
           adoptSavedPrefs(parsed.prefs);
-          gameStore.getState().replaceState(advance(parsed.state, Date.now()).state, 'tick');
+          const now = Date.now();
+          gameStore.getState().replaceState(advance(rebaseClock(parsed.state, now), now).state, 'tick');
         },
         keepAsPreviousVersion: () => saveSession.backupNow(),
       },

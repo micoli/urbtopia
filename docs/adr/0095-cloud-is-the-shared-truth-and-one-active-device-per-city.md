@@ -16,7 +16,7 @@ One player who owns several devices kept meeting a Save conflict against their o
 - **A Takeover is always allowed.** The device that lost the lease learns it on its next contact, becomes read-only with a banner, and keeps what it had not pushed as a previous version of the City.
 - **Offline play needs no lease.** On reconnection: nobody else advanced, the device reclaims the lease and pushes; another device advanced, it is a real Save conflict with both sides summarised; the Cloud save equals the local one, nothing happens.
 - **Sync is tighter.** Push 30 seconds after an edit, on hidden, and on page hide; compare revisions when the page becomes visible again.
-- **The push carries the server time** and the Catch-up reference follows it, so two device clocks never decide an elapsed time. When a Cloud save is adopted, `lastSeen` is capped at the device's `now`.
+- **A Cloud save written by a device whose clock runs ahead is rebased** when adopted: `rebaseClock` brings `lastSeen` back to the device's `now` and shifts every running timer with it, so nothing stalls and nothing is replayed twice. A save written by a device whose clock runs behind still replays that gap in the Catch-up; measuring it against the server time is left until clock skew is actually seen.
 - **Preferences that describe the device stay on it** (graphics quality, touch or desktop layout); the others keep travelling in the save.
 
 ## Why
