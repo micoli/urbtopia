@@ -40,6 +40,13 @@ ready_http = "http://localhost:5180/"
 boot_start = false
 retry = false
 
+[daemons.puzzle-lab]
+run = "npm run puzzle-lab"
+dir = "."
+ready_http = "http://localhost:5184/"
+boot_start = false
+retry = false
+
 [daemons.casino-sim]
 run = "npm run casino:sim -- --port 5182 --strictPort"
 dir = "."

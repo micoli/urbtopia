@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Puzzle lab</title>
+<link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+<header>
+  <label>Seed <input id="seed" type="text" value="lab-1" autocomplete="off" /></label>
+  <label>Difficulty
+    <select id="difficulty"><option>easy</option><option>medium</option><option>hard</option></select>
+  </label>
+  <button id="next-seed" type="button">Next seed</button>
+  <label><input id="show-witness" type="checkbox" checked /> Show the witness Parts</label>
+</header>
+<main>
+  <section id="board-panel">
+    <canvas id="board"></canvas>
+    <div id="playback">
+      <button id="reset" type="button">Reset</button>
+      <button id="step" type="button">Step</button>
+      <button id="play" type="button">Play</button>
+      <input id="tick" type="range" min="0" max="0" value="0" />
+      <span id="tick-label"></span>
+    </div>
+    <p id="verdict"></p>
+  </section>
+  <aside>
+    <h2>Aims</h2>
+    <ul id="aims"></ul>
+    <h2>Inventory</h2>
+    <ul id="inventory"></ul>
+    <h2>Batch</h2>
+    <label>Seeds per difficulty <input id="batch-size" type="number" min="1" max="5000" value="1000" /></label>
+    <button id="run-batch" type="button">Run batch</button>
+    <table id="batch-table"></table>
+    <ul id="batch-failures"></ul>
+  </aside>
+</main>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

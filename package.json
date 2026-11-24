@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build && node scripts/prerender-guide.ts",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tools/back-office && tsc --noEmit -p tools/glb-viewer",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tools/back-office && tsc --noEmit -p tools/glb-viewer && tsc --noEmit -p tools/puzzle-lab",
     "lint": "eslint src build scripts tools",
     "test": "vitest run",
     "saves:update": "UPDATE_SAVES=1 vitest run src/saves",
@@ -35,6 +35,7 @@
     "assets:editor": "vite --config tools/assets-editor/vite.config.ts --host",
     "glb-viewer": "vite --config tools/glb-viewer/vite.config.ts",
     "back-office": "vite --config tools/back-office/vite.config.ts",
+    "puzzle-lab": "vite --config tools/puzzle-lab/vite.config.ts",
     "architect:proto": "vite --config prototypes/architect-studio/vite.config.ts",
     "casino:sim": "vite --config prototypes/casino-sim/vite.config.ts --host",
     "preview": "vite preview",
