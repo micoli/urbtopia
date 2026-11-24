@@ -1,6 +1,6 @@
 # Play on another device entry
 
-Status: ready-for-agent
+Status: done - implemented
 Spec: ../spec.md
 Blocked by: none
 
@@ -13,3 +13,7 @@ A permanent entry "Play on another device" in the system menu opens the sign-in 
 - [ ] The entry is visible from the first game, hidden when an email is already attached.
 - [ ] It opens the existing sign-in by code (ADR 0027) with a sentence explaining why.
 - [ ] Texts in FR and EN; update the Guide article on the Cloud save.
+
+## Notes
+
+The entry sits in the City section of the Game settings tab and sends the player to the Saves tab, where the typed-code form already lives. The Guide has no Cloud save article to update.
