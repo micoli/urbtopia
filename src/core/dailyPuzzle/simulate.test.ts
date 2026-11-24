@@ -64,4 +64,14 @@ describe('simulate', () => {
 
     expect(simulate(board, [{ kind: 'spring-right', at: { x: 0, y: 4 } }]).solved).toBe(true);
   });
+
+  it('flips a seesaw after each pass so the second pass goes the other way', () => {
+    const board: Board = { ...emptyBoard, ballStart: { x: 2, y: 0 }, aims: [{ kind: 'deliver', target: { x: 1, y: 5 } }] };
+    const parts = [
+      { kind: 'seesaw-right', at: { x: 2, y: 2 } },
+      { kind: 'trampoline-left', at: { x: 3, y: 4 } },
+    ];
+
+    expect(simulate(board, parts).solved).toBe(true);
+  });
 });
