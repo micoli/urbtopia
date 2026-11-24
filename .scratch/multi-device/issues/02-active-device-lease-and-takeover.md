@@ -14,3 +14,7 @@ Migration and RPC `urb_claim_city` (lease of 2 min), renewed every 30 s with the
 - [ ] Unit tests on the fake client: two devices, takeover, lapsed lease, offline then reconnect (three cases).
 - [ ] Banner and dialog texts in FR and EN, Dialog from `src/ui/common`, no emoji, motion respects `prefers-reduced-motion`.
 - [ ] One Playwright test with two browser contexts: A plays, B takes over, A becomes read-only and its last edit is a previous version.
+
+## Notes (set aside)
+
+The unpushed work of the device put aside goes to the Cloud save through `urb_stash_save` (migration `20261124000001`), three kept per City, shown in the version list and restorable. The migration also redefines `urb_delete_city_saves` from its latest version (shipments check, Showcase, Hall of fame opt-out) to clear the stashes and the lease.

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { newGame } from '../../core';
 import { CURRENT_VERSION, serializeEnvelope } from '../envelope';
 import { readCloudMeta } from '../meta';
@@ -7,7 +7,7 @@ import { bootCities, FIRST_CITY_ID, readRegistry } from '../cities';
 import { CityScopedSaveStore } from '../cityStore';
 import { MemorySaveStore, SAVE_KEY } from '../saveStore';
 import { CloudSync, LEASE_RENEW_MS, PUSH_INTERVAL_MS, type CloudStatus } from './cloudSync';
-import { CITY_LEASE_MS } from './types';
+import { CITY_LEASE_MS, CloudError } from './types';
 import { FakeCloudSaveClient } from './fakeCloudSaveClient';
 
 const T0 = 1_700_000_000_000;
@@ -354,6 +354,78 @@ describe('CloudSync Active device', () => {
     await a.sync.tick();
     expect(a.sync.current.kind).toBe('synced');
     expect(client.rows[client.rows.length - 1]?.envelope).toBe(envelopeAt(clock.now - BACKOFF_MS));
+  });
+});
+
+const flushAsync = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+describe('CloudSync work set aside', () => {
+  async function putAside() {
+    const { clock, client, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+    await b.sync.takeOver();
+    clock.now += PUSH_INTERVAL_MS;
+    a.edit(clock.now);
+    return { clock, client, a, b };
+  }
+
+  it('sends the unpushed work of the device put aside to the Cloud save as a previous version', async () => {
+    const { clock, client, a } = await putAside();
+    await a.sync.tick();
+    await flushAsync();
+
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
+    expect(client.stashes.map((stash) => stash.envelope)).toEqual([envelopeAt(clock.now)]);
+    expect(client.rows).toHaveLength(1);
+    expect(client.rows[0]?.envelope).toBe(envelopeAt(T0));
+  });
+
+  it('shows it in the version list of the device that took over, and restores it on demand', async () => {
+    const { clock, b, a } = await putAside();
+    await a.sync.tick();
+    await flushAsync();
+
+    const versions = await b.sync.listVersions();
+    const aside = versions.find((version) => version.revision < 0);
+    expect(aside).toBeDefined();
+    await b.sync.restoreVersion(aside!.revision);
+    expect(b.log.adopted[b.log.adopted.length - 1]).toBe(envelopeAt(clock.now));
+  });
+
+  it('sets nothing aside when everything was already pushed', async () => {
+    const { clock, client, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+    await b.sync.takeOver();
+
+    clock.now += LEASE_RENEW_MS;
+    await a.sync.tick();
+    await flushAsync();
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
+    expect(client.stashes).toHaveLength(0);
+  });
+
+  it('keeps the work in the local save when the Cloud save cannot be reached, and tries again at the next lease check', async () => {
+    const { clock, client, a } = await putAside();
+    vi.spyOn(client, 'stash').mockRejectedValueOnce(new CloudError('offline'));
+    await a.sync.tick();
+    await flushAsync();
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
+
+    vi.restoreAllMocks();
+    clock.now += LEASE_RENEW_MS;
+    await a.sync.tick();
+    await flushAsync();
+    expect(client.stashes.map((stash) => stash.envelope)).toEqual([envelopeAt(clock.now - LEASE_RENEW_MS)]);
   });
 });
 

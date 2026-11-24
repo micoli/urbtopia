@@ -1,7 +1,8 @@
 import { FIRST_CITY_ID, MAX_CITIES } from '../cities';
-import { CITY_LEASE_MS, CloudError, type CityLease, type CloudAccount, type CloudCity, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
+import { CITY_LEASE_MS, CloudError, type CityLease, type CloudAccount, type CloudCity, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput, type StashInput } from './types';
 
 const MAX_ROWS = 10;
+const MAX_STASHES = 3;
 const MAX_ENVELOPE_LENGTH = 1_048_576;
 
 interface Row extends CloudSave {
@@ -18,6 +19,8 @@ export class FakeCloudSaveClient implements CloudSaveClient {
   validCode = '123456';
   private listeners = new Set<(account: CloudAccount | null) => void>();
   pushes: PushInput[] = [];
+  stashes: (StashInput & { id: number })[] = [];
+  private nextStash = 1;
   claims: { cityId: string; deviceId: string; force: boolean }[] = [];
   private leases = new Map<string, { deviceId: string; expiresAt: number }>();
   signedIn = false;
@@ -161,6 +164,16 @@ export class FakeCloudSaveClient implements CloudSaveClient {
     return { held: true, holder: deviceId };
   }
 
+  async stash(input: StashInput): Promise<void> {
+    this.guard();
+    if (input.envelope.length > MAX_ENVELOPE_LENGTH) throw new CloudError('too-large');
+    if (this.stashes.some((stash) => stash.cityId === input.cityId && stash.savedAt === input.savedAt && stash.envelope === input.envelope)) return;
+    this.stashes.push({ ...input, id: this.nextStash });
+    this.nextStash += 1;
+    const ofCity = this.stashes.filter((stash) => stash.cityId === input.cityId);
+    for (const old of ofCity.slice(0, Math.max(0, ofCity.length - MAX_STASHES))) this.stashes.splice(this.stashes.indexOf(old), 1);
+  }
+
   async latest(cityId: string): Promise<CloudSave | null> {
     this.guard();
     const current = this.current(cityId);
@@ -169,7 +182,9 @@ export class FakeCloudSaveClient implements CloudSaveClient {
 
   async list(cityId: string): Promise<CloudSaveVersion[]> {
     this.guard();
-    return [...this.rowsOf(cityId)].reverse().map((row) => ({ revision: row.revision, clientSavedAt: row.clientSavedAt, createdAt: row.createdAt }));
+    const saves = [...this.rowsOf(cityId)].reverse().map((row) => ({ revision: row.revision, clientSavedAt: row.clientSavedAt, createdAt: row.createdAt }));
+    const aside = this.stashes.filter((stash) => stash.cityId === cityId).reverse().map((stash) => ({ revision: -stash.id, clientSavedAt: stash.savedAt, createdAt: this.clock() }));
+    return [...saves, ...aside];
   }
 
   async listCities(): Promise<CloudCity[]> {
@@ -182,7 +197,8 @@ export class FakeCloudSaveClient implements CloudSaveClient {
 
   async restore(cityId: string, revision: number): Promise<number> {
     this.guard();
-    const source = this.rowsOf(cityId).find((row) => row.revision === revision);
+    const stashed = revision < 0 ? this.stashes.find((stash) => stash.cityId === cityId && stash.id === -revision) : undefined;
+    const source = stashed ? { envelope: stashed.envelope, clientSavedAt: stashed.savedAt } : this.rowsOf(cityId).find((row) => row.revision === revision);
     if (!source) throw new CloudError('unknown');
     return this.insert(cityId, source.envelope, source.clientSavedAt, this.current(cityId)?.revision ?? 0);
   }
@@ -191,6 +207,7 @@ export class FakeCloudSaveClient implements CloudSaveClient {
     this.guard();
     this.cities().delete(cityId);
     this.leases.delete(`${this.userId}:${cityId}`);
+    this.stashes = this.stashes.filter((stash) => stash.cityId !== cityId);
   }
 
   async deleteMine(): Promise<void> {

@@ -904,6 +904,10 @@ export type Database = {
         };
         Returns: number;
       };
+      urb_stash_save: {
+        Args: { p_city_id: string; p_client_saved_at: string; p_envelope: Json; p_format_version: number };
+        Returns: number;
+      };
       urb_claim_city: {
         Args: { p_city_id: string; p_device_id: string; p_force?: boolean };
         Returns: { held: boolean; holder: string }[];

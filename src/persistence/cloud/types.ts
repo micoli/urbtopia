@@ -45,6 +45,13 @@ export interface PushInput {
   deviceId?: string;
 }
 
+export interface StashInput {
+  cityId: string;
+  envelope: string;
+  savedAt: number;
+  formatVersion: number;
+}
+
 export interface CloudAccount {
   userId: string;
   email: string | null;
@@ -59,6 +66,7 @@ export interface CloudSaveClient {
   onAccountChange(listener: (account: CloudAccount | null) => void): () => void;
   push(input: PushInput): Promise<number>;
   claimCity(cityId: string, deviceId: string, force: boolean): Promise<CityLease>;
+  stash(input: StashInput): Promise<void>;
   latest(cityId: string): Promise<CloudSave | null>;
   list(cityId: string): Promise<CloudSaveVersion[]>;
   listCities(): Promise<CloudCity[]>;

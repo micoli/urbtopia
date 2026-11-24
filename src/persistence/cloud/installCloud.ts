@@ -9,6 +9,7 @@ import { parseEnvelope } from '../envelope';
 import { adoptSavedPrefs } from '../savedPrefs';
 import { readDeviceId } from '../deviceId';
 import { openCityId, rawSaveStore, saveSession, saveStore } from '../instance';
+import { saveNowHandle } from '../saveNow';
 import { SAVE_KEY } from '../saveStore';
 import { cloudEnabled } from './cloudConfig';
 import { CloudSync } from './cloudSync';
@@ -48,6 +49,7 @@ export function installCloudSync(): () => void {
       client,
       cityId: openCityId(),
       deviceId: readDeviceId(rawSaveStore, () => crypto.randomUUID()),
+      flush: () => saveNowHandle.current(),
       store: saveStore,
       now: Date.now,
       canPush: () => !readOnlyStore.getState().readOnly || readOnlyStore.getState().reason === 'device',

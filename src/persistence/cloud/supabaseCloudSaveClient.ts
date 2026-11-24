@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CloudConfig } from './cloudConfig';
 import type { Database, Json } from './database.types';
 import { loadSharedSupabase } from './sharedSupabase';
-import { CloudError, type CityLease, type CloudAccount, type CloudCity, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
+import { CloudError, type CityLease, type CloudAccount, type CloudCity, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput, type StashInput } from './types';
 
 const KEEPALIVE_BODY_LIMIT = 60_000;
 
@@ -137,6 +137,18 @@ class SupabaseCloudSaveClient implements CloudSaveClient {
     if (error) throw toCloudError(error);
     const lease = data[0];
     return { held: lease?.held === true, holder: lease?.holder ?? null };
+  }
+
+  async stash(input: StashInput): Promise<void> {
+    const { error } = await this.attempt(() =>
+      this.client.rpc('urb_stash_save', {
+        p_city_id: input.cityId,
+        p_envelope: JSON.parse(input.envelope) as Json,
+        p_format_version: input.formatVersion,
+        p_client_saved_at: new Date(input.savedAt).toISOString(),
+      }),
+    );
+    if (error) throw toCloudError(error);
   }
 
   async latest(cityId: string): Promise<CloudSave | null> {

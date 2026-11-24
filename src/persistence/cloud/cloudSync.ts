@@ -48,6 +48,7 @@ export interface CloudSyncDeps {
   deviceId: string;
   canPush: () => boolean;
   onActive?: (active: boolean) => void;
+  flush?: () => void;
   onStatus: (status: CloudStatus) => void;
   onAccount?: (account: CloudAccount | null) => void;
   parseOptions?: ParseOptions;
@@ -66,6 +67,7 @@ export class CloudSync {
   private lastAttemptAt: number | null = null;
   private lastRefreshAt: number | null = null;
   private lastClaimAt: number | null = null;
+  private asideSavedAt: number | null = null;
   private retryAt = 0;
   private failures = 0;
   private busy = false;
@@ -128,6 +130,7 @@ export class CloudSync {
 
   private async watchLease(): Promise<void> {
     if (!this.deps.canPush() || !this.leaseDue()) return;
+    void this.setAside();
     await this.guarded(async () => {
       await this.ensureSignedIn();
       if (await this.claim(false)) await this.resume();
@@ -155,9 +158,27 @@ export class CloudSync {
 
   private enterElsewhere(): void {
     if (this.status.kind === 'elsewhere') return;
-    if (readCloudMeta(this.deps.store).editedSinceSync) this.deps.local.keepAsPreviousVersion();
+    this.deps.flush?.();
+    if (this.hasUnpushedWork()) this.deps.local.keepAsPreviousVersion();
     this.deps.onActive?.(false);
     this.setStatus({ kind: 'elsewhere' });
+    void this.setAside();
+  }
+
+  private hasUnpushedWork(): boolean {
+    return readCloudMeta(this.deps.store).editedSinceSync || this.isDirty();
+  }
+
+  // The work of a device put aside goes to the Cloud save as a previous version, never as the current one; when the service is out of reach it stays in the local save and the next lease check tries again.
+  private async setAside(): Promise<void> {
+    const local = this.readLocal();
+    if (!local || !this.hasUnpushedWork() || local.savedAt === this.asideSavedAt) return;
+    try {
+      await this.deps.client.stash({ cityId: this.deps.cityId, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION });
+      this.asideSavedAt = local.savedAt;
+    } catch {
+      // Nothing is lost: the local save still holds this work.
+    }
   }
 
   async refresh(): Promise<void> {
