@@ -92,6 +92,10 @@ function aimsFor(random: Random, path: Cell[], count: number): Aim[] | undefined
   return chosen.length >= count ? chosen.slice(0, count) : undefined;
 }
 
+function needsEveryPart(board: Board, witness: PlacedPart[]): boolean {
+  return witness.every((_, skipped) => !simulate(board, witness.filter((__, kept) => kept !== skipped)).solved);
+}
+
 function tryBuild(random: Random, layout: Layout): { board: Board; witness: PlacedPart[] } | undefined {
   const start: Cell = { x: Math.floor(random() * layout.width), y: 0 };
   const bare: Board = { width: layout.width, height: layout.height, ballStart: start, aims: [] };
@@ -100,7 +104,7 @@ function tryBuild(random: Random, layout: Layout): { board: Board; witness: Plac
   const aims = aimsFor(random, runBall(bare, witness).path, layout.aims);
   if (!aims) return undefined;
   const board: Board = { ...bare, aims };
-  if (simulate(board, []).solved || !simulate(board, witness).solved) return undefined;
+  if (simulate(board, []).solved || !simulate(board, witness).solved || !needsEveryPart(board, witness)) return undefined;
   return { board, witness };
 }
 
