@@ -1,11 +1,10 @@
 import { generatePuzzle } from '../../../src/core/dailyPuzzle/generate'
 import { runBall, simulate } from '../../../src/core/dailyPuzzle/simulate'
 import type { Aim, Cell, Difficulty, PlacedPart, Puzzle } from '../../../src/core/dailyPuzzle/types'
+import { BoardScene } from './boardScene'
 
-const CELL = 44
 const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard']
-const PLAY_INTERVAL_MS = 350
-const FAN_REACH = 3
+const PLAY_INTERVAL_MS = 700
 
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 const seedInput = element<HTMLInputElement>('seed')
@@ -15,12 +14,7 @@ const canvas = element<HTMLCanvasElement>('board')
 const tickInput = element<HTMLInputElement>('tick')
 const tickLabel = element<HTMLSpanElement>('tick-label')
 const verdict = element<HTMLParagraphElement>('verdict')
-const context = canvas.getContext('2d') as CanvasRenderingContext2D
-
-const KIND_COLOR: Record<string, string> = {
-  ramp: '#8e6bbf', conveyor: '#c98a2b', trampoline: '#2f8fbf', spring: '#3fa56b', seesaw: '#bf5f7a', fan: '#6b7f8e',
-}
-const KIND_LETTER: Record<string, string> = { ramp: 'R', conveyor: 'C', trampoline: 'T', spring: 'S', seesaw: 'B', fan: 'F' }
+const board = new BoardScene(canvas)
 
 let puzzle: Puzzle
 let path: Cell[] = []
@@ -29,8 +23,6 @@ let timer: ReturnType<typeof setInterval> | undefined
 
 const currentDifficulty = () => difficultySelect.value as Difficulty
 const currentParts = (): PlacedPart[] => (showWitness.checked ? puzzle.witness : [])
-const familyOf = (kind: string) => kind.slice(0, kind.lastIndexOf('-'))
-const sideOf = (kind: string) => (kind.endsWith('-right') ? '›' : '‹')
 
 function describeAim(aim: Aim): string {
   const at = (cell: Cell) => `(${cell.x},${cell.y})`
@@ -40,89 +32,12 @@ function describeAim(aim: Aim): string {
   return `Collect stars ${aim.stars.map(at).join(' ')}, then reach the exit ${at(aim.exit)}`
 }
 
-function drawGrid() {
-  const { width, height } = puzzle.board
-  context.strokeStyle = getComputedStyle(document.body).getPropertyValue('--line')
-  context.lineWidth = 1
-  for (let x = 0; x <= width; x += 1) { context.beginPath(); context.moveTo(x * CELL, 0); context.lineTo(x * CELL, height * CELL); context.stroke() }
-  for (let y = 0; y <= height; y += 1) { context.beginPath(); context.moveTo(0, y * CELL); context.lineTo(width * CELL, y * CELL); context.stroke() }
-}
-
-const centerOf = (cell: Cell) => ({ x: cell.x * CELL + CELL / 2, y: cell.y * CELL + CELL / 2 })
-
-function drawMarker(cell: Cell, glyph: string, color: string) {
-  const { x, y } = centerOf(cell)
-  context.fillStyle = color
-  context.font = `${CELL * 0.5}px system-ui`
-  context.textAlign = 'center'
-  context.textBaseline = 'middle'
-  context.fillText(glyph, x, y)
-}
-
-function drawAims() {
-  for (const aim of puzzle.board.aims) {
-    if (aim.kind === 'deliver') drawMarker(aim.target, '◎', '#c0392b')
-    if (aim.kind === 'light') for (const cell of aim.candles) drawMarker(cell, '♦', '#e08a1e')
-    if (aim.kind === 'flip') for (const cell of aim.switches) drawMarker(cell, '▣', '#2f6f4f')
-    if (aim.kind === 'collect') {
-      for (const cell of aim.stars) drawMarker(cell, '★', '#d4a800')
-      drawMarker(aim.exit, '◎', '#2f9f5f')
-    }
-  }
-}
-
-function drawParts(parts: PlacedPart[]) {
-  for (const part of parts) {
-    const family = familyOf(part.kind)
-    if (family === 'fan') {
-      const side = part.kind.endsWith('-right') ? 1 : -1
-      context.fillStyle = 'rgba(107,127,142,0.18)'
-      const left = side === 1 ? part.at.x : part.at.x - (FAN_REACH - 1)
-      context.fillRect(left * CELL, part.at.y * CELL, FAN_REACH * CELL, CELL)
-    }
-    context.fillStyle = KIND_COLOR[family] ?? '#888'
-    context.fillRect(part.at.x * CELL + 4, part.at.y * CELL + 4, CELL - 8, CELL - 8)
-    context.fillStyle = '#fff'
-    context.font = `bold ${CELL * 0.4}px system-ui`
-    context.textAlign = 'center'
-    context.textBaseline = 'middle'
-    const { x, y } = centerOf(part.at)
-    context.fillText(`${KIND_LETTER[family] ?? '?'}${sideOf(part.kind)}`, x, y)
-  }
-}
-
-function drawPath() {
-  context.strokeStyle = 'rgba(192,57,43,0.55)'
-  context.lineWidth = 3
-  context.beginPath()
-  path.slice(0, tick + 1).forEach((cell, index) => {
-    const { x, y } = centerOf(cell)
-    if (index === 0) context.moveTo(x, y)
-    else context.lineTo(x, y)
-  })
-  context.stroke()
-  const ball = path[tick]
-  if (!ball) return
-  const { x, y } = centerOf(ball)
-  context.fillStyle = '#c0392b'
-  context.beginPath()
-  context.arc(x, y, CELL * 0.18, 0, Math.PI * 2)
-  context.fill()
-}
-
-function draw() {
-  const { width, height } = puzzle.board
-  canvas.width = width * CELL
-  canvas.height = height * CELL
-  drawGrid()
-  drawParts(currentParts())
-  drawAims()
-  drawPath()
+function showTick() {
   tickLabel.textContent = `${tick} / ${Math.max(0, path.length - 1)}`
   tickInput.value = String(tick)
 }
 
-function showPuzzle() {
+async function showPuzzle() {
   stopPlayback()
   puzzle = generatePuzzle(seedInput.value, currentDifficulty())
   const parts = currentParts()
@@ -134,7 +49,8 @@ function showPuzzle() {
   verdict.className = result.solved ? 'ok' : 'ko'
   element('aims').replaceChildren(...puzzle.board.aims.map((aim) => Object.assign(document.createElement('li'), { textContent: describeAim(aim) })))
   element('inventory').replaceChildren(...puzzle.inventory.map((kind) => Object.assign(document.createElement('li'), { textContent: kind })))
-  draw()
+  await board.show(puzzle, parts, path, result.solved)
+  showTick()
 }
 
 function stopPlayback() {
@@ -146,24 +62,25 @@ function stopPlayback() {
 function step() {
   if (tick >= path.length - 1) return stopPlayback()
   tick += 1
-  draw()
+  board.step(tick, PLAY_INTERVAL_MS)
+  showTick()
 }
 
 element('step').addEventListener('click', () => { stopPlayback(); step() })
-element('reset').addEventListener('click', () => { stopPlayback(); tick = 0; draw() })
+element('reset').addEventListener('click', () => { stopPlayback(); tick = 0; board.seek(0); showTick() })
 element('play').addEventListener('click', () => {
   if (timer) return stopPlayback()
-  if (tick >= path.length - 1) tick = 0
+  if (tick >= path.length - 1) { tick = 0; board.seek(0) }
   element('play').textContent = 'Pause'
   timer = setInterval(step, PLAY_INTERVAL_MS)
 })
-tickInput.addEventListener('input', () => { stopPlayback(); tick = Number(tickInput.value); draw() })
-seedInput.addEventListener('change', showPuzzle)
-difficultySelect.addEventListener('change', showPuzzle)
-showWitness.addEventListener('change', showPuzzle)
+tickInput.addEventListener('input', () => { stopPlayback(); tick = Number(tickInput.value); board.seek(tick); showTick() })
+seedInput.addEventListener('change', () => void showPuzzle())
+difficultySelect.addEventListener('change', () => void showPuzzle())
+showWitness.addEventListener('change', () => void showPuzzle())
 element('next-seed').addEventListener('click', () => {
   seedInput.value = `lab-${Math.floor(Math.random() * 1_000_000)}`
-  showPuzzle()
+  void showPuzzle()
 })
 
 interface BatchRow { difficulty: Difficulty; generated: number; failed: number; milliseconds: number; ticks: number }
@@ -209,4 +126,4 @@ async function runBatch() {
 }
 
 element('run-batch').addEventListener('click', () => { void runBatch() })
-showPuzzle()
+void showPuzzle()
