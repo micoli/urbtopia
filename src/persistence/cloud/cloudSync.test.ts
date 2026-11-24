@@ -357,6 +357,29 @@ describe('CloudSync Active device', () => {
   });
 });
 
+describe('CloudSync Takeover while a check is running', () => {
+  it('waits for the running check instead of being dropped', async () => {
+    const { clock, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+    await b.sync.takeOver();
+    clock.now += PUSH_INTERVAL_MS;
+    await a.sync.tick();
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
+
+    clock.now += LEASE_RENEW_MS;
+    const running = a.sync.tick();
+    await a.sync.takeOver();
+    await running;
+    expect(a.sync.current.kind).toBe('synced');
+    expect(a.log.active[a.log.active.length - 1]).toBe(true);
+  });
+});
+
 describe('CloudSync lease checks', () => {
   async function conflictedPhone() {
     const { clock, client, device } = world();

@@ -7,6 +7,8 @@ import { CloudError, type CloudAccount, type CloudCity, type CloudSave, type Clo
 export const PUSH_INTERVAL_MS = 30_000;
 export const REFRESH_INTERVAL_MS = 10_000;
 export const LEASE_RENEW_MS = 30_000;
+const TAKEOVER_WAIT_MS = 10_000;
+const TAKEOVER_POLL_MS = 50;
 const BACKOFF_START_MS = 30_000;
 const BACKOFF_MAX_MS = 10 * 60_000;
 
@@ -116,11 +118,18 @@ export class CloudSync {
   }
 
   async takeOver(): Promise<void> {
+    await this.whenIdle();
     await this.guarded(async () => {
       await this.ensureSignedIn();
       await this.claim(true);
       await this.resume();
     });
+  }
+
+  private async whenIdle(): Promise<void> {
+    for (let waited = 0; this.busy && waited < TAKEOVER_WAIT_MS; waited += TAKEOVER_POLL_MS) {
+      await new Promise((resolve) => setTimeout(resolve, TAKEOVER_POLL_MS));
+    }
   }
 
   private async resume(): Promise<void> {
