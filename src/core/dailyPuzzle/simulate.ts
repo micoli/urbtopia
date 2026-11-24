@@ -35,6 +35,7 @@ function visitsOf(visited: Cell[], cell: Cell): number {
 function isMet(aim: Aim, visited: Cell[], end: Cell): boolean {
   if (aim.kind === 'deliver') return cellKey(aim.target) === cellKey(end);
   if (aim.kind === 'light') return aim.candles.every((candle) => visitsOf(visited, candle) > 0);
+  if (aim.kind === 'collect') return cellKey(aim.exit) === cellKey(end) && aim.stars.every((star) => visitsOf(visited, star) > 0);
   return aim.switches.every((cell) => visitsOf(visited, cell) % 2 === 1);
 }
 

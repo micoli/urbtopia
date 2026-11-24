@@ -144,4 +144,20 @@ describe('simulate', () => {
       expect(simulate(flipBoard({ x: 0, y: 3 }), []).solved).toBe(false);
     });
   });
+
+  describe('Collect aim', () => {
+    const collectBoard = (stars: Cell[], exit: Cell): Board => ({ ...emptyBoard, aims: [{ kind: 'collect', stars, exit }] });
+
+    it('is solved when the ball takes every star then ends on the exit', () => {
+      expect(simulate(collectBoard([{ x: 2, y: 1 }, { x: 2, y: 3 }], { x: 2, y: 5 }), []).solved).toBe(true);
+    });
+
+    it('fails when a star is missed', () => {
+      expect(simulate(collectBoard([{ x: 2, y: 1 }, { x: 3, y: 3 }], { x: 2, y: 5 }), []).solved).toBe(false);
+    });
+
+    it('fails when every star is taken but the ball misses the exit', () => {
+      expect(simulate(collectBoard([{ x: 2, y: 1 }], { x: 3, y: 5 }), []).solved).toBe(false);
+    });
+  });
 });

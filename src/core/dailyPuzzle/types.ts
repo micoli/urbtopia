@@ -3,7 +3,7 @@ export interface Cell {
   y: number;
 }
 
-export type Aim = { kind: 'deliver'; target: Cell } | { kind: 'light'; candles: Cell[] } | { kind: 'flip'; switches: Cell[] };
+export type Aim = { kind: 'deliver'; target: Cell } | { kind: 'light'; candles: Cell[] } | { kind: 'flip'; switches: Cell[] } | { kind: 'collect'; stars: Cell[]; exit: Cell };
 
 export interface Board {
   width: number;
