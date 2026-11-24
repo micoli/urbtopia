@@ -28,18 +28,23 @@ const FAN_PUSH = 2;
 
 const cellKey = (cell: Cell) => `${cell.x},${cell.y}`;
 
-function visitsOf(visited: Cell[], cell: Cell): number {
-  return visited.filter((seen) => cellKey(seen) === cellKey(cell)).length;
+export function visitsOf(path: Cell[], cell: Cell): number {
+  return path.filter((seen) => cellKey(seen) === cellKey(cell)).length;
 }
 
-function isMet(aim: Aim, visited: Cell[], end: Cell): boolean {
+function isMet(aim: Aim, path: Cell[], end: Cell): boolean {
   if (aim.kind === 'deliver') return cellKey(aim.target) === cellKey(end);
-  if (aim.kind === 'light') return aim.candles.every((candle) => visitsOf(visited, candle) > 0);
-  if (aim.kind === 'collect') return cellKey(aim.exit) === cellKey(end) && aim.stars.every((star) => visitsOf(visited, star) > 0);
-  return aim.switches.every((cell) => visitsOf(visited, cell) % 2 === 1);
+  if (aim.kind === 'light') return aim.candles.every((candle) => visitsOf(path, candle) > 0);
+  if (aim.kind === 'collect') return cellKey(aim.exit) === cellKey(end) && aim.stars.every((star) => visitsOf(path, star) > 0);
+  return aim.switches.every((cell) => visitsOf(path, cell) % 2 === 1);
 }
 
-export function simulate(board: Board, parts: PlacedPart[]): SimulationResult {
+export interface BallRun {
+  path: Cell[];
+  landed: boolean;
+}
+
+export function runBall(board: Board, parts: PlacedPart[]): BallRun {
   const partByCell = new Map(parts.map((part) => [cellKey(part.at), part.kind]));
   const seesawSide = new Map<string, number>();
 
@@ -64,17 +69,20 @@ export function simulate(board: Board, parts: PlacedPart[]): SimulationResult {
     return { dx: side, dy: 1 };
   }
 
-  let ball = board.ballStart;
-  const visited: Cell[] = [ball];
-  let ticks = 0;
   const onBoard = (cell: Cell) => cell.x >= 0 && cell.x < board.width;
-  while (onBoard(ball) && ball.y < board.height - 1 && ticks < MAX_TICKS) {
+  let ball = board.ballStart;
+  const path: Cell[] = [ball];
+  while (onBoard(ball) && ball.y < board.height - 1 && path.length <= MAX_TICKS) {
     const move = moveFrom(ball);
     ball = { x: ball.x + move.dx, y: ball.y + move.dy };
-    visited.push(ball);
-    ticks += 1;
+    path.push(ball);
   }
-  const landed = onBoard(ball) && ticks < MAX_TICKS;
-  const reached = board.aims.every((aim) => isMet(aim, visited, ball));
-  return { solved: landed && reached, ticks };
+  return { path, landed: onBoard(ball) && path.length <= MAX_TICKS };
+}
+
+export function simulate(board: Board, parts: PlacedPart[]): SimulationResult {
+  const { path, landed } = runBall(board, parts);
+  const end = path[path.length - 1] as Cell;
+  const reached = board.aims.every((aim) => isMet(aim, path, end));
+  return { solved: landed && reached, ticks: path.length - 1 };
 }

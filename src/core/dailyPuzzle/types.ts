@@ -21,3 +21,11 @@ export interface SimulationResult {
   solved: boolean;
   ticks: number;
 }
+
+export type Difficulty = 'easy' | 'medium' | 'hard';
+
+export interface Puzzle {
+  board: Board;
+  inventory: string[];
+  witness: PlacedPart[];
+}
