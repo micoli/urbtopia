@@ -7,3 +7,5 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const ReadOnly: Story = { parameters: { stores: { readOnly: true } } };
+
+export const PlayedOnAnotherDevice: Story = { parameters: { stores: { readOnly: true, readOnlyReason: 'device' } } };

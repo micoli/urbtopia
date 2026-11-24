@@ -1,5 +1,5 @@
 import { FIRST_CITY_ID, MAX_CITIES } from '../cities';
-import { CloudError, type CloudAccount, type CloudCity, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
+import { CITY_LEASE_MS, CloudError, type CityLease, type CloudAccount, type CloudCity, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
 
 const MAX_ROWS = 10;
 const MAX_ENVELOPE_LENGTH = 1_048_576;
@@ -18,6 +18,8 @@ export class FakeCloudSaveClient implements CloudSaveClient {
   validCode = '123456';
   private listeners = new Set<(account: CloudAccount | null) => void>();
   pushes: PushInput[] = [];
+  claims: { cityId: string; deviceId: string; force: boolean }[] = [];
+  private leases = new Map<string, { deviceId: string; expiresAt: number }>();
   signedIn = false;
   private offline = false;
   private hourMs = 3_600_000;
@@ -127,7 +129,9 @@ export class FakeCloudSaveClient implements CloudSaveClient {
     const current = this.current(input.cityId);
     const currentRevision = current?.revision ?? 0;
     if (!current && this.storedCityCount() >= MAX_CITIES) throw new CloudError('city-limit');
+    if (input.deviceId !== undefined && this.leaseHolder(input.cityId, input.deviceId) !== null) throw new CloudError('not-active');
     if (input.baseRevision !== currentRevision) throw new CloudError('conflict', currentRevision);
+    if (input.deviceId !== undefined) this.takeLease(input.cityId, input.deviceId, false);
     const sameHour = current && this.clock() - current.createdAt < this.hourMs;
     if (current && sameHour && !input.keepPrevious) {
       current.revision += 1;
@@ -136,6 +140,25 @@ export class FakeCloudSaveClient implements CloudSaveClient {
       return current.revision;
     }
     return this.insert(input.cityId, input.envelope, input.savedAt, currentRevision);
+  }
+
+  async claimCity(cityId: string, deviceId: string, force: boolean): Promise<CityLease> {
+    this.guard();
+    this.claims.push({ cityId, deviceId, force });
+    return this.takeLease(cityId, deviceId, force);
+  }
+
+  private leaseHolder(cityId: string, deviceId: string): string | null {
+    const lease = this.leases.get(`${this.userId}:${cityId}`);
+    if (!lease || lease.deviceId === deviceId || lease.expiresAt <= this.clock()) return null;
+    return lease.deviceId;
+  }
+
+  private takeLease(cityId: string, deviceId: string, force: boolean): CityLease {
+    const holder = this.leaseHolder(cityId, deviceId);
+    if (holder !== null && !force) return { held: false, holder };
+    this.leases.set(`${this.userId}:${cityId}`, { deviceId, expiresAt: this.clock() + CITY_LEASE_MS });
+    return { held: true, holder: deviceId };
   }
 
   async latest(cityId: string): Promise<CloudSave | null> {
@@ -167,6 +190,7 @@ export class FakeCloudSaveClient implements CloudSaveClient {
   async deleteCity(cityId: string): Promise<void> {
     this.guard();
     this.cities().delete(cityId);
+    this.leases.delete(`${this.userId}:${cityId}`);
   }
 
   async deleteMine(): Promise<void> {

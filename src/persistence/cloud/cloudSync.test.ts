@@ -6,26 +6,30 @@ import { restoreCloudCity } from '../restoreCloudCity';
 import { bootCities, FIRST_CITY_ID, readRegistry } from '../cities';
 import { CityScopedSaveStore } from '../cityStore';
 import { MemorySaveStore, SAVE_KEY } from '../saveStore';
-import { CloudSync, PUSH_INTERVAL_MS, type CloudStatus } from './cloudSync';
+import { CloudSync, LEASE_RENEW_MS, PUSH_INTERVAL_MS, type CloudStatus } from './cloudSync';
+import { CITY_LEASE_MS } from './types';
 import { FakeCloudSaveClient } from './fakeCloudSaveClient';
 
 const T0 = 1_700_000_000_000;
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
+const BACKOFF_MS = 10 * MINUTE;
 const game = newGame({ seed: 'amber-fox-4821', now: T0 });
 
 function envelopeAt(savedAt: number): string {
   return serializeEnvelope(game, savedAt);
 }
 
-function setup(client: FakeCloudSaveClient, clock: { now: number }, keepLocal = false, cityId = FIRST_CITY_ID) {
+function setup(client: FakeCloudSaveClient, clock: { now: number }, keepLocal = false, cityId = FIRST_CITY_ID, deviceId = 'browser') {
   const store = new MemorySaveStore();
-  const log = { adopted: [] as string[], previousKept: 0, statuses: [] as CloudStatus[], canPush: true };
+  const log = { adopted: [] as string[], previousKept: 0, statuses: [] as CloudStatus[], active: [] as boolean[], canPush: true };
   const sync = new CloudSync({
     client,
     cityId,
+    deviceId,
     store,
     now: () => clock.now,
+    onActive: (active) => log.active.push(active),
     local: {
       adopt: (envelope) => {
         log.adopted.push(envelope);
@@ -49,7 +53,7 @@ function setup(client: FakeCloudSaveClient, clock: { now: number }, keepLocal = 
 function world() {
   const clock = { now: T0 };
   const client = new FakeCloudSaveClient(() => clock.now);
-  return { clock, client, device: () => setup(client, clock) };
+  return { clock, client, device: (deviceId = 'browser') => setup(client, clock, false, FIRST_CITY_ID, deviceId) };
 }
 
 describe('CloudSync pushing', () => {
@@ -117,7 +121,7 @@ describe('CloudSync pushing', () => {
 
 describe('CloudSync refresh on return', () => {
   it('adopts a newer Cloud save silently when the local city was not edited', async () => {
-    const { clock, client, device } = world();
+    const { clock, device } = world();
     const a = device();
     const b = device();
     a.edit(T0);
@@ -189,6 +193,167 @@ describe('CloudSync refresh on return', () => {
     await a.sync.pushNow();
     await b.sync.refresh();
     expect(b.log.adopted).toHaveLength(1);
+  });
+});
+
+describe('CloudSync Active device', () => {
+  it('lets one device play a City and shows the others read-only', async () => {
+    const { client, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    b.edit(T0 + 1);
+    await b.sync.start();
+
+    expect(a.log.active).toEqual([true]);
+    expect(b.sync.current).toEqual({ kind: 'elsewhere' });
+    expect(b.log.active).toEqual([false]);
+    await b.sync.pushNow();
+    expect(client.pushes).toHaveLength(1);
+  });
+
+  it('keeps the unpushed work of the device that is put aside as a previous version', async () => {
+    const { clock, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+    await b.sync.takeOver();
+    expect(b.log.active).toEqual([false, true]);
+
+    clock.now += PUSH_INTERVAL_MS;
+    a.edit(clock.now);
+    await a.sync.tick();
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
+    expect(a.log.active).toEqual([true, false]);
+    expect(a.log.previousKept).toBe(1);
+  });
+
+  it('hands the City over: the new Active device opens it from the Cloud save', async () => {
+    const { client, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+    expect(b.log.adopted).toHaveLength(0);
+
+    await b.sync.takeOver();
+    expect(b.log.adopted).toEqual([envelopeAt(T0)]);
+    expect(b.sync.current.kind).toBe('synced');
+    expect(readCloudMeta(b.store).baseRevision).toBe(1);
+    expect(client.claims.some((claim) => claim.force)).toBe(true);
+  });
+
+  it('refuses the push of a device that lost the lease between two checks', async () => {
+    const { clock, client, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+    await b.sync.takeOver();
+
+    clock.now += PUSH_INTERVAL_MS;
+    a.edit(clock.now);
+    await a.sync.pushNow();
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
+    expect(client.rows).toHaveLength(1);
+  });
+
+  it('lets a device in once the lease of a quiet device has lapsed, without a Takeover', async () => {
+    const { clock, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+
+    clock.now += CITY_LEASE_MS + 1;
+    await b.sync.start();
+    expect(b.sync.current.kind).toBe('synced');
+    expect(b.log.adopted).toEqual([envelopeAt(T0)]);
+  });
+
+  it('renews the lease while the player is not editing', async () => {
+    const { clock, client, device } = world();
+    const a = device('phone');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    const claimsBefore = client.claims.length;
+
+    clock.now += LEASE_RENEW_MS;
+    await a.sync.tick();
+    expect(client.claims.length).toBe(claimsBefore + 1);
+    expect(client.pushes).toHaveLength(1);
+  });
+
+  it('raises a Save conflict when the device put aside takes the City back after both advanced', async () => {
+    const { clock, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+    await b.sync.takeOver();
+
+    clock.now += PUSH_INTERVAL_MS;
+    b.edit(clock.now);
+    await b.sync.pushNow();
+    a.edit(clock.now + 1);
+    await a.sync.tick();
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
+
+    await a.sync.takeOver();
+    expect(a.sync.current.kind).toBe('conflict');
+  });
+
+  it('takes the City back without a conflict when the other device never advanced', async () => {
+    const { clock, client, device } = world();
+    const a = device('phone');
+    const b = device('laptop');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+    await b.sync.start();
+    await b.sync.takeOver();
+
+    clock.now += PUSH_INTERVAL_MS;
+    a.edit(clock.now);
+    await a.sync.tick();
+    expect(a.sync.current).toEqual({ kind: 'elsewhere' });
+
+    await a.sync.takeOver();
+    expect(a.log.statuses.some((status) => status.kind === 'conflict')).toBe(false);
+    expect(client.rows[client.rows.length - 1]?.envelope).toBe(envelopeAt(clock.now));
+  });
+
+  it('keeps playing offline and pushes on reconnection when nobody else advanced', async () => {
+    const { clock, client, device } = world();
+    const a = device('phone');
+    a.edit(T0);
+    await a.sync.start();
+    await a.sync.tick();
+
+    client.goOffline();
+    clock.now += PUSH_INTERVAL_MS;
+    a.edit(clock.now);
+    await a.sync.tick();
+    expect(a.sync.current).toEqual({ kind: 'offline' });
+
+    client.goOnline();
+    clock.now += BACKOFF_MS;
+    await a.sync.tick();
+    expect(a.sync.current.kind).toBe('synced');
+    expect(client.rows[client.rows.length - 1]?.envelope).toBe(envelopeAt(clock.now - BACKOFF_MS));
   });
 });
 
@@ -575,6 +740,7 @@ describe('CloudSync accounts', () => {
     const sync = new CloudSync({
       client,
       cityId: FIRST_CITY_ID,
+      deviceId: 'browser',
       store,
       now: () => clock.now,
       local: { adopt: () => {}, keepAsPreviousVersion: () => {} },
@@ -598,6 +764,7 @@ describe('CloudSync publication hook', () => {
     const sync = new CloudSync({
       client,
       cityId: FIRST_CITY_ID,
+      deviceId: 'browser',
       store,
       now: () => clock.now,
       local: { adopt: () => {}, keepAsPreviousVersion: () => {} },
@@ -617,7 +784,7 @@ describe('CloudSync publication hook', () => {
     const client = new FakeCloudSaveClient(() => clock.now);
     const store = new MemorySaveStore();
     const pushed: string[] = [];
-    const sync = new CloudSync({ client, cityId: FIRST_CITY_ID, store, now: () => clock.now, local: { adopt: () => {}, keepAsPreviousVersion: () => {} }, canPush: () => true, onStatus: () => {}, onPushed: (envelope) => pushed.push(envelope) });
+    const sync = new CloudSync({ client, cityId: FIRST_CITY_ID, deviceId: 'browser', store, now: () => clock.now, local: { adopt: () => {}, keepAsPreviousVersion: () => {} }, canPush: () => true, onStatus: () => {}, onPushed: (envelope) => pushed.push(envelope) });
     store.put(SAVE_KEY, envelopeAt(T0));
     sync.noteEdit();
     await sync.start();

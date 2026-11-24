@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { CloudConfig } from './cloudConfig';
 import type { Database, Json } from './database.types';
 import { loadSharedSupabase } from './sharedSupabase';
-import { CloudError, type CloudAccount, type CloudCity, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
+import { CloudError, type CityLease, type CloudAccount, type CloudCity, type CloudSave, type CloudSaveClient, type CloudSaveVersion, type PushInput } from './types';
 
 const KEEPALIVE_BODY_LIMIT = 60_000;
 
@@ -15,6 +15,7 @@ interface PostgrestFailure {
 }
 
 export function toCloudError(failure: PostgrestFailure): CloudError {
+  if (failure.message.includes('urb_not_active')) return new CloudError('not-active');
   if (failure.message.includes('urb_conflict')) return new CloudError('conflict', Number(failure.details ?? 0));
   if (failure.message.includes('urb_too_large')) return new CloudError('too-large');
   if (failure.message.includes('urb_city_limit')) return new CloudError('city-limit');
@@ -121,6 +122,7 @@ class SupabaseCloudSaveClient implements CloudSaveClient {
           p_format_version: input.formatVersion,
           p_client_saved_at: new Date(input.savedAt).toISOString(),
           p_keep_previous: input.keepPrevious === true,
+          p_device_id: input.deviceId,
         }),
       );
       if (error) throw toCloudError(error);
@@ -128,6 +130,13 @@ class SupabaseCloudSaveClient implements CloudSaveClient {
     } finally {
       this.setKeepalive(false);
     }
+  }
+
+  async claimCity(cityId: string, deviceId: string, force: boolean): Promise<CityLease> {
+    const { data, error } = await this.attempt(() => this.client.rpc('urb_claim_city', { p_city_id: cityId, p_device_id: deviceId, p_force: force }));
+    if (error) throw toCloudError(error);
+    const lease = data[0];
+    return { held: lease?.held === true, holder: lease?.holder ?? null };
   }
 
   async latest(cityId: string): Promise<CloudSave | null> {

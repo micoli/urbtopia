@@ -21,6 +21,7 @@ export interface StoreOverrides {
   social?: Partial<SocialStore>;
   toast?: Partial<ToastStore>;
   readOnly?: boolean;
+  readOnlyReason?: 'tab' | 'device';
   prefs?: Partial<Prefs>;
   selectBuilding?: BuildingType;
   setup?: () => void;
@@ -49,7 +50,7 @@ function resetStores(fixture: GameFixtureName, overrides: StoreOverrides) {
   cloudStore.setState({ ...overrides.cloud });
   socialStore.setState({ ...overrides.social });
   toastStore.setState({ ...overrides.toast });
-  readOnlyStore.setState({ readOnly: overrides.readOnly ?? false });
+  readOnlyStore.setState({ readOnly: overrides.readOnly ?? false, reason: overrides.readOnly ? (overrides.readOnlyReason ?? 'tab') : null });
   selectBuildingOfType(overrides.selectBuilding);
   overrides.setup?.();
 }

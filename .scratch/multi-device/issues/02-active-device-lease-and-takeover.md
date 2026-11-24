@@ -1,6 +1,6 @@
 # Active device lease and Takeover
 
-Status: ready-for-agent
+Status: done - implemented
 Spec: ../spec.md
 Blocked by: 01
 

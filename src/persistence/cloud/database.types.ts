@@ -900,8 +900,13 @@ export type Database = {
           p_envelope: Json;
           p_format_version: number;
           p_keep_previous?: boolean;
+          p_device_id?: string;
         };
         Returns: number;
+      };
+      urb_claim_city: {
+        Args: { p_city_id: string; p_device_id: string; p_force?: boolean };
+        Returns: { held: boolean; holder: string }[];
       };
       urb_record_achievement_medal: {
         Args: { p_category: string; p_name_en: string; p_name_fr: string };

@@ -7,7 +7,8 @@ import { gameStore } from '../../store/gameStore';
 import { readOnlyStore } from '../../store/readOnlyStore';
 import { parseEnvelope } from '../envelope';
 import { adoptSavedPrefs } from '../savedPrefs';
-import { openCityId, saveSession, saveStore } from '../instance';
+import { readDeviceId } from '../deviceId';
+import { openCityId, rawSaveStore, saveSession, saveStore } from '../instance';
 import { SAVE_KEY } from '../saveStore';
 import { cloudEnabled } from './cloudConfig';
 import { CloudSync } from './cloudSync';
@@ -46,9 +47,15 @@ export function installCloudSync(): () => void {
     sync = new CloudSync({
       client,
       cityId: openCityId(),
+      deviceId: readDeviceId(rawSaveStore, () => crypto.randomUUID()),
       store: saveStore,
       now: Date.now,
-      canPush: () => !readOnlyStore.getState().readOnly,
+      canPush: () => !readOnlyStore.getState().readOnly || readOnlyStore.getState().reason === 'device',
+      onActive: (active) => {
+        const { readOnly, reason, set } = readOnlyStore.getState();
+        if (!active) return set(true, 'device');
+        if (readOnly && reason === 'device') set(false);
+      },
       keepLocal: isKeepLocalRequested(window.location.search),
       onPushed: (envelope) => {
         showcasePublishHandle.current(envelope);
@@ -114,6 +121,7 @@ export function installCloudSync(): () => void {
       },
       syncNow: () => engine.pushNow(),
       resolveConflict: (choice) => engine.resolveConflict(choice),
+      takeOver: () => engine.takeOver(),
       loadVersions: async () => cloudStore.getState().setVersions(await engine.listVersions()),
       restoreVersion: async (revision) => {
         await engine.restoreVersion(revision);

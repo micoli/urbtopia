@@ -22,6 +22,7 @@ export interface CloudActions {
   signOut: () => Promise<void>;
   syncNow: () => Promise<void>;
   resolveConflict: (choice: SaveConflictChoice) => Promise<void>;
+  takeOver: () => Promise<void>;
   loadVersions: () => Promise<void>;
   restoreVersion: (revision: number) => Promise<void>;
   deleteCloudData: () => Promise<void>;

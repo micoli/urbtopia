@@ -6,6 +6,7 @@ import { CloudError, type CloudAccount, type CloudCity, type CloudSave, type Clo
 
 export const PUSH_INTERVAL_MS = 30_000;
 export const REFRESH_INTERVAL_MS = 10_000;
+export const LEASE_RENEW_MS = 30_000;
 const BACKOFF_START_MS = 30_000;
 const BACKOFF_MAX_MS = 10 * 60_000;
 
@@ -30,6 +31,7 @@ export type CloudStatus =
   | { kind: 'synced'; at: number }
   | { kind: 'offline' }
   | { kind: 'error'; reason: CloudFailure }
+  | { kind: 'elsewhere' }
   | { kind: 'conflict'; conflict: SaveConflict };
 
 export interface LocalSavePort {
@@ -43,7 +45,9 @@ export interface CloudSyncDeps {
   store: SaveStore;
   now: () => number;
   local: LocalSavePort;
+  deviceId: string;
   canPush: () => boolean;
+  onActive?: (active: boolean) => void;
   onStatus: (status: CloudStatus) => void;
   onAccount?: (account: CloudAccount | null) => void;
   parseOptions?: ParseOptions;
@@ -61,6 +65,7 @@ export class CloudSync {
   private signedIn = false;
   private lastAttemptAt: number | null = null;
   private lastRefreshAt: number | null = null;
+  private lastClaimAt: number | null = null;
   private retryAt = 0;
   private failures = 0;
   private busy = false;
@@ -84,11 +89,13 @@ export class CloudSync {
     if (readCloudMeta(this.deps.store).paused) return;
     await this.guarded(async () => {
       await this.ensureSignedIn();
+      if (!(await this.claim(false))) return;
       await this.reconcile();
     });
   }
 
   async tick(): Promise<void> {
+    if (this.status.kind === 'elsewhere') return this.watchLease();
     if (!this.canAct()) return;
     const now = this.deps.now();
     if (now < this.retryAt) return;
@@ -96,9 +103,61 @@ export class CloudSync {
       await this.start();
       if (!this.canAct()) return;
     }
+    if (this.leaseDue()) {
+      await this.guarded(async () => void (await this.claim(false)));
+      if (!this.canAct() || this.deps.now() < this.retryAt) return;
+    }
     if (this.failures === 0 && this.lastAttemptAt !== null && now - this.lastAttemptAt < PUSH_INTERVAL_MS) return;
     if (!this.isDirty()) return;
     await this.pushNow();
+  }
+
+  async takeOver(): Promise<void> {
+    await this.guarded(async () => {
+      await this.ensureSignedIn();
+      await this.claim(true);
+      await this.resume();
+    });
+  }
+
+  private async resume(): Promise<void> {
+    await this.reconcile();
+    if (this.isBlocked() || !this.isDirty()) return;
+    await this.pushLocal(false);
+  }
+
+  private async watchLease(): Promise<void> {
+    if (!this.deps.canPush() || !this.leaseDue()) return;
+    await this.guarded(async () => {
+      await this.ensureSignedIn();
+      if (await this.claim(false)) await this.resume();
+    });
+  }
+
+  private leaseDue(): boolean {
+    return this.lastClaimAt === null || this.deps.now() - this.lastClaimAt >= LEASE_RENEW_MS;
+  }
+
+  private async claim(force: boolean): Promise<boolean> {
+    const lease = await this.deps.client.claimCity(this.deps.cityId, this.deps.deviceId, force);
+    this.lastClaimAt = this.deps.now();
+    if (!lease.held) {
+      this.enterElsewhere();
+      return false;
+    }
+    if (this.status.kind === 'elsewhere') {
+      this.setStatus({ kind: 'idle' });
+      this.reconciled = false;
+    }
+    this.deps.onActive?.(true);
+    return true;
+  }
+
+  private enterElsewhere(): void {
+    if (this.status.kind === 'elsewhere') return;
+    if (readCloudMeta(this.deps.store).editedSinceSync) this.deps.local.keepAsPreviousVersion();
+    this.deps.onActive?.(false);
+    this.setStatus({ kind: 'elsewhere' });
   }
 
   async refresh(): Promise<void> {
@@ -139,6 +198,7 @@ export class CloudSync {
         savedAt: local.savedAt,
         formatVersion: CURRENT_VERSION,
         keepalive: true,
+        deviceId: this.deps.deviceId,
       })
       .then((revision) => this.recordSync(revision, local.savedAt, editsAtStart))
       .catch(() => {
@@ -159,7 +219,7 @@ export class CloudSync {
         return;
       }
       if (local) {
-        await this.deps.client.push({ cityId: this.deps.cityId, baseRevision: cloud.revision, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION, keepPrevious: true });
+        await this.deps.client.push({ cityId: this.deps.cityId, baseRevision: cloud.revision, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION, keepPrevious: true, deviceId: this.deps.deviceId });
         const restored = await this.deps.client.restore(this.deps.cityId, cloud.revision);
         this.deps.local.keepAsPreviousVersion();
         this.adoptCloud({ ...cloud, revision: restored });
@@ -236,7 +296,7 @@ export class CloudSync {
   }
 
   private isBlocked(): boolean {
-    if (this.status.kind === 'conflict') return true;
+    if (this.status.kind === 'conflict' || this.status.kind === 'elsewhere') return true;
     return this.status.kind === 'error' && FATAL_FAILURES.includes(this.status.reason);
   }
 
@@ -244,7 +304,7 @@ export class CloudSync {
     if (this.busy || !this.deps.canPush()) return;
     this.busy = true;
     const previous = this.status;
-    if (previous.kind !== 'conflict') this.setStatus({ kind: 'syncing' });
+    if (previous.kind !== 'conflict' && previous.kind !== 'elsewhere') this.setStatus({ kind: 'syncing' });
     try {
       await action();
       if (this.status.kind === 'syncing') this.setStatus(previous.kind === 'idle' ? { kind: 'idle' } : previous);
@@ -352,10 +412,12 @@ export class CloudSync {
     this.lastAttemptAt = this.deps.now();
     const editsAtStart = this.editCount;
     try {
-      const revision = await this.deps.client.push({ cityId: this.deps.cityId, baseRevision, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION, keepPrevious });
+      const revision = await this.deps.client.push({ cityId: this.deps.cityId, baseRevision, envelope: local.envelope, savedAt: local.savedAt, formatVersion: CURRENT_VERSION, keepPrevious, deviceId: this.deps.deviceId });
+      this.lastClaimAt = this.deps.now();
       this.recordSync(revision, local.savedAt, editsAtStart);
       this.deps.onPushed?.(local.envelope);
     } catch (error) {
+      if (error instanceof CloudError && error.kind === 'not-active') return this.enterElsewhere();
       if (!(error instanceof CloudError) || error.kind !== 'conflict') throw error;
       await this.onPushConflict();
     }
