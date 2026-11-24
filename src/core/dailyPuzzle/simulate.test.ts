@@ -88,4 +88,28 @@ describe('simulate', () => {
       expect(simulate(into(3, 3), [fan]).solved).toBe(true);
     });
   });
+
+  describe('left variants', () => {
+    const deliverTo = (x: number, targetX: number): Board => ({ ...emptyBoard, ballStart: { x, y: 0 }, aims: [{ kind: 'deliver', target: { x: targetX, y: 5 } }] });
+
+    it('deflects the ball to the left on a left ramp', () => {
+      expect(simulate(deliverTo(4, 3), [{ kind: 'ramp-left', at: { x: 4, y: 2 } }]).solved).toBe(true);
+    });
+
+    it('launches the ball to the left on a left spring', () => {
+      expect(simulate(deliverTo(4, 1), [{ kind: 'spring-left', at: { x: 4, y: 4 } }]).solved).toBe(true);
+    });
+
+    it('blows the ball to the left in the jet of a left fan', () => {
+      expect(simulate(deliverTo(4, 2), [{ kind: 'fan-left', at: { x: 4, y: 1 } }]).solved).toBe(true);
+    });
+  });
+
+  it('ends the run as soon as the ball leaves the board', () => {
+    const board: Board = { ...emptyBoard, ballStart: { x: 4, y: 0 } };
+
+    const result = simulate(board, [{ kind: 'conveyor-right', at: { x: 4, y: 2 } }]);
+
+    expect(result).toEqual({ solved: false, ticks: 3 });
+  });
 });
