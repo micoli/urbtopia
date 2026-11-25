@@ -1,6 +1,7 @@
 import { generatePuzzle } from '../../../src/core/dailyPuzzle/generate'
 import { runBall, simulate } from '../../../src/core/dailyPuzzle/simulate'
 import type { Aim, Cell, Difficulty, PlacedPart, Puzzle } from '../../../src/core/dailyPuzzle/types'
+import { PUZZLE_LIGHTINGS, type PuzzleLightingName } from '../../../src/scene/puzzleLighting'
 import { BoardScene } from './boardScene'
 
 const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard']
@@ -83,6 +84,34 @@ element('next-seed').addEventListener('click', () => {
   void showPuzzle()
 })
 
+const cell = (text: string, tag: 'td' | 'th' = 'td') => Object.assign(document.createElement(tag), { textContent: text })
+
+const lightingSelect = element<HTMLSelectElement>('lighting')
+lightingSelect.replaceChildren(...Object.keys(PUZZLE_LIGHTINGS).map((name) => new Option(name, name, false, name === 'vivid')))
+lightingSelect.addEventListener('change', () => { board.setLighting(lightingSelect.value as PuzzleLightingName); showColours() })
+
+const PALETTE: Record<string, number> = {
+  sun: 0xffc61a, coral: 0xff4f4f, lime: 0x7be01f, cobalt: 0x2456d6, magenta: 0xff2d95, cream: 0xfff1c9, graphite: 0x2a2d3a, white: 0xffffff,
+}
+const hex = (value: number) => `#${value.toString(16).padStart(6, '0')}`
+const channelsOf = (value: number) => [(value >> 16) & 255, (value >> 8) & 255, value & 255] as const
+const luma = (value: number) => { const [r, g, b] = channelsOf(value); return 0.2126 * r + 0.7152 * g + 0.0722 * b }
+const saturation = (value: number) => { const [r, g, b] = channelsOf(value); const high = Math.max(r, g, b); return high === 0 ? 0 : (high - Math.min(r, g, b)) / high }
+
+function showColours() {
+  const table = element<HTMLTableElement>('colour-table')
+  const header = document.createElement('tr')
+  header.append(...['colour', 'painted', 'drawn', 'light', 'colour'].map((text) => cell(text, 'th')))
+  const rows = Object.entries(board.measure(PALETTE)).map(([name, { painted, rendered }]) => {
+    const line = document.createElement('tr')
+    const swatch = Object.assign(cell(hex(rendered)), { style: `background:${hex(rendered)};color:${luma(rendered) > 130 ? '#000' : '#fff'}` })
+    line.append(cell(name), cell(hex(painted)), swatch, cell(`${Math.round((100 * luma(rendered)) / luma(painted))}%`), cell(`${Math.round((100 * saturation(rendered)) / saturation(painted))}%`))
+    return line
+  })
+  table.replaceChildren(header, ...rows)
+}
+element('measure').addEventListener('click', showColours)
+
 interface BatchRow { difficulty: Difficulty; generated: number; failed: number; milliseconds: number; ticks: number }
 
 function runBatchFor(difficulty: Difficulty, size: number, failures: string[]): BatchRow {
@@ -106,7 +135,6 @@ function runBatchFor(difficulty: Difficulty, size: number, failures: string[]): 
   return row
 }
 
-const cell = (text: string, tag: 'td' | 'th' = 'td') => Object.assign(document.createElement(tag), { textContent: text })
 
 async function runBatch() {
   const size = Math.max(1, Number(element<HTMLInputElement>('batch-size').value))
@@ -127,3 +155,6 @@ async function runBatch() {
 
 element('run-batch').addEventListener('click', () => { void runBatch() })
 void showPuzzle()
+
+// Reachable from the browser console, to tune a lighting live: change a value of PUZZLE_LIGHTINGS, call board.setLighting(name), then measure.
+Object.assign(window, { puzzleLab: { board, PUZZLE_LIGHTINGS, measure: () => board.measure(PALETTE) } })

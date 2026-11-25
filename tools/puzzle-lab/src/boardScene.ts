@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
-import { lightingOf } from '../../../src/scene/dayLighting'
+import { PUZZLE_LIGHTINGS, type PuzzleLightingName } from '../../../src/scene/puzzleLighting'
 import { ModelLibrary } from '../../../src/scene/modelLibrary'
 import { cellKey, progressAt } from '../../../src/core/dailyPuzzle/progress'
 import { fanBlowsOn } from '../../../src/core/dailyPuzzle/simulate'
@@ -32,6 +32,7 @@ export class BoardScene {
   private readonly scene = new THREE.Scene()
   private readonly content = new THREE.Group()
   private readonly sun = new THREE.DirectionalLight()
+  private readonly sky = new THREE.HemisphereLight()
   private readonly clock = new THREE.Clock()
   private readonly library = new ModelLibrary('/glb/')
   private actors: Actor[] = []
@@ -53,31 +54,60 @@ export class BoardScene {
   constructor(private readonly canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
-    this.renderer.toneMapping = THREE.NeutralToneMapping
-    this.renderer.toneMappingExposure = 0.8
     this.renderer.shadowMap.enabled = true
     const generator = new THREE.PMREMGenerator(this.renderer)
     this.scene.environment = generator.fromScene(new RoomEnvironment(), 0.04).texture
     generator.dispose()
     this.scene.background = new THREE.Color()
-    const sky = new THREE.HemisphereLight()
     this.sun.castShadow = true
     this.sun.shadow.mapSize.set(2048, 2048)
     this.sun.shadow.bias = -0.0004
     this.sun.shadow.normalBias = 0.03
-    this.scene.add(this.sun, this.sun.target, sky, this.content)
-    const lighting = lightingOf(1, true)
-    this.sun.color.setHex(lighting.sunColor)
-    this.sun.intensity = lighting.sunIntensity
-    sky.color.setHex(lighting.skyColor)
-    sky.groundColor.setHex(lighting.groundColor)
-    sky.intensity = lighting.hemisphereIntensity
-    this.scene.environmentIntensity = lighting.environmentIntensity
-    ;(this.scene.background as THREE.Color).setHex(lighting.background)
+    this.scene.add(this.sun, this.sun.target, this.sky, this.content)
+    this.setLighting('vivid')
     this.controls = new OrbitControls(this.camera, canvas)
     this.controls.enableDamping = false
     canvas.addEventListener('dblclick', () => this.frame())
     this.renderer.setAnimationLoop(() => this.draw())
+  }
+
+  setLighting(name: PuzzleLightingName) {
+    const lighting = PUZZLE_LIGHTINGS[name]
+    this.renderer.toneMapping = lighting.toneMapping
+    this.renderer.toneMappingExposure = lighting.exposure
+    this.sun.color.setHex(lighting.sunColor)
+    this.sun.intensity = lighting.sunIntensity
+    this.sky.color.setHex(lighting.skyColor)
+    this.sky.groundColor.setHex(lighting.groundColor)
+    this.sky.intensity = lighting.hemisphereIntensity
+    this.scene.environmentIntensity = lighting.environmentIntensity
+    ;(this.scene.background as THREE.Color).setHex(lighting.background)
+  }
+
+  // Paints flat swatches facing the camera in front of the board, renders, and reads back what the screen shows at the centre of each: the colour as drawn against the colour as painted.
+  measure(swatches: Record<string, number>): Record<string, { painted: number; rendered: number }> {
+    const gl = this.renderer.getContext()
+    const names = Object.keys(swatches)
+    const group = new THREE.Group()
+    const { width, height } = this.boardSize
+    const positions = names.map((name, index) => {
+      const at = new THREE.Vector3(width / 2 + (index - (names.length - 1) / 2) * 1.2, height / 2, 3)
+      const swatch = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ color: swatches[name] }))
+      swatch.position.copy(at)
+      group.add(swatch)
+      return at
+    })
+    this.scene.add(group)
+    this.renderer.render(this.scene, this.camera)
+    const result: Record<string, { painted: number; rendered: number }> = {}
+    const pixel = new Uint8Array(4)
+    names.forEach((name, index) => {
+      const ndc = positions[index]!.clone().project(this.camera)
+      gl.readPixels(Math.round((ndc.x * 0.5 + 0.5) * this.canvas.width), Math.round((ndc.y * 0.5 + 0.5) * this.canvas.height), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel)
+      result[name] = { painted: swatches[name]!, rendered: (pixel[0]! << 16) | (pixel[1]! << 8) | pixel[2]! }
+    })
+    this.scene.remove(group)
+    return result
   }
 
   load(): Promise<void> {
