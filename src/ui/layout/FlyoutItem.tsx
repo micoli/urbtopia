@@ -12,6 +12,8 @@ interface FlyoutItemProps {
   onChoose: () => void;
   onChooseRepeat?: () => void;
   codexId?: CodexId;
+  // A stable name for the row, whatever the language: scripted tours (promo videos) pick a row by it.
+  choiceId?: string;
   onInfo?: () => void;
   preview?: string;
   icon?: string;
@@ -19,12 +21,12 @@ interface FlyoutItemProps {
   disabled?: boolean;
 }
 
-export function FlyoutItem({ label, badge, cost, guided = false, onChoose, onChooseRepeat, codexId, onInfo, preview, icon, selected, disabled }: FlyoutItemProps) {
+export function FlyoutItem({ label, badge, cost, guided = false, onChoose, onChooseRepeat, codexId, choiceId, onInfo, preview, icon, selected, disabled }: FlyoutItemProps) {
   const choose = useSingleOrDoubleClick(onChoose, onChooseRepeat);
   const picture = icon ? `${import.meta.env.BASE_URL}assets/icons/${icon}` : preview;
   const hasRow = onInfo || picture;
   const item = (
-      <button type="button" className="flyout-item" data-guided={guided && !hasRow} data-selected={selected} data-codex-label={onInfo ? codexId : undefined} disabled={onInfo ? false : disabled} onClick={onInfo ?? choose}>
+      <button type="button" className="flyout-item" data-choice={hasRow ? undefined : choiceId} data-guided={guided && !hasRow} data-selected={selected} data-codex-label={onInfo ? codexId : undefined} disabled={onInfo ? false : disabled} onClick={onInfo ?? choose}>
       <span>{label}</span>
       {badge ? <small className="flyout-badge">{badge}</small> : null}
       {cost && !(onInfo || icon || preview) ? <small className="flyout-cost">{cost}</small> : null}
@@ -32,7 +34,7 @@ export function FlyoutItem({ label, badge, cost, guided = false, onChoose, onCho
   );
   if (!hasRow) return item;
   return (
-    <div className="flyout-row">
+    <div className="flyout-row" data-choice={choiceId}>
       {item}
       <button type="button" className="flyout-info" data-codex-id={codexId} data-guided={guided} aria-label={onInfo ? t('codex.about').replace('{name}', label) : label} disabled={disabled} onClick={choose}>
         {cost ? <small className="flyout-cost">{cost}</small> : null}

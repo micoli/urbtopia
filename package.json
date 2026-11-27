@@ -26,6 +26,7 @@
     "test:codex": "playwright test",
     "test:avatars": "vitest run scripts/avatarImages.test.ts",
     "test:codex:images": "vitest run scripts/codexImages.test.ts",
+    "promo": "node scripts/promo/cli.ts",
     "test:gameplay": "playwright test --config playwright.gameplay.config.ts",
     "test:visual": "playwright test --config playwright.visual.config.ts",
     "test:guide": "playwright test --config playwright.guide.config.ts",

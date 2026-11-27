@@ -1,0 +1,73 @@
+@layer legacy {
+  /* A part of the interface is shown only when the scene lists it in `data-promo-show`. */
+  html:not([data-promo-show~="hud"]) :is(.dock-stat, .city-stats),
+  html:not([data-promo-show~="camera"]) .camera-buttons,
+  html:not([data-promo-show~="build"]) :is(.flyout, .confirm-pad),
+  html:not([data-promo-show~="selection"]) .building-floating-bar,
+  html:not([data-promo-show~="panel"]) .side-panel {
+    visibility: hidden !important;
+  }
+
+  .devtools-trigger,
+  .tutorial-banner,
+  .first-use-hint,
+  .toast,
+  .note,
+  .venue-hint,
+  .district-hint,
+  .transit-hint,
+  .street-view-hint,
+  .transport-map-hint,
+  .analytics-readout-hint,
+  [role="tooltip"] {
+    display: none !important;
+  }
+
+  .promo-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100000;
+    width: 24px;
+    height: 24px;
+    margin: -2px 0 0 -2px;
+    pointer-events: none;
+    background: var(--color-white);
+    clip-path: polygon(0 0, 0 85%, 24% 66%, 42% 100%, 58% 92%, 40% 60%, 72% 60%);
+    filter: drop-shadow(0 1px 2px var(--black-a55));
+  }
+
+  .promo-ripple {
+    position: fixed;
+    z-index: 99999;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 3px solid var(--color-accent);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: promo-ripple 0.5s var(--ease-out) forwards;
+  }
+
+  .promo-caption {
+    position: fixed;
+    bottom: 8%;
+    left: 50%;
+    z-index: 100000;
+    max-width: 70%;
+    padding: 0.5em 1.1em;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: var(--black-a70);
+    color: var(--color-text);
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  @keyframes promo-ripple {
+    from { opacity: 1; transform: scale(0.3); }
+    to { opacity: 0; transform: scale(1.4); }
+  }
+}

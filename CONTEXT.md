@@ -1423,3 +1423,6 @@ _Avoid_: Docs, documentation, manual, wiki
 - Common words are kept for Materials and Goods; invention is reserved for brand-like terms (game name, currency, market).
 - No trademarked terms from other games in code, docs or UI.
 - Code identifiers and this glossary are in English; UI strings are translated FR/EN. The game name and the currency name are identical in both languages.
+
+**Promo scene**:
+A filmed sequence of the game, written as a TypeScript file in `scripts/promo/scenarios/` (`scene(name, options, play)`) and played by the promo engine in a headed browser at `?promo`. It starts from a saved City (`state`), may pin the language and the Cycle hour, and ends in its own video; a **Promo scenario** chains scenes into one MP4. A scene whose content has not changed is not filmed again.

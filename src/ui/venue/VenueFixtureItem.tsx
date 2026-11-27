@@ -24,6 +24,7 @@ export function VenueFixtureItem({ id, tier, rank, selected, onChoose, limit }: 
   return (
     <FlyoutItem
       label={t(`venue.fixture.${id}`)}
+      choiceId={id}
       badge={lockedByTier ? `${t('venue.tierNeeded')} ${minTier}` : rank < minRank ? `${t('venue.rankNeeded')} ${minRank}` : limit ? `${limit.count}/${limit.max}` : undefined}
       cost={<UrbsAmount value={price} />}
       preview={picture}
