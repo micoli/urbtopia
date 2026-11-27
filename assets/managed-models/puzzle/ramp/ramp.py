@@ -1,5 +1,5 @@
 """Ramp of the Daily puzzle, vivid style, one tile wide. It slopes down toward +X, the way of a right-hand ramp (the game mirrors it for the left).
-A passive part, so it has a single glTF clip: `hit` (the surface takes the knock of the ball and springs back). Two meshes under one root: the fixed body with its rails, and the surface."""
+A passive part, so it has a single glTF clip: `hit` (the surface takes the knock of the ball and springs back). Two meshes under one root: the two fixed rails, and the surface."""
 import math
 import os
 import sys
@@ -45,10 +45,9 @@ def slab(name, height, width, y=0.0, color=0):
 
 
 def body_parts():
-    parts = [lpm.sweep("body", [(-HALF, 0), (HALF, 0), (HALF, LOW), (-HALF, HIGH)], BODY_WIDTH, color=P["cobalt"])]
+    parts = []
     for name, sign in (("left", -1), ("right", 1)):
         parts.append(slab(f"rail {name}", RAIL, RAIL_WIDTH, y=sign * (SURFACE_WIDTH + RAIL_WIDTH) / 2, color=P["sun"]))
-    parts.append(lpm.box("foot", (2 * HALF + 0.04, BODY_WIDTH + 0.04, 0.02), color=P["cobalt_dark"]))
     return parts
 
 
