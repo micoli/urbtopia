@@ -8,6 +8,7 @@ import { congestionDiagnosisMessages } from './congestionDiagnosis';
 import { wasteDiagnosisMessages } from './wasteDiagnosis';
 import { jobsDiagnosisMessages } from './jobsDiagnosis';
 import { casinoMessages } from './casino';
+import { puzzleMessages } from './puzzle';
 import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
 import { wasteSectionMessages } from './wasteSection';
@@ -43,6 +44,7 @@ export const MESSAGES = {
   ...natureMessages('en'),
   ...challengeMessages('en'),
   ...casinoMessages('en'),
+  ...puzzleMessages('en'),
   ...needsMessages('en'),
   ...wasteSectionMessages('en'),
   ...difficultyMessages('en'),
