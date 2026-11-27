@@ -51,12 +51,14 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: var(--space-6) var(--space-8);
 }
 
 .puzzle-tray__list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-6);
   margin: 0;
   padding: 0;
@@ -66,7 +68,16 @@
 .puzzle-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-8);
+}
+
+/* The button of a run floats at the top of the board, in the middle. */
+.puzzle-run {
+  position: absolute;
+  top: var(--space-8);
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* The verdict of a run sits in the middle of the board, over it; only its button takes the pointer. */

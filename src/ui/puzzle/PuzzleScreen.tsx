@@ -9,6 +9,7 @@ import { PuzzleActions } from './PuzzleActions';
 import { PuzzleAims } from './PuzzleAims';
 import { PuzzleCanvas } from './PuzzleCanvas';
 import { PuzzleDragLayer } from './PuzzleDragLayer';
+import { PuzzleRunButton } from './PuzzleRunButton';
 import { PuzzleTray } from './PuzzleTray';
 import { PuzzleVerdict } from './PuzzleVerdict';
 import { usePuzzleGame } from './usePuzzleGame';
@@ -27,7 +28,7 @@ export function PuzzleScreen({ puzzle }: PuzzleScreenProps) {
           <div className="puzzle-close"><CloseButton label={t('puzzle.close')} onClick={() => puzzleStore.getState().close()} /></div>
           <PuzzleAims aims={puzzle.board.aims} />
           <PuzzleTray view={view} />
-          <div className="puzzle-stage" style={{ '--puzzle-ratio': puzzleViewRatio(puzzle.board.width, puzzle.board.height) } as CSSProperties}><PuzzleCanvas view={view} />{view.phase === 'done' ? <PuzzleVerdict solved={view.solved} /> : null}</div>
+          <div className="puzzle-stage" style={{ '--puzzle-ratio': puzzleViewRatio(puzzle.board.width, puzzle.board.height) } as CSSProperties}><PuzzleCanvas view={view} /><PuzzleRunButton view={view} />{view.phase === 'done' ? <PuzzleVerdict solved={view.solved} /> : null}</div>
           <PuzzleActions view={view} />
           <PuzzleDragLayer />
         </div>
