@@ -1,5 +1,18 @@
 import type { Locator, Page } from '@playwright/test';
 import type { UiPart } from './types.ts';
+import { speak } from './voice.ts';
+
+export interface Cue {
+  file: string;
+  at: number;
+  seconds: number;
+}
+
+export interface StageOptions {
+  voice: string;
+  // The moment the video starts, in milliseconds since the epoch: a cue is dated from it.
+  videoStartedAt: number;
+}
 
 type Target = Locator | { role: Parameters<Page['getByRole']>[0]; name: string | RegExp };
 
@@ -7,6 +20,7 @@ type Target = Locator | { role: Parameters<Page['getByRole']>[0]; name: string |
 // Read when used, not at import: the command line sets it after the modules are loaded.
 const isFast = (): boolean => process.env.PROMO_FAST === '1';
 const FRAME_MS = 16;
+const PAUSE_AFTER_LINE_MS = 250;
 const ease = (t: number) => t * t * (3 - 2 * t);
 
 export class Stage {
@@ -17,16 +31,21 @@ export class Stage {
     return isFast();
   }
 
-  constructor(page: Page) {
+  readonly cues: Cue[] = [];
+  private readonly options: StageOptions;
+  private speaksUntil = 0;
+
+  constructor(page: Page, options: StageOptions) {
     this.page = page;
+    this.options = options;
   }
 
   wait(milliseconds: number): Promise<void> {
     return this.page.waitForTimeout(isFast() ? Math.min(milliseconds, 30) : milliseconds);
   }
 
-  async caption(text: string, milliseconds?: number): Promise<void> {
-    await this.page.evaluate((value) => window.__promo?.caption(value), text);
+  async caption(text: string, milliseconds?: number, mode: 'plain' | 'words' | 'typewriter' = 'plain'): Promise<void> {
+    await this.page.evaluate(([value, style]) => window.__promo?.caption(value, style), [text, mode] as const);
     if (milliseconds === undefined) return;
     await this.wait(milliseconds);
     await this.hideCaption();
@@ -58,6 +77,44 @@ export class Stage {
     const box = await locator.boundingBox();
     if (!box) throw new Error(`Nothing to show: ${locator}`);
     return box;
+  }
+
+  // The voice over says a line. A line never overlaps the previous one: it waits for it to end. With `wait: false` the scene goes on while the voice speaks.
+  async say(text: string, { wait = true, speed = 1 } = {}): Promise<void> {
+    if (isFast()) return;
+    const speech = await speak(text, this.options.voice, speed);
+    const startsAt = Math.max(Date.now(), this.speaksUntil);
+    this.speaksUntil = startsAt + speech.seconds * 1000 + PAUSE_AFTER_LINE_MS;
+    this.cues.push({ file: speech.file, at: (startsAt - this.options.videoStartedAt) / 1000, seconds: speech.seconds });
+    if (wait) await this.page.waitForTimeout(this.speaksUntil - Date.now());
+  }
+
+  // Lets the voice finish its last line before the scene ends.
+  async endOfSpeech(): Promise<void> {
+    if (isFast()) return;
+    await this.page.waitForTimeout(Math.max(0, this.speaksUntil - Date.now()));
+  }
+
+  // A full-screen title card that fades in and out.
+  async title(text: string, { subtitle, seconds = 2.5 }: { subtitle?: string; seconds?: number } = {}): Promise<void> {
+    await this.page.evaluate(([a, b]) => window.__promo?.title(a, b), [text, subtitle] as const);
+    await this.wait(seconds * 1000);
+    await this.page.evaluate(() => window.__promo?.title(null));
+  }
+
+  // A spotlight on a widget: the rest of the picture is dimmed, a ring pulses around it. `clearCallout` removes it.
+  async callout(target: Target, label?: string): Promise<void> {
+    const box = await this.boxOf(target);
+    await this.page.evaluate(([rect, text]) => window.__promo?.callout(rect, text), [box, label] as const);
+  }
+
+  clearCallout(): Promise<void> {
+    return this.page.evaluate(() => window.__promo?.callout(null));
+  }
+
+  // A big figure counting up, to land a number.
+  stat(label: string, to: number, { from = 0, seconds = 1.6, suffix = '' } = {}): Promise<void> {
+    return this.page.evaluate(([a, b, c, d, e]) => window.__promo?.stat(a, b, c, d, e), [label, from, to, isFast() ? 0.05 : seconds, suffix] as const);
   }
 
   // The cursor goes to a widget and rests on it, to show it.

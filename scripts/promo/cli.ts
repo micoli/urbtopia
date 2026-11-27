@@ -31,7 +31,7 @@ for (const scene of loaded.scenes) {
   const video = join(directory, `${scene.name}.${hash}.webm`);
   if (!fast && !fresh && existsSync(video)) {
     console.log(`${scene.name}: cached`);
-    recordings.push({ video, ...JSON.parse(readFileSync(`${video}.json`, 'utf8')) });
+    recordings.push({ video, cues: [], ...JSON.parse(readFileSync(`${video}.json`, 'utf8')) });
     continue;
   }
   console.log(`${scene.name}: recording`);
@@ -40,5 +40,5 @@ for (const scene of loaded.scenes) {
 
 if (only || fast) process.exit(0);
 const output = join(ROOT, 'tmp/promo', `${name}.mp4`);
-assemble(recordings, output, directory, loaded.audio ? resolve(ROOT, loaded.audio) : undefined);
+assemble(recordings, output, directory, { ...loaded, audio: loaded.audio ? resolve(ROOT, loaded.audio) : undefined });
 console.log(output);

@@ -10,3 +10,8 @@
 - The game is filmed in layout C (side panel), with the pedestrians drawn as the players' avatars (`pedestrianModel: 'avatar'`), never as stick figures. The Build menu row opens the Codex on its name; a building is chosen with the picture/price button (`.flyout-row .flyout-info`). A click on a free tile places the building at once, after the mouse has moved over it.
 - Interiors: `scripts/promo/interior.ts` has `openInteriorBuild(stage)` and `placeFixture(stage, { section, fixture, cell, rotations })`. A row of a build menu carries `data-choice="<id>"` (the Fixture id), whatever the language; the interior menu closes after each placement, `placeFixture` reopens it. `tileToScreen` and `clickTile` use the cells of the open interior. `scripts/promo/states/early-city.json` (60 Citizens, 6000 U) is built by `node scripts/promo/buildEarlyCity.ts`. A scene that fails leaves `tmp/promo/<scenario>/<scene>.error.png`.
 - The `promo-video` skill drives all this from a scenario described by the user.
+
+## Voice over and effects
+
+- `stage.say(text, { wait, speed })` speaks a line with Kokoro (Kokoro-FastAPI in Docker, `KOKORO_URL`, default `http://localhost:8880`; started as the container `urbtopia-kokoro` from `ghcr.io/remsky/kokoro-fastapi-cpu:v0.10.0` when nothing answers). Lines are cached in `tmp/promo/voice/`. The scene option `voice` picks the voice (`af_heart` for `en`, `ff_siwis` for `fr`). The cues are stored with the scene and mixed at assembly over a silent base; `--fast` does not speak.
+- Effects of the page: `title`, `caption(text, ms, 'words')`, `callout` / `clearCallout`, `stat`, and a light vignette. Between scenes the assembly fades through black; `scenario(name, scenes, { transition: 'cut', audio })` changes it and adds a music bed.

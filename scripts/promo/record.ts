@@ -1,12 +1,14 @@
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { chromium } from '@playwright/test';
-import { Stage } from './stage.ts';
+import { Stage, type Cue } from './stage.ts';
+import { DEFAULT_VOICES } from './voice.ts';
 import { DEFAULT_VIEWPORT, type Scene } from './types.ts';
 
 export interface Recording {
   video: string;
   trimSeconds: number;
+  cues: Cue[];
 }
 
 interface RecordOptions {
@@ -27,8 +29,8 @@ export async function recordScene(scene: Scene, { baseUrl, root, directory, hash
   const prefs = { language, layout: 'C', pedestrianModel: 'avatar', ...(scene.options.hideTaxBadges ? { showTaxBadges: false } : {}) };
   await context.addInitScript((value) => localStorage.setItem('urbtopia-prefs', JSON.stringify(value)), prefs);
   const page = await context.newPage();
+  const videoStartedAt = Date.now();
   if (process.env.PROMO_DEBUG) page.on('console', (message) => console.log(`[page] ${message.text()}`));
-  const startedAt = Date.now();
   const time = scene.options.time ? `&time=${scene.options.time}` : '';
   await page.goto(`${baseUrl}/?promo${time}`);
   await page.locator('#splash').waitFor({ state: 'detached', timeout: 60_000 });
@@ -39,9 +41,10 @@ export async function recordScene(scene: Scene, { baseUrl, root, directory, hash
   }
   await page.evaluate((parts) => window.__promo?.setUi(parts), scene.options.ui ?? []);
   await page.waitForTimeout(1500);
-  const trimSeconds = (Date.now() - startedAt) / 1000;
+  const trimSeconds = (Date.now() - videoStartedAt) / 1000;
+  const stage = new Stage(page, { voice: scene.options.voice ?? DEFAULT_VOICES[language], videoStartedAt });
   try {
-    await scene.play(process.env.PROMO_TRACE ? traced(new Stage(page)) : new Stage(page));
+    await scene.play(process.env.PROMO_TRACE ? traced(stage) : stage);
   } catch (error) {
     await page.screenshot({ path: join(directory, `${scene.name}.error.png`) });
     await browser.close();
@@ -52,12 +55,12 @@ export async function recordScene(scene: Scene, { baseUrl, root, directory, hash
   const raw = await page.video()?.path();
   await context.close();
   await browser.close();
-  if (fast) return { video: '', trimSeconds };
+  if (fast) return { video: '', trimSeconds, cues: [] };
   if (!raw) throw new Error('No video was recorded');
   const video = join(directory, `${scene.name}.${hash}.webm`);
   renameSync(raw, video);
-  writeFileSync(`${video}.json`, JSON.stringify({ trimSeconds }));
-  return { video, trimSeconds };
+  writeFileSync(`${video}.json`, JSON.stringify({ trimSeconds, cues: stage.cues }));
+  return { video, trimSeconds, cues: stage.cues };
 }
 
 // PROMO_TRACE=1 prints how long every verb of the stage takes, to find what makes a scenario slow.

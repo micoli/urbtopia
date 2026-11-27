@@ -8,12 +8,24 @@ import './promo.css';
 
 export interface PromoApi {
   loadState(text: string): boolean;
-  caption(text: string | null): void;
   timelapse(hours: number, seconds: number): Promise<void>;
   flyTo(x: number, z: number, zoom: number, seconds: number): Promise<void>;
   pinCycleHour(hour: number | null): void;
   tileToScreen(x: number, y: number): { x: number; y: number } | null;
   setUi(parts: string[]): void;
+  caption(text: string | null, mode?: CaptionMode): void;
+  title(text: string | null, subtitle?: string): void;
+  callout(rect: Rect | null, label?: string): void;
+  stat(label: string, from: number, to: number, seconds: number, suffix?: string): Promise<void>;
+  look(on: boolean): void;
+}
+
+export type CaptionMode = 'plain' | 'words' | 'typewriter';
+export interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 declare global {
@@ -47,13 +59,98 @@ function installCursor(): void {
   }, true);
 }
 
-function installCaption(): (text: string | null) => void {
+function installCaption(): (text: string | null, mode?: CaptionMode) => void {
   const caption = createElement('promo-caption');
   caption.hidden = true;
-  return (text) => {
+  let typing: number | undefined;
+  return (text, mode = 'plain') => {
+    window.clearInterval(typing);
     caption.hidden = text === null;
-    caption.textContent = text ?? '';
+    caption.replaceChildren();
+    caption.classList.toggle('promo-typewriter', mode === 'typewriter');
+    if (text === null) return;
+    if (mode === 'plain') {
+      caption.textContent = text;
+      return;
+    }
+    if (mode === 'typewriter') {
+      let shown = 0;
+      typing = window.setInterval(() => {
+        shown += 1;
+        caption.textContent = text.slice(0, shown);
+        if (shown >= text.length) window.clearInterval(typing);
+      }, 45);
+      return;
+    }
+    // The space is a text node between the words: a space at the end of an inline-block would collapse.
+    text.split(' ').forEach((word, index) => {
+      const span = document.createElement('span');
+      span.className = 'promo-word';
+      span.style.animationDelay = `${index * 90}ms`;
+      span.textContent = word;
+      if (index > 0) caption.append(' ');
+      caption.append(span);
+    });
   };
+}
+
+// A full-screen title card: the text goes from blur to sharp over a radial glow.
+function installTitle(): (text: string | null, subtitle?: string) => void {
+  const card = createElement('promo-title');
+  card.hidden = true;
+  return (text, subtitle) => {
+    card.hidden = text === null;
+    card.replaceChildren();
+    if (text === null) return;
+    const heading = document.createElement('h1');
+    heading.textContent = text;
+    card.append(heading);
+    if (!subtitle) return;
+    const line = document.createElement('p');
+    line.textContent = subtitle;
+    card.append(line);
+  };
+}
+
+// A spotlight: everything but the rectangle is dimmed, and a ring pulses around it.
+function installCallout(): (rect: Rect | null, label?: string) => void {
+  const callout = createElement('promo-callout');
+  callout.hidden = true;
+  return (rect, label) => {
+    callout.hidden = rect === null;
+    callout.replaceChildren();
+    if (rect === null) return;
+    const margin = 10;
+    Object.assign(callout.style, { left: `${rect.x - margin}px`, top: `${rect.y - margin}px`, width: `${rect.width + margin * 2}px`, height: `${rect.height + margin * 2}px` });
+    if (!label) return;
+    const tag = document.createElement('span');
+    tag.textContent = label;
+    // A label wider than the room beside the ring stays inside the picture.
+    if (rect.x + rect.width / 2 < window.innerWidth * 0.15) Object.assign(tag.style, { left: '0', transform: 'none' });
+    callout.append(tag);
+  };
+}
+
+// A figure that counts up in the middle of the screen, with a small pulse when it lands.
+function installStat(): PromoApi['stat'] {
+  const stat = createElement('promo-stat');
+  stat.hidden = true;
+  return async (label, from, to, seconds, suffix = '') => {
+    stat.hidden = false;
+    const start = performance.now();
+    for (let now = start; now - start < seconds * 1000; now = await frame()) {
+      const t = 1 - Math.pow(1 - (now - start) / (seconds * 1000), 3);
+      stat.replaceChildren(Object.assign(document.createElement('strong'), { textContent: `${Math.round(from + (to - from) * t).toLocaleString('en-US')}${suffix}` }), Object.assign(document.createElement('span'), { textContent: label }));
+    }
+    stat.replaceChildren(Object.assign(document.createElement('strong'), { textContent: `${to.toLocaleString('en-US')}${suffix}`, className: 'promo-pulse' }), Object.assign(document.createElement('span'), { textContent: label }));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    stat.hidden = true;
+  };
+}
+
+// A light vignette and a faint grain over the whole picture.
+function look(on: boolean): void {
+  document.documentElement.dataset.promoLook = on ? 'on' : 'off';
 }
 
 // The Day cycle is lit as Daytime in `?promo` unless a scene asks for the cycle: a time-lapse shows it going round.
@@ -115,6 +212,6 @@ export function installPromo(): void {
   setUi([]);
   silenceDemonstrations();
   installCursor();
-  const caption = installCaption();
-  window.__promo = { loadState, caption, timelapse, flyTo, pinCycleHour: (hour) => showDayCycle(hour === null, hour), tileToScreen, setUi };
+  window.__promo = { loadState, caption: installCaption(), title: installTitle(), callout: installCallout(), stat: installStat(), look, timelapse, flyTo, pinCycleHour: (hour) => showDayCycle(hour === null, hour), tileToScreen, setUi };
+  look(true);
 }

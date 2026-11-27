@@ -2,20 +2,38 @@ import { execFileSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Recording } from './record.ts';
-import { DEFAULT_VIEWPORT } from './types.ts';
+import { DEFAULT_VIEWPORT, type ScenarioOptions } from './types.ts';
+
+const FADE_SECONDS = 0.35;
+const MUSIC_VOLUME = 0.18;
 
 const ffmpeg = (...args: string[]): void => void execFileSync('ffmpeg', ['-y', '-loglevel', 'error', ...args], { stdio: 'inherit' });
+const durationOf = (file: string): number => Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).toString());
 
-function normalise(recording: Recording): string {
+// One scene: its picture, the voice lines at their moments over a silent base, and a fade in and out when the scenes are joined through black.
+function normalise(recording: Recording, fade: boolean): string {
   const output = recording.video.replace(/\.webm$/, '.mp4');
-  ffmpeg('-ss', String(recording.trimSeconds), '-i', recording.video, '-vf', `scale=${DEFAULT_VIEWPORT.width}:${DEFAULT_VIEWPORT.height}:flags=lanczos,fps=30`, '-c:v', 'libx264', '-crf', '14', '-preset', 'slow', '-pix_fmt', 'yuv420p', '-an', output);
+  const seconds = durationOf(recording.video) - recording.trimSeconds;
+  const fadeOut = Math.max(0, seconds - FADE_SECONDS);
+  const picture = `scale=${DEFAULT_VIEWPORT.width}:${DEFAULT_VIEWPORT.height}:flags=lanczos,fps=30${fade ? `,fade=t=in:st=0:d=${FADE_SECONDS},fade=t=out:st=${fadeOut}:d=${FADE_SECONDS}` : ''}`;
+  const lines = recording.cues.map((cue, index) => `[${index + 2}:a]adelay=${Math.max(0, Math.round((cue.at - recording.trimSeconds) * 1000))}:all=1,aresample=48000[c${index}]`);
+  const mixed = ['[1:a]', ...recording.cues.map((_, index) => `[c${index}]`)].join('');
+  const sound = `${lines.join(';')}${lines.length ? ';' : ''}${mixed}amix=inputs=${recording.cues.length + 1}:duration=first:normalize=0${fade ? `,afade=t=in:st=0:d=${FADE_SECONDS},afade=t=out:st=${fadeOut}:d=${FADE_SECONDS}` : ''}[a]`;
+  ffmpeg(
+    '-ss', String(recording.trimSeconds), '-i', recording.video,
+    '-f', 'lavfi', '-t', String(seconds), '-i', 'anullsrc=r=48000:cl=stereo',
+    ...recording.cues.flatMap((cue) => ['-i', cue.file]),
+    '-filter_complex', `[0:v]${picture}[v];${sound}`,
+    '-map', '[v]', '-map', '[a]', '-t', String(seconds),
+    '-c:v', 'libx264', '-crf', '14', '-preset', 'slow', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', output,
+  );
   return output;
 }
 
-export function assemble(recordings: Recording[], output: string, directory: string, audio?: string): void {
-  const parts = recordings.map(normalise);
+export function assemble(recordings: Recording[], output: string, directory: string, { audio, transition = 'fade' }: ScenarioOptions = {}): void {
+  const parts = recordings.map((recording) => normalise(recording, transition === 'fade'));
   const list = join(directory, 'concat.txt');
   writeFileSync(list, parts.map((part) => `file '${part}'`).join('\n'));
   if (!audio) return ffmpeg('-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', output);
-  ffmpeg('-f', 'concat', '-safe', '0', '-i', list, '-i', audio, '-c:v', 'copy', '-c:a', 'aac', '-shortest', output);
+  ffmpeg('-f', 'concat', '-safe', '0', '-i', list, '-stream_loop', '-1', '-i', audio, '-filter_complex', `[1:a]volume=${MUSIC_VOLUME}[m];[0:a][m]amix=inputs=2:duration=first:normalize=0[a]`, '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', output);
 }

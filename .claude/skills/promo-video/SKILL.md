@@ -16,6 +16,37 @@ Engine and rules: ADR 0097, `docs/agents/promo-videos.md`. The user describes th
 5. Extract key frames of the scene (`ffmpeg -ss <s> -i tmp/promo/<name>/<scene>.<hash>.webm -frames:v 1 frame.png` in the scratchpad) and look at them: caption readable, no banner or dialog in the way, the cursor on its target, the right City. Fix the scene and film it again until it is right.
 6. Assemble: `node scripts/promo/cli.ts <name>`. Output: `tmp/promo/<name>.mp4`. Tell the user the path, the duration and what could not be checked.
 
+## Voice over (Kokoro in Docker)
+
+`stage.say('line')` speaks a line over the picture. The voice is Kokoro (82M, StyleTTS 2) served by Kokoro-FastAPI, an OpenAI-compatible endpoint (`POST /v1/audio/speech`), on `http://localhost:8880` (`KOKORO_URL`).
+
+- The engine uses the server that answers; otherwise it starts the CPU image `ghcr.io/remsky/kokoro-fastapi-cpu:v0.10.0` as the container `urbtopia-kokoro` (`docker run -d -p 8880:8880`). Docker must run. The first synthesis of a line takes a few seconds; a line already spoken comes from `tmp/promo/voice/` (named by the hash of text, voice and speed).
+- Default voice: `af_heart` for `en`, `ff_siwis` for `fr`. Override with the scene option `voice` (`am_michael`, `bf_emma`... list: `GET /v1/audio/voices`).
+- A line never overlaps the previous one. `say(text)` waits for the end of the line; `say(text, { wait: false })` lets the action go on while the voice speaks, and `stage.endOfSpeech()` waits for the last line before a scene ends. Write the narration so the action lasts as long as the line.
+- Under `--fast` nothing is synthesised and `say` returns at once.
+- Narration: short spoken sentences, present tense, one idea per line, the words of `CONTEXT.md`, no read-aloud of the captions. A caption names, the voice explains.
+
+## Effects
+
+Use few, and one hero moment per scene. All are drawn in the page, so they are filmed with the game.
+
+- `stage.title('Urbtopia', { subtitle, seconds })`: full-screen title card, blur-to-sharp reveal over a glow. Open with it and close with it (leave the closing card 3 s or more).
+- `stage.caption(text, ms, 'words' | 'typewriter')`: captions that appear word by word, or typed character by character with a caret; `'plain'` (default) for text people must read.
+- `stage.callout(target, 'label')` / `stage.clearCallout()`: dims the picture except the widget, a ring pulses around it. Stronger than `circle`; use it for the one thing to look at.
+- `stage.point(target)` and `stage.circle(target)`: the cursor shows a widget.
+- `stage.stat('Wood stored', 20, { from, seconds, suffix })`: a big figure counting up, with a pop when it lands. Land a number the viewer must remember.
+- `stage.focusTile(x, y, zoom, seconds)` / `flyTo`: camera moves; zoom in on the building in action, pull back to close.
+- `stage.timelapse({ hours, seconds })`: time passing; the Day cycle turns.
+- Between scenes the assembly fades through black (0.35 s); `scenario(name, scenes, { transition: 'cut' })` for plain cuts, `{ audio: 'music.mp3' }` for a music bed mixed under the voice.
+- A light vignette is always on (`__promo.look(false)` removes it).
+
+## Pacing
+
+- The first 3 to 5 seconds decide whether the viewer stays: open on the title and the first action, never on a pause.
+- 2 to 4 seconds per beat; do not animate text people have to read, let it appear and stay.
+- A pause (1 to 2 seconds of stillness) before the payoff makes it land: the Storehouse that fills up, the number that counts up.
+- Keep one motion language: the same camera zoom levels and the same ease for similar moments.
+
 ## Rules
 
 - The tax bubbles ("25 U") that float over the buildings can crowd a shot: if they do, set `hideTaxBadges: true` in the scene options. Keep them when the scene is about taxes or income.

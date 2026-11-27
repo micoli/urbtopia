@@ -7,6 +7,8 @@ export interface SceneOptions {
   ui?: UiPart[];
   state?: string;
   language?: 'en' | 'fr';
+  // A Kokoro voice for `stage.say`; by default one of the language.
+  voice?: string;
   // Hides the tax bubbles over the buildings when they crowd the shot.
   hideTaxBadges?: boolean;
   time?: string;
@@ -19,9 +21,15 @@ export interface Scene {
   play: (stage: Stage) => Promise<void>;
 }
 
-export interface Scenario {
-  name: string;
+export interface ScenarioOptions {
+  // A music track mixed under the voice.
   audio?: string;
+  // Between scenes: a fade through black, or a plain cut.
+  transition?: 'fade' | 'cut';
+}
+
+export interface Scenario extends ScenarioOptions {
+  name: string;
   scenes: Scene[];
 }
 
@@ -31,6 +39,6 @@ export function scene(name: string, options: SceneOptions, play: Scene['play']):
   return { name, options, play };
 }
 
-export function scenario(name: string, scenes: Scene[], audio?: string): Scenario {
-  return { name, scenes, audio };
+export function scenario(name: string, scenes: Scene[], options: ScenarioOptions = {}): Scenario {
+  return { name, scenes, ...options };
 }
