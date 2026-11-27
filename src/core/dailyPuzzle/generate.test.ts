@@ -29,9 +29,9 @@ describe('generatePuzzle', () => {
   });
 
   describe.each([
-    ['easy', 4, 1],
-    ['medium', 7, 3],
-    ['hard', 11, 5],
+    ['easy', 4, 3],
+    ['medium', 7, 5],
+    ['hard', 11, 8],
   ] as const)('a %s puzzle', (difficulty, useful, decoys) => {
     const puzzles = ['a', 'b', 'c', 'd', 'e', 'f'].map((seed) => generatePuzzle(seed, difficulty));
 
