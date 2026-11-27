@@ -14,11 +14,11 @@
         const SPLASH_COUNT = 4;
         const drawn = Math.floor(Math.random() * SPLASH_COUNT);
         const root = document.documentElement.style;
-        for (const orientation of ['paysage', 'portrait']) root.setProperty(`--splash-${orientation}`, `url(./splash-${orientation}-${drawn}.jpeg)`);
+        root.setProperty('--splash', `url(./splash-${drawn}.jpeg)`);
         const preload = document.createElement('link');
         preload.rel = 'preload';
         preload.as = 'image';
-        preload.href = `./splash-${matchMedia('(orientation: portrait)').matches ? 'portrait' : 'paysage'}-${drawn}.jpeg`;
+        preload.href = `./splash-${drawn}.jpeg`;
         document.head.append(preload);
       })();
     </script>
@@ -35,7 +35,7 @@
         position: absolute;
         inset: 20px;
         border-radius: 20px;
-        background: var(--splash-paysage) center / cover no-repeat;
+        background: var(--splash) center top / cover no-repeat;
         box-shadow: inset 0 0 12px 6px #000;
       }
       #splash-loader {
@@ -85,11 +85,6 @@
       #splash.splash-hidden {
         opacity: 0;
         pointer-events: none;
-      }
-      @media (orientation: portrait) {
-        #splash::before {
-          background-image: var(--splash-portrait);
-        }
       }
     </style>
   </head>
