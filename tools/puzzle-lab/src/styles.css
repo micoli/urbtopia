@@ -2,12 +2,14 @@
 @media (prefers-color-scheme: dark) { :root { --bg: #1d1b18; --fg: #ece7da; --panel: #26231f; --line: #4a453c; --accent: #6fbf8f; } }
 body { margin: 0; background: var(--bg); color: var(--fg); }
 header { display: flex; gap: 16px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
-main { display: flex; gap: 24px; padding: 16px; align-items: flex-start; flex-wrap: wrap; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 24px; padding: 16px; align-items: start; }
+@media (max-width: 1100px) { main { grid-template-columns: minmax(0, 1fr); } aside { position: static; max-height: none; } }
 #board-panel { display: flex; flex-direction: column; gap: 8px; }
-canvas { display: block; width: 780px; height: 600px; max-width: 100%; border: 1px solid var(--line); border-radius: 6px; }
+canvas { display: block; width: 100%; height: min(70vh, 640px); border: 1px solid var(--line); border-radius: 6px; }
 #playback { display: flex; gap: 8px; align-items: center; }
 #tick { flex: 1; }
-aside { min-width: 280px; max-width: 420px; }
+aside { position: sticky; top: 8px; max-height: calc(100vh - 16px); overflow-y: auto; padding-right: 4px; }
+#physics-actions { display: flex; gap: 6px; margin-bottom: 6px; }
 h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; margin: 16px 0 6px; }
 ul { margin: 0; padding-left: 18px; }
 button, input, select { font: inherit; }
@@ -19,3 +21,15 @@ th:first-child, td:first-child { text-align: left; }
 #verdict { margin: 0; font-weight: 600; }
 .ok { color: var(--accent); }
 .ko { color: #c0392b; }
+#physics label { display: grid; grid-template-columns: 9rem 3rem 1fr; align-items: center; gap: 6px; padding: 1px 0; }
+#physics output { text-align: right; opacity: 0.75; }
+#tray { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+#tray button { touch-action: none; user-select: none; }
+#tray button.held { background: var(--accent); color: #fff; }
+#edit-actions { display: flex; flex-wrap: wrap; gap: 4px; }
+#drag-chip { position: fixed; top: 0; left: 0; z-index: 10; display: none; margin: -16px 0 0 8px; padding: 2px 8px; border-radius: 4px; background: var(--accent); color: #fff; pointer-events: none; white-space: nowrap; }
+#board-frame { position: relative; }
+#gizmo { position: absolute; top: 8px; right: 8px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; border-radius: 6px; background: color-mix(in srgb, var(--panel) 80%, transparent); font-variant-numeric: tabular-nums; }
+#gizmo-canvas { width: 120px; height: 120px; border: 0; border-radius: 50%; cursor: grab; touch-action: none; }
+#gizmo-canvas:active { cursor: grabbing; }
+#angles { white-space: pre; font-size: 12px; }

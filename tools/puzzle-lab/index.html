@@ -14,11 +14,14 @@
   </label>
   <button id="next-seed" type="button">Next seed</button>
   <label>Lighting <select id="lighting"></select></label>
-  <label><input id="show-witness" type="checkbox" checked /> Show the witness Parts</label>
+  <label><input id="show-trail" type="checkbox" /> Show the path of the ball</label>
 </header>
 <main>
   <section id="board-panel">
-    <canvas id="board"></canvas>
+    <div id="board-frame">
+      <canvas id="board"></canvas>
+      <div id="gizmo"><canvas id="gizmo-canvas" width="240" height="240"></canvas><output id="angles"></output></div>
+    </div>
     <div id="playback">
       <button id="reset" type="button">Reset</button>
       <button id="step" type="button">Step</button>
@@ -27,12 +30,15 @@
       <span id="tick-label"></span>
     </div>
     <p id="verdict"></p>
+    <div id="tray"></div>
+    <div id="edit-actions"><button id="undo" type="button">Undo</button> <button id="clear" type="button">Clear</button> <button id="solve" type="button">Solve</button> <button id="take-back" type="button">Take back</button></div>
   </section>
   <aside>
+    <h2>Physics</h2>
+    <div id="physics-actions"><button id="physics-reset" type="button">Reset physics</button> <button id="physics-copy" type="button">Copy values</button></div>
+    <div id="physics"></div>
     <h2>Aims</h2>
     <ul id="aims"></ul>
-    <h2>Inventory</h2>
-    <ul id="inventory"></ul>
     <h2>Colours</h2>
     <button id="measure" type="button">Measure colours</button>
     <table id="colour-table"></table>
