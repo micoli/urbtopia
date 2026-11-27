@@ -3,6 +3,7 @@ import { useStore } from 'zustand';
 import { OnDemand } from './OnDemand';
 import { casinoStore } from '../../store/casinoStore';
 import { architectStore } from '../../store/architectStore';
+import { puzzleStore } from '../../store/puzzleStore';
 import { districtStore } from '../../store/districtStore';
 import { clubStore } from '../../store/clubStore';
 import { showDialogStore } from '../../store/showDialogStore';
@@ -47,6 +48,7 @@ const CityManagement = lazy(() => import('../stats/CityManagement').then((module
 const SocialWindow = lazy(() => import('../social/SocialWindow').then((module) => ({ default: module.SocialWindow })));
 const CodexDialog = lazy(() => import('../codex/CodexDialog').then((module) => ({ default: module.CodexDialog })));
 const ArchitectDialog = lazy(() => import('../architect/ArchitectDialog').then((module) => ({ default: module.ArchitectDialog })));
+const PuzzleDialog = lazy(() => import('../puzzle/PuzzleDialog').then((module) => ({ default: module.PuzzleDialog })));
 const DistrictDialog = lazy(() => import('../district/DistrictDialog').then((module) => ({ default: module.DistrictDialog })));
 const CasinoDialog = lazy(() => import('../casino/CasinoDialog').then((module) => ({ default: module.CasinoDialog })));
 const ClubDialog = lazy(() => import('../club/ClubDialog').then((module) => ({ default: module.ClubDialog })));
@@ -73,6 +75,7 @@ export function Overlays() {
   const casinoOpen = useStore(casinoStore, (store) => store.casinoId !== null);
   const architectOpen = useStore(architectStore, (store) => store.officeId !== null);
   const districtOpen = useStore(districtStore, (store) => store.officeId !== null);
+  const puzzleOpen = useStore(puzzleStore, (store) => store.puzzle !== null);
   const venueOpen = useStore(venueStore, (store) => store.venueId !== null);
   const demonstrationOpen = useStore(demonstrationStore, store => store.buildingType !== null);
   const clubOpen = useStore(clubStore, (store) => store.buildingId !== null);
@@ -87,6 +90,7 @@ export function Overlays() {
       <OnDemand when={codexOpen}><CodexDialog /></OnDemand>
       <OnDemand when={casinoOpen}><CasinoDialog /></OnDemand>
       <OnDemand when={districtOpen}><DistrictDialog /></OnDemand>
+      <OnDemand when={puzzleOpen}><PuzzleDialog /></OnDemand>
       <OnDemand when={architectOpen}><ArchitectDialog /></OnDemand>
       <OnDemand when={venueOpen}><VenueDialog /></OnDemand>
       <OnDemand when={demonstrationOpen}><DemonstrationDialog /></OnDemand>
