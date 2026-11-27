@@ -1,5 +1,6 @@
 import { PROFILE_COLORS, type Profile } from '../domain/profiles'
 import { button } from './styles'
+import { ExportButton } from './ExportButton'
 import { ProfileSwitcher } from './ProfileSwitcher'
 import { ThemeSwitch } from './ThemeSwitch'
 
@@ -18,6 +19,7 @@ export function TopBar({ profile, onRefresh }: Props) {
       <ProfileSwitcher active={profile} />
       <div className="ml-auto flex flex-wrap items-center gap-2">
         <ThemeSwitch />
+        <ExportButton profile={profile} />
         <button className={button('ghost')} onClick={onRefresh}>↻ Refresh</button>
       </div>
     </header>
