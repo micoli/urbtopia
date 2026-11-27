@@ -10,6 +10,7 @@ const CLOUD_ACTIONS: CloudActions = {
   signOut: resolved,
   syncNow: resolved,
   resolveConflict: resolved,
+  takeOver: async () => {},
   loadVersions: resolved,
   restoreVersion: resolved,
   deleteCloudData: resolved,

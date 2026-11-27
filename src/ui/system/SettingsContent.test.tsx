@@ -15,6 +15,7 @@ vi.mock('../common/hooks', () => ({
 vi.mock('../../store/gameStore', () => ({ gameStore: { getState: () => ({ send: vi.fn(), newGame: vi.fn() }), subscribe: vi.fn() } }));
 vi.mock('./CloudSaveSection', () => ({ CloudSaveSection: () => null }));
 vi.mock('./DifficultySettings', () => ({ DifficultySettings: () => null }));
+vi.mock('./OtherDeviceSetting', () => ({ OtherDeviceSetting: () => null }));
 vi.mock('../../pwa/useInstallPrompt', () => ({ useInstallPrompt: () => ({ canInstall: false, install: () => {} }) }));
 
 afterEach(() => {

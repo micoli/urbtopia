@@ -1,11 +1,15 @@
 import { createStore } from 'zustand/vanilla';
 
+export type ReadOnlyReason = 'tab' | 'device';
+
 export interface ReadOnlyStore {
   readOnly: boolean;
-  set: (readOnly: boolean) => void;
+  reason: ReadOnlyReason | null;
+  set: (readOnly: boolean, reason?: ReadOnlyReason) => void;
 }
 
 export const readOnlyStore = createStore<ReadOnlyStore>((set) => ({
   readOnly: false,
-  set: (readOnly) => set({ readOnly }),
+  reason: null,
+  set: (readOnly, reason = 'tab') => set({ readOnly, reason: readOnly ? reason : null }),
 }));

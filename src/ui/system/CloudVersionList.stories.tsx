@@ -21,3 +21,4 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 export const Single: Story = { args: { versions: [{ revision: 1, clientSavedAt: 1790000000000, createdAt: 1790000000000 }] } };
+export const WithWorkSetAside: Story = { args: { versions: [{ revision: 12, clientSavedAt: 1790000000000, createdAt: 1790000000000 }, { revision: -3, clientSavedAt: 1790000000000 - 600_000, createdAt: 1790000000000 - 600_000 }] } };

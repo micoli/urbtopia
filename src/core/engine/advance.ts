@@ -51,6 +51,13 @@ export function standStill(state: GameState, now: number): AdvanceResult {
   return { state: { ...shiftRunningTimers(state, gap), lastSeen: state.lastSeen + gap, timeOffset: (state.timeOffset ?? 0) - gap }, events: [] };
 }
 
+// A save written by a device whose clock runs ahead of this one: the game clock comes back to `now` and every running timer comes back with it, so nothing stalls and nothing is replayed twice.
+export function rebaseClock(state: GameState, now: number): GameState {
+  const ahead = state.lastSeen - now;
+  if (ahead <= 0) return state;
+  return { ...shiftRunningTimers(state, -ahead), lastSeen: now, timeOffset: (state.timeOffset ?? 0) + ahead };
+}
+
 function advanceCity(state: GameState, now: number): AdvanceResult {
   if (state.replan) return standStill(state, now);
   const effectiveNow = Math.max(now, state.lastSeen);

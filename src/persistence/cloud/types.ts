@@ -1,4 +1,4 @@
-export type CloudErrorKind = 'offline' | 'rate-limited' | 'invalid-code' | 'conflict' | 'too-large' | 'city-limit' | 'unauthenticated' | 'unknown';
+export type CloudErrorKind = 'offline' | 'rate-limited' | 'invalid-code' | 'conflict' | 'not-active' | 'too-large' | 'city-limit' | 'unauthenticated' | 'unknown';
 
 export class CloudError extends Error {
   constructor(
@@ -27,6 +27,13 @@ export interface CloudCity {
   clientSavedAt: number;
 }
 
+export const CITY_LEASE_MS = 2 * 60_000;
+
+export interface CityLease {
+  held: boolean;
+  holder: string | null;
+}
+
 export interface PushInput {
   cityId: string;
   baseRevision: number;
@@ -35,6 +42,14 @@ export interface PushInput {
   formatVersion: number;
   keepPrevious?: boolean;
   keepalive?: boolean;
+  deviceId?: string;
+}
+
+export interface StashInput {
+  cityId: string;
+  envelope: string;
+  savedAt: number;
+  formatVersion: number;
 }
 
 export interface CloudAccount {
@@ -50,6 +65,8 @@ export interface CloudSaveClient {
   verifyEmailCode(email: string, code: string): Promise<void>;
   onAccountChange(listener: (account: CloudAccount | null) => void): () => void;
   push(input: PushInput): Promise<number>;
+  claimCity(cityId: string, deviceId: string, force: boolean): Promise<CityLease>;
+  stash(input: StashInput): Promise<void>;
   latest(cityId: string): Promise<CloudSave | null>;
   list(cityId: string): Promise<CloudSaveVersion[]>;
   listCities(): Promise<CloudCity[]>;

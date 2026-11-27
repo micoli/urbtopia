@@ -997,7 +997,7 @@ A glass window of a powered building that shows light at Night. Each window is l
 _Avoid_: Night lights, street lamp (a separate thing, not modelled)
 
 **Preference**:
-A choice of the Player about how the game looks and behaves for them (language, layout, display settings, Always day…), never about the city itself. The save keeps the Preferences as plain keys and values next to the city, without a schema or a version, so they follow the city to another device, through the Cloud save or an export. The device keeps a copy to start with before any city is read; a city saved before Preferences were kept leaves the device's own.
+A choice of the Player about how the game looks and behaves for them (language, layout, display settings, Always day…), never about the city itself. The save keeps the Preferences as plain keys and values next to the city, without a schema or a version, so they follow the city to another device, through the Cloud save or an export, except those that describe the device itself (graphics quality, touch or desktop layout), which stay on it. The device keeps a copy to start with before any city is read; a city saved before Preferences were kept leaves the device's own.
 _Avoid_: Option, config
 
 **Always day**:
@@ -1161,7 +1161,7 @@ A stop served by Metro vehicles on a Tunnel. A Transit hub is one too where a Tu
 _Avoid_: Railway station, Subway stop
 
 **Player account**:
-The anonymous identity that owns up to three Cities and their Cloud saves, created silently on first play and bound to the device. The player can later attach an email to it to recover their Cities on another device. Its Handle, Avatar, Friends, Groups and Medals are shared by all its Cities.
+The anonymous identity that owns up to three Cities and their Cloud saves, created silently on first play and bound to the device until an email is attached. Attaching an email makes it portable: the player signs in with a typed code on another device and plays their Cities there, one Active device at a time. Its Handle, Avatar, Friends, Groups and Medals are shared by all its Cities.
 _Avoid_: User, profile, login
 
 **City**:
@@ -1181,12 +1181,20 @@ The temporary holding area of the objects lifted by a Replan, from which the pla
 _Avoid_: Reserve (already the Solidarity reserve), inventory
 
 **Cloud save**:
-The copy of a City kept online for its Player account: the current one plus the 9 previous versions, for each City. The local save stays the source of truth; the Cloud save mirrors it.
+The copy of a City kept online for its Player account: the current one plus the 9 previous versions, for each City. Online, the Cloud save is the shared truth and a device opens a City from it; the local save is the device's cache, which lets the player keep playing offline.
 _Avoid_: Remote save, sync, server save
 
 **Save conflict**:
-The situation where the local save of a City and its Cloud save have both advanced since they last matched. The player chooses which one to keep; the other is kept as a previous version.
+The situation where the local save of a City and its Cloud save have both advanced, with different content, since they last matched: typically both devices were played offline. A local save that equals the Cloud save is never a conflict. The player chooses which one to keep, with both summarised side by side; the other is kept as a previous version.
 _Avoid_: Merge, overwrite
+
+**Active device**:
+The one device of a Player account that plays a City at a given moment, which the Cloud save knows by a short lease the device keeps renewing. The lease lapses on its own when the device goes quiet, so a closed tab never blocks another device. The other devices show that City read-only until the player takes it over. Each City has its own Active device. Two tabs of one browser are one device.
+_Avoid_: Master device, session owner, lock
+
+**Takeover**:
+The player's explicit choice to make the device in front of them the Active device of a City, which puts the previous one in read-only. What the previous device had not yet sent stays available as a previous version.
+_Avoid_: Force, steal, switch
 
 **Handle**:
 The unique public name of a Player account in multiplayer, the only identity shown to other players. It is required to enter multiplayer, which also requires an attached email. The email is never shown.

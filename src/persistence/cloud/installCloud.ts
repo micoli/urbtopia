@@ -1,5 +1,5 @@
 import { sendAchievementSignal } from '../../store/achievementSignal';
-import { advance } from '../../core';
+import { advance, rebaseClock } from '../../core';
 import { isBackOfficeSessionRequested } from '../../backOffice/handoff';
 import { showcasePublishHandle } from '../../showcase/publishHandle';
 import { cloudStore } from '../../store/cloudStore';
@@ -7,7 +7,9 @@ import { gameStore } from '../../store/gameStore';
 import { readOnlyStore } from '../../store/readOnlyStore';
 import { parseEnvelope } from '../envelope';
 import { adoptSavedPrefs } from '../savedPrefs';
-import { openCityId, saveSession, saveStore } from '../instance';
+import { readDeviceId } from '../deviceId';
+import { openCityId, rawSaveStore, saveSession, saveStore } from '../instance';
+import { saveNowHandle } from '../saveNow';
 import { SAVE_KEY } from '../saveStore';
 import { cloudEnabled } from './cloudConfig';
 import { CloudSync } from './cloudSync';
@@ -17,7 +19,7 @@ import { loadCloudClient } from './loadCloudClient';
 import { localAuthPassword, requestedLocalAuthEmail } from './localAuth';
 import { CloudError, type CloudAccount, type CloudSaveClient } from './types';
 
-const TICK_MS = 30_000;
+const TICK_MS = 10_000;
 
 async function startAfterLocalAuth(client: CloudSaveClient, engine: CloudSync): Promise<void> {
   const email = requestedLocalAuthEmail();
@@ -46,9 +48,16 @@ export function installCloudSync(): () => void {
     sync = new CloudSync({
       client,
       cityId: openCityId(),
+      deviceId: readDeviceId(rawSaveStore, () => crypto.randomUUID()),
+      flush: () => saveNowHandle.current(),
       store: saveStore,
       now: Date.now,
-      canPush: () => !readOnlyStore.getState().readOnly,
+      canPush: () => !readOnlyStore.getState().readOnly || readOnlyStore.getState().reason === 'device',
+      onActive: (active) => {
+        const { readOnly, reason, set } = readOnlyStore.getState();
+        if (!active) return set(true, 'device');
+        if (readOnly && reason === 'device') set(false);
+      },
       keepLocal: isKeepLocalRequested(window.location.search),
       onPushed: (envelope) => {
         showcasePublishHandle.current(envelope);
@@ -66,7 +75,8 @@ export function installCloudSync(): () => void {
           saveSession.backupNow();
           saveStore.put(SAVE_KEY, envelope);
           adoptSavedPrefs(parsed.prefs);
-          gameStore.getState().replaceState(advance(parsed.state, Date.now()).state, 'tick');
+          const now = Date.now();
+          gameStore.getState().replaceState(advance(rebaseClock(parsed.state, now), now).state, 'tick');
         },
         keepAsPreviousVersion: () => saveSession.backupNow(),
       },
@@ -114,6 +124,7 @@ export function installCloudSync(): () => void {
       },
       syncNow: () => engine.pushNow(),
       resolveConflict: (choice) => engine.resolveConflict(choice),
+      takeOver: () => engine.takeOver(),
       loadVersions: async () => cloudStore.getState().setVersions(await engine.listVersions()),
       restoreVersion: async (revision) => {
         await engine.restoreVersion(revision);
@@ -135,7 +146,8 @@ export function installCloudSync(): () => void {
   });
   const timer = setInterval(() => void sync?.tick(), TICK_MS);
   const onVisibility = () => {
-    if (document.visibilityState === 'hidden') sync?.pushOnPageHide();
+    if (document.visibilityState === 'hidden') return sync?.pushOnPageHide();
+    void sync?.refresh();
   };
   const onPageHide = () => sync?.pushOnPageHide();
   document.addEventListener('visibilitychange', onVisibility);

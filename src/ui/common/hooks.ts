@@ -5,7 +5,7 @@ import { gameStore, type GameStore } from '../../store/gameStore';
 import { dialogStore, type DialogStore } from '../../store/dialogStore';
 import { showcaseStore, type ShowcaseStore } from '../../store/showcaseStore';
 import { socialStore, type SocialStore } from '../../store/socialStore';
-import { readOnlyStore } from '../../store/readOnlyStore';
+import { readOnlyStore, type ReadOnlyReason } from '../../store/readOnlyStore';
 import { uiStore, type UiStore } from '../../store/uiStore';
 import { shipmentStore, type ShipmentStore } from '../../store/shipmentStore';
 import { solidarityStore, type SolidarityStore } from '../../store/solidarityStore';
@@ -32,6 +32,10 @@ export function useDialogs<T>(selector: (store: DialogStore) => T): T {
 
 export function useReadOnly(): boolean {
   return useStore(readOnlyStore, (store) => store.readOnly);
+}
+
+export function useReadOnlyReason(): ReadOnlyReason | null {
+  return useStore(readOnlyStore, (store) => store.reason);
 }
 
 export function useCloud<T>(selector: (store: CloudStore) => T): T {

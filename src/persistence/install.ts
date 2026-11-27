@@ -69,7 +69,7 @@ export function installPersistence(): () => void {
         adoptSavedPrefs(loaded.prefs);
         gameStore.getState().replaceState(loaded.state, 'tick');
       }
-      readOnlyStore.getState().set(false);
+      if (readOnlyStore.getState().reason !== 'device') readOnlyStore.getState().set(false);
       void catchUpInChunks(Date.now());
     },
   });

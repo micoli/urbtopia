@@ -9,6 +9,7 @@ import { SwitchField } from '../common/SwitchField';
 import { AdvisorSettings } from '../advisor/AdvisorSettings';
 import { BugReportSettings } from '../bugReport/BugReportSettings';
 import { DifficultySettings } from './DifficultySettings';
+import { OtherDeviceSetting } from './OtherDeviceSetting';
 import { SettingRow } from './SettingRow';
 import { SettingsSection } from './SettingsSection';
 
@@ -41,6 +42,7 @@ export function GameSettings() {
         <SettingRow label={t('settings.seed')} description={t('settings.seed.description')}>
           <code className="setting-row__value">{seed}</code>
         </SettingRow>
+        <OtherDeviceSetting />
       </SettingsSection>
       <BugReportSettings />
       <DifficultySettings />

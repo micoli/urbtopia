@@ -151,9 +151,16 @@ function writeStored({ language, layout, traffic, pedestrians, pedestrianModel, 
   }
 }
 
-// Every preference as a plain key and value, the form in which the save keeps them.
+// Preferences that describe the device (screen layout, graphics quality, crowd, pointer calibration): they stay on it and never ride in the save.
+export const DEVICE_PREF_KEYS = ['layout', 'traffic', 'pedestrians', 'trafficDensity', 'pedestrianDensity', 'sunShadows', 'shinyModels', 'objectShadows', 'pickMode', 'debug', 'debugOffsetX', 'debugOffsetY'] as const satisfies readonly (keyof Prefs)[];
+
+export function isDevicePref(key: string): boolean {
+  return (DEVICE_PREF_KEYS as readonly string[]).includes(key);
+}
+
+// Every preference that follows the City, as a plain key and value, the form in which the save keeps them.
 export function savedPrefsOf(prefs: Prefs): Record<string, unknown> {
-  return Object.fromEntries(Object.entries(prefs).filter(([, value]) => typeof value !== 'function'));
+  return Object.fromEntries(Object.entries(prefs).filter(([key, value]) => typeof value !== 'function' && !isDevicePref(key)));
 }
 
 export interface PrefsStore extends Prefs {
@@ -207,7 +214,7 @@ export const prefsStore = createStore<PrefsStore>((set, get) => ({
   ...parsePrefs(readStored(), browserLanguage),
   applySavedPrefs: (saved) => {
     const valid = parsePrefs(JSON.stringify(saved), browserLanguage);
-    const applied = Object.keys(saved).filter((key) => Object.hasOwn(valid, key));
+    const applied = Object.keys(saved).filter((key) => Object.hasOwn(valid, key) && !isDevicePref(key));
     if (applied.length === 0) return;
     set(Object.fromEntries(applied.map((key) => [key, valid[key as keyof Prefs]])));
     writeStored(get());
