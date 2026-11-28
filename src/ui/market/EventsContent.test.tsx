@@ -15,6 +15,7 @@ vi.mock('../common/hooks', () => ({
   useUi: (selector: (store: { openSettingsFromSocial: () => void }) => unknown) => selector({ openSettingsFromSocial: () => {} }),
 }));
 vi.mock('../common/ItemIcon', () => ({ ItemIcon: () => null }));
+vi.mock('../puzzle/PuzzleCard', () => ({ PuzzleCard: () => null }));
 
 afterEach(() => prefsStore.getState().setLanguage('en'));
 
