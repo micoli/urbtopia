@@ -2,13 +2,17 @@ import type { Difficulty } from '../../core/dailyPuzzle/types';
 import { puzzleDay, puzzleSeedOf } from '../../puzzle/puzzleDay';
 import { t } from '../../i18n/t';
 import { puzzleStore } from '../../store/puzzleStore';
+import { uiStore } from '../../store/uiStore';
 import { ActionButton } from '../common/ActionButton';
 
 const LEVELS: Difficulty[] = ['easy', 'medium', 'hard'];
 
 // The Daily puzzle, at the head of the Events tab: one button for each difficulty.
 export function PuzzleCard() {
-  const open = (difficulty: Difficulty) => puzzleStore.getState().open(puzzleSeedOf(puzzleDay(Date.now())), difficulty);
+  const open = (difficulty: Difficulty) => {
+    puzzleStore.getState().open(puzzleSeedOf(puzzleDay(Date.now())), difficulty);
+    uiStore.setState({ marketOpen: false });
+  };
   return (
     <section className="puzzle-card" aria-label={t('puzzle.card.title')}>
       <strong>{t('puzzle.card.title')}</strong>
