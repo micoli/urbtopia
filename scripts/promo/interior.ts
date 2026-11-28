@@ -20,6 +20,7 @@ export async function placeFixture(stage: Stage, { section, fixture, cell, rotat
   await stage.clickTile(cell.x, cell.y);
   await stage.ui('hud', 'build', 'panel');
   for (let turn = 0; turn < rotations; turn++) await stage.click(stage.page.getByRole('button', { name: 'Rotate', exact: true }).first());
+  await stage.ui('hud', 'build');
 }
 
 // The Build button of the interior: the city has one of its own under the dialog.

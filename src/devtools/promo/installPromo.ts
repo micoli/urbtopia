@@ -18,6 +18,7 @@ export interface PromoApi {
   callout(rect: Rect | null, label?: string): void;
   stat(label: string, from: number, to: number, seconds: number, suffix?: string): Promise<void>;
   look(on: boolean): void;
+  shiftRoom(dx: number, dy: number): void;
 }
 
 export type CaptionMode = 'plain' | 'words' | 'typewriter';
@@ -202,6 +203,24 @@ function setUi(parts: string[]): void {
   document.documentElement.dataset.promoShow = parts.join(' ');
 }
 
+// Moves the open room on the screen by a number of pixels: the pan is in world units, so the way a pan moves the picture is measured first.
+function shiftRoom(dx: number, dy: number): void {
+  const scene = venueSceneHandle.current;
+  if (!scene) return;
+  const view = scene.getView();
+  const at = () => scene.screenOfCell(5, 5);
+  const origin = at();
+  scene.setView(view.x + 1, view.y, view.zoom);
+  const alongX = { x: at().x - origin.x, y: at().y - origin.y };
+  scene.setView(view.x, view.y + 1, view.zoom);
+  const alongY = { x: at().x - origin.x, y: at().y - origin.y };
+  const determinant = alongX.x * alongY.y - alongY.x * alongX.y;
+  if (Math.abs(determinant) < 1e-6) return scene.setView(view.x, view.y, view.zoom);
+  const tx = (dx * alongY.y - alongY.x * dy) / determinant;
+  const ty = (alongX.x * dy - dx * alongX.y) / determinant;
+  scene.setView(view.x + tx, view.y + ty, view.zoom);
+}
+
 // The guided demonstrations explain the game: a promo never opens their invitation.
 function silenceDemonstrations(): void {
   const types = DEMONSTRATIONS.map((demonstration) => demonstration.buildingType);
@@ -212,6 +231,6 @@ export function installPromo(): void {
   setUi([]);
   silenceDemonstrations();
   installCursor();
-  window.__promo = { loadState, caption: installCaption(), title: installTitle(), callout: installCallout(), stat: installStat(), look, timelapse, flyTo, pinCycleHour: (hour) => showDayCycle(hour === null, hour), tileToScreen, setUi };
+  window.__promo = { loadState, caption: installCaption(), title: installTitle(), callout: installCallout(), stat: installStat(), look, shiftRoom, timelapse, flyTo, pinCycleHour: (hour) => showDayCycle(hour === null, hour), tileToScreen, setUi };
   look(true);
 }

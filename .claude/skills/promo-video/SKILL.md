@@ -47,6 +47,10 @@ Use few, and one hero moment per scene. All are drawn in the page, so they are f
 - A pause (1 to 2 seconds of stillness) before the payoff makes it land: the Storehouse that fills up, the number that counts up.
 - Keep one motion language: the same camera zoom levels and the same ease for similar moments.
 
+## Formats
+
+`--format=phone` films the same scenario in portrait (720×1280) into `<name>.phone.mp4`; every `stage.check` still runs. The zooms of `focusTile` / `flyTo` are written for the landscape width and scaled to the width of the format, so the same stretch of the city shows. In portrait the side panels and the build menu cover a large part of the picture: `stage.portrait` tells the format, `stage.shiftRoom(dx, dy)` moves the open interior room clear of them, and `placeFixture` hides the fixture panel once a piece is turned. Always check the key frames of a portrait video.
+
 ## Rules
 
 - The tax bubbles ("25 U") that float over the buildings can crowd a shot: if they do, set `hideTaxBadges: true` in the scene options. Keep them when the scene is about taxes or income.

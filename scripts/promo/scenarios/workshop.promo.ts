@@ -5,7 +5,7 @@ export default scenario('workshop', [
   scene('interior', { language: 'en', state: 'scripts/promo/states/early-city.json', ui: ['hud'], hideTaxBadges: true }, async (stage) => {
     const ratesOf = () => stage.page.locator('.dock-stat--rates').first().innerText();
 
-    await stage.title('Urbtopia', { subtitle: 'Build your city' });
+    await stage.title('Urbtopia', { subtitle: 'Every city runs on something' });
     await stage.caption('The Workshop has an interior to fit out', undefined, 'words');
     await stage.say('Every Workshop has an interior, ready to be fitted out.', { wait: false });
     await stage.focusTile(55, 57, 70, 2);
@@ -15,6 +15,7 @@ export default scenario('workshop', [
     await stage.click({ role: 'button', name: 'Open the Workshop interior' });
     await stage.ui('hud', 'build');
     await stage.wait(1500);
+    if (stage.portrait) await stage.shiftRoom(120, -170);
     await openInteriorBuild(stage);
     await stage.hideCaption();
 
@@ -93,7 +94,7 @@ export default scenario('workshop', [
       await stage.ui('hud');
       await stage.focusTile(57, 57, 36, 2.5);
       await stage.stat('Wood stored', 20);
-      await stage.title('Urbtopia', { subtitle: 'Build your city', seconds: 3 });
+      await stage.title('Urbtopia', { subtitle: 'Every city runs on something', seconds: 3 });
     });
   }),
 ], { transition: 'fade' });

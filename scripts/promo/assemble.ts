@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Recording } from './record.ts';
-import { DEFAULT_VIEWPORT, type ScenarioOptions } from './types.ts';
+import type { ScenarioOptions } from './types.ts';
 
 const FADE_SECONDS = 0.35;
 const MUSIC_VOLUME = 0.18;
@@ -15,7 +15,7 @@ function normalise(recording: Recording, fade: boolean): string {
   const output = recording.video.replace(/\.webm$/, '.mp4');
   const seconds = durationOf(recording.video) - recording.trimSeconds;
   const fadeOut = Math.max(0, seconds - FADE_SECONDS);
-  const picture = `scale=${DEFAULT_VIEWPORT.width}:${DEFAULT_VIEWPORT.height}:flags=lanczos,fps=30${fade ? `,fade=t=in:st=0:d=${FADE_SECONDS},fade=t=out:st=${fadeOut}:d=${FADE_SECONDS}` : ''}`;
+  const picture = `scale=${recording.viewport.width}:${recording.viewport.height}:flags=lanczos,fps=30${fade ? `,fade=t=in:st=0:d=${FADE_SECONDS},fade=t=out:st=${fadeOut}:d=${FADE_SECONDS}` : ''}`;
   const lines = recording.cues.map((cue, index) => `[${index + 2}:a]adelay=${Math.max(0, Math.round((cue.at - recording.trimSeconds) * 1000))}:all=1,aresample=48000[c${index}]`);
   const mixed = ['[1:a]', ...recording.cues.map((_, index) => `[c${index}]`)].join('');
   const sound = `${lines.join(';')}${lines.length ? ';' : ''}${mixed}amix=inputs=${recording.cues.length + 1}:duration=first:normalize=0${fade ? `,afade=t=in:st=0:d=${FADE_SECONDS},afade=t=out:st=${fadeOut}:d=${FADE_SECONDS}` : ''}[a]`;

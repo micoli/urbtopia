@@ -35,6 +35,13 @@ export interface Scenario extends ScenarioOptions {
 
 export const DEFAULT_VIEWPORT = { width: 1080, height: 768 };
 
+// Formats of a video: the whole scenario is filmed again at the size of the format (`--format=phone`).
+export const FORMATS = {
+  landscape: DEFAULT_VIEWPORT,
+  phone: { width: 720, height: 1280 },
+} as const;
+export type Format = keyof typeof FORMATS;
+
 export function scene(name: string, options: SceneOptions, play: Scene['play']): Scene {
   return { name, options, play };
 }

@@ -3,7 +3,7 @@ import { join, resolve } from 'node:path';
 import { assemble } from './assemble.ts';
 import { sceneHash } from './cache.ts';
 import { recordScene, type Recording } from './record.ts';
-import type { Scenario } from './types.ts';
+import { DEFAULT_VIEWPORT, FORMATS, type Format, type Scenario } from './types.ts';
 
 const ROOT = resolve(import.meta.dirname, '../..');
 const BASE_URL = process.env.PROMO_URL ?? 'http://127.0.0.1:5175';
@@ -13,15 +13,22 @@ const name = args.find((arg) => !arg.startsWith('--'));
 const fresh = args.includes('--fresh');
 const fast = args.includes('--fast');
 if (fast) process.env.PROMO_FAST = '1';
+const format = (args.find((arg) => arg.startsWith('--format='))?.slice('--format='.length) ?? 'landscape') as Format;
+if (!(format in FORMATS)) {
+  console.error(`Unknown format ${format}: ${Object.keys(FORMATS).join(', ')}`);
+  process.exit(1);
+}
 const only = args.find((arg) => arg.startsWith('--scene='))?.slice('--scene='.length);
 
 if (!name) {
-  console.error('Usage: node scripts/promo/cli.ts <scenario> [--fresh] [--fast] [--scene=<name>]');
+  console.error('Usage: node scripts/promo/cli.ts <scenario> [--fresh] [--fast] [--format=landscape|phone] [--scene=<name>]');
   process.exit(1);
 }
 
 const { default: loaded } = await import(`./scenarios/${name}.promo.ts`) as { default: Scenario };
-const directory = join(ROOT, 'tmp/promo', name);
+const suffix = format === 'landscape' ? '' : `.${format}`;
+const directory = join(ROOT, 'tmp/promo', `${name}${suffix}`);
+for (const scene of loaded.scenes) scene.options.viewport ??= FORMATS[format];
 mkdirSync(directory, { recursive: true });
 
 const recordings: Recording[] = [];
@@ -31,7 +38,7 @@ for (const scene of loaded.scenes) {
   const video = join(directory, `${scene.name}.${hash}.webm`);
   if (!fast && !fresh && existsSync(video)) {
     console.log(`${scene.name}: cached`);
-    recordings.push({ video, cues: [], ...JSON.parse(readFileSync(`${video}.json`, 'utf8')) });
+    recordings.push({ video, cues: [], viewport: scene.options.viewport ?? DEFAULT_VIEWPORT, ...JSON.parse(readFileSync(`${video}.json`, 'utf8')) });
     continue;
   }
   console.log(`${scene.name}: recording`);
@@ -39,6 +46,6 @@ for (const scene of loaded.scenes) {
 }
 
 if (only || fast) process.exit(0);
-const output = join(ROOT, 'tmp/promo', `${name}.mp4`);
+const output = join(ROOT, 'tmp/promo', `${name}${suffix}.mp4`);
 assemble(recordings, output, directory, { ...loaded, audio: loaded.audio ? resolve(ROOT, loaded.audio) : undefined });
 console.log(output);

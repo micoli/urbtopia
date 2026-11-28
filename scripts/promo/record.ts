@@ -9,6 +9,7 @@ export interface Recording {
   video: string;
   trimSeconds: number;
   cues: Cue[];
+  viewport: { width: number; height: number };
 }
 
 interface RecordOptions {
@@ -42,7 +43,7 @@ export async function recordScene(scene: Scene, { baseUrl, root, directory, hash
   await page.evaluate((parts) => window.__promo?.setUi(parts), scene.options.ui ?? []);
   await page.waitForTimeout(1500);
   const trimSeconds = (Date.now() - videoStartedAt) / 1000;
-  const stage = new Stage(page, { voice: scene.options.voice ?? DEFAULT_VOICES[language], videoStartedAt });
+  const stage = new Stage(page, { voice: scene.options.voice ?? DEFAULT_VOICES[language], viewport, videoStartedAt });
   try {
     await scene.play(process.env.PROMO_TRACE ? traced(stage) : stage);
   } catch (error) {
@@ -55,12 +56,12 @@ export async function recordScene(scene: Scene, { baseUrl, root, directory, hash
   const raw = await page.video()?.path();
   await context.close();
   await browser.close();
-  if (fast) return { video: '', trimSeconds, cues: [] };
+  if (fast) return { video: '', trimSeconds, cues: [], viewport };
   if (!raw) throw new Error('No video was recorded');
   const video = join(directory, `${scene.name}.${hash}.webm`);
   renameSync(raw, video);
-  writeFileSync(`${video}.json`, JSON.stringify({ trimSeconds, cues: stage.cues }));
-  return { video, trimSeconds, cues: stage.cues };
+  writeFileSync(`${video}.json`, JSON.stringify({ trimSeconds, cues: stage.cues, viewport }));
+  return { video, trimSeconds, cues: stage.cues, viewport };
 }
 
 // PROMO_TRACE=1 prints how long every verb of the stage takes, to find what makes a scenario slow.

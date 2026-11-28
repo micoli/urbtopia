@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import type { UiPart } from './types.ts';
 import { speak } from './voice.ts';
+import { DEFAULT_VIEWPORT } from './types.ts';
 
 export interface Cue {
   file: string;
@@ -10,6 +11,7 @@ export interface Cue {
 
 export interface StageOptions {
   voice: string;
+  viewport: { width: number; height: number };
   // The moment the video starts, in milliseconds since the epoch: a cue is dated from it.
   videoStartedAt: number;
 }
@@ -93,6 +95,11 @@ export class Stage {
   async endOfSpeech(): Promise<void> {
     if (isFast()) return;
     await this.page.waitForTimeout(Math.max(0, this.speaksUntil - Date.now()));
+  }
+
+  // Moves the open interior room on the screen, to keep it clear of the panels (in portrait).
+  shiftRoom(dx: number, dy: number): Promise<void> {
+    return this.page.evaluate(([x, y]) => window.__promo?.shiftRoom(x, y), [dx, dy] as const);
   }
 
   // A full-screen title card that fades in and out.
@@ -192,8 +199,15 @@ export class Stage {
     }
   }
 
+  // True in a portrait format (`--format=phone`).
+  get portrait(): boolean {
+    return this.options.viewport.height > this.options.viewport.width;
+  }
+
+  // The zooms of a scenario are written for the landscape width: a narrower picture zooms out by the same ratio, to show the same stretch of the city.
   flyTo(x: number, z: number, zoom: number, seconds = 2): Promise<void> {
-    return this.page.evaluate(([a, b, c, d]) => window.__promo?.flyTo(a, b, c, d), [x, z, zoom, isFast() ? 0.05 : seconds] as const);
+    const scaled = zoom * (this.options.viewport.width / DEFAULT_VIEWPORT.width);
+    return this.page.evaluate(([a, b, c, d]) => window.__promo?.flyTo(a, b, c, d), [x, z, scaled, isFast() ? 0.05 : seconds] as const);
   }
 
   focusTile(x: number, y: number, zoom: number, seconds = 1.8): Promise<void> {
