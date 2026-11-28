@@ -1260,6 +1260,22 @@ _Avoid_: Title, label
 A Challenge renewed every day at 07:00 Paris time by the server, paid in Urbs, published in three variants (easy, medium, hard), with a goal reachable in about 45 minutes of active play.
 _Avoid_: Daily quest
 
+**Daily puzzle**:
+A puzzle played once a day per Player account, listed at the top of the Events tab of the Market window. Three Daily puzzles are published every day at 07:00 Paris time (easy, medium, hard), the same for every Player; the player picks one and wins at most once a day, a fixed amount of Urbs set by its difficulty and paid to the active City. It needs the player to be signed in. A failed or abandoned attempt costs nothing and can be replayed until the next 07:00, the Contraption of an unfinished attempt never being saved. The player runs and resets the Contraption freely before the Aim is reached. Each is always solvable. Solving one counts towards the Medals of its Player account.
+_Avoid_: Daily quest, Minigame (a Casino game), Challenge (a delivery goal)
+
+**Part**:
+A piece the player places on a Daily puzzle to build a Contraption, taken from a limited set given with the puzzle.
+_Avoid_: Item (already Goods and Materials), Fixture (an interior piece)
+
+**Aim**:
+What a Daily puzzle asks of the Contraption: deliver the ball to the target, light every candle, flip every switch, or collect every star then reach the exit. An easy puzzle has one Aim, a medium one two, a hard one three. Its elements (target, candles, switches, stars, exit) are fixed on the board and are never Parts.
+_Avoid_: Goal (already Challenge), Objective (already the State), Mission
+
+**Contraption**:
+The chain of Parts a player assembles to solve a Daily puzzle.
+_Avoid_: Machine (already a Farm interior piece)
+
 **Event**:
 A Challenge with a start and an end date set by the server, longer than a day, paid in Medals. Distinct from an Annual event, which is calendar-based and involves no server.
 _Avoid_: Festival
@@ -1281,7 +1297,7 @@ The units the player has set aside for an accepted Challenge, taken from the Sto
 _Avoid_: Basket, deposit, contribution
 
 **Medal**:
-A permanent distinction earned by completing a Challenge whose reward is a Medal, by reaching cumulative Donation value milestones, or by completing an Achievement category. A Medal belongs to the Player account, not to a City. It is shown in the Social window, on the Player account's own profile and on its Friends'.
+A permanent distinction earned by completing a Challenge whose reward is a Medal, by reaching cumulative Donation value milestones, by solving 5, 10, 30, 50 or 100 Daily puzzles, or by completing an Achievement category. A Medal belongs to the Player account, not to a City. It is shown in the Social window, on the Player account's own profile and on its Friends'.
 _Avoid_: Badge (reserved for the notification counter on a button), trophy. Distinct from an Achievement.
 
 **Achievement category**:
@@ -1407,3 +1423,6 @@ _Avoid_: Docs, documentation, manual, wiki
 - Common words are kept for Materials and Goods; invention is reserved for brand-like terms (game name, currency, market).
 - No trademarked terms from other games in code, docs or UI.
 - Code identifiers and this glossary are in English; UI strings are translated FR/EN. The game name and the currency name are identical in both languages.
+
+**Promo scene**:
+A filmed sequence of the game, written as a TypeScript file in `scripts/promo/scenarios/` (`scene(name, options, play)`) and played by the promo engine in a headed browser at `?promo`. It starts from a saved City (`state`), may pin the language and the Cycle hour, and ends in its own video; a **Promo scenario** chains scenes into one MP4. A scene whose content has not changed is not filmed again.

@@ -8,6 +8,7 @@ import { congestionDiagnosisMessages } from './congestionDiagnosis';
 import { wasteDiagnosisMessages } from './wasteDiagnosis';
 import { jobsDiagnosisMessages } from './jobsDiagnosis';
 import { casinoMessages } from './casino';
+import { puzzleMessages } from './puzzle';
 import { difficultyMessages } from './difficulty';
 import { needsMessages } from './needs';
 import { wasteSectionMessages } from './wasteSection';
@@ -44,6 +45,7 @@ export const FR: Record<MessageKey, string> = {
   ...natureMessages('fr'),
   ...challengeMessages('fr'),
   ...casinoMessages('fr'),
+  ...puzzleMessages('fr'),
   ...needsMessages('fr'),
   ...wasteSectionMessages('fr'),
   ...difficultyMessages('fr'),

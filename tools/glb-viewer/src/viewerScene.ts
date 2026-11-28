@@ -12,6 +12,7 @@ const GROUND_COLOR = 0x7d9a62
 export interface ShownModel {
   object: THREE.Object3D
   label: string
+  clips: readonly THREE.AnimationClip[]
 }
 
 export class ViewerScene {
@@ -23,6 +24,9 @@ export class ViewerScene {
   private readonly sky = new THREE.HemisphereLight()
   private readonly ground: THREE.Mesh
   private readonly models = new THREE.Group()
+  private readonly clock = new THREE.Clock()
+  private mixers: { mixer: THREE.AnimationMixer; clips: readonly THREE.AnimationClip[] }[] = []
+  private clipName = ''
   private grid = new THREE.GridHelper(1, 1)
   private showGrid = true
   private night = false
@@ -69,6 +73,7 @@ export class ViewerScene {
   // Models sit on a square-ish grid of equal cells, each as wide as the biggest model.
   show(items: ShownModel[]) {
     this.models.clear()
+    this.mixers = items.filter(({ clips }) => clips.length > 0).map(({ object, clips }) => ({ mixer: new THREE.AnimationMixer(object), clips }))
     const boxes = items.map(({ object }) => {
       object.position.set(0, 0, 0)
       object.updateMatrixWorld(true)
@@ -95,6 +100,17 @@ export class ViewerScene {
       this.models.add(object)
     })
     this.rebuildGround()
+    this.playClip(this.clipName)
+  }
+
+  // An empty name shows the rest pose.
+  playClip(name: string) {
+    this.clipName = name
+    for (const { mixer, clips } of this.mixers) {
+      mixer.stopAllAction()
+      const clip = clips.find((candidate) => candidate.name === name)
+      if (clip) mixer.clipAction(clip).reset().play()
+    }
   }
 
   setShadows(enabled: boolean) {
@@ -180,6 +196,8 @@ export class ViewerScene {
   private draw() {
     const { clientWidth, clientHeight } = this.canvas
     if (this.canvas.width !== Math.round(clientWidth * this.renderer.getPixelRatio()) || this.canvas.height !== Math.round(clientHeight * this.renderer.getPixelRatio())) this.resize()
+    const delta = this.clock.getDelta()
+    for (const { mixer } of this.mixers) mixer.update(delta)
     this.controls.update()
     this.renderer.render(this.scene, this.camera)
   }

@@ -24,6 +24,7 @@
 @import './ui/codex/codex.css' layer(legacy);
 @import './ui/casino/casino.css' layer(legacy);
 @import './ui/district/district.css' layer(legacy);
+@import './ui/puzzle/puzzle.css' layer(legacy);
 @import './ui/politics/politics.css' layer(legacy);
 @import './ui/achievements/achievements.css' layer(legacy);
 @import './ui/advisor/advisor.css' layer(legacy);

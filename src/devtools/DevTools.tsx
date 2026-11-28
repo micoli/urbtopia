@@ -10,6 +10,7 @@ import { AdvisorContextSection } from './AdvisorContextSection';
 import { AnnualEventDateButtons } from './AnnualEventDateButtons';
 import { dayOfIsoDate, isoDateOfDay } from './annualEventDate';
 import { clearGoods, clearMaterials, clearWarehouse } from './clearItems';
+import { DevPuzzleButtons } from './DevPuzzleButtons';
 import { DevToolsSection } from './DevToolsSection';
 import { DevToolsWindow } from './DevToolsWindow';
 import { FeatureFlagSwitches } from './FeatureFlagSwitches';
@@ -90,6 +91,9 @@ export default function DevTools() {
             <AnnualEventDateButtons year={new Date().getFullYear()} forcedDay={forcedDay} />
             <small>{forcedDay === undefined ? 'Date réelle de l’appareil.' : 'Date forcée pour les fenêtres des événements annuels.'}</small>
             <ActionButton variant="danger" disabled={forcedDay === undefined} onClick={() => forceAnnualEventDay(undefined)}>Revenir à la date réelle</ActionButton>
+          </DevToolsSection>
+          <DevToolsSection id="puzzle" title="Puzzle du jour" icon="play">
+            <DevPuzzleButtons onDone={() => setOpen(false)} />
           </DevToolsSection>
           <DevToolsSection id="releaseNotes" title="Notes de release" icon="info">
             <ReleaseNotesDevButton onDone={() => setOpen(false)} />

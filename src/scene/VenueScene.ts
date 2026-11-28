@@ -852,6 +852,13 @@ export class VenueScene {
     this.dirty = true;
   }
 
+  // Where the middle of a floor cell is on the screen.
+  screenOfCell(x: number, y: number): { x: number; y: number } {
+    const rect = this.canvas.getBoundingClientRect();
+    const point = new THREE.Vector3(x + 0.5, 0, y + 0.5).project(this.camera);
+    return { x: ((point.x + 1) / 2) * rect.width + rect.left, y: ((1 - point.y) / 2) * rect.height + rect.top };
+  }
+
   getView(): { x: number; y: number; zoom: number } {
     return { x: this.pan.x, y: this.pan.z, zoom: this.zoom };
   }

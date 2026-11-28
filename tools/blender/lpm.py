@@ -24,7 +24,7 @@ import bmesh
 import bpy
 from mathutils import Matrix, Vector
 
-__all__ = ["reset", "Palette", "box", "grid_box", "prism", "lathe", "sweep", "plate", "bend", "mirror_x", "move", "rotate",
+__all__ = ["reset", "Palette", "box", "grid_box", "prism", "ring", "star", "lathe", "sweep", "plate", "bend", "mirror_x", "move", "rotate",
            "scale", "taper", "paint", "finish", "tri_count", "report", "export_glb", "save"]
 
 # --------------------------------------------------------------------------- scene / palette
@@ -208,6 +208,44 @@ def prism(name, sides, radius, height, at=(0, 0, 0), color=0, radius_top=None, r
     if cap:
         faces += [tuple(reversed(range(sides))), tuple(range(sides, 2 * sides))]
     return _object(name, _bm_from(verts, faces), color)
+
+
+def ring(name, sides, radius, inner_radius, height, at=(0, 0, 0), color=0, rotate=0.0):
+    """Regular n-gon tube standing on its base at `at`: a prism with a hole, open through the middle."""
+    x, y, z = at
+    verts = []
+    for rr, zz in ((radius, z), (inner_radius, z), (radius, z + height), (inner_radius, z + height)):
+        for i in range(sides):
+            a = math.radians(rotate) + 2 * math.pi * i / sides
+            verts.append((x + rr * math.cos(a), y + rr * math.sin(a), zz))
+    out_low, in_low, out_high, in_high = (k * sides for k in range(4))
+    faces = []
+    for i in range(sides):
+        j = (i + 1) % sides
+        faces += [(out_low + i, out_low + j, out_high + j, out_high + i), (in_low + j, in_low + i, in_high + i, in_high + j),
+                  (out_high + i, out_high + j, in_high + j, in_high + i), (out_low + j, out_low + i, in_low + i, in_low + j)]
+    return _object(name, _bm_from(verts, faces), color)
+
+
+def star(name, points, radius, inner_ratio=0.381966, rim=0.03, depth=0.1, at=(0, 0, 0), colors=(0, 0)):
+    """Regular n-pointed star standing in the XZ plane, the first tip up, facing -Y, puffed into a low pyramid on each side. `inner_ratio` is the radius of the notches over the radius of the
+    tips (0.381966 is the pentagram). `rim` is half the thickness of its edge and `depth` how far the centre rises from the plane. The two faces of each arm take `colors` in turn."""
+    x, y, z = at
+    count = 2 * points
+    ring = [(radius if k % 2 == 0 else radius * inner_ratio, math.radians(90 + 360 * k / count)) for k in range(count)]
+    verts = [(x + r * math.cos(a), y - rim, z + r * math.sin(a)) for r, a in ring] + [(x + r * math.cos(a), y + rim, z + r * math.sin(a)) for r, a in ring]
+    front_apex, back_apex = len(verts), len(verts) + 1
+    verts += [(x, y - rim - depth, z), (x, y + rim + depth, z)]
+    faces = [(front_apex, k, (k + 1) % count) for k in range(count)]
+    faces += [(back_apex, count + (k + 1) % count, count + k) for k in range(count)]
+    faces += [(k, count + k, count + (k + 1) % count, (k + 1) % count) for k in range(count)]
+    ob = _object(name, _bm_from(verts, faces), colors[0])
+    attr = ob.data.attributes["lpm_color"]
+    for index in range(2 * count):
+        attr.data[index].value = int(colors[index % count % 2])
+    for index in range(2 * count, 3 * count):
+        attr.data[index].value = int(colors[1])
+    return ob
 
 
 def lathe(name, profile, segments=8, at=(0, 0, 0), color=0):

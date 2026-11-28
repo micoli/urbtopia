@@ -30,7 +30,7 @@ async function fetchAllRows<Row>(fetchRange: (from: number, to: number) => Promi
   }
 }
 
-async function fetchAllUsers(client: AdminClient) {
+export async function fetchAllUsers(client: AdminClient) {
   const users = []
   for (let page = 1; page <= MAX_USER_PAGES; page++) {
     const { data, error } = await client.auth.admin.listUsers({ page, perPage: USERS_PER_PAGE })

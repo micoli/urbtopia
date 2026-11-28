@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { setBanned, type AdminClient } from '../api/supabaseAdmin'
 import { accountLabel, isBanned, type AccountSummary } from '../domain/accounts'
 import { badge, button } from './styles'
@@ -8,9 +8,10 @@ interface Props {
   client: AdminClient
   account: AccountSummary
   onChanged: () => void
+  children?: ReactNode
 }
 
-export function BanControl({ client, account, onChanged }: Props) {
+export function BanControl({ client, account, onChanged, children }: Props) {
   const [confirming, setConfirming] = useState(false)
   const [error, setError] = useState('')
   const banned = isBanned(account, Date.now())
@@ -31,6 +32,7 @@ export function BanControl({ client, account, onChanged }: Props) {
       <div className="flex items-center gap-3">
         <span className={badge(banned ? 'red' : 'green')}>{banned ? 'Banned' : 'Active'}</span>
         <button className={button(banned ? 'secondary' : 'danger')} onClick={() => setConfirming(true)}>{banned ? 'Unban' : 'Ban'}</button>
+        {children}
       </div>
       {error && <p className="text-xs text-red-700" role="alert">{error}</p>}
       {confirming && (

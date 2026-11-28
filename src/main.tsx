@@ -16,6 +16,7 @@ import { registerServiceWorker } from './pwa/registerServiceWorker';
 import { installStaleChunkReload } from './pwa/reloadOnStaleChunk';
 import { catchUpInChunks } from './store/catchUpInChunks';
 import { gameStore, isSimulation } from './store/gameStore';
+import { isPromoRequested } from './store/e2eFlag';
 import { installEventEffects } from './store/installEventEffects';
 import { liveCommandGateway } from './store/liveCommandGateway';
 import '@fontsource-variable/inter';
@@ -49,6 +50,8 @@ if (isFpsOverlayRequested(window.location.search)) installFpsOverlay();
 if (import.meta.env.DEV && isSimulation) void import('./sim/installSimulation').then((module) => module.installSimulation());
 
 if (import.meta.env.DEV) void import('./devtools/installSkipTime').then((module) => module.installSkipTime());
+
+if (import.meta.env.DEV && isPromoRequested(window.location.search)) void import('./devtools/promo/installPromo').then((module) => module.installPromo());
 
 blockPageZoom();
 hideSplashAfterFailsafe();

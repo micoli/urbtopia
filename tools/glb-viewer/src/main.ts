@@ -8,6 +8,7 @@ const element = <T extends HTMLElement>(id: string) => document.getElementById(i
 const list = element<HTMLUListElement>('models')
 const filter = element<HTMLInputElement>('filter')
 const toneSelect = element<HTMLSelectElement>('tone')
+const clipSelect = element<HTMLSelectElement>('clip')
 const info = element('info')
 const viewer = new ViewerScene(element<HTMLCanvasElement>('canvas'))
 
@@ -90,6 +91,15 @@ const trisOf = (object: THREE.Object3D) => {
   return tris
 }
 
+function renderClips(names: string[]) {
+  const previous = clipSelect.value
+  const clips = [...new Set(names)].sort()
+  clipSelect.replaceChildren(new Option('Rest pose', ''), ...clips.map((name) => new Option(name, name)))
+  clipSelect.value = clips.includes(previous) ? previous : ''
+  clipSelect.disabled = clips.length === 0
+  viewer.playClip(clipSelect.value)
+}
+
 async function showSelection() {
   const keys = catalog.map((model) => model.key).filter((key) => selected.has(key))
   renderTones()
@@ -115,8 +125,9 @@ async function showSelection() {
         if (mesh.isMesh) mesh.material = library.withTextureVariant(mesh.material, `tone:${key}:${tone}` as never)
       })
     }
-    return { object, label: key }
+    return { object, label: key, clips: library.clipsOf(key) }
   })
+  renderClips(items.flatMap(({ clips }) => clips.map(({ name }) => name)))
   viewer.show(items)
   if (refitOnNextShow) viewer.frame()
   refitOnNextShow = false
@@ -134,6 +145,7 @@ async function refreshCatalog() {
 }
 
 filter.addEventListener('input', renderList)
+clipSelect.addEventListener('change', () => viewer.playClip(clipSelect.value))
 toneSelect.addEventListener('change', () => {
   tone = toneSelect.value
   void showSelection()

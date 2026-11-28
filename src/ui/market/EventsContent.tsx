@@ -3,6 +3,7 @@ import { isChallengePlayable, visibleChallenges } from '../../challenges/visible
 import { t } from '../../i18n/t';
 import { useChallenges, useGame, useUi } from '../common/hooks';
 import { ActionButton } from '../common/ActionButton';
+import { PuzzleCard } from '../puzzle/PuzzleCard';
 import { SignInPrompt } from '../social/SignInPrompt';
 import { ActiveChallenge } from './ActiveChallenge';
 import { ChallengeCard } from './ChallengeCard';
@@ -27,9 +28,9 @@ export function EventsContent() {
     if (shownIds !== '') markSeen(shownIds.split(','));
   }, [shownIds, markSeen]);
 
-  if (!enabled) return <><p>{t('challenge.unavailable')}</p>{rules}</>;
-  if (status === 'sign-in-required') return <><SignInPrompt onSignIn={() => openSettings(true)} />{rules}</>;
-  if (!snapshot) return <><p>{t('challenge.loading')}</p>{rules}</>;
+  if (!enabled) return <><PuzzleCard /><p>{t('challenge.unavailable')}</p>{rules}</>;
+  if (status === 'sign-in-required') return <><PuzzleCard /><SignInPrompt onSignIn={() => openSettings(true)} />{rules}</>;
+  if (!snapshot) return <><PuzzleCard /><p>{t('challenge.loading')}</p>{rules}</>;
 
   const accepted = snapshot.accepted;
   const running = accepted ? snapshot.challenges.find(({ id }) => id === accepted.challengeId) : undefined;
@@ -37,6 +38,7 @@ export function EventsContent() {
 
   return (
     <>
+      <PuzzleCard />
       {status === 'offline' ? <p className="challenge-note">{t('challenge.offline')}</p> : null}
       {failure ? <p className="challenge-note" role="alert">{t(`challenge.error.${failure}`)}</p> : null}
       {accepted && running ? <ActiveChallenge challenge={running} accepted={accepted} state={state} clockOffset={clockOffset} busy={busy} onSetAside={(item, quantity) => void actions?.setAside(item, quantity)} onAbandon={() => void actions?.abandon()} /> : null}

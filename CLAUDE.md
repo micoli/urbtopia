@@ -16,6 +16,10 @@ Single-context: one `CONTEXT.md` + `docs/adr/` at the root. See `docs/agents/dom
 
 Add `?e2e` to the game URL in Playwright tests (`page.goto('/?e2e')`) and when driving the game by hand. Other URL parameters (`local-auth`, `advisor-fake`, `time`, `always-day`…) and the Advisor flag: `docs/agents/browser-tests.md`.
 
+## Promo videos
+
+`npm run promo -- <scenario>` films a scripted scene file into an MP4; the `promo-video` skill drives it. Details: `docs/agents/promo-videos.md`.
+
 ## UI
 
 Decisions in `docs/adr/0051-ui-layers-tokens-variants-radix-and-icons.md`.

@@ -6,7 +6,7 @@ export interface DevToolsPosition {
   y: number;
 }
 
-export type DevToolsSectionId = 'flags' | 'advisor' | 'warehouse' | 'annualEvents' | 'releaseNotes' | 'items';
+export type DevToolsSectionId = 'flags' | 'advisor' | 'warehouse' | 'annualEvents' | 'releaseNotes' | 'items' | 'puzzle';
 
 export function readDevToolsPosition(): DevToolsPosition | null {
   try {
