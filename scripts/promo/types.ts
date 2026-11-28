@@ -1,14 +1,20 @@
 import type { Stage } from './stage.ts';
 
 // The parts of the interface a scene shows; every other part is hidden, except the main menu that is always shown.
-export type UiPart = 'hud' | 'camera' | 'build' | 'selection' | 'panel';
+export type UiPart = 'hud' | 'camera' | 'build' | 'selection' | 'panel' | 'analytics';
 
 export interface SceneOptions {
   ui?: UiPart[];
   state?: string;
-  language?: 'en' | 'fr';
+  language?: Language;
   // A Kokoro voice for `stage.say`; by default one of the language.
   voice?: string;
+  // The scene starts from the state the previous scene ended in, not from a save file: a film cut into scenes goes on where it stopped.
+  from?: 'previous';
+  // What the scene's code is made of, for the cache: the source of its sequences and of what they lean on. A scene is filmed again only when it changes.
+  sources?: string[];
+  // Features that ship switched off, switched on for the scene: `clubs`.
+  flags?: string[];
   // Hides the tax bubbles over the buildings when they crowd the shot.
   hideTaxBadges?: boolean;
   time?: string;
@@ -28,9 +34,13 @@ export interface ScenarioOptions {
   transition?: 'fade' | 'cut';
 }
 
+export type Language = 'en' | 'fr';
+export const LANGUAGES: readonly Language[] = ['en', 'fr'];
+
+// A scenario is written once and built for each language: `build` gets the language and returns the scenes, with their captions and lines in it.
 export interface Scenario extends ScenarioOptions {
   name: string;
-  scenes: Scene[];
+  build: (language: Language) => Scene[];
 }
 
 export const DEFAULT_VIEWPORT = { width: 1080, height: 768 };
@@ -46,6 +56,6 @@ export function scene(name: string, options: SceneOptions, play: Scene['play']):
   return { name, options, play };
 }
 
-export function scenario(name: string, scenes: Scene[], options: ScenarioOptions = {}): Scenario {
-  return { name, scenes, ...options };
+export function scenario(name: string, build: Scenario['build'], options: ScenarioOptions = {}): Scenario {
+  return { name, build, ...options };
 }

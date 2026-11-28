@@ -1,4 +1,10 @@
 import { gameStore } from '../../store/gameStore';
+import { t } from '../../i18n/t';
+import type { MessageKey } from '../../i18n/messages';
+import { uiStore } from '../../store/uiStore';
+import { venueStore } from '../../store/venueStore';
+import { openInterior } from '../../store/openInterior';
+import type { AnalyticsLayerId, Level } from '../../core';
 import { sceneHandle } from '../../store/sceneHandle';
 import { venueSceneHandle } from '../../store/venueSceneHandle';
 import { parseEnvelope } from '../../persistence/envelope';
@@ -13,15 +19,22 @@ export interface PromoApi {
   pinCycleHour(hour: number | null): void;
   tileToScreen(x: number, y: number): { x: number; y: number } | null;
   setUi(parts: string[]): void;
-  caption(text: string | null, mode?: CaptionMode): void;
-  title(text: string | null, subtitle?: string): void;
+  analytics(layer: string | null): void;
+  management(section: string | null, preload?: boolean): void;
+  interior(buildingType: string | null): void;
+  cursor(visible: boolean): void;
+  level(level: number): void;
+  rotateView(direction: number): void;
+  caption(text: string | null, mode?: CaptionMode, wordMs?: number): void;
+  title(text: string | null, subtitle?: string, note?: string): void;
+  text(key: string): string;
   callout(rect: Rect | null, label?: string): void;
   stat(label: string, from: number, to: number, seconds: number, suffix?: string): Promise<void>;
   look(on: boolean): void;
   shiftRoom(dx: number, dy: number): void;
 }
 
-export type CaptionMode = 'plain' | 'words' | 'typewriter';
+export type CaptionMode = 'viral' | 'plain' | 'words' | 'typewriter';
 export interface Rect {
   x: number;
   y: number;
@@ -60,15 +73,35 @@ function installCursor(): void {
   }, true);
 }
 
-function installCaption(): (text: string | null, mode?: CaptionMode) => void {
+const VIRAL_CHUNK_WORDS = 3;
+const VIRAL_CHUNK_CHARACTERS = 18;
+
+// Words by chunks of a few: a chunk is on screen at a time, like the subtitles of short videos.
+function viralChunks(text: string): string[][] {
+  const chunks: string[][] = [];
+  for (const word of text.split(' ').filter(Boolean)) {
+    const last = chunks[chunks.length - 1];
+    if (last && last.length < VIRAL_CHUNK_WORDS && last.join(' ').length + word.length < VIRAL_CHUNK_CHARACTERS) last.push(word);
+    else chunks.push([word]);
+  }
+  return chunks;
+}
+
+function installCaption(): PromoApi['caption'] {
   const caption = createElement('promo-caption');
   caption.hidden = true;
   let typing: number | undefined;
-  return (text, mode = 'plain') => {
+  let timers: number[] = [];
+  const clear = () => {
     window.clearInterval(typing);
+    timers.forEach((timer) => window.clearTimeout(timer));
+    timers = [];
+  };
+  return (text, mode = 'viral', wordMs = 260) => {
+    clear();
     caption.hidden = text === null;
     caption.replaceChildren();
-    caption.classList.toggle('promo-typewriter', mode === 'typewriter');
+    caption.className = `promo-caption promo-caption--${mode}`;
     if (text === null) return;
     if (mode === 'plain') {
       caption.textContent = text;
@@ -81,6 +114,30 @@ function installCaption(): (text: string | null, mode?: CaptionMode) => void {
         caption.textContent = text.slice(0, shown);
         if (shown >= text.length) window.clearInterval(typing);
       }, 45);
+      return;
+    }
+    if (mode === 'viral') {
+      // Each word pops in and takes the highlight; a chunk stays a beat after its last word, then the next one replaces it.
+      let at = 0;
+      viralChunks(text).forEach((chunk, chunkIndex) => {
+        const spans = chunk.map((word) => Object.assign(document.createElement('span'), { className: 'promo-viral-word', textContent: word }));
+        timers.push(window.setTimeout(() => {
+          caption.replaceChildren(...spans.flatMap((span, index) => (index === 0 ? [span] : [' ', span])));
+          caption.style.setProperty('--tilt', `${[-2.5, 1.8, -1.2, 2.4][chunkIndex % 4]}deg`);
+        }, at));
+        spans.forEach((span, index) => {
+          timers.push(window.setTimeout(() => {
+            spans.forEach((other) => other.classList.remove('promo-viral-current'));
+            span.classList.add('promo-viral-on', 'promo-viral-current');
+          }, at + index * wordMs));
+        });
+        at += chunk.length * wordMs + wordMs * 1.4;
+      });
+      // The last chunk does not stay on screen: it goes when its beat is over.
+      timers.push(window.setTimeout(() => {
+        caption.hidden = true;
+        caption.replaceChildren();
+      }, at));
       return;
     }
     // The space is a text node between the words: a space at the end of an inline-block would collapse.
@@ -96,20 +153,18 @@ function installCaption(): (text: string | null, mode?: CaptionMode) => void {
 }
 
 // A full-screen title card: the text goes from blur to sharp over a radial glow.
-function installTitle(): (text: string | null, subtitle?: string) => void {
+function installTitle(): PromoApi['title'] {
   const card = createElement('promo-title');
   card.hidden = true;
-  return (text, subtitle) => {
+  return (text, subtitle, note) => {
     card.hidden = text === null;
     card.replaceChildren();
     if (text === null) return;
     const heading = document.createElement('h1');
     heading.textContent = text;
     card.append(heading);
-    if (!subtitle) return;
-    const line = document.createElement('p');
-    line.textContent = subtitle;
-    card.append(line);
+    if (subtitle) card.append(Object.assign(document.createElement('p'), { textContent: subtitle }));
+    if (note) card.append(Object.assign(document.createElement('small'), { textContent: note }));
   };
 }
 
@@ -222,6 +277,43 @@ function shiftRoom(dx: number, dy: number): void {
 }
 
 // The guided demonstrations explain the game: a promo never opens their invitation.
+// Opens a Layer of the Analytics view, or leaves it.
+function analytics(layer: string | null): void {
+  if (layer === null) uiStore.getState().exitAnalytics();
+  else uiStore.getState().enterAnalytics(layer as AnalyticsLayerId);
+}
+
+// Opens City management on one of its sections (`eco-needs`...), or closes it.
+function management(section: string | null, preload = false): void {
+  if (preload) document.documentElement.dataset.promoPreload = '';
+  else delete document.documentElement.dataset.promoPreload;
+  const ui = uiStore.getState();
+  if (section !== null) ui.showManagementSection(section);
+  else if (ui.statsOpen) ui.toggleStats();
+}
+
+// Opens the interior of the first building of a type, or closes the open one: the scene does it with no mouse and no floating bar.
+function interior(buildingType: string | null): void {
+  if (buildingType === null) venueStore.getState().close();
+  else openInterior(gameStore.getState().state.buildings.find((building) => building.type === buildingType)!);
+}
+
+// The fake cursor is hidden for the shots that must show the game alone.
+function cursor(visible: boolean): void {
+  if (visible) delete document.documentElement.dataset.promoNoCursor;
+  else document.documentElement.dataset.promoNoCursor = '';
+}
+
+// The level of the map shown: 0 for the surface, -1 and -2 under it.
+function level(value: number): void {
+  uiStore.getState().setLevel(value as Level);
+}
+
+// A quarter turn of the view, to the right (1) or to the left (-1): a second angle on the same place.
+function rotateView(direction: number): void {
+  sceneHandle.current?.camera.rotate(direction);
+}
+
 function silenceDemonstrations(): void {
   const types = DEMONSTRATIONS.map((demonstration) => demonstration.buildingType);
   demonstrationPreferencesStore.setState({ seenTypes: types });
@@ -231,6 +323,6 @@ export function installPromo(): void {
   setUi([]);
   silenceDemonstrations();
   installCursor();
-  window.__promo = { loadState, caption: installCaption(), title: installTitle(), callout: installCallout(), stat: installStat(), look, shiftRoom, timelapse, flyTo, pinCycleHour: (hour) => showDayCycle(hour === null, hour), tileToScreen, setUi };
+  window.__promo = { loadState, caption: installCaption(), title: installTitle(), callout: installCallout(), stat: installStat(), look, shiftRoom, text: (key) => t(key as MessageKey), timelapse, flyTo, pinCycleHour: (hour) => showDayCycle(hour === null, hour), tileToScreen, setUi, analytics, management, interior, cursor, level, rotateView };
   look(true);
 }

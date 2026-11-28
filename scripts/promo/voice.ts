@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 // Voice over: Kokoro (82M, StyleTTS 2) served by Kokoro-FastAPI in Docker, through its OpenAI-compatible speech endpoint.
@@ -16,6 +16,18 @@ export interface Speech {
   seconds: number;
 }
 
+// Kokoro speaks about this many characters a second; a line not yet spoken is given this length, a little long, so that the voice never runs over the next moment of the film.
+const CHARACTERS_PER_SECOND = 13;
+
+const fileOf = (text: string, voice: string, speed: number): string => join(CACHE_DIR, `${createHash('sha256').update(`${voice}|${speed}|${text}`).digest('hex').slice(0, 16)}.mp3`);
+
+// The line as the film is shot: its real length when it was spoken before, else an estimate. Nothing is synthesised: the voices are made after the shooting (`speak`), which keeps Kokoro from slowing the game down.
+export function plan(text: string, voice: string, speed = 1): Speech {
+  mkdirSync(CACHE_DIR, { recursive: true });
+  const file = fileOf(text, voice, speed);
+  return { file, seconds: existsSync(file) ? durationOf(file) : text.length / CHARACTERS_PER_SECOND / speed + 0.2 };
+}
+
 const isUp = async (): Promise<boolean> => {
   try {
     return (await fetch(`${KOKORO_URL}/v1/audio/voices`, { signal: AbortSignal.timeout(2000) })).ok;
@@ -24,8 +36,14 @@ const isUp = async (): Promise<boolean> => {
   }
 };
 
-// Uses the server that answers, else starts the container (CPU image, models baked in) and waits for it.
-export async function ensureKokoro(): Promise<void> {
+// Uses the server that answers, else starts the container (CPU image, models baked in) and waits for it. Videos filmed side by side ask once together.
+let starting: Promise<void> | undefined;
+export function ensureKokoro(): Promise<void> {
+  starting ??= start().finally(() => { starting = undefined; });
+  return starting;
+}
+
+async function start(): Promise<void> {
   if (await isUp()) return;
   console.log(`Kokoro: starting ${KOKORO_IMAGE}`);
   try {
@@ -45,7 +63,7 @@ const durationOf = (file: string): number => Number(execFileSync('ffprobe', ['-v
 // A line already spoken is not synthesised again: the file is named by the hash of the text, the voice and the speed.
 export async function speak(text: string, voice: string, speed = 1): Promise<Speech> {
   mkdirSync(CACHE_DIR, { recursive: true });
-  const file = join(CACHE_DIR, `${createHash('sha256').update(`${voice}|${speed}|${text}`).digest('hex').slice(0, 16)}.mp3`);
+  const file = fileOf(text, voice, speed);
   if (!existsSync(file)) {
     await ensureKokoro();
     const response = await fetch(`${KOKORO_URL}/v1/audio/speech`, {
@@ -54,7 +72,10 @@ export async function speak(text: string, voice: string, speed = 1): Promise<Spe
       body: JSON.stringify({ model: 'kokoro', input: text, voice, speed, response_format: 'mp3' }),
     });
     if (!response.ok) throw new Error(`Kokoro answered ${response.status} for "${text}"`);
-    writeFileSync(file, Buffer.from(await response.arrayBuffer()));
+    // Written aside then renamed: a video filmed side by side never reads a half-written line.
+    const partial = `${file}.${process.pid}.${Date.now()}.part`;
+    writeFileSync(partial, Buffer.from(await response.arrayBuffer()));
+    renameSync(partial, file);
   }
   return { file, seconds: durationOf(file) };
 }
