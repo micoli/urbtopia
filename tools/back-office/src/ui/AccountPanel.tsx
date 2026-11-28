@@ -4,6 +4,7 @@ import { accountLabel, type AccountSummary } from '../domain/accounts'
 import { formatDate } from '../domain/format'
 import { useAccountDetail } from '../hooks/useAccountDetail'
 import { BanControl } from './BanControl'
+import { ExportAccountButton } from './ExportAccountButton'
 import { Fact } from './Fact'
 import { GameFrame, type GameLaunch } from './GameFrame'
 import { HandleEditor } from './HandleEditor'
@@ -45,7 +46,9 @@ export function AccountPanel({ client, account, gameUrl, onChanged }: Props) {
           ) : (
             <p className="text-sm text-zinc-500">This account has not chosen a Handle.</p>
           )}
-          <BanControl client={client} account={account} onChanged={onChanged} />
+          <BanControl client={client} account={account} onChanged={onChanged}>
+            <ExportAccountButton client={client} account={account} />
+          </BanControl>
         </div>
       </section>
 

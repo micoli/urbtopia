@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { exportDatabase, type ExportProgress } from '../api/exportDatabase'
 import { createAdminClient } from '../api/supabaseAdmin'
+import { downloadBlob } from '../domain/downloadBlob'
 import { isLocalUrl, type Profile } from '../domain/profiles'
 import { button } from './styles'
 
@@ -13,15 +14,6 @@ function fileNameOf(profile: Profile): string {
   return `${profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-export-${day}.json`
 }
 
-function saveBlob(blob: Blob, fileName: string) {
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = fileName
-  link.click()
-  URL.revokeObjectURL(url)
-}
-
 export function ExportButton({ profile }: Props) {
   const [progress, setProgress] = useState<ExportProgress | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -31,7 +23,7 @@ export function ExportButton({ profile }: Props) {
     setProgress({ table: 'auth.users', rows: 0 })
     try {
       const blob = await exportDatabase(createAdminClient(profile), setProgress)
-      saveBlob(blob, fileNameOf(profile))
+      downloadBlob(blob, fileNameOf(profile))
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : String(failure))
     } finally {

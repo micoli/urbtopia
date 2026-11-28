@@ -1,14 +1,14 @@
 import type { AdminClient } from './supabaseAdmin'
 import { fetchAllUsers } from './supabaseAdmin'
 
-interface TableSpec {
+export interface TableSpec {
   name: string
   orderBy: string[]
   pageSize?: number
 }
 
-const LIGHT_PAGE = 1000
-const HEAVY_PAGE = 20
+export const LIGHT_PAGE = 1000
+export const HEAVY_PAGE = 20
 
 // The order columns are the primary key, so that paging neither skips nor repeats a row.
 const TABLES: TableSpec[] = [
@@ -37,8 +37,11 @@ const TABLES: TableSpec[] = [
   { name: 'urb_forbidden_handle_words', orderBy: ['word'] },
 ]
 
-interface UntypedQuery {
+export interface UntypedQuery {
   order: (column: string) => UntypedQuery
+  eq: (column: string, value: string) => UntypedQuery
+  in: (column: string, values: Array<string | number>) => UntypedQuery
+  or: (filters: string) => UntypedQuery
   range: (from: number, to: number) => PromiseLike<{ data: unknown[] | null; error: { code?: string; message: string } | null }>
 }
 
@@ -54,12 +57,12 @@ export interface ExportProgress {
 const TABLE_NOT_IN_SCHEMA = 'PGRST205'
 
 // A table of a migration not released yet is absent from the project: null, not a failure.
-async function readTablePages(client: AdminClient, { name, orderBy, pageSize = LIGHT_PAGE }: TableSpec, onRows: (rows: number) => void): Promise<string[] | null> {
+export async function readTablePages(client: AdminClient, { name, orderBy, pageSize = LIGHT_PAGE }: TableSpec, onRows: (rows: number) => void, scope: (query: UntypedQuery) => UntypedQuery = query => query): Promise<string[] | null> {
   const parts: string[] = []
   let total = 0
   for (let from = 0; ; from += pageSize) {
     // The table name is dynamic, so the typed query builder cannot follow it.
-    let query = (client as unknown as UntypedClient).from(name).select('*')
+    let query = scope((client as unknown as UntypedClient).from(name).select('*'))
     for (const column of orderBy) query = query.order(column)
     const { data, error } = await query.range(from, from + pageSize - 1)
     if (error?.code === TABLE_NOT_IN_SCHEMA) return null
